@@ -15,7 +15,7 @@ from config import *
 from utils import load_jsonl_sample, save_json, print_progress
 
 
-def classify_documents(texts: list, classifier, source_name: str) -> dict:
+def classify_documents(texts: list, classifier, source_name: str) -> tuple:
     """
     Classify a batch of documents with detailed progress tracking
     
@@ -25,9 +25,12 @@ def classify_documents(texts: list, classifier, source_name: str) -> dict:
         source_name: Name of the source being processed
     
     Returns:
-        Dictionary with domain statistics
+        Tuple of (stats dict, document_scores list)
+        - stats: Dictionary with domain statistics
+        - document_scores: List of dicts with per-document domain scores
     """
     domain_scores = defaultdict(list)
+    document_scores = []  # Store per-document scores
     total_docs = len(texts)
     
     print(f"\n{'='*60}")
@@ -56,11 +59,21 @@ def classify_documents(texts: list, classifier, source_name: str) -> dict:
             
             # Store scores
             for i, result in enumerate(results):
+                doc_idx = start_idx + i
+                
+                # Create per-document score dict
+                doc_scores = {}
                 for domain, score in zip(result['labels'], result['scores']):
                     domain_scores[domain].append(score)
+                    doc_scores[domain] = float(score)
+                
+                # Store document-level data
+                document_scores.append({
+                    'doc_id': doc_idx,
+                    'domains': doc_scores
+                })
                 
                 # Progress update
-                doc_idx = start_idx + i
                 if (doc_idx + 1) % 10 == 0 or doc_idx == total_docs - 1:
                     progress = (doc_idx + 1) / total_docs
                     bar_length = 40
@@ -95,7 +108,7 @@ def classify_documents(texts: list, classifier, source_name: str) -> dict:
             'high_confidence_ratio': float(sum(1 for s in scores if s > CONFIDENCE_THRESHOLD) / len(scores))
         }
     
-    return stats
+    return stats, document_scores
 
 
 def main():
@@ -148,7 +161,7 @@ def main():
             print(f"✅ Loaded {num_docs:,} documents")
             
             # Classify
-            stats = classify_documents(texts, classifier, source_name)
+            stats, doc_scores = classify_documents(texts, classifier, source_name)
             
             # Add metadata
             results = {
@@ -160,9 +173,14 @@ def main():
             
             all_results[source_name] = results
             
-            # Save individual source results
+            # Save individual source results (aggregated stats)
             output_file = os.path.join(RESULTS_DIR, f"{source_name}_classification.json")
             save_json(results, output_file)
+            
+            # Save per-document scores separately (for graph construction)
+            doc_scores_file = os.path.join(RESULTS_DIR, f"{source_name}_document_scores.json")
+            save_json(doc_scores, doc_scores_file)
+            print(f"💾 Saved document-level scores to {doc_scores_file}")
             
             # Print summary
             print("\n📊 Top 5 domains by mean confidence:")
@@ -189,7 +207,7 @@ def main():
     print(f"✅ Results saved to {RESULTS_DIR}/")
     print(f"  - Individual files: {len(all_results)} source files")
     print(f"  - Combined file: all_sources_classification.json")
-    print("\n🎯 Next step: Run visualize_sources.py to create visualizations")
+    print("\n🎯 Next step: Run build_cooccurrence_graph.py to build domain graphs")
 
 
 if __name__ == "__main__":
