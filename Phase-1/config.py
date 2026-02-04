@@ -102,6 +102,7 @@ BATCH_SIZE = 16
 TEXT_MAX_LENGTH = 1000  # Characters to use for classification
 
 # Sampling parameters
+USE_ALL_DOCUMENTS = True  # Use all available documents (ignore SAMPLE_SIZE_PER_SOURCE)
 SAMPLE_SIZE_PER_SOURCE = 5000  # Number of documents to sample per source
 CONFIDENCE_THRESHOLD = 0.7  # Threshold for "high confidence" classification
 
