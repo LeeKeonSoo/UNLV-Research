@@ -1,8 +1,7 @@
 """
-Domain Classification Script
+Domain Classification Script - OPTIMIZED VERSION
 
-Runs BART zero-shot classification on sampled data and saves results.
-This separates the expensive classification step from visualization.
+Uses HuggingFace Dataset for efficient GPU batch processing.
 """
 
 import os
@@ -10,14 +9,16 @@ import json
 from collections import defaultdict
 from transformers import pipeline
 import numpy as np
+from datasets import Dataset
+from tqdm import tqdm
 
 from config import *
-from utils import load_jsonl_sample, save_json, print_progress
+from utils import load_jsonl_sample, save_json
 
 
 def classify_documents(texts: list, classifier, source_name: str) -> tuple:
     """
-    Classify a batch of documents with detailed progress tracking
+    Classify documents using Dataset for efficient GPU batching
     
     Args:
         texts: List of text strings
@@ -26,76 +27,66 @@ def classify_documents(texts: list, classifier, source_name: str) -> tuple:
     
     Returns:
         Tuple of (stats dict, document_scores list)
-        - stats: Dictionary with domain statistics
-        - document_scores: List of dicts with per-document domain scores
     """
-    domain_scores = defaultdict(list)
-    document_scores = []  # Store per-document scores
     total_docs = len(texts)
-    
     print(f"\n{'='*60}")
     print(f"Classifying {total_docs:,} documents from {source_name}")
     print('='*60)
     
-    # Truncate all texts first
+    # Truncate texts
     truncated_texts = [text[:TEXT_MAX_LENGTH] for text in texts]
     
-    # Process in batches for GPU efficiency
-    batch_size = BATCH_SIZE
-    num_batches = (total_docs + batch_size - 1) // batch_size
+    # Create HuggingFace Dataset
+    print("Creating dataset...")
+    dataset = Dataset.from_dict({"text": truncated_texts})
     
-    for batch_idx in range(num_batches):
-        start_idx = batch_idx * batch_size
-        end_idx = min(start_idx + batch_size, total_docs)
-        batch_texts = truncated_texts[start_idx:end_idx]
-        
+    # Initialize storage
+    document_scores = []
+    domain_scores = defaultdict(list)
+    
+    print(f"Processing with batch_size={BATCH_SIZE}...")
+    
+    # Process with dataset batching (MUCH faster on GPU)
+    for idx, batch in enumerate(tqdm(
+        dataset.iter(batch_size=BATCH_SIZE),
+        total=(total_docs + BATCH_SIZE - 1) // BATCH_SIZE,
+        desc="Classifying"
+    )):
         try:
-            # Batch classification (much faster on GPU)
-            results = classifier(batch_texts, ALL_DOMAINS, multi_label=True, batch_size=batch_size)
+            # Batch classification
+            results = classifier(
+                batch['text'],
+                ALL_DOMAINS,
+                multi_label=True
+            )
             
-            # Handle single result vs list of results
+            # Handle single result vs list
             if not isinstance(results, list):
                 results = [results]
             
-            # Store scores
+            # Store per-document scores
             for i, result in enumerate(results):
-                doc_idx = start_idx + i
+                doc_idx = idx * BATCH_SIZE + i
                 
-                # Create per-document score dict
+                # Create score dict for this document
                 doc_scores = {}
                 for domain, score in zip(result['labels'], result['scores']):
-                    domain_scores[domain].append(score)
                     doc_scores[domain] = float(score)
+                    domain_scores[domain].append(score)
                 
-                # Store document-level data
                 document_scores.append({
                     'doc_id': doc_idx,
                     'domains': doc_scores
                 })
-                
-                # Progress update
-                if (doc_idx + 1) % 10 == 0 or doc_idx == total_docs - 1:
-                    progress = (doc_idx + 1) / total_docs
-                    bar_length = 40
-                    filled = int(bar_length * progress)
-                    bar = '█' * filled + '░' * (bar_length - filled)
-                    
-                    # Show top domain for current doc
-                    top_domain = result['labels'][0] if result['labels'] else "unknown"
-                    top_score = result['scores'][0] if result['scores'] else 0.0
-                    
-                    print(f'\r  Progress: |{bar}| {progress*100:.1f}% '
-                          f'({doc_idx + 1:,}/{total_docs:,}) | '
-                          f'Current: {top_domain[:30]:30s} ({top_score:.2f})',
-                          end='', flush=True)
         
         except Exception as e:
-            print(f"\n⚠️  Error in batch {batch_idx}: {e}")
+            print(f"\n⚠️  Error in batch {idx}: {e}")
             continue
     
-    print()  # New line after progress
+    print("\n✅ Classification complete")
     
     # Aggregate statistics
+    print("Computing statistics...")
     stats = {}
     for domain, scores in domain_scores.items():
         stats[domain] = {
@@ -113,12 +104,13 @@ def classify_documents(texts: list, classifier, source_name: str) -> tuple:
 
 def main():
     print("=" * 60)
-    print("DOMAIN CLASSIFICATION")
+    print("DOMAIN CLASSIFICATION (OPTIMIZED)")
     print("=" * 60)
     print(f"\nModel: {CLASSIFIER_MODEL}")
     print(f"Sources: {', '.join(PILE_SUBSETS)}")
     print(f"Domains: {len(ALL_DOMAINS)} domains across {len(DOMAINS)} categories")
     print(f"Mode: {'All documents' if USE_ALL_DOCUMENTS else f'{SAMPLE_SIZE_PER_SOURCE:,} samples per source'}")
+    print(f"Batch size: {BATCH_SIZE}")
     
     # Load classifier
     print("\n" + "="*60)
