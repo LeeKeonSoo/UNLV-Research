@@ -64,8 +64,41 @@ PILE_SUBSETS = [
 # Classification parameters
 CLASSIFIER_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
 #"facebook/bart-large-mnli"
-CLASSIFIER_DEVICE = 0  # GPU device
-BATCH_SIZE = 32
+# GPU Selection (for dual GPU systems)
+GPU_INDEX = -1  # Change to 1 for second GPU, -1 to auto-select least used
+
+# Auto-detect device (CUDA GPU / MPS / CPU)
+import torch
+if torch.cuda.is_available():
+    # CUDA GPU (Windows/Linux)
+    num_gpus = torch.cuda.device_count()
+    
+    if GPU_INDEX == -1:
+        # Auto-select least used GPU
+        gpu_memory_free = []
+        for i in range(num_gpus):
+            torch.cuda.set_device(i)
+            free_mem = torch.cuda.mem_get_info()[0]
+            gpu_memory_free.append((i, free_mem))
+        best_gpu = max(gpu_memory_free, key=lambda x: x[1])[0]
+        CLASSIFIER_DEVICE = best_gpu
+    else:
+        CLASSIFIER_DEVICE = GPU_INDEX
+    
+    DEVICE_NAME = f"CUDA GPU {CLASSIFIER_DEVICE}: {torch.cuda.get_device_name(CLASSIFIER_DEVICE)} ({num_gpus} GPUs available)"
+    
+elif torch.backends.mps.is_available():
+    # Apple Silicon GPU (Mac)
+    CLASSIFIER_DEVICE = "mps"
+    DEVICE_NAME = "Apple MPS (Metal Performance Shaders)"
+else:
+    # CPU fallback
+    CLASSIFIER_DEVICE = -1
+    DEVICE_NAME = "CPU (No GPU detected)"
+
+print(f"🎮 Device: {DEVICE_NAME}")
+
+BATCH_SIZE = 16
 TEXT_MAX_LENGTH = 1000  # Characters to use for classification
 
 # Sampling parameters
