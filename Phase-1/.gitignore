@@ -3,6 +3,12 @@ pile/
 pile_compressed/
 *.jsonl
 
+# K-12 data directories
+k12_raw/
+k12_processed/
+k12_graphs/
+k12_reports/
+
 # Python
 __pycache__/
 *.py[cod]
