@@ -1,11 +1,16 @@
 """
 Build Co-occurrence Graph from Document-level Domain Scores
 
+LEGACY TOOL for The Pile analysis (Phase 1a)
+
 This script:
-1. Loads per-document classification scores
+1. Loads per-document classification scores (from classify_domains.py)
 2. Builds a co-occurrence matrix (edges between domains)
 3. Computes node sizes (domain coverage)
 4. Saves graph data for visualization
+
+Note: This is for the original 24-domain Pile analysis.
+For K-12 curriculum graphs, use build_k12_graph.py instead.
 """
 
 import os
@@ -17,8 +22,8 @@ from utils import save_json
 
 
 def load_document_scores(source_name: str) -> list:
-    """Load document-level scores for a source"""
-    filepath = os.path.join(RESULTS_DIR, f"{source_name}_document_scores.json")
+    """Load document-level scores for a Pile source"""
+    filepath = os.path.join(PILE_RESULTS_DIR, f"{source_name}_document_scores.json")
     
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Document scores not found: {filepath}")
@@ -116,7 +121,10 @@ def compute_graph_statistics(graph_data: dict) -> dict:
 
 def main():
     print("=" * 60)
-    print("DOMAIN CO-OCCURRENCE GRAPH BUILDER")
+    print("DOMAIN CO-OCCURRENCE GRAPH BUILDER (PILE)")
+    print("=" * 60)
+    print("⚠️  Legacy tool for The Pile analysis")
+    print("   For K-12 graphs, use build_k12_graph.py")
     print("=" * 60)
     print(f"\nThreshold: {CONFIDENCE_THRESHOLD}")
     print(f"Sources: {', '.join(PILE_SUBSETS)}")
@@ -152,7 +160,7 @@ def main():
             all_graphs[source_name] = graph_output
             
             # Save individual graph
-            output_file = os.path.join(RESULTS_DIR, f"{source_name}_graph.json")
+            output_file = os.path.join(PILE_RESULTS_DIR, f"{source_name}_graph.json")
             save_json(graph_output, output_file)
             
             # Print summary
@@ -174,17 +182,18 @@ def main():
             continue
     
     # Save combined graphs
-    combined_file = os.path.join(RESULTS_DIR, "all_sources_graphs.json")
+    combined_file = os.path.join(PILE_RESULTS_DIR, "all_sources_graphs.json")
     save_json(all_graphs, combined_file)
     
     print("\n" + "="*60)
     print("GRAPH BUILDING COMPLETE")
     print("="*60)
     print(f"✅ Built graphs for {len(all_graphs)} sources")
-    print(f"✅ Results saved to {RESULTS_DIR}/")
+    print(f"✅ Results saved to {PILE_RESULTS_DIR}/")
     print(f"  - Individual files: *_graph.json")
     print(f"  - Combined file: all_sources_graphs.json")
-    print("\n🎯 Next step: Create visualizations of the domain graphs")
+    print("\n💡 Note: This analyzed The Pile datasets")
+    print("   For K-12 curriculum graphs, use build_k12_graph.py")
 
 
 if __name__ == "__main__":

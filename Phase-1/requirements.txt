@@ -4,3 +4,17 @@ datasets==3.2.0
 numpy==2.2.1
 plotly==6.5.2
 tqdm
+
+# For K-12 data collection
+requests
+beautifulsoup4
+selenium  # For JavaScript-heavy sites
+
+# For concept graph construction
+sentence-transformers  # Document embeddings
+scikit-learn  # Clustering (HDBSCAN)
+hdbscan  # Hierarchical clustering
+
+# Optional: For better concept labeling
+# openai  # If using GPT for cluster labeling
+# anthropic  # If using Claude for cluster labeling
