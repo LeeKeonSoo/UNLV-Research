@@ -32,3 +32,5 @@ Thumbs.db
 
 # Results (optional - uncomment if needed)
 results/
+tiny_textbooks_raw/
+*-cwd
