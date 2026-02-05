@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(python build_k12_graph.py:*)",
+      "Bash(python:*)",
+      "WebFetch(domain:openstax.org)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(ls:*)",
+      "Read(//Users/leekeonsoo/Desktop/University/Etc./UNLV/Lab/Research/Phase-1/**)",
+      "Bash(if [ -d k12_raw ])",
+      "Bash(then mv k12_raw legacy/)",
+      "Bash(fi)",
+      "Bash(if [ -d k12_graphs ])",
+      "Bash(then mv k12_graphs legacy/)",
+      "Bash(if [ -d k12_reports ])",
+      "Bash(then mv k12_reports legacy/)",
+      "Bash(if [ -d k12_processed ])",
+      "Bash(then mv k12_processed legacy/)"
+    ]
+  }
+}
