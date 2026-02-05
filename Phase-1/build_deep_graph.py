@@ -8,7 +8,7 @@ import numpy as np
 from pathlib import Path
 from collections import defaultdict, Counter
 from sentence_transformers import SentenceTransformer
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, MiniBatchKMeans
 from tqdm import tqdm
 import warnings
 import re
@@ -90,7 +90,12 @@ class DeepHierarchicalGraph:
         return "General Topics"
 
     def cluster_documents(self, documents, doc_indices, level):
-        """Cluster documents at given level"""
+        """
+        Cluster documents at given level
+
+        Memory optimization: Uses MiniBatchKMeans for large datasets (>1000 docs)
+        to avoid O(n²) memory requirement of AgglomerativeClustering
+        """
         if level not in LEVEL_PARAMS:
             return None
 
@@ -116,13 +121,27 @@ class DeepHierarchicalGraph:
 
         print(f"{n_clusters} clusters... ", end='', flush=True)
 
-        # Perform clustering
-        clusterer = AgglomerativeClustering(
-            n_clusters=n_clusters,
-            metric=METRIC,
-            linkage=LINKAGE_METHOD
-        )
-        labels = clusterer.fit_predict(embeddings)
+        # Choose clustering algorithm based on data size
+        # Use MiniBatchKMeans for large datasets (levels 2-4) - memory efficient O(n*k)
+        # Use AgglomerativeClustering for smaller datasets (levels 5-8) - better quality
+        if len(doc_indices) > 1000:
+            # MiniBatchKMeans: Fast, low memory, good for large datasets
+            clusterer = MiniBatchKMeans(
+                n_clusters=n_clusters,
+                batch_size=1000,
+                random_state=42,
+                n_init=3,
+                max_iter=100
+            )
+            labels = clusterer.fit_predict(embeddings)
+        else:
+            # AgglomerativeClustering: Better quality, higher memory, good for small datasets
+            clusterer = AgglomerativeClustering(
+                n_clusters=n_clusters,
+                metric=METRIC,
+                linkage=LINKAGE_METHOD
+            )
+            labels = clusterer.fit_predict(embeddings)
 
         # Group by cluster
         clusters = defaultdict(list)
