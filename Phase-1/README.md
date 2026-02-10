@@ -1,94 +1,115 @@
-# Tiny-Textbooks Deep Hierarchical Analysis
+# Phase 1: Dataset Characterization for SLM Pretraining
 
-**Comprehensive analysis of 420,000 synthetic textbook documents with 8-level deep domain hierarchy and interactive visualizations.**
+**Research Goal**: Analyze domain coverage and quality characteristics of educational datasets to inform curriculum-aware pretraining strategies for Small Language Models (SLMs).
 
 ---
 
 ## 📋 Overview
 
-This project performs deep hierarchical analysis on the complete **Hugging Face `nampdn-ai/tiny-textbooks`** dataset:
+This project develops a systematic methodology to characterize pretraining datasets along two critical dimensions:
 
-- **Dataset Size:** 420,000 synthetic textbook documents
-- **Hierarchy Depth:** 8 levels (Root → Broad Domain → Subject → Topic → Subtopic → Concept → Detail → Fine Detail)
-- **Expected Nodes:** ~270,000 hierarchical nodes
-- **Visualizations:** Interactive 3D HTML + Gephi analysis
+1. **Domain Coverage**: What subjects, concepts, and granularities are present?
+2. **Quality Metrics**: How natural, structured, and educational is the content?
+
+**Current Status**: Week 4/16 - Foundation metrics implementation
+
+---
+
+## 🎯 Research Questions
+
+1. How can we build a fine-grained domain taxonomy from educational resources?
+2. What is the domain distribution of educational vs. synthetic textbook datasets?
+3. How do quality metrics (perplexity, educational structure) compare across datasets?
+4. What percentage of content exhibits cross-cutting concepts (multi-domain)?
+
+---
+
+## 📊 Datasets Analyzed
+
+| Dataset | Size | Source | Characteristics |
+|---------|------|--------|-----------------|
+| **Khan Academy K-12** | ~2MB, 19 subjects | Educational content | Structured, grade-labeled, FAQ format |
+| **Tiny-Textbooks** | ~10GB, 420K docs | GPT-3.5 generated | Synthetic, textbook format, unlabeled |
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 ```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Download NLTK data (for readability metrics)
+python -c "import nltk; nltk.download('punkt')"
 ```
 
 ### Three-Step Pipeline
 
-#### 1. Collect Full Dataset (30-60 minutes)
+#### Step 1: Extract Khan Academy Taxonomy (5-10 minutes)
+
 ```bash
-python collect_tinytextbooks.py
+python 1_extract_khan_taxonomy.py
 ```
 
-#### 2. Build Deep Hierarchy (2-4 hours)
-```bash
-python build_deep_graph.py
-```
+**What it does**:
+- Loads Khan Academy K-12 concepts
+- Extracts Subject → Grade → Concept hierarchy
+- Creates concept prototypes using SentenceTransformer embeddings
+- Saves taxonomy and embeddings to `outputs/`
 
-**Output:**
-- `graphs/deep_hierarchy.json` - For HTML visualization
-- `graphs/deep_hierarchy.gexf` - For Gephi analysis
-
-#### 3. Visualize
-
-**Option A: HTML Visualization (lightweight, browser-based)**
-```bash
-python visualize_3d.py
-open visualizations/3d_interactive.html
-```
-
-**Option B: Gephi Analysis (recommended for deep exploration)**
-```bash
-# If .gexf wasn't created automatically:
-python export_gephi.py
-
-# Then:
-# 1. Download Gephi: https://gephi.org/
-# 2. Open Gephi
-# 3. File → Open → graphs/deep_hierarchy.gexf
-# 4. Layout → Force Atlas 2 → Run
-# 5. Statistics → Modularity → Run
-# 6. Appearance → Nodes → Color by Modularity
-# 7. Appearance → Nodes → Size by doc_count
-```
+**Output**:
+- `outputs/khan_taxonomy.json` - Hierarchical structure
+- `outputs/concept_prototypes.pkl` - Concept embeddings (384-dim)
+- `outputs/metadata.json` - Dataset statistics
 
 ---
 
-## 📊 Visualization Comparison
+#### Step 2: Compute Metrics (1-2 hours for full datasets)
 
-| Feature | HTML (visualize_3d.py) | Gephi (export_gephi.py) |
-|---------|------------------------|-------------------------|
-| **Performance** | Lags at Level 8 (~270K nodes) | Smooth with 270K+ nodes |
-| **Analysis Tools** | None | Statistics, Filters, Community Detection |
-| **Layout** | Basic force-directed | Advanced Force Atlas 2 |
-| **Interactivity** | Domain toggles | Full graph manipulation |
-| **Best For** | Quick preview, presentations | Deep analysis, research |
-| **Export** | Screenshot only | PDF, SVG, Statistics CSV |
+```bash
+python 2_compute_metrics.py
+```
 
-**Recommendation:** Use Gephi for serious analysis. The HTML version is great for quick demos but becomes slow with all levels visible.
+**What it does**:
+- Loads concept prototypes from Step 1
+- Processes both Khan Academy and Tiny-Textbooks
+- For each text chunk (paragraph), computes:
+  - **Domain Classification**: Multi-label, soft assignment via embedding similarity
+  - **Quality Metrics**: Perplexity (GPT-2), educational markers (examples, explanations, structure)
+- Saves annotated datasets to `outputs/`
+
+**Output**:
+- `outputs/khan_analysis.jsonl` - Khan Academy analysis results
+- `outputs/tiny_textbooks_analysis.jsonl` - Tiny-Textbooks analysis results
+
+**Configuration**:
+- Edit `2_compute_metrics.py` to set `max_batches=5` for quick testing
+- Full run processes all 42 Tiny-Textbooks batches (~420K documents)
 
 ---
 
-## 🔧 Files
+#### Step 3: Build Dashboard (< 1 minute)
 
-### Core Pipeline
-- `collect_tinytextbooks.py` - Download 420K docs from Hugging Face
-- `build_deep_graph.py` - Build 8-level hierarchy (creates both .json and .gexf)
-- `visualize_3d.py` - Generate interactive HTML
-- `export_gephi.py` - Convert existing .json to .gexf (if needed)
+```bash
+python 3_build_dashboard.py
+```
 
-### Configuration
-- `config.py` - Clustering parameters, paths
-- `utils.py` - Helper functions
+**What it does**:
+- Loads analysis results from Step 2
+- Aggregates statistics (domain distributions, quality metrics)
+- Generates interactive HTML dashboard with Chart.js visualizations
+
+**Output**:
+- `outputs/dashboard.html` - Interactive dashboard (open in browser)
+
+**Dashboard Features**:
+- Domain distribution comparison (Khan vs Tiny-Textbooks)
+- Quality metrics comparison (perplexity, educational markers)
+- Top 10 concepts by frequency
+- Cross-cutting analysis (multi-domain percentage)
+- Fully self-contained (no server required)
 
 ---
 
@@ -96,131 +117,229 @@ python export_gephi.py
 
 ```
 Phase-1/
-├── collect_tinytextbooks.py
-├── build_deep_graph.py
-├── visualize_3d.py
-├── export_gephi.py          # NEW: Gephi export
-├── config.py
-├── utils.py
-├── requirements.txt
-├── README.md
+├── README.md                           # This file
+├── requirements.txt                    # Python dependencies
 │
-├── tiny_textbooks_raw/      # 420K documents (42 batch files, ~10 GB)
-├── graphs/                  
-│   ├── deep_hierarchy.json  # For HTML visualization
-│   └── deep_hierarchy.gexf  # For Gephi (NEW)
-├── visualizations/
-│   └── 3d_interactive.html
-└── legacy/                  # Archived K-12 implementation
+├── 1_extract_khan_taxonomy.py          # Step 1: Build taxonomy
+├── 2_compute_metrics.py                # Step 2: Analyze datasets
+├── 3_build_dashboard.py                # Step 3: Visualize results
+│
+├── khan_k12_concepts/                  # Khan Academy data (19 subjects)
+│   ├── all_k12_concepts.json           # Merged dataset (982KB)
+│   └── [subject]_[grade].json          # Individual subject files
+│
+├── tiny_textbooks_raw/                 # Tiny-Textbooks data (420K docs)
+│   ├── batch_000.json
+│   ├── batch_001.json
+│   └── ... (42 batches total)
+│
+├── outputs/                            # Analysis outputs
+│   ├── khan_taxonomy.json              # Hierarchical taxonomy
+│   ├── concept_prototypes.pkl          # Concept embeddings
+│   ├── metadata.json                   # Statistics
+│   ├── khan_analysis.jsonl             # Khan analysis results
+│   ├── tiny_textbooks_analysis.jsonl   # Tiny-Textbooks analysis
+│   └── dashboard.html                  # Interactive dashboard
+│
+├── legacy/                             # Archived old implementations
+│   ├── old_analysis/                   # Previous graph-based approach
+│   └── ...
+│
+├── research_plan_refined.md            # Detailed research plan
+└── subtask1_metrics_design.md          # Metrics documentation
 ```
 
 ---
 
-## 🎯 Gephi Workflow
+## 🔬 Methodology
 
-### Quick Start
-```bash
-# After running build_deep_graph.py:
-open graphs/deep_hierarchy.gexf  # Opens in Gephi (if installed)
+### Domain Classification
+
+**Approach**: Embedding-based similarity to concept prototypes
+
+1. **Concept Prototypes**: For each Khan Academy concept, embed all article content → 384-dim vector
+2. **Query Embedding**: Embed each paragraph from target dataset
+3. **Similarity Scoring**: Compute cosine similarity to all prototypes
+4. **Multi-Label Assignment**: Top-K concepts with similarity > threshold → soft labels
+
+**Example**:
+```python
+paragraph = "Fractions represent parts of a whole. For example, 1/2 means..."
+domain_labels = {
+    "Math - 4th Grade::Equivalent fractions": 0.78,
+    "Math - 5th Grade::Add and subtract fractions": 0.52,
+    "Reading - 3rd Grade": 0.15
+}
+# Sum = 1.0 (normalized probabilities)
 ```
 
-### Analysis Steps
-
-**1. Layout (2-3 minutes)**
-- Layout → Force Atlas 2
-- Click "Run"
-- Wait until stabilizes
-- Click "Stop"
-
-**2. Community Detection**
-- Statistics → Modularity
-- Click "Run"
-- View report
-
-**3. Visual Styling**
-- Appearance → Nodes → Color → Partition → Modularity Class
-- Appearance → Nodes → Size → Ranking → doc_count (min: 1, max: 50)
-- Appearance → Edges → Color → Unique (gray, opacity 0.2)
-
-**4. Filtering**
-- Filters → Topology → Degree Range
-- Filter → Attributes → level (show specific levels)
-
-**5. Export Results**
-- File → Export → PDF/SVG (for papers/presentations)
-- Statistics → Export table (CSV)
-- Screenshot tool (high-quality images)
+**Advantages**:
+- ✅ Handles unlabeled data
+- ✅ Multi-label (cross-cutting concepts)
+- ✅ Soft assignment (continuous scores, not binary)
+- ✅ No manual labeling required
 
 ---
 
-## 💡 Tips
+### Quality Metrics
 
-### Performance
-- **HTML lags at Level 8?** → Use Gephi instead
-- **Gephi too slow?** → Filter by level or degree to show subgraph
-- **Out of memory?** → Reduce batch size in collect script
+#### 1. Perplexity (GPT-2)
+- **Definition**: How "surprised" a language model is by the text
+- **Lower = Better**: Natural, well-formed text
+- **Typical Ranges**:
+  - High-quality educational text: 30-60
+  - Web-scraped text: 80-150
+  - Noisy/corrupted text: >200
 
-### Analysis
-- **Find important concepts:** Sort by degree centrality
-- **Discover clusters:** Use Modularity detection
-- **Compare domains:** Filter by level 2, color by modularity
-- **Export for paper:** Use PDF export with anti-aliasing
+#### 2. Educational Markers (Binary Features)
+- **Has Examples**: Contains "for example", "such as", "consider"
+- **Has Explanation**: Contains "because", "therefore", "this means"
+- **Has Structure**: Contains "first", "second", "finally", "in summary"
 
-### Workflow
-1. Build graph once with `build_deep_graph.py`
-2. Use HTML for quick demos to others
-3. Use Gephi for your own analysis
-4. Export pretty images from Gephi for presentations
+**Why these matter**:
+- Educational content should teach, not just state facts
+- Examples aid understanding
+- Explanations build reasoning
+- Structure aids retention
+
+---
+
+## 📈 Expected Results
+
+### Domain Coverage
+
+**Hypothesis**:
+- Khan Academy: Well-balanced across K-12 subjects, sparse in advanced topics
+- Tiny-Textbooks: More uniform distribution (GPT-generated), potential bias toward common topics
+
+**Metrics**:
+- Subject distribution (histogram)
+- Multi-domain ratio (% of paragraphs with >1 domain label)
+- Domain entropy (higher = more diverse)
+
+### Quality Comparison
+
+**Hypothesis**:
+- Khan Academy: Lower perplexity (human-written, curated)
+- Tiny-Textbooks: Slightly higher perplexity (GPT artifacts), but more consistent structure
+
+**Metrics**:
+- Average/median perplexity
+- Educational marker prevalence (%)
 
 ---
 
 ## 🛠️ Troubleshooting
 
-**Q: Gephi file not created?**
-```bash
-python export_gephi.py
-```
+### Out of Memory (OOM) Errors
 
-**Q: NetworkX not installed?**
-```bash
-pip install networkx
-```
+**Symptom**: `torch.cuda.OutOfMemoryError` or process killed
 
-**Q: HTML visualization slow?**
-- This is expected with 270K nodes
-- Use Gephi instead for deep exploration
-- Or filter to show only Levels 1-5 in HTML
+**Solutions**:
+1. Reduce batch size in `2_compute_metrics.py`:
+   ```python
+   embeddings = model.encode(texts, batch_size=8)  # Default: 32
+   ```
 
-**Q: Gephi crashes on open?**
-- Increase Gephi memory: Edit `gephi.conf`, set `-Xmx8g` (8GB RAM)
-- Or filter graph before export (modify `export_gephi.py`)
+2. Process fewer batches for testing:
+   ```python
+   process_tiny_textbooks(..., max_batches=5)  # Test on 5 batches
+   ```
+
+3. Use CPU instead of GPU (slower, but more memory):
+   ```python
+   model = GPT2LMHeadModel.from_pretrained("gpt2")
+   # Don't call .cuda()
+   ```
+
+### Slow Processing
+
+**Expected Runtime**:
+- Step 1 (Taxonomy extraction): 5-10 minutes
+- Step 2 (Khan Academy): 10-15 minutes
+- Step 2 (Tiny-Textbooks, full): 1-2 hours
+- Step 3 (Dashboard): < 1 minute
+
+**Speed Tips**:
+- Test on subset first (`max_batches=5`)
+- Use GPU if available (4060Ti + 3070Ti = ~24GB VRAM)
+- Reduce `TOP_K_DOMAINS` in config (less similarity computations)
+
+### Dashboard Not Showing Charts
+
+**Issue**: `Chart.js` not loading (no internet)
+
+**Solution**: Dashboard uses CDN for Chart.js. Requires internet connection to load.
+If offline, download `chart.js` locally and update HTML `<script>` tag.
 
 ---
 
 ## 📚 Next Steps
 
-1. **Explore in Gephi:** Find natural domain clusters
-2. **Extract statistics:** Degree distribution, modularity scores
-3. **Compare with other datasets:** Extend to The Pile, C4
-4. **Generate reports:** Export analysis for research documentation
+### Short-term (Week 5-6)
+1. ✅ Run pipeline on full datasets
+2. ⏳ Validate domain classification (manual inspection)
+3. ⏳ Add difficulty metrics (Flesch-Kincaid readability)
+4. ⏳ Extend to The Pile sample (5GB stratified sample)
+
+### Medium-term (Week 7-10)
+1. Prerequisite mining (concept co-occurrence analysis)
+2. Comparative analysis (Khan vs Tiny vs Pile)
+3. Identify domain gaps for augmentation
+
+### Long-term (Week 11+)
+1. Train 100M-300M SLM with curriculum ordering
+2. Validate that domain-balanced data → better efficiency
 
 ---
 
 ## 🎓 Research Context
 
-**Phase 1 (Current):** Build deep hierarchical knowledge graph from synthetic textbooks
-- Establish baseline understanding of educational content structure
-- Develop methodology for graph-based dataset characterization
+**Phase 1 Goal (Current)**: Build domain characterization toolkit
 
-**Phase 2 (Planned):** Extend analysis to large-scale datasets
-- Apply same methodology to The Pile components, RedPajama, C4
-- Compare "graph shapes" across different data sources
+**Phase 2 Goal (Planned)**: Train curriculum-aware SLM prototype
 
-**Phase 3 (Planned):** Create refined SLM training dataset
-- Use graph insights to balance domain coverage
-- Develop principled dataset composition strategies
+**Phase 3 Goal (Future)**: Systematic dataset refinement
+
+**Timeline**: 16 weeks total (Week 4/16 as of Feb 2026)
+
+**Deliverable**: Workshop/short paper at COLM 2026 or EMNLP 2026
 
 ---
 
-**Last Updated:** 2026-02-06
-**Version:** 1.1 (Added Gephi support)
+## 🔗 Resources
+
+- **Khan Academy Data**: Collected via `collect_khan_academy.py` (legacy)
+- **Tiny-Textbooks**: [HuggingFace: nampdn-ai/tiny-textbooks](https://huggingface.co/datasets/nampdn-ai/tiny-textbooks)
+- **SentenceTransformers**: [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
+- **GPT-2**: [Hugging Face: gpt2](https://huggingface.co/gpt2)
+
+---
+
+## 📝 Citation
+
+```bibtex
+@misc{lee2026phase1,
+  author = {Lee, Keonsoo},
+  title = {Phase 1: Dataset Characterization for Small Language Model Pretraining},
+  year = {2026},
+  institution = {University of Nevada, Las Vegas},
+  note = {Research in Progress}
+}
+```
+
+---
+
+## 💬 Contact
+
+**Researcher**: Keonsoo Lee (bubbleguy10@gmail.com)
+
+**Institution**: UNLV
+
+**Last Updated**: February 10, 2026
+
+---
+
+## 📄 License
+
+Research code for academic purposes. Khan Academy data subject to their [Terms of Service](https://www.khanacademy.org/about/tos). Tiny-Textbooks data under [Apache 2.0](https://huggingface.co/datasets/nampdn-ai/tiny-textbooks).
