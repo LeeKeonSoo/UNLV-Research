@@ -1,16 +1,14 @@
 """
-Step 2: Compute Domain and Quality Metrics
+Step 2: Compute Domain Metrics (Simple Version - No Perplexity)
 
-This script:
-1. Loads concept prototypes from Step 1
-2. Processes Khan Academy and Tiny-Textbooks datasets
-3. For each paragraph, computes:
-   - Domain coverage (multi-label classification via embedding similarity)
-   - Quality metrics (perplexity, educational markers)
-4. Saves annotated datasets for visualization
+Simplified version that:
+1. Uses TF-IDF prototypes from Step 1
+2. Computes domain classification only (no perplexity)
+3. Detects educational markers
+4. Works offline without large models
 
 Input:
-  - outputs/concept_prototypes.pkl
+  - outputs/concept_prototypes_tfidf.pkl
   - khan_k12_concepts/all_k12_concepts.json
   - tiny_textbooks_raw/*.json
 
@@ -23,14 +21,11 @@ import json
 import pickle
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from collections import defaultdict
 
 import numpy as np
-import torch
-from sentence_transformers import SentenceTransformer, util
-from transformers import GPT2LMHeadModel, GPT2TokenizerFast
-import textstat
+from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 import jsonlines
 
@@ -40,7 +35,7 @@ import jsonlines
 # ==============================================================================
 
 # Paths
-PROTOTYPES_PATH = "outputs/concept_prototypes.pkl"
+PROTOTYPES_PATH = "outputs/concept_prototypes_tfidf.pkl"
 TAXONOMY_PATH = "outputs/khan_taxonomy.json"
 KHAN_DATA_PATH = "khan_k12_concepts/all_k12_concepts.json"
 TINY_TEXTBOOKS_DIR = "tiny_textbooks_raw"
@@ -52,7 +47,7 @@ TINY_OUTPUT = OUTPUT_DIR / "tiny_textbooks_analysis.jsonl"
 
 # Parameters
 TOP_K_DOMAINS = 5  # Number of top domain labels per paragraph
-MIN_SIMILARITY = 0.3  # Minimum cosine similarity threshold
+MIN_SIMILARITY = 0.1  # Lower threshold for TF-IDF (less strict than embeddings)
 CHUNK_SIZE = 200  # Words per paragraph chunk
 
 
@@ -60,27 +55,19 @@ CHUNK_SIZE = 200  # Words per paragraph chunk
 # Load Models and Data
 # ==============================================================================
 
-def load_prototypes_and_models():
-    """Load concept prototypes and embedding model."""
-    print("Loading concept prototypes...")
+def load_prototypes_and_vectorizer():
+    """Load concept prototypes and TF-IDF vectorizer."""
+    print("Loading concept prototypes (TF-IDF)...")
     with open(PROTOTYPES_PATH, 'rb') as f:
-        prototypes = pickle.load(f)
+        data = pickle.load(f)
+
+    prototypes = data['prototypes']
+    vectorizer = data['vectorizer']
 
     print(f"✓ Loaded {len(prototypes)} concept prototypes")
+    print(f"  Vector dimension: {len(list(prototypes.values())[0])}")
 
-    print("\nLoading embedding model (SentenceTransformer)...")
-    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-    print("✓ Embedding model loaded")
-
-    print("\nLoading language model for perplexity (GPT-2)...")
-    lm_model = GPT2LMHeadModel.from_pretrained("gpt2")
-    lm_tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
-    lm_model.eval()
-    if torch.cuda.is_available():
-        lm_model = lm_model.cuda()
-    print("✓ Language model loaded")
-
-    return prototypes, embedding_model, lm_model, lm_tokenizer
+    return prototypes, vectorizer
 
 
 # ==============================================================================
@@ -90,29 +77,33 @@ def load_prototypes_and_models():
 def classify_domain(
     text: str,
     prototypes: Dict,
-    embedding_model: SentenceTransformer,
+    vectorizer,
     top_k: int = 5,
-    min_similarity: float = 0.3
+    min_similarity: float = 0.1
 ) -> Dict[str, float]:
     """
-    Classify text into domains using concept prototype similarity.
+    Classify text into domains using TF-IDF similarity to concept prototypes.
 
     Returns: {domain_id: similarity_score, ...} (top-k, soft labels)
     """
-    # Embed query text
-    query_embedding = embedding_model.encode(text, convert_to_tensor=True)
+    # Vectorize query text
+    try:
+        query_vector = vectorizer.transform([text]).toarray()[0]
+    except:
+        # If text has no matching features, return empty
+        return {}
 
     # Compute similarities to all prototypes
     similarities = {}
-    for concept_id, prototype_embedding in prototypes.items():
-        prototype_tensor = torch.tensor(prototype_embedding)
-        if torch.cuda.is_available():
-            prototype_tensor = prototype_tensor.cuda()
+    for concept_id, prototype_vector in prototypes.items():
+        # Reshape for sklearn
+        query = query_vector.reshape(1, -1)
+        prototype = prototype_vector.reshape(1, -1)
 
-        similarity = util.cos_sim(query_embedding, prototype_tensor).item()
+        similarity = cosine_similarity(query, prototype)[0][0]
 
         if similarity >= min_similarity:
-            similarities[concept_id] = similarity
+            similarities[concept_id] = float(similarity)
 
     # Get top-k
     top_domains = dict(sorted(similarities.items(), key=lambda x: x[1], reverse=True)[:top_k])
@@ -126,37 +117,8 @@ def classify_domain(
 
 
 # ==============================================================================
-# Quality Metrics
+# Quality Metrics (Simplified - No Perplexity)
 # ==============================================================================
-
-def compute_perplexity(
-    text: str,
-    model: GPT2LMHeadModel,
-    tokenizer: GPT2TokenizerFast,
-    max_length: int = 512
-) -> float:
-    """
-    Compute perplexity using GPT-2.
-    Lower perplexity = more natural text.
-    """
-    try:
-        encodings = tokenizer(text, return_tensors="pt", truncation=True, max_length=max_length)
-        input_ids = encodings.input_ids
-
-        if torch.cuda.is_available():
-            input_ids = input_ids.cuda()
-
-        with torch.no_grad():
-            outputs = model(input_ids, labels=input_ids)
-            loss = outputs.loss
-
-        perplexity = torch.exp(loss).item()
-        return perplexity
-
-    except Exception as e:
-        print(f"Warning: Perplexity computation failed: {e}")
-        return float('inf')
-
 
 def detect_educational_markers(text: str) -> Dict[str, bool]:
     """
@@ -179,18 +141,6 @@ def detect_educational_markers(text: str) -> Dict[str, bool]:
         "has_examples": any(marker in text_lower for marker in example_markers),
         "has_explanation": any(marker in text_lower for marker in explanation_markers),
         "has_structure": any(marker in text_lower for marker in structure_markers)
-    }
-
-
-def compute_quality_metrics(
-    text: str,
-    lm_model: GPT2LMHeadModel,
-    lm_tokenizer: GPT2TokenizerFast
-) -> Dict:
-    """Compute all quality metrics for a text."""
-    return {
-        "perplexity": compute_perplexity(text, lm_model, lm_tokenizer),
-        **detect_educational_markers(text)
     }
 
 
@@ -241,12 +191,7 @@ def chunk_text(text: str, chunk_size: int = 200) -> List[str]:
 # Dataset Processing
 # ==============================================================================
 
-def process_khan_academy(
-    prototypes: Dict,
-    embedding_model: SentenceTransformer,
-    lm_model: GPT2LMHeadModel,
-    lm_tokenizer: GPT2TokenizerFast
-):
+def process_khan_academy(prototypes: Dict, vectorizer):
     """Process Khan Academy dataset and save analysis."""
     print("\n" + "="*60)
     print("Processing Khan Academy Dataset")
@@ -271,12 +216,12 @@ def process_khan_academy(
 
             # Domain classification
             domain_labels = classify_domain(
-                chunk, prototypes, embedding_model,
+                chunk, prototypes, vectorizer,
                 top_k=TOP_K_DOMAINS, min_similarity=MIN_SIMILARITY
             )
 
-            # Quality metrics
-            quality = compute_quality_metrics(chunk, lm_model, lm_tokenizer)
+            # Educational markers (no perplexity)
+            markers = detect_educational_markers(chunk)
 
             # Save result
             results.append({
@@ -289,7 +234,7 @@ def process_khan_academy(
                 "text": chunk,
                 "word_count": len(chunk.split()),
                 "domain_labels": domain_labels,
-                "quality": quality
+                "educational_markers": markers
             })
 
     # Save to JSONL
@@ -302,10 +247,8 @@ def process_khan_academy(
 
 def process_tiny_textbooks(
     prototypes: Dict,
-    embedding_model: SentenceTransformer,
-    lm_model: GPT2LMHeadModel,
-    lm_tokenizer: GPT2TokenizerFast,
-    max_batches: int = None  # Limit batches for testing
+    vectorizer,
+    max_batches: int = 5  # Default to 5 for testing
 ):
     """Process Tiny-Textbooks dataset and save analysis."""
     print("\n" + "="*60)
@@ -316,7 +259,7 @@ def process_tiny_textbooks(
 
     if max_batches:
         batch_files = batch_files[:max_batches]
-        print(f"Processing first {max_batches} batches only (for testing)")
+        print(f"Processing first {max_batches} batches for testing")
 
     results = []
     total_docs = 0
@@ -341,12 +284,12 @@ def process_tiny_textbooks(
 
                 # Domain classification
                 domain_labels = classify_domain(
-                    chunk, prototypes, embedding_model,
+                    chunk, prototypes, vectorizer,
                     top_k=TOP_K_DOMAINS, min_similarity=MIN_SIMILARITY
                 )
 
-                # Quality metrics
-                quality = compute_quality_metrics(chunk, lm_model, lm_tokenizer)
+                # Educational markers
+                markers = detect_educational_markers(chunk)
 
                 # Save result
                 results.append({
@@ -357,7 +300,7 @@ def process_tiny_textbooks(
                     "text": chunk,
                     "word_count": len(chunk.split()),
                     "domain_labels": domain_labels,
-                    "quality": quality
+                    "educational_markers": markers
                 })
 
     # Save to JSONL
@@ -375,23 +318,29 @@ def process_tiny_textbooks(
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
+    print("="*60)
+    print("DATASET ANALYSIS (Simplified - Domain Classification Only)")
+    print("="*60)
+
     # Load models and data
-    prototypes, embedding_model, lm_model, lm_tokenizer = load_prototypes_and_models()
+    prototypes, vectorizer = load_prototypes_and_vectorizer()
 
     # Process Khan Academy
-    process_khan_academy(prototypes, embedding_model, lm_model, lm_tokenizer)
+    process_khan_academy(prototypes, vectorizer)
 
-    # Process Tiny-Textbooks (all batches - will take ~1-2 hours)
-    # For testing, set max_batches=5
+    # Process Tiny-Textbooks (5 batches for testing)
+    # Set max_batches=None for full run
     process_tiny_textbooks(
-        prototypes, embedding_model, lm_model, lm_tokenizer,
-        max_batches=None  # Set to 5 for quick test
+        prototypes, vectorizer,
+        max_batches=5  # Quick test - change to None for full run
     )
 
     print("\n" + "="*60)
     print("✓ Metrics computation complete!")
     print("="*60)
     print(f"\nNext step: Run 3_build_dashboard.py to visualize results")
+    print("\nNote: Perplexity not computed in this simplified version")
+    print("      Focus is on domain classification and educational markers")
 
 
 if __name__ == "__main__":

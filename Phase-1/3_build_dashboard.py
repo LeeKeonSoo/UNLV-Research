@@ -92,38 +92,28 @@ def aggregate_quality_stats(data: List[Dict]) -> Dict:
 
     Returns:
     {
-        "avg_perplexity": float,
-        "median_perplexity": float,
         "has_examples_ratio": float,
         "has_explanation_ratio": float,
         "has_structure_ratio": float
     }
     """
-    perplexities = []
     has_examples = 0
     has_explanation = 0
     has_structure = 0
 
     for item in data:
-        quality = item.get("quality", {})
+        markers = item.get("educational_markers", {})
 
-        ppl = quality.get("perplexity", float('inf'))
-        if ppl != float('inf') and ppl < 1000:  # Filter outliers
-            perplexities.append(ppl)
-
-        if quality.get("has_examples", False):
+        if markers.get("has_examples", False):
             has_examples += 1
-        if quality.get("has_explanation", False):
+        if markers.get("has_explanation", False):
             has_explanation += 1
-        if quality.get("has_structure", False):
+        if markers.get("has_structure", False):
             has_structure += 1
 
     total = len(data)
 
     return {
-        "avg_perplexity": np.mean(perplexities) if perplexities else 0,
-        "median_perplexity": np.median(perplexities) if perplexities else 0,
-        "perplexity_std": np.std(perplexities) if perplexities else 0,
         "has_examples_ratio": has_examples / total if total else 0,
         "has_explanation_ratio": has_explanation / total if total else 0,
         "has_structure_ratio": has_structure / total if total else 0

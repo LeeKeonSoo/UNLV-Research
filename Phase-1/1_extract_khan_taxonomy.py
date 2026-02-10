@@ -1,31 +1,24 @@
 """
-Step 1: Extract Khan Academy Taxonomy and Build Concept Prototypes
+Step 1: Extract Khan Academy Taxonomy (Simple Version - No External Models)
 
-This script:
-1. Loads Khan Academy K-12 concepts from JSON
-2. Extracts hierarchical structure (Subject → Grade → Concept)
-3. Creates concept prototypes by embedding article content
-4. Saves taxonomy and embeddings for downstream classification
+This version uses TF-IDF instead of SentenceTransformers to avoid network issues.
+Suitable for offline environments or when HuggingFace models can't be downloaded.
 
 Input: khan_k12_concepts/all_k12_concepts.json
 Output:
   - outputs/khan_taxonomy.json (hierarchical structure)
-  - outputs/concept_prototypes.pkl (embeddings)
+  - outputs/concept_prototypes_tfidf.pkl (TF-IDF vectors)
 """
 
 import json
 import pickle
 from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from tqdm import tqdm
-
-# Alternative embedding models (commented out, can swap later):
-# from InstructorEmbedding import INSTRUCTOR  # instructor-base
-# from sentence_transformers import SentenceTransformer  # e5-large-v2
 
 
 def load_khan_data(data_path: str) -> List[Dict]:
@@ -90,29 +83,16 @@ def extract_taxonomy(data: List[Dict]) -> Dict:
     return taxonomy
 
 
-def build_concept_prototypes(
-    taxonomy: Dict,
-    model_name: str = "all-MiniLM-L6-v2"
-) -> Tuple[Dict, SentenceTransformer]:
+def build_concept_prototypes_tfidf(taxonomy: Dict) -> tuple:
     """
-    Create concept prototype embeddings.
+    Create concept prototype vectors using TF-IDF.
 
-    For each concept, concatenate all article content and embed.
-    Returns mapping: concept_id → embedding vector
+    This is simpler than SentenceTransformers but works offline.
+    Returns mapping: concept_id → TF-IDF vector
     """
-    print(f"\nBuilding concept prototypes with {model_name}...")
+    print(f"\nBuilding concept prototypes with TF-IDF...")
 
-    # Load embedding model
-    print(f"Loading SentenceTransformer: {model_name}")
-    model = SentenceTransformer(model_name)
-
-    # Alternative models (commented):
-    # model = INSTRUCTOR('hkunlp/instructor-base')  # Instructor
-    # model = SentenceTransformer('intfloat/e5-large-v2')  # E5
-
-    prototypes = {}
-
-    # Collect all texts to embed
+    # Collect all texts and IDs
     concept_texts = []
     concept_ids = []
 
@@ -128,27 +108,31 @@ def build_concept_prototypes(
             concept_texts.append(content)
             concept_ids.append(concept_id)
 
-    print(f"Embedding {len(concept_texts)} concepts...")
+    print(f"Processing {len(concept_texts)} concepts...")
 
-    # Batch embed for efficiency
-    embeddings = model.encode(
-        concept_texts,
-        batch_size=32,
-        show_progress_bar=True,
-        convert_to_numpy=True
+    # Build TF-IDF vectorizer
+    vectorizer = TfidfVectorizer(
+        max_features=300,  # Keep vectors reasonably sized
+        stop_words='english',
+        ngram_range=(1, 2),  # Unigrams and bigrams
+        min_df=2  # Ignore very rare terms
     )
 
-    # Create concept → embedding mapping
-    for concept_id, embedding in zip(concept_ids, embeddings):
-        prototypes[concept_id] = embedding
+    # Fit and transform
+    tfidf_matrix = vectorizer.fit_transform(concept_texts)
+
+    # Create concept → vector mapping
+    prototypes = {}
+    for concept_id, vector in zip(concept_ids, tfidf_matrix):
+        prototypes[concept_id] = vector.toarray()[0]  # Convert sparse to dense
 
     print(f"✓ Created {len(prototypes)} concept prototypes")
-    print(f"  Embedding dimension: {embeddings.shape[1]}")
+    print(f"  Vector dimension: {len(prototypes[concept_ids[0]])}")
 
-    return prototypes, model
+    return prototypes, vectorizer
 
 
-def save_outputs(taxonomy: Dict, prototypes: Dict, output_dir: str):
+def save_outputs(taxonomy: Dict, prototypes: Dict, vectorizer, output_dir: str):
     """Save taxonomy and prototypes to disk."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -159,18 +143,18 @@ def save_outputs(taxonomy: Dict, prototypes: Dict, output_dir: str):
         json.dump(taxonomy, f, indent=2, ensure_ascii=False)
     print(f"\n✓ Saved taxonomy to {taxonomy_path}")
 
-    # Save prototypes as pickle (embeddings are numpy arrays)
-    prototypes_path = output_path / "concept_prototypes.pkl"
+    # Save prototypes as pickle
+    prototypes_path = output_path / "concept_prototypes_tfidf.pkl"
     with open(prototypes_path, 'wb') as f:
-        pickle.dump(prototypes, f)
+        pickle.dump({'prototypes': prototypes, 'vectorizer': vectorizer}, f)
     print(f"✓ Saved concept prototypes to {prototypes_path}")
 
     # Save metadata
     metadata = {
         "num_subjects": len(taxonomy),
         "num_concepts": len(prototypes),
-        "embedding_dim": list(prototypes.values())[0].shape[0] if prototypes else 0,
-        "model": "all-MiniLM-L6-v2",
+        "vector_dim": len(list(prototypes.values())[0]) if prototypes else 0,
+        "method": "TF-IDF (sklearn)",
         "subjects": list(taxonomy.keys())
     }
 
@@ -185,22 +169,28 @@ def main():
     DATA_PATH = "khan_k12_concepts/all_k12_concepts.json"
     OUTPUT_DIR = "outputs"
 
+    print("="*60)
+    print("KHAN ACADEMY TAXONOMY EXTRACTION (TF-IDF Version)")
+    print("="*60)
+
     # Step 1: Load data
     data = load_khan_data(DATA_PATH)
 
     # Step 2: Extract taxonomy
     taxonomy = extract_taxonomy(data)
 
-    # Step 3: Build concept prototypes
-    prototypes, model = build_concept_prototypes(taxonomy)
+    # Step 3: Build concept prototypes (TF-IDF)
+    prototypes, vectorizer = build_concept_prototypes_tfidf(taxonomy)
 
     # Step 4: Save outputs
-    save_outputs(taxonomy, prototypes, OUTPUT_DIR)
+    save_outputs(taxonomy, prototypes, vectorizer, OUTPUT_DIR)
 
     print("\n" + "="*60)
     print("✓ Khan Academy taxonomy extraction complete!")
     print("="*60)
-    print(f"\nNext step: Run 2_compute_metrics.py to analyze datasets")
+    print(f"\nNext step: Run 2_compute_metrics_simple.py to analyze datasets")
+    print("\nNote: Using TF-IDF vectors instead of SentenceTransformers")
+    print("      This works offline but may be less accurate than embeddings.")
 
 
 if __name__ == "__main__":
