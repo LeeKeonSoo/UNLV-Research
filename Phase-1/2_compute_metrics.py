@@ -21,13 +21,16 @@ import json
 import pickle
 import re
 from pathlib import Path
-from typing import Dict, List
-from collections import defaultdict
+from typing import Dict, List, Tuple
 
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 import jsonlines
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except Exception:
+    TORCH_AVAILABLE = False
 
 
 # ==============================================================================
@@ -49,6 +52,7 @@ TINY_OUTPUT = OUTPUT_DIR / "tiny_textbooks_analysis.jsonl"
 TOP_K_DOMAINS = 5  # Number of top domain labels per paragraph
 MIN_SIMILARITY = 0.1  # Lower threshold for TF-IDF (less strict than embeddings)
 CHUNK_SIZE = 200  # Words per paragraph chunk
+USE_GPU = True  # Use CUDA if available (torch required)
 
 
 # ==============================================================================
@@ -70,50 +74,84 @@ def load_prototypes_and_vectorizer():
     return prototypes, vectorizer
 
 
+def build_prototype_matrix(prototypes: Dict) -> Tuple[List[str], np.ndarray]:
+    """Build a normalized prototype matrix for fast cosine similarity."""
+    prototype_ids = list(prototypes.keys())
+    matrix = np.vstack([prototypes[concept_id] for concept_id in prototype_ids]).astype(np.float32)
+
+    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    norms[norms == 0] = 1.0
+    matrix = matrix / norms
+
+    return prototype_ids, matrix
+
+
+class DomainClassifier:
+    """Classify text into domains using a fast matrix-based cosine similarity."""
+
+    def __init__(self, vectorizer, prototype_ids: List[str], prototype_matrix: np.ndarray, use_gpu: bool = True):
+        self.vectorizer = vectorizer
+        self.prototype_ids = prototype_ids
+        self.prototype_matrix = prototype_matrix
+        self.use_torch = False
+        self.device = "cpu"
+
+        if use_gpu and TORCH_AVAILABLE and torch.cuda.is_available():
+            self.use_torch = True
+            self.device = "cuda"
+            self.prototype_tensor = torch.from_numpy(self.prototype_matrix).to(self.device)
+            print("Using torch CUDA for domain similarity")
+        else:
+            if use_gpu and not TORCH_AVAILABLE:
+                print("torch not available; using CPU for domain similarity")
+            elif use_gpu and TORCH_AVAILABLE and not torch.cuda.is_available():
+                print("CUDA not available; using CPU for domain similarity")
+
+    def classify(self, text: str, top_k: int = 5, min_similarity: float = 0.1) -> Dict[str, float]:
+        try:
+            query_sparse = self.vectorizer.transform([text])
+        except Exception:
+            return {}
+
+        if query_sparse.nnz == 0:
+            return {}
+
+        query_norm = float(np.sqrt(query_sparse.multiply(query_sparse).sum()))
+        if query_norm == 0.0:
+            return {}
+
+        if self.use_torch:
+            query_dense = torch.from_numpy(query_sparse.toarray().astype(np.float32)).to(self.device)
+            sims = (query_dense @ self.prototype_tensor.T) / query_norm
+            sims = sims.squeeze(0).to("cpu").numpy()
+        else:
+            query_dense = query_sparse.toarray().astype(np.float32)
+            sims = (query_dense @ self.prototype_matrix.T).ravel() / query_norm
+
+        valid_idx = np.where(sims >= min_similarity)[0]
+        if valid_idx.size == 0:
+            return {}
+
+        if valid_idx.size > top_k:
+            top_idx = valid_idx[np.argpartition(sims[valid_idx], -top_k)[-top_k:]]
+        else:
+            top_idx = valid_idx
+
+        top_idx = top_idx[np.argsort(sims[top_idx])[::-1]]
+        top_domains = {self.prototype_ids[i]: float(sims[i]) for i in top_idx}
+
+        total = sum(top_domains.values())
+        if total > 0:
+            top_domains = {k: v / total for k, v in top_domains.items()}
+
+        return top_domains
+
+
 # ==============================================================================
 # Domain Classification
 # ==============================================================================
 
-def classify_domain(
-    text: str,
-    prototypes: Dict,
-    vectorizer,
-    top_k: int = 5,
-    min_similarity: float = 0.1
-) -> Dict[str, float]:
-    """
-    Classify text into domains using TF-IDF similarity to concept prototypes.
-
-    Returns: {domain_id: similarity_score, ...} (top-k, soft labels)
-    """
-    # Vectorize query text
-    try:
-        query_vector = vectorizer.transform([text]).toarray()[0]
-    except:
-        # If text has no matching features, return empty
-        return {}
-
-    # Compute similarities to all prototypes
-    similarities = {}
-    for concept_id, prototype_vector in prototypes.items():
-        # Reshape for sklearn
-        query = query_vector.reshape(1, -1)
-        prototype = prototype_vector.reshape(1, -1)
-
-        similarity = cosine_similarity(query, prototype)[0][0]
-
-        if similarity >= min_similarity:
-            similarities[concept_id] = float(similarity)
-
-    # Get top-k
-    top_domains = dict(sorted(similarities.items(), key=lambda x: x[1], reverse=True)[:top_k])
-
-    # Normalize to sum to 1 (soft probabilities)
-    total = sum(top_domains.values())
-    if total > 0:
-        top_domains = {k: v / total for k, v in top_domains.items()}
-
-    return top_domains
+# classify_domain removed in favor of DomainClassifier
 
 
 # ==============================================================================
@@ -191,13 +229,13 @@ def chunk_text(text: str, chunk_size: int = 200) -> List[str]:
 # Dataset Processing
 # ==============================================================================
 
-def process_khan_academy(prototypes: Dict, vectorizer):
+def process_khan_academy(classifier: DomainClassifier):
     """Process Khan Academy dataset and save analysis."""
     print("\n" + "="*60)
     print("Processing Khan Academy Dataset")
     print("="*60)
 
-    with open(KHAN_DATA_PATH, 'r') as f:
+    with open(KHAN_DATA_PATH, 'r', encoding='utf-8', errors='replace') as f:
         khan_data = json.load(f)
 
     results = []
@@ -215,9 +253,10 @@ def process_khan_academy(prototypes: Dict, vectorizer):
                 continue
 
             # Domain classification
-            domain_labels = classify_domain(
-                chunk, prototypes, vectorizer,
-                top_k=TOP_K_DOMAINS, min_similarity=MIN_SIMILARITY
+            domain_labels = classifier.classify(
+                chunk,
+                top_k=TOP_K_DOMAINS,
+                min_similarity=MIN_SIMILARITY
             )
 
             # Educational markers (no perplexity)
@@ -246,8 +285,7 @@ def process_khan_academy(prototypes: Dict, vectorizer):
 
 
 def process_tiny_textbooks(
-    prototypes: Dict,
-    vectorizer,
+    classifier: DomainClassifier,
     max_batches: int = 5  # Default to 5 for testing
 ):
     """Process Tiny-Textbooks dataset and save analysis."""
@@ -265,7 +303,7 @@ def process_tiny_textbooks(
     total_docs = 0
 
     for batch_file in tqdm(batch_files, desc="Processing batches"):
-        with open(batch_file, 'r') as f:
+        with open(batch_file, 'r', encoding='utf-8', errors='replace') as f:
             batch_data = json.load(f)
 
         for doc in batch_data:
@@ -283,9 +321,10 @@ def process_tiny_textbooks(
                     continue
 
                 # Domain classification
-                domain_labels = classify_domain(
-                    chunk, prototypes, vectorizer,
-                    top_k=TOP_K_DOMAINS, min_similarity=MIN_SIMILARITY
+                domain_labels = classifier.classify(
+                    chunk,
+                    top_k=TOP_K_DOMAINS,
+                    min_similarity=MIN_SIMILARITY
                 )
 
                 # Educational markers
@@ -324,14 +363,16 @@ def main():
 
     # Load models and data
     prototypes, vectorizer = load_prototypes_and_vectorizer()
+    prototype_ids, prototype_matrix = build_prototype_matrix(prototypes)
+    classifier = DomainClassifier(vectorizer, prototype_ids, prototype_matrix, use_gpu=USE_GPU)
 
     # Process Khan Academy
-    process_khan_academy(prototypes, vectorizer)
+    process_khan_academy(classifier)
 
     # Process Tiny-Textbooks (5 batches for testing)
     # Set max_batches=None for full run
     process_tiny_textbooks(
-        prototypes, vectorizer,
+        classifier,
         max_batches=5  # Quick test - change to None for full run
     )
 
