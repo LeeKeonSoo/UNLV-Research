@@ -335,15 +335,15 @@ def generate_dashboard_html(khan_data: List[Dict], tiny_data: List[Dict]) -> str
             </div>
 
             <div class="kpi-card">
-                <div class="kpi-label">Khan Avg Perplexity</div>
-                <div class="kpi-value">{khan_quality_stats['avg_perplexity']:.1f}</div>
-                <div class="kpi-comparison">Lower = more natural</div>
+                <div class="kpi-label">Khan Educational Quality</div>
+                <div class="kpi-value">{(khan_quality_stats['has_examples_ratio'] + khan_quality_stats['has_explanation_ratio'] + khan_quality_stats['has_structure_ratio']) / 3 * 100:.1f}%</div>
+                <div class="kpi-comparison">Avg of 3 educational markers</div>
             </div>
 
             <div class="kpi-card">
-                <div class="kpi-label">Tiny Avg Perplexity</div>
-                <div class="kpi-value">{tiny_quality_stats['avg_perplexity']:.1f}</div>
-                <div class="kpi-comparison">Lower = more natural</div>
+                <div class="kpi-label">Tiny Educational Quality</div>
+                <div class="kpi-value">{(tiny_quality_stats['has_examples_ratio'] + tiny_quality_stats['has_explanation_ratio'] + tiny_quality_stats['has_structure_ratio']) / 3 * 100:.1f}%</div>
+                <div class="kpi-comparison">Avg of 3 educational markers</div>
             </div>
         </div>
 
@@ -385,14 +385,6 @@ def generate_dashboard_html(khan_data: List[Dict], tiny_data: List[Dict]) -> str
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Average Perplexity</td>
-                        <td>{khan_quality_stats['avg_perplexity']:.2f}</td>
-                        <td>{tiny_quality_stats['avg_perplexity']:.2f}</td>
-                        <td class="{'metric-good' if khan_quality_stats['avg_perplexity'] < tiny_quality_stats['avg_perplexity'] else 'metric-bad'}">
-                            {'Khan' if khan_quality_stats['avg_perplexity'] < tiny_quality_stats['avg_perplexity'] else 'Tiny'}
-                        </td>
-                    </tr>
                     <tr>
                         <td>Has Examples %</td>
                         <td>{khan_quality_stats['has_examples_ratio']*100:.1f}%</td>
