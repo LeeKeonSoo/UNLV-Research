@@ -30,14 +30,17 @@ def export_to_gephi(json_path, gexf_path):
     # Create NetworkX directed graph
     G = nx.DiGraph()
     
-    # Add nodes with attributes
+    # Add nodes with attributes (convert None to empty string)
     for node in graph_data['nodes']:
+        # Clean attributes - GEXF doesn't allow None values
+        parent = node.get('parent') or ''
+        
         G.add_node(
             node['id'],
             label=node['name'],
             level=node['level'],
             doc_count=node['document_count'],
-            parent=node.get('parent', '')
+            parent=parent
         )
     
     # Add edges

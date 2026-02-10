@@ -34,3 +34,4 @@ Thumbs.db
 results/
 tiny_textbooks_raw/
 *-cwd
+*.json
