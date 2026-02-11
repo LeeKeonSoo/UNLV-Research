@@ -76,7 +76,7 @@ TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
 CHUNK_SIZE     = 200
 USE_GPU        = True
-CUDA_DEVICE    = 0    # GPU 번호: 0 또는 1 (그래픽카드 두 개인 경우)
+CUDA_DEVICE    = 1    # GPU 번호: 0 또는 1 (그래픽카드 두 개인 경우)
 
 # Top-3000 common English words (lightweight proxy for rare-word detection)
 _COMMON_WORDS: Optional[set] = None
