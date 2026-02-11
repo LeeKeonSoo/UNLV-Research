@@ -50,6 +50,14 @@ try:
 except Exception:
     TRANSFORMERS_AVAILABLE = False
 
+# ---------- optional datasketch / sklearn (redundancy) ----------
+try:
+    from datasketch import MinHash as _MinHash
+    from sklearn.metrics.pairwise import cosine_similarity as _cossim
+    REDUNDANCY_DEPS_AVAILABLE = True
+except Exception:
+    REDUNDANCY_DEPS_AVAILABLE = False
+
 
 # ==============================================================================
 # Configuration
@@ -181,7 +189,7 @@ def compute_quality(text: str) -> Dict:
 # 3. Difficulty
 # ==============================================================================
 
-def compute_difficulty(text: str) -> Dict:
+def compute_difficulty(text: str, sentences: List[str] = None) -> Dict:
     try:
         fk_grade    = textstat.flesch_kincaid_grade(text)
         flesch_ease = textstat.flesch_reading_ease(text)
@@ -190,7 +198,8 @@ def compute_difficulty(text: str) -> Dict:
         fk_grade = flesch_ease = smog = 0.0
 
     try:
-        sentences = sent_tokenize(text)
+        if sentences is None:
+            sentences = sent_tokenize(text)
         words     = [w for w in word_tokenize(text) if w.isalpha()]
         n_sents   = max(len(sentences), 1)
         n_words   = max(len(words), 1)
@@ -248,6 +257,9 @@ class RedundancyChecker:
         self._vectorizer     = idx["vectorizer"]
         self._doc_ids        = idx["doc_ids"]
         self._num_perm       = 128
+        # Bind once at init — avoids repeated module lookup inside the hot loop
+        self._MinHash = _MinHash
+        self._cossim  = _cossim
         print(f"✓ Corpus index loaded ({len(self._doc_ids):,} chunks)")
 
     def compute(self, text: str) -> Dict:
@@ -260,15 +272,12 @@ class RedundancyChecker:
                 "n_gram_overlap_5":         0.0,
             }
 
-        from datasketch import MinHash
-        from sklearn.metrics.pairwise import cosine_similarity as cossim
-
         # 1. Exact duplicate
         text_hash = hashlib.md5(text.encode()).hexdigest()
         exact_dup = text_hash in self._exact_hashes
 
         # 2. Near-duplicate (MinHash)
-        mh = MinHash(num_perm=self._num_perm)
+        mh = self._MinHash(num_perm=self._num_perm)
         for word in text.lower().split():
             mh.update(word.encode("utf-8"))
         similar = self._lsh.query(mh)
@@ -282,7 +291,7 @@ class RedundancyChecker:
         # 3. TF-IDF cosine — computed ONCE, reused for semantic + n-gram metrics
         try:
             tv   = self._vectorizer.transform([text])
-            sims = cossim(tv, self._corpus_matrix).ravel()
+            sims = self._cossim(tv, self._corpus_matrix).ravel()
             sorted_sims = np.sort(sims)
             sem_score = float(sorted_sims[-2]) if len(sims) > 1 else 0.0  # 2nd highest (1st = self)
             top_sim   = float(sorted_sims[-1])
@@ -328,27 +337,45 @@ class PerplexityScorer:
         except Exception as e:
             print(f"  ⚠ GPT-2 load failed ({e}). Perplexity will be null.")
 
-    def _score_text(self, text: str) -> Optional[float]:
-        if not self._available:
-            return None
+    def _score_batch(self, texts: List[str]) -> List[Optional[float]]:
+        """Score a list of texts in a single GPU forward pass (with padding)."""
+        if not self._available or not texts:
+            return [None] * len(texts)
         try:
             enc = self._tokenizer(
-                text,
+                texts,
                 return_tensors="pt",
                 truncation=True,
                 max_length=self.MAX_TOKENS,
+                padding=True,
             )
-            input_ids = enc["input_ids"].to(self._device)
+            input_ids      = enc["input_ids"].to(self._device)       # (B, T)
+            attention_mask = enc["attention_mask"].to(self._device)   # (B, T)
             if input_ids.shape[1] < 2:
-                return None
+                return [None] * len(texts)
             with torch.no_grad():
-                out  = self._model(input_ids, labels=input_ids)
-                ppl  = torch.exp(out.loss).item()
-            return round(ppl, 2) if np.isfinite(ppl) else None
+                logits = self._model(input_ids).logits                # (B, T, V)
+            # Causal LM loss: each token predicts the next
+            shift_logits = logits[:, :-1, :].contiguous()             # (B, T-1, V)
+            shift_labels = input_ids[:, 1:].contiguous()              # (B, T-1)
+            shift_mask   = attention_mask[:, 1:].float().contiguous() # (B, T-1)
+            loss_fn      = torch.nn.CrossEntropyLoss(reduction="none")
+            token_loss   = loss_fn(
+                shift_logits.view(-1, shift_logits.size(-1)),
+                shift_labels.view(-1),
+            ).view(shift_logits.size(0), -1)                          # (B, T-1)
+            # Average over non-padding tokens only
+            seq_lens  = shift_mask.sum(dim=1).clamp(min=1)
+            mean_loss = (token_loss * shift_mask).sum(dim=1) / seq_lens
+            ppls      = torch.exp(mean_loss)
+            return [
+                round(p.item(), 2) if np.isfinite(p.item()) else None
+                for p in ppls
+            ]
         except Exception:
-            return None
+            return [None] * len(texts)
 
-    def compute(self, text: str) -> Dict:
+    def compute(self, text: str, sentences: List[str] = None) -> Dict:
         if not self._available:
             return {
                 "gpt2":                    None,
@@ -357,18 +384,18 @@ class PerplexityScorer:
                 "max_sentence_perplexity": None,
             }
 
-        overall = self._score_text(text)
-
-        # Sentence-level breakdown
-        try:
+        if sentences is None:
             sentences = sent_tokenize(text)
-            sent_ppls = [
-                self._score_text(s) for s in sentences
-                if len(s.split()) >= 5
-            ]
-            sent_ppls = [p for p in sent_ppls if p is not None]
-        except Exception:
-            sent_ppls = []
+
+        # Filter sentences by minimum length
+        valid_sents = [s for s in sentences if len(s.split()) >= 5]
+
+        # Batch: whole chunk first, then valid sentences — single forward pass
+        all_texts = [text] + valid_sents
+        all_ppls  = self._score_batch(all_texts)
+
+        overall   = all_ppls[0]
+        sent_ppls = [p for p in all_ppls[1:] if p is not None]
 
         sent_mean = round(float(np.mean(sent_ppls)), 2) if sent_ppls else None
         sent_max  = round(float(np.max(sent_ppls)),  2) if sent_ppls else None
@@ -429,10 +456,13 @@ def _process_chunks(
         if len(chunk.split()) < 20:
             continue
 
+        # Tokenize sentences once — shared by difficulty and perplexity
+        sentences  = sent_tokenize(chunk)
+
         quality    = compute_quality(chunk)
-        difficulty = compute_difficulty(chunk)
+        difficulty = compute_difficulty(chunk, sentences=sentences)
         redun      = redundancy.compute(chunk)
-        ppl        = perplexity.compute(chunk)
+        ppl        = perplexity.compute(chunk, sentences=sentences)
 
         record = {
             **doc_meta,
