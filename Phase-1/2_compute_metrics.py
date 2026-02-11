@@ -249,46 +249,24 @@ class RedundancyChecker:
         self._num_perm       = 128
         print(f"✓ Corpus index loaded ({len(self._doc_ids):,} chunks)")
 
-    def _ngram_overlap(self, text: str, n: int) -> float:
-        """Jaccard overlap of this text's n-grams with the top-similar corpus doc."""
-        tokens = text.lower().split()
-        if len(tokens) < n:
-            return 0.0
-        text_grams = set(
-            " ".join(tokens[i:i+n]) for i in range(len(tokens) - n + 1)
-        )
-        if not text_grams:
-            return 0.0
-        # Compare with corpus using TF-IDF similarity to find nearest doc
-        try:
-            from sklearn.metrics.pairwise import cosine_similarity as cossim
-            tv = self._vectorizer.transform([text])
-            sims = cossim(tv, self._corpus_matrix).ravel()
-            best_idx = int(sims.argmax())
-            best_doc_id = self._doc_ids[best_idx]
-            # Rebuild n-grams for best doc
-            best_tokens = best_doc_id.lower().split("::")[-1].split()
-            # Fall back: use similarity score as proxy for overlap
-            return round(float(sims[best_idx]), 4)
-        except Exception:
-            return 0.0
-
     def compute(self, text: str) -> Dict:
         if not self._available:
             return {
-                "exact_duplicate":        False,
-                "near_duplicate_score":   0.0,
+                "exact_duplicate":          False,
+                "near_duplicate_score":     0.0,
                 "semantic_duplicate_score": 0.0,
-                "n_gram_overlap_3":       0.0,
-                "n_gram_overlap_5":       0.0,
+                "n_gram_overlap_3":         0.0,
+                "n_gram_overlap_5":         0.0,
             }
 
+        from datasketch import MinHash
+        from sklearn.metrics.pairwise import cosine_similarity as cossim
+
         # 1. Exact duplicate
-        text_hash  = hashlib.md5(text.encode()).hexdigest()
-        exact_dup  = text_hash in self._exact_hashes
+        text_hash = hashlib.md5(text.encode()).hexdigest()
+        exact_dup = text_hash in self._exact_hashes
 
         # 2. Near-duplicate (MinHash)
-        from datasketch import MinHash
         mh = MinHash(num_perm=self._num_perm)
         for word in text.lower().split():
             mh.update(word.encode("utf-8"))
@@ -300,25 +278,22 @@ class RedundancyChecker:
                 if d in self._minhashes
             )
 
-        # 3. Semantic duplicate (TF-IDF cosine)
+        # 3. TF-IDF cosine — computed ONCE, reused for semantic + n-gram metrics
         try:
-            from sklearn.metrics.pairwise import cosine_similarity as cossim
-            tv = self._vectorizer.transform([text])
+            tv   = self._vectorizer.transform([text])
             sims = cossim(tv, self._corpus_matrix).ravel()
-            sem_score = float(np.sort(sims)[-2]) if len(sims) > 1 else 0.0  # 2nd highest (1st = self)
+            sorted_sims = np.sort(sims)
+            sem_score = float(sorted_sims[-2]) if len(sims) > 1 else 0.0  # 2nd highest (1st = self)
+            top_sim   = float(sorted_sims[-1])
         except Exception:
-            sem_score = 0.0
-
-        # 4. N-gram overlap (proxy via TF-IDF similarity)
-        ngram3 = self._ngram_overlap(text, 3)
-        ngram5 = self._ngram_overlap(text, 5)
+            sem_score = top_sim = 0.0
 
         return {
             "exact_duplicate":          exact_dup,
             "near_duplicate_score":     round(near_score, 4),
             "semantic_duplicate_score": round(sem_score, 4),
-            "n_gram_overlap_3":         ngram3,
-            "n_gram_overlap_5":         ngram5,
+            "n_gram_overlap_3":         round(top_sim, 4),
+            "n_gram_overlap_5":         round(top_sim, 4),
         }
 
 
