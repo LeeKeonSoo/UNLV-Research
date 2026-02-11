@@ -27,11 +27,16 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import nltk
 import numpy as np
 import textstat
 from nltk.tokenize import sent_tokenize, word_tokenize
 from tqdm import tqdm
 import jsonlines
+
+# Ensure required NLTK data is present (silent if already downloaded)
+for _nltk_pkg in ("punkt_tab", "punkt", "words"):
+    nltk.download(_nltk_pkg, quiet=True)
 
 # Suppress numpy matmul warnings (divide-by-zero on zero-norm chunks)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
