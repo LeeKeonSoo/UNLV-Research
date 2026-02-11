@@ -32,102 +32,96 @@ def load_khan_data(data_path: str) -> List[Dict]:
 
 def extract_taxonomy(data: List[Dict]) -> Dict:
     """
-    Extract hierarchical taxonomy structure.
+    Extract course-level taxonomy structure.
+
+    Groups lessons by (subject, course) so each prototype represents
+    one course (e.g. "Math::Algebra 1"), not one lesson.
 
     Returns:
     {
-        "Math - 4th Grade": {
-            "grade": "4",
+        "Math::Algebra 1": {
             "subject": "Math",
-            "concepts": ["Place value", "Addition", ...],
-            "concept_map": {"Place value": {title, url, ...}, ...}
+            "course": "Algebra 1",
+            "grade": "8-9",
+            "texts": ["lesson content 1", "lesson content 2", ...],
+            "lesson_count": 42
         },
         ...
     }
     """
-    print("\nExtracting taxonomy structure...")
-    taxonomy = defaultdict(lambda: {
-        "grade": None,
-        "subject": None,
-        "concepts": [],
-        "concept_map": {}
-    })
+    print("\nExtracting taxonomy structure (course-level)...")
+    def _new_entry():
+        return {"subject": "", "course": "", "grade": "", "texts": []}
+
+    taxonomy = defaultdict(_new_entry)
 
     for doc in tqdm(data, desc="Processing concepts"):
         subject = doc.get("subject", "Unknown")
+        course = doc.get("course", doc.get("subject", "Unknown"))
         grade = doc.get("grade", "Unknown")
-        title = doc.get("title", "Untitled")
         content = doc.get("content", "")
 
-        key = subject
+        key = f"{subject}::{course}"
 
-        if taxonomy[key]["grade"] is None:
+        if taxonomy[key]["subject"] == "":
+            taxonomy[key]["subject"] = subject
+            taxonomy[key]["course"] = course
             taxonomy[key]["grade"] = grade
-            taxonomy[key]["subject"] = subject.split(" - ")[0] if " - " in subject else subject
 
-        taxonomy[key]["concepts"].append(title)
-        taxonomy[key]["concept_map"][title] = {
-            "title": title,
-            "content": content,
-            "url": doc.get("url", ""),
-            "word_count": doc.get("word_count", 0)
-        }
+        if content and len(content.strip()) >= 50:
+            taxonomy[key]["texts"].append(content)
 
-    # Convert defaultdict to regular dict
+    # Convert defaultdict to regular dict and add lesson_count
     taxonomy = dict(taxonomy)
+    for info in taxonomy.values():
+        info["lesson_count"] = len(info["texts"])
 
-    print(f"✓ Extracted {len(taxonomy)} subject-grade categories")
-    for subject, info in list(taxonomy.items())[:5]:
-        print(f"  - {subject}: {len(info['concepts'])} concepts")
+    print(f"✓ Extracted {len(taxonomy)} course-level categories")
+    for key, info in list(taxonomy.items())[:5]:
+        print(f"  - {key}: {info['lesson_count']} lessons")
 
     return taxonomy
 
 
 def build_concept_prototypes_tfidf(taxonomy: Dict) -> tuple:
     """
-    Create concept prototype vectors using TF-IDF.
+    Create one TF-IDF prototype vector per course.
 
-    This is simpler than SentenceTransformers but works offline.
-    Returns mapping: concept_id → TF-IDF vector
+    All lesson texts within the same course are concatenated into
+    a single document before vectorization, so each concept_id like
+    "Math::Algebra 1" gets one representative vector (~30-50 total).
     """
-    print(f"\nBuilding concept prototypes with TF-IDF...")
+    print(f"\nBuilding concept prototypes with TF-IDF (course-level)...")
 
-    # Collect all texts and IDs
     concept_texts = []
     concept_ids = []
 
-    for subject, info in taxonomy.items():
-        for concept_title, concept_data in info["concept_map"].items():
-            concept_id = f"{subject}::{concept_title}"
-            content = concept_data["content"]
+    for concept_id, info in taxonomy.items():
+        texts = info.get("texts", [])
+        if not texts:
+            continue
+        # Concatenate all lesson texts for this course into one document
+        combined = " ".join(texts)
+        concept_texts.append(combined)
+        concept_ids.append(concept_id)
 
-            # Skip empty content
-            if not content or len(content.strip()) < 50:
-                continue
+    print(f"Processing {len(concept_texts)} course-level prototypes...")
 
-            concept_texts.append(content)
-            concept_ids.append(concept_id)
-
-    print(f"Processing {len(concept_texts)} concepts...")
-
-    # Build TF-IDF vectorizer
     vectorizer = TfidfVectorizer(
-        max_features=300,  # Keep vectors reasonably sized
+        max_features=300,
         stop_words='english',
-        ngram_range=(1, 2),  # Unigrams and bigrams
-        min_df=2  # Ignore very rare terms
+        ngram_range=(1, 2),
+        min_df=1,  # Each course document is unique; don't throw away terms
     )
 
-    # Fit and transform
     tfidf_matrix = vectorizer.fit_transform(concept_texts)
 
-    # Create concept → vector mapping
-    prototypes = {}
-    for concept_id, vector in zip(concept_ids, tfidf_matrix):
-        prototypes[concept_id] = vector.toarray()[0]  # Convert sparse to dense
+    dense_matrix = np.asarray(tfidf_matrix.todense())
+    prototypes = {concept_id: dense_matrix[i] for i, concept_id in enumerate(concept_ids)}
 
     print(f"✓ Created {len(prototypes)} concept prototypes")
     print(f"  Vector dimension: {len(prototypes[concept_ids[0]])}")
+    print(f"  Sample IDs: {concept_ids[:5]}")
 
     return prototypes, vectorizer
 
@@ -150,12 +144,15 @@ def save_outputs(taxonomy: Dict, prototypes: Dict, vectorizer, output_dir: str):
     print(f"✓ Saved concept prototypes to {prototypes_path}")
 
     # Save metadata
+    from collections import Counter
+    subject_counts = Counter(info["subject"] for info in taxonomy.values())
     metadata = {
-        "num_subjects": len(taxonomy),
-        "num_concepts": len(prototypes),
+        "num_courses": len(taxonomy),
+        "num_prototypes": len(prototypes),
         "vector_dim": len(list(prototypes.values())[0]) if prototypes else 0,
-        "method": "TF-IDF (sklearn)",
-        "subjects": list(taxonomy.keys())
+        "method": "TF-IDF (sklearn) - course-level aggregation",
+        "courses": list(taxonomy.keys()),
+        "subject_breakdown": dict(subject_counts),
     }
 
     metadata_path = output_path / "metadata.json"
