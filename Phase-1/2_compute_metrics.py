@@ -68,6 +68,7 @@ TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
 CHUNK_SIZE     = 200
 USE_GPU        = True
+CUDA_DEVICE    = 0    # GPU 번호: 0 또는 1 (그래픽카드 두 개인 경우)
 
 # Top-3000 common English words (lightweight proxy for rare-word detection)
 _COMMON_WORDS: Optional[set] = None
@@ -115,9 +116,9 @@ class DomainClassifier:
 
         if use_gpu and TORCH_AVAILABLE and torch.cuda.is_available():
             self.use_torch = True
-            self.device    = "cuda"
+            self.device    = f"cuda:{CUDA_DEVICE}"
             self.proto_t   = torch.from_numpy(proto_matrix).to(self.device)
-            print("Domain classifier: using CUDA")
+            print(f"Domain classifier: using {self.device}")
         else:
             print("Domain classifier: using CPU")
 
@@ -314,8 +315,8 @@ class PerplexityScorer:
             print("  ⚠ transformers not available. Perplexity will be null.")
             return
         try:
-            device_str = "cuda" if (use_gpu and TORCH_AVAILABLE
-                                    and torch.cuda.is_available()) else "cpu"
+            device_str = f"cuda:{CUDA_DEVICE}" if (use_gpu and TORCH_AVAILABLE
+                                                   and torch.cuda.is_available()) else "cpu"
             print(f"Loading GPT-2 model (device={device_str})...")
             self._tokenizer = GPT2Tokenizer.from_pretrained(
                 "gpt2", cache_dir="./models")
