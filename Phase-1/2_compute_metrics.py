@@ -55,10 +55,9 @@ try:
 except Exception:
     TRANSFORMERS_AVAILABLE = False
 
-# ---------- optional datasketch / sklearn (redundancy) ----------
+# ---------- optional datasketch (redundancy) ----------
 try:
     from datasketch import MinHash as _MinHash
-    from sklearn.metrics.pairwise import cosine_similarity as _cossim
     REDUNDANCY_DEPS_AVAILABLE = True
 except Exception:
     REDUNDANCY_DEPS_AVAILABLE = False
@@ -254,18 +253,13 @@ class RedundancyChecker:
         with open(index_path, "rb") as f:
             idx = pickle.load(f)
 
-        self._available      = True
-        self._exact_hashes   = idx["exact_hashes"]
-        self._lsh            = idx["lsh"]
-        self._minhashes      = idx["minhashes"]
-        self._corpus_matrix  = idx["corpus_matrix"]
-        self._vectorizer     = idx["vectorizer"]
-        self._doc_ids        = idx["doc_ids"]
-        self._num_perm       = 128
-        # Bind once at init — avoids repeated module lookup inside the hot loop
-        self._MinHash = _MinHash
-        self._cossim  = _cossim
-        print(f"✓ Corpus index loaded ({len(self._doc_ids):,} chunks)")
+        self._available    = True
+        self._exact_hashes = idx["exact_hashes"]
+        self._lsh          = idx["lsh"]
+        self._minhashes    = idx["minhashes"]
+        self._num_perm     = 128
+        self._MinHash      = _MinHash
+        print(f"✓ Corpus index loaded ({len(self._minhashes):,} chunks)")
 
     def compute(self, text: str) -> Dict:
         if not self._available:
@@ -281,7 +275,7 @@ class RedundancyChecker:
         text_hash = hashlib.md5(text.encode()).hexdigest()
         exact_dup = text_hash in self._exact_hashes
 
-        # 2. Near-duplicate (MinHash)
+        # 2. Near-duplicate (MinHash Jaccard)
         mh = self._MinHash(num_perm=self._num_perm)
         for word in text.lower().split():
             mh.update(word.encode("utf-8"))
@@ -293,22 +287,12 @@ class RedundancyChecker:
                 if d in self._minhashes
             )
 
-        # 3. TF-IDF cosine — computed ONCE, reused for semantic + n-gram metrics
-        try:
-            tv   = self._vectorizer.transform([text])
-            sims = self._cossim(tv, self._corpus_matrix).ravel()
-            sorted_sims = np.sort(sims)
-            sem_score = float(sorted_sims[-2]) if len(sims) > 1 else 0.0  # 2nd highest (1st = self)
-            top_sim   = float(sorted_sims[-1])
-        except Exception:
-            sem_score = top_sim = 0.0
-
         return {
             "exact_duplicate":          exact_dup,
             "near_duplicate_score":     round(near_score, 4),
-            "semantic_duplicate_score": round(sem_score, 4),
-            "n_gram_overlap_3":         round(top_sim, 4),
-            "n_gram_overlap_5":         round(top_sim, 4),
+            "semantic_duplicate_score": round(near_score, 4),  # MinHash로 통합
+            "n_gram_overlap_3":         0.0,
+            "n_gram_overlap_5":         0.0,
         }
 
 
