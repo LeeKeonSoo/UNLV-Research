@@ -33,19 +33,169 @@ MAX_EXPLORER  = 2000   # documents sampled per dataset for the Explorer tab
 
 
 # ==============================================================================
-# Data loading
+# Data loading — single-pass streaming
 # ==============================================================================
 
-def load_analysis(filepath: str) -> List[Dict]:
+def process_dataset(filepath: str, n_explorer: int = 2000):
+    """
+    Stream through a JSONL file exactly once, simultaneously computing:
+      - aggregate statistics (stats dict)
+      - a reservoir sample for the Explorer tab (list of compact rows)
+
+    Memory usage: O(n_explorer) — never loads the full dataset.
+    """
     path = Path(filepath)
     if not path.exists():
-        print(f"  WARNING: {filepath} not found, returning empty list.")
-        return []
-    results = []
+        print(f"  WARNING: {filepath} not found.")
+        return {"total": 0}, []
+
+    # --- aggregate accumulators ---
+    n = 0
+    domain_ctr:  Counter = Counter()
+    subject_ctr: Counter = Counter()
+    multi_domain = 0
+    quality_scores: List[float] = []
+    has_ex = has_expl = has_struct = 0
+    fk_grades: List[float] = []
+    fk_ease_v: List[float] = []
+    smog_v:    List[float] = []
+    lex_v:     List[float] = []
+    exact_dup = 0
+    near_dup_v: List[float] = []
+    sem_dup_v:  List[float] = []
+    ppl_v:      List[float] = []
+
+    # --- reservoir sampling (Algorithm R, seed=42) ---
+    rng       = random.Random(42)
+    reservoir: List[dict] = []
+
+    def to_row(item):
+        domains   = item.get("domain_labels") or {}
+        top_dom   = max(domains.items(), key=lambda x: x[1])[0] if domains else "N/A"
+        top_score = round(float(domains.get(top_dom, 0.0)), 3) if domains else 0.0
+        d = item.get("difficulty")  or {}
+        r = item.get("redundancy")  or {}
+        p = item.get("perplexity")  or {}
+        m = item.get("educational_markers") or {}
+
+        def rv(x, dec=2):
+            v = _flt(x)
+            return round(v, dec) if v is not None else None
+
+        text = item.get("text", "")
+        return {
+            "doc_id":           str(item.get("doc_id") or "")[:60],
+            "source":           item.get("source", ""),
+            "subject":          item.get("subject", ""),
+            "grade":            item.get("grade", ""),
+            "title":            (item.get("title") or "")[:60],
+            "chunk_id":         item.get("chunk_id", 0),
+            "word_count":       item.get("word_count", 0),
+            "top_domain":       top_dom.split("::")[-1][:40],
+            "top_domain_full":  top_dom,
+            "top_domain_score": top_score,
+            "quality_score":    rv(item.get("quality_score"), 2),
+            "has_examples":     bool(m.get("has_examples")),
+            "has_explanation":  bool(m.get("has_explanation")),
+            "has_structure":    bool(m.get("has_structure")),
+            "fk_grade":         rv(d.get("flesch_kincaid_grade"), 1),
+            "fk_ease":          rv(d.get("flesch_reading_ease"), 1),
+            "lex_div":          rv(d.get("lexical_diversity"), 3),
+            "rare_words":       rv(d.get("rare_words_pct"), 3),
+            "exact_dup":        bool(r.get("exact_duplicate")),
+            "near_dup":         rv(r.get("near_duplicate_score"), 3),
+            "semantic_dup":     rv(r.get("semantic_duplicate_score"), 3),
+            "ngram3":           rv(r.get("n_gram_overlap_3"), 3),
+            "perplexity":       rv(p.get("gpt2"), 1),
+            "domain_labels":    {k: round(float(v), 3) for k, v in list(domains.items())[:8]},
+            "text_preview":     text[:300] + ("..." if len(text) > 300 else ""),
+        }
+
     with jsonlines.open(filepath) as reader:
-        for obj in reader:
-            results.append(obj)
-    return results
+        for item in reader:
+            n += 1
+
+            # --- aggregate ---
+            domains = item.get("domain_labels") or {}
+            for did in domains:
+                domain_ctr[did] += 1
+                subject_ctr[did.split("::")[0] if "::" in did else "Unknown"] += 1
+            if len(domains) > 1:
+                multi_domain += 1
+
+            qs = _flt(item.get("quality_score"))
+            if qs is not None:
+                quality_scores.append(qs)
+            mk = item.get("educational_markers") or {}
+            has_ex    += int(bool(mk.get("has_examples")))
+            has_expl  += int(bool(mk.get("has_explanation")))
+            has_struct += int(bool(mk.get("has_structure")))
+
+            d = item.get("difficulty") or {}
+            for key, lst in [
+                ("flesch_kincaid_grade", fk_grades),
+                ("flesch_reading_ease",  fk_ease_v),
+                ("smog_index",           smog_v),
+                ("lexical_diversity",    lex_v),
+            ]:
+                v = _flt(d.get(key))
+                if v is not None:
+                    lst.append(v)
+
+            r = item.get("redundancy") or {}
+            exact_dup += int(bool(r.get("exact_duplicate")))
+            for key, lst in [
+                ("near_duplicate_score",     near_dup_v),
+                ("semantic_duplicate_score", sem_dup_v),
+            ]:
+                v = _flt(r.get(key))
+                if v is not None:
+                    lst.append(v)
+
+            p = item.get("perplexity") or {}
+            pv = _flt(p.get("gpt2"))
+            if pv is not None and pv < 2000:
+                ppl_v.append(pv)
+
+            # --- reservoir sample (Algorithm R) ---
+            row = to_row(item)
+            if len(reservoir) < n_explorer:
+                reservoir.append(row)
+            else:
+                j = rng.randint(0, n - 1)
+                if j < n_explorer:
+                    reservoir[j] = row
+
+    if n == 0:
+        return {"total": 0}, []
+
+    stats = {
+        "total": n,
+        "subject_counts":      dict(subject_ctr),
+        "top_domains":         [[k, v] for k, v in domain_ctr.most_common(20)],
+        "multi_domain_ratio":  multi_domain / n,
+        "avg_quality":         _mean(quality_scores),
+        "quality_hist":        _hist(quality_scores, 10, 0.0, 1.0),
+        "has_examples_pct":    has_ex    / n * 100,
+        "has_explanation_pct": has_expl  / n * 100,
+        "has_structure_pct":   has_struct / n * 100,
+        "avg_fk_grade":        _mean(fk_grades),
+        "avg_fk_ease":         _mean(fk_ease_v),
+        "fk_grade_hist":       _hist(fk_grades, 15, 0, 18),
+        "fk_ease_hist":        _hist(fk_ease_v, 15, 0, 100),
+        "smog_hist":           _hist(smog_v, 15, 0, 18),
+        "lex_div_hist":        _hist(lex_v, 10, 0, 1),
+        "exact_dup_pct":       exact_dup / n * 100,
+        "avg_near_dup":        _mean(near_dup_v),
+        "near_dup_hist":       _hist(near_dup_v, 20, 0, 1),
+        "semantic_dup_hist":   _hist(sem_dup_v, 20, 0, 1),
+        "perplexity_available": len(ppl_v) > 0,
+        "avg_perplexity":      _mean(ppl_v),
+        "ppl_hist":            _hist(ppl_v, 20),
+    }
+
+    rng.shuffle(reservoir)
+    return stats, reservoir
 
 
 # ==============================================================================
@@ -82,179 +232,6 @@ def _hist(values: list, bins: int = 20, vmin=None, vmax=None) -> dict:
     }
 
 
-def aggregate(data: List[Dict]) -> dict:
-    """Compute all aggregated statistics for one dataset."""
-    n = len(data)
-    if n == 0:
-        return {"total": 0}
-
-    domain_ctr: Counter = Counter()
-    subject_ctr: Counter = Counter()
-    multi_domain = 0
-
-    quality_scores: List[float] = []
-    has_ex = has_expl = has_struct = 0
-
-    fk_grades: List[float] = []
-    fk_ease_v: List[float] = []
-    smog_v: List[float] = []
-    lex_v: List[float] = []
-
-    exact_dup = 0
-    near_dup_v: List[float] = []
-    sem_dup_v: List[float] = []
-    ng3_v: List[float] = []
-    ng5_v: List[float] = []
-
-    ppl_v: List[float] = []
-
-    for item in data:
-        # Domain
-        domains = item.get("domain_labels") or {}
-        for did in domains:
-            domain_ctr[did] += 1
-            subject_ctr[did.split("::")[0] if "::" in did else "Unknown"] += 1
-        if len(domains) > 1:
-            multi_domain += 1
-
-        # Quality
-        qs = _flt(item.get("quality_score"))
-        if qs is not None:
-            quality_scores.append(qs)
-        m = item.get("educational_markers") or {}
-        has_ex    += int(bool(m.get("has_examples")))
-        has_expl  += int(bool(m.get("has_explanation")))
-        has_struct += int(bool(m.get("has_structure")))
-
-        # Difficulty
-        d = item.get("difficulty") or {}
-        for key, lst in [
-            ("flesch_kincaid_grade", fk_grades),
-            ("flesch_reading_ease",  fk_ease_v),
-            ("smog_index",           smog_v),
-            ("lexical_diversity",    lex_v),
-        ]:
-            v = _flt(d.get(key))
-            if v is not None:
-                lst.append(v)
-
-        # Redundancy
-        r = item.get("redundancy") or {}
-        exact_dup += int(bool(r.get("exact_duplicate")))
-        for key, lst in [
-            ("near_duplicate_score",     near_dup_v),
-            ("semantic_duplicate_score", sem_dup_v),
-            ("n_gram_overlap_3",         ng3_v),
-            ("n_gram_overlap_5",         ng5_v),
-        ]:
-            v = _flt(r.get(key))
-            if v is not None:
-                lst.append(v)
-
-        # Perplexity
-        p = item.get("perplexity") or {}
-        pv = _flt(p.get("gpt2"))
-        if pv is not None and pv < 2000:
-            ppl_v.append(pv)
-
-    return {
-        "total": n,
-        # Domain
-        "subject_counts": dict(subject_ctr),
-        "top_domains":    [[k, v] for k, v in domain_ctr.most_common(20)],
-        "multi_domain_ratio": multi_domain / n,
-        # Quality
-        "avg_quality":         _mean(quality_scores),
-        "quality_hist":        _hist(quality_scores, 10, 0.0, 1.0),
-        "has_examples_pct":    has_ex    / n * 100,
-        "has_explanation_pct": has_expl  / n * 100,
-        "has_structure_pct":   has_struct / n * 100,
-        # Difficulty
-        "avg_fk_grade":  _mean(fk_grades),
-        "avg_fk_ease":   _mean(fk_ease_v),
-        "fk_grade_hist": _hist(fk_grades, 15, 0, 18),
-        "fk_ease_hist":  _hist(fk_ease_v, 15, 0, 100),
-        "smog_hist":     _hist(smog_v, 15, 0, 18),
-        "lex_div_hist":  _hist(lex_v, 10, 0, 1),
-        # Redundancy
-        "exact_dup_pct":  exact_dup / n * 100,
-        "avg_near_dup":   _mean(near_dup_v),
-        "near_dup_hist":  _hist(near_dup_v, 20, 0, 1),
-        "semantic_dup_hist": _hist(sem_dup_v, 20, 0, 1),
-        # Perplexity
-        "perplexity_available": len(ppl_v) > 0,
-        "avg_perplexity": _mean(ppl_v),
-        "ppl_hist":       _hist(ppl_v, 20),
-    }
-
-
-def sample_explorer(data: List[Dict], n: int = 2000) -> List[Dict]:
-    """Sample representative documents for the Explorer table."""
-    def to_row(item):
-        domains = item.get("domain_labels") or {}
-        top_dom = max(domains.items(), key=lambda x: x[1])[0] if domains else "N/A"
-        top_score = round(float(domains.get(top_dom, 0.0)), 3) if domains else 0.0
-        d = item.get("difficulty") or {}
-        r = item.get("redundancy") or {}
-        p = item.get("perplexity") or {}
-        m = item.get("educational_markers") or {}
-
-        def rv(x, dec=2):
-            v = _flt(x)
-            return round(v, dec) if v is not None else None
-
-        text = item.get("text", "")
-        return {
-            "doc_id":         str(item.get("doc_id") or "")[:60],
-            "source":         item.get("source", ""),
-            "subject":        item.get("subject", ""),
-            "grade":          item.get("grade", ""),
-            "title":          (item.get("title") or "")[:60],
-            "chunk_id":       item.get("chunk_id", 0),
-            "word_count":     item.get("word_count", 0),
-            "top_domain":     top_dom.split("::")[-1][:40],
-            "top_domain_full":top_dom,
-            "top_domain_score": top_score,
-            "quality_score":  rv(item.get("quality_score"), 2),
-            "has_examples":   bool(m.get("has_examples")),
-            "has_explanation":bool(m.get("has_explanation")),
-            "has_structure":  bool(m.get("has_structure")),
-            "fk_grade":       rv(d.get("flesch_kincaid_grade"), 1),
-            "fk_ease":        rv(d.get("flesch_reading_ease"), 1),
-            "lex_div":        rv(d.get("lexical_diversity"), 3),
-            "rare_words":     rv(d.get("rare_words_pct"), 3),
-            "exact_dup":      bool(r.get("exact_duplicate")),
-            "near_dup":       rv(r.get("near_duplicate_score"), 3),
-            "semantic_dup":   rv(r.get("semantic_duplicate_score"), 3),
-            "ngram3":         rv(r.get("n_gram_overlap_3"), 3),
-            "perplexity":     rv(p.get("gpt2"), 1),
-            "domain_labels":  {k: round(float(v), 3) for k, v in list(domains.items())[:8]},
-            "text_preview":   text[:300] + ("..." if len(text) > 300 else ""),
-        }
-
-    rows = [to_row(item) for item in data]
-    if len(rows) <= n:
-        return rows
-
-    # Stratified sample by subject
-    random.seed(42)
-    by_subj: dict = defaultdict(list)
-    for row in rows:
-        by_subj[row["subject"]].append(row)
-
-    sampled: List[dict] = []
-    for subj, docs in sorted(by_subj.items()):
-        quota = max(1, round(n * len(docs) / len(rows)))
-        sampled.extend(random.sample(docs, min(quota, len(docs))))
-
-    if len(sampled) < n:
-        sampled_ids = {id(r) for r in sampled}
-        rest = [r for r in rows if id(r) not in sampled_ids]
-        extra = min(n - len(sampled), len(rest))
-        sampled.extend(random.sample(rest, extra))
-
-    random.shuffle(sampled)
-    return sampled[:n]
 
 
 # ==============================================================================
@@ -272,16 +249,8 @@ def _fmt(v, fmt=".1f", fallback="N/A") -> str:
     return format(v, fmt)
 
 
-def generate_dashboard_html(khan_data: List[Dict], tiny_data: List[Dict]) -> str:
-    print("  Aggregating Khan stats...")
-    ks = aggregate(khan_data)
-    print("  Aggregating Tiny stats...")
-    ts = aggregate(tiny_data)
-
-    print(f"  Sampling Khan explorer docs (max {MAX_EXPLORER})...")
-    khan_exp = sample_explorer(khan_data, MAX_EXPLORER)
-    print(f"  Sampling Tiny explorer docs (max {MAX_EXPLORER})...")
-    tiny_exp = sample_explorer(tiny_data, MAX_EXPLORER)
+def generate_dashboard_html(ks: dict, khan_exp: List[dict],
+                            ts: dict, tiny_exp: List[dict]) -> str:
 
     # Subject chart data
     all_subj = sorted(set(ks["subject_counts"]) | set(ts["subject_counts"]))
@@ -983,18 +952,21 @@ def main():
     print("BUILDING INTERACTIVE DASHBOARD")
     print("=" * 60)
 
-    print("\nLoading analysis results...")
-    khan_data = load_analysis(KHAN_ANALYSIS)
-    tiny_data = load_analysis(TINY_ANALYSIS)
-    print(f"  Khan Academy:  {len(khan_data):,} chunks")
-    print(f"  Tiny-Textbooks: {len(tiny_data):,} chunks")
+    print("\nStreaming analysis results...")
+    print("  Processing Khan Academy (single pass)...")
+    ks, khan_exp = process_dataset(KHAN_ANALYSIS, MAX_EXPLORER)
+    print(f"  Khan Academy:  {ks.get('total', 0):,} chunks → {len(khan_exp)} explorer rows")
 
-    if not khan_data and not tiny_data:
+    print("  Processing Tiny-Textbooks (single pass)...")
+    ts, tiny_exp = process_dataset(TINY_ANALYSIS, MAX_EXPLORER)
+    print(f"  Tiny-Textbooks: {ts.get('total', 0):,} chunks → {len(tiny_exp)} explorer rows")
+
+    if ks.get("total", 0) == 0 and ts.get("total", 0) == 0:
         print("\nERROR: No analysis files found. Run 2_compute_metrics.py first.")
         return
 
     print("\nGenerating dashboard HTML...")
-    html = generate_dashboard_html(khan_data, tiny_data)
+    html = generate_dashboard_html(ks, khan_exp, ts, tiny_exp)
 
     Path("outputs").mkdir(exist_ok=True)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
