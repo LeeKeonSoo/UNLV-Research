@@ -285,7 +285,7 @@ def generate_dashboard_html(ks: dict, khan_exp: List[dict],
     kdc, tdc = winner(ks["exact_dup_pct"], ts["exact_dup_pct"], higher_is_better=False)
 
     cmp_rows = f"""
-<tr><td>Total Chunks</td><td>{len(khan_data):,}</td><td>{len(tiny_data):,}</td><td>Text segments analyzed</td></tr>
+<tr><td>Total Chunks</td><td>{ks["total"]:,}</td><td>{ts["total"]:,}</td><td>Text segments analyzed</td></tr>
 <tr><td>Avg Quality Score</td><td{kqc}>{kq:.1f}%</td><td{tqc}>{tq:.1f}%</td><td>Avg of 3 educational markers</td></tr>
 <tr><td>Has Examples</td><td{kec}>{ks['has_examples_pct']:.1f}%</td><td{tec}>{ts['has_examples_pct']:.1f}%</td><td>"for example", "such as"</td></tr>
 <tr><td>Has Explanation</td><td{kxc}>{ks['has_explanation_pct']:.1f}%</td><td{txc}>{ts['has_explanation_pct']:.1f}%</td><td>"because", "therefore"</td></tr>
@@ -313,8 +313,8 @@ def generate_dashboard_html(ks: dict, khan_exp: List[dict],
 
     # KPI values
     kpi_html = f"""
-<div class="kpi"><div class="kpi-label">Khan Chunks</div><div class="kpi-value">{len(khan_data):,}</div><div class="kpi-sub">text segments</div></div>
-<div class="kpi"><div class="kpi-label">Tiny Chunks</div><div class="kpi-value">{len(tiny_data):,}</div><div class="kpi-sub">text segments</div></div>
+<div class="kpi"><div class="kpi-label">Khan Chunks</div><div class="kpi-value">{ks["total"]:,}</div><div class="kpi-sub">text segments</div></div>
+<div class="kpi"><div class="kpi-label">Tiny Chunks</div><div class="kpi-value">{ts["total"]:,}</div><div class="kpi-sub">text segments</div></div>
 <div class="kpi"><div class="kpi-label">Khan Avg Quality</div><div class="kpi-value">{kq:.0f}%</div><div class="kpi-sub">educational markers</div></div>
 <div class="kpi"><div class="kpi-label">Tiny Avg Quality</div><div class="kpi-value">{tq:.0f}%</div><div class="kpi-sub">educational markers</div></div>
 <div class="kpi"><div class="kpi-label">Khan Avg FK Grade</div><div class="kpi-value">{_fmt(ks['avg_fk_grade'])}</div><div class="kpi-sub">Flesch-Kincaid</div></div>
@@ -406,7 +406,7 @@ canvas{{max-height:340px!important}}
 
 <div class="header">
   <h1>📊 Dataset Analysis Dashboard</h1>
-  <p>Phase 1 · SLM Pretraining Dataset Characterization · Khan Academy ({len(khan_data):,} chunks) vs Tiny-Textbooks ({len(tiny_data):,} chunks)</p>
+  <p>Phase 1 · SLM Pretraining Dataset Characterization · Khan Academy ({ks["total"]:,} chunks) vs Tiny-Textbooks ({ts["total"]:,} chunks)</p>
 </div>
 
 <div class="tab-nav">
