@@ -16,6 +16,7 @@ Output:
 """
 
 import json
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -29,6 +30,18 @@ from tqdm import tqdm
 
 # Maps course-name keywords to (subject_category, grade_range)
 # Order matters: more specific patterns first
+LANGUAGE_ARTS_PRIORITY_MAP = [
+    (r'3rd grade reading',                  ('Language Arts',  '3')),
+    (r'4th grade reading',                  ('Language Arts',  '4')),
+    (r'5th grade reading',                  ('Language Arts',  '5')),
+    (r'6th grade reading',                  ('Language Arts',  '6')),
+    (r'7th grade reading',                  ('Language Arts',  '7')),
+    (r'8th grade reading',                  ('Language Arts',  '8')),
+    (r'9th grade reading',                  ('Language Arts',  '9')),
+    (r'^Grammar',                           ('Language Arts',  '3-8')),
+    (r'Storytelling',                       ('Language Arts',  '3-6')),
+]
+
 COURSE_GRADE_MAP = [
     # ── Explicit grade-labeled courses ─────────────────────────────────────────
     (r'^3rd grade',                         ('Math',           '3')),
@@ -98,17 +111,6 @@ COURSE_GRADE_MAP = [
     (r'Microeconomics',                     ('Social Studies', '12')),
     (r'Finance and capital',                ('Social Studies', '11-12')),
 
-    # ── Language Arts / ELA ─────────────────────────────────────────────────────
-    (r'3rd grade reading',                  ('Language Arts',  '3')),
-    (r'4th grade reading',                  ('Language Arts',  '4')),
-    (r'5th grade reading',                  ('Language Arts',  '5')),
-    (r'6th grade reading',                  ('Language Arts',  '6')),
-    (r'7th grade reading',                  ('Language Arts',  '7')),
-    (r'8th grade reading',                  ('Language Arts',  '8')),
-    (r'9th grade reading',                  ('Language Arts',  '9')),
-    (r'^Grammar',                           ('Language Arts',  '3-8')),
-    (r'Storytelling',                       ('Language Arts',  '3-6')),
-
     # ── Computer Science ─────────────────────────────────────────────────────────
     (r'Computer programming|Computer Programming',  ('Computer Science', '9-12')),
     (r'Computer science|AP.*Computer Science',       ('Computer Science', '9-12')),
@@ -136,6 +138,12 @@ def classify_course(course_name: str):
     for pattern in SKIP_PATTERNS:
         if re.search(pattern, course_name, re.IGNORECASE):
             return None
+
+    # Priority pass to avoid grade-pattern collisions:
+    # e.g. "5th grade reading & vocabulary" must map to Language Arts, not Math.
+    for pattern, (subject, grade) in LANGUAGE_ARTS_PRIORITY_MAP:
+        if re.search(pattern, course_name, re.IGNORECASE):
+            return subject, grade
 
     for pattern, (subject, grade) in COURSE_GRADE_MAP:
         if re.search(pattern, course_name, re.IGNORECASE):
@@ -245,6 +253,18 @@ def load_cosmopedia():
 # Transformation
 # ==============================================================================
 
+def _slugify(text: str) -> str:
+    slug = text.lower().strip()
+    slug = re.sub(r"[^a-z0-9]+", "_", slug)
+    slug = re.sub(r"_+", "_", slug).strip("_")
+    return slug or "unknown"
+
+
+def _stable_doc_hash(course: str, title: str, prompt: str, text: str) -> str:
+    material = "\n".join([course, title, prompt, text])
+    return hashlib.md5(material.encode("utf-8")).hexdigest()[:16]
+
+
 def transform_to_k12_concepts(raw_data):
     """
     Convert cosmopedia entries to the khan_k12_concepts format:
@@ -265,6 +285,7 @@ def transform_to_k12_concepts(raw_data):
     results = []
     skipped_counter = Counter()
     subject_counter = Counter()
+    emitted_doc_ids = set()
 
     print(f"\nTransforming {len(raw_data)} entries...")
 
@@ -287,14 +308,26 @@ def transform_to_k12_concepts(raw_data):
             continue
 
         subject, grade = classification
+        lesson_title = lesson_title or course_name
+        course_slug = _slugify(course_name)
+        doc_hash = _stable_doc_hash(course_name, lesson_title, prompt, text)
+        base_doc_id = f"cosmopedia://khanacademy/{course_slug}/{doc_hash}"
+        doc_id = base_doc_id
+        suffix = 2
+        while doc_id in emitted_doc_ids:
+            doc_id = f"{base_doc_id}-{suffix}"
+            suffix += 1
+        emitted_doc_ids.add(doc_id)
 
         results.append({
             "subject": subject,
             "grade": grade,
             "course": course_name,
-            "title": lesson_title or course_name,
+            "title": lesson_title,
             "content": text.strip(),
-            "url": f"cosmopedia://khanacademy/{course_name.lower().replace(' ', '_')}",
+            "doc_id": doc_id,
+            "url": doc_id,
+            "course_url": f"cosmopedia://khanacademy/{course_slug}",
             "word_count": len(text.split()),
         })
         subject_counter[subject] += 1

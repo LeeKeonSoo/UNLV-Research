@@ -3,6 +3,23 @@
 **작성일**: 2026년 2월 10일
 **연구자**: KeonSoo (bubbleguy10@gmail.com)
 
+## Phase-1 Objective Sync (Canonical)
+This decisions log is synchronized to `PHASE1_RESEARCH_OBJECTIVE_SPEC.md`.
+
+1. Phase-1 claim scope is descriptive/comparative only.
+2. Phase-1 excludes causal training-effect claims (Phase-2 responsibility).
+3. Canonical RQ set:
+   1. RQ1 domain coverage differences.
+   2. RQ2 educational-structure quality differences.
+   3. RQ3 metric reliability/stability.
+4. Metric tiering is fixed:
+   1. Core: domain, quality, difficulty.
+   2. Exploratory: redundancy, perplexity.
+5. Claiming policy:
+   1. Only Core metrics can support headline conclusions.
+   2. Exploratory metrics are diagnostic.
+   3. Metrics failing reliability gates are non-claimable.
+
 ---
 
 ## 📋 프로젝트 핵심 결정사항

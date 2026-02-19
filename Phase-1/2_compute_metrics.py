@@ -17,12 +17,14 @@ Input:
 Output:
   - outputs/khan_analysis.jsonl
   - outputs/tiny_textbooks_analysis.jsonl
+  - outputs/run_manifest.json
 """
 
 import hashlib
 import json
 import pickle
 import re
+import subprocess
 import warnings
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -33,6 +35,7 @@ import textstat
 from nltk.tokenize import sent_tokenize, word_tokenize
 from tqdm import tqdm
 import jsonlines
+from sklearn.metrics.pairwise import cosine_similarity
 
 # Ensure required NLTK data is present (silent if already downloaded)
 for _nltk_pkg in ("punkt_tab", "punkt", "words"):
@@ -75,12 +78,28 @@ TINY_TEXTBOOKS_DIR = "tiny_textbooks_raw"
 OUTPUT_DIR   = Path("outputs")
 KHAN_OUTPUT  = OUTPUT_DIR / "khan_analysis.jsonl"
 TINY_OUTPUT  = OUTPUT_DIR / "tiny_textbooks_analysis.jsonl"
+RUN_MANIFEST_OUTPUT = OUTPUT_DIR / "run_manifest.json"
 
 TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
 CHUNK_SIZE     = 200
 USE_GPU        = True
 CUDA_DEVICE    = 0    # GPU 번호: 0 또는 1 (그래픽카드 두 개인 경우)
+
+SCHEMA_VERSION = "v2"
+METRIC_TIER = {
+    "domain": "core",
+    "quality": "core",
+    "difficulty": "core",
+    "redundancy": "exploratory",
+    "perplexity": "exploratory",
+}
+
+DOMAIN_TOP1_GATE = 0.60
+DOMAIN_TOP3_GATE = 0.85
+QUALITY_PREC_GATE = 0.80
+DIFFICULTY_OOR_GATE = 0.01
+PERPLEXITY_COVERAGE_GATE = 0.90
 
 # Top-3000 common English words (lightweight proxy for rare-word detection)
 _COMMON_WORDS: Optional[set] = None
@@ -99,6 +118,243 @@ def _load_common_words() -> set:
             _COMMON_WORDS = set()
     return _COMMON_WORDS
 
+
+def _safe_float(v) -> Optional[float]:
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return f if np.isfinite(f) else None
+
+
+def _hash_file(path: Path) -> Optional[str]:
+    if not path.exists() or not path.is_file():
+        return None
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _fingerprint_files(paths: List[Path]) -> str:
+    h = hashlib.sha256()
+    for p in sorted(paths):
+        if not p.exists():
+            continue
+        st = p.stat()
+        row = f"{p.name}|{st.st_size}|{int(st.st_mtime)}\n"
+        h.update(row.encode("utf-8"))
+    return h.hexdigest()
+
+
+def _git_commit_hash() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL
+        ).strip()
+    except Exception:
+        return "unknown"
+
+
+def _is_domain_valid(domain_labels: Dict[str, float]) -> bool:
+    if not isinstance(domain_labels, dict) or not domain_labels:
+        return False
+    vals = [v for v in (_safe_float(x) for x in domain_labels.values()) if v is not None]
+    if not vals:
+        return False
+    total = sum(vals)
+    return 0.80 <= total <= 1.20
+
+
+def _is_quality_valid(quality_score: float, markers: Dict) -> bool:
+    qs = _safe_float(quality_score)
+    if qs is None or qs < 0.0 or qs > 1.0:
+        return False
+    needed = ("has_examples", "has_explanation", "has_structure")
+    if not isinstance(markers, dict):
+        return False
+    return all(isinstance(markers.get(k), bool) for k in needed)
+
+
+def _is_difficulty_valid(difficulty: Dict) -> bool:
+    if not isinstance(difficulty, dict):
+        return False
+    fk_grade = _safe_float(difficulty.get("flesch_kincaid_grade"))
+    fk_ease = _safe_float(difficulty.get("flesch_reading_ease"))
+    smog = _safe_float(difficulty.get("smog_index"))
+    ttr = _safe_float(difficulty.get("lexical_diversity"))
+    rare = _safe_float(difficulty.get("rare_words_pct"))
+    if fk_grade is None or fk_ease is None or smog is None or ttr is None or rare is None:
+        return False
+    return (
+        0.0 <= fk_grade <= 20.0
+        and -50.0 <= fk_ease <= 120.0
+        and 0.0 <= smog <= 30.0
+        and 0.0 <= ttr <= 1.0
+        and 0.0 <= rare <= 1.0
+    )
+
+
+def _is_redundancy_valid(redundancy: Dict, available: bool) -> bool:
+    if not available or not isinstance(redundancy, dict):
+        return False
+    exact = redundancy.get("exact_duplicate")
+    near = _safe_float(redundancy.get("near_duplicate_score"))
+    sem = _safe_float(redundancy.get("semantic_duplicate_score"))
+    ng3 = _safe_float(redundancy.get("n_gram_overlap_3"))
+    ng5 = _safe_float(redundancy.get("n_gram_overlap_5"))
+    if not isinstance(exact, bool):
+        return False
+    numeric_ok = all(v is not None and 0.0 <= v <= 1.0 for v in (near, sem, ng3, ng5))
+    return numeric_ok
+
+
+def _is_perplexity_valid(perplexity: Dict) -> bool:
+    if not isinstance(perplexity, dict):
+        return False
+    return _safe_float(perplexity.get("gpt2")) is not None
+
+
+class RunningStat:
+    def __init__(self):
+        self.n = 0
+        self.mean = 0.0
+        self.m2 = 0.0
+        self.min = None
+        self.max = None
+
+    def add(self, value: Optional[float]):
+        if value is None:
+            return
+        x = float(value)
+        self.n += 1
+        if self.min is None or x < self.min:
+            self.min = x
+        if self.max is None or x > self.max:
+            self.max = x
+        delta = x - self.mean
+        self.mean += delta / self.n
+        delta2 = x - self.mean
+        self.m2 += delta * delta2
+
+    @property
+    def std(self) -> float:
+        if self.n < 2:
+            return 0.0
+        return float(np.sqrt(self.m2 / (self.n - 1)))
+
+    def as_dict(self) -> Dict[str, Optional[float]]:
+        return {
+            "count": self.n,
+            "mean": round(self.mean, 6) if self.n else None,
+            "std": round(self.std, 6) if self.n else None,
+            "min": round(self.min, 6) if self.min is not None else None,
+            "max": round(self.max, 6) if self.max is not None else None,
+        }
+
+
+class ReliabilityTracker:
+    def __init__(self):
+        self.total_chunks = 0
+        self.perplexity_non_null = 0
+        self.difficulty_out_of_range = 0
+        self.exact_dup_true = 0
+        self.near_stats = RunningStat()
+        self.semantic_stats = RunningStat()
+        self.ngram3_stats = RunningStat()
+        self.ngram5_stats = RunningStat()
+
+    def observe(self, record: Dict):
+        self.total_chunks += 1
+
+        d = record.get("difficulty") or {}
+        if not _is_difficulty_valid(d):
+            self.difficulty_out_of_range += 1
+
+        r = record.get("redundancy") or {}
+        self.exact_dup_true += int(bool(r.get("exact_duplicate")))
+        self.near_stats.add(_safe_float(r.get("near_duplicate_score")))
+        self.semantic_stats.add(_safe_float(r.get("semantic_duplicate_score")))
+        self.ngram3_stats.add(_safe_float(r.get("n_gram_overlap_3")))
+        self.ngram5_stats.add(_safe_float(r.get("n_gram_overlap_5")))
+
+        p = record.get("perplexity") or {}
+        if _safe_float(p.get("gpt2")) is not None:
+            self.perplexity_non_null += 1
+
+    def gate_outcomes(self) -> Dict:
+        n = max(self.total_chunks, 1)
+        difficulty_oor_rate = self.difficulty_out_of_range / n
+        perplexity_coverage = self.perplexity_non_null / n
+        exact_dup_rate = self.exact_dup_true / n
+        near_std = self.near_stats.std
+        semantic_std = self.semantic_stats.std
+        ngram_std = max(self.ngram3_stats.std, self.ngram5_stats.std)
+        non_degenerate = (
+            (near_std > 1e-6 or semantic_std > 1e-6 or ngram_std > 1e-6)
+            and exact_dup_rate < 0.99
+        )
+
+        return {
+            "domain": {
+                "top1_accuracy": {
+                    "threshold": DOMAIN_TOP1_GATE,
+                    "value": None,
+                    "pass": None,
+                    "status": "requires_manual_validation_set",
+                },
+                "top3_recall": {
+                    "threshold": DOMAIN_TOP3_GATE,
+                    "value": None,
+                    "pass": None,
+                    "status": "requires_manual_validation_set",
+                },
+            },
+            "quality": {
+                "macro_precision": {
+                    "threshold": QUALITY_PREC_GATE,
+                    "value": None,
+                    "pass": None,
+                    "status": "requires_manual_validation_set",
+                }
+            },
+            "difficulty": {
+                "out_of_range_rate": {
+                    "threshold": DIFFICULTY_OOR_GATE,
+                    "value": round(difficulty_oor_rate, 6),
+                    "pass": difficulty_oor_rate <= DIFFICULTY_OOR_GATE,
+                    "status": "auto_computed",
+                }
+            },
+            "redundancy": {
+                "non_degenerate_distribution": {
+                    "threshold": "std>0 and exact_dup_rate<0.99",
+                    "value": {
+                        "exact_duplicate_rate": round(exact_dup_rate, 6),
+                        "near_duplicate_std": round(near_std, 6),
+                        "semantic_duplicate_std": round(semantic_std, 6),
+                        "ngram_overlap_std": round(ngram_std, 6),
+                    },
+                    "pass": non_degenerate,
+                    "status": "auto_computed",
+                }
+            },
+            "perplexity": {
+                "non_null_coverage": {
+                    "threshold": PERPLEXITY_COVERAGE_GATE,
+                    "value": round(perplexity_coverage, 6),
+                    "pass": perplexity_coverage >= PERPLEXITY_COVERAGE_GATE,
+                    "status": "auto_computed",
+                }
+            },
+            "distribution_summary": {
+                "near_duplicate": self.near_stats.as_dict(),
+                "semantic_duplicate": self.semantic_stats.as_dict(),
+                "n_gram_overlap_3": self.ngram3_stats.as_dict(),
+                "n_gram_overlap_5": self.ngram5_stats.as_dict(),
+            },
+        }
 
 # ==============================================================================
 # 1. Domain Classification
@@ -243,9 +499,16 @@ class RedundancyChecker:
     """
 
     def __init__(self, index_path: str):
+        if not REDUNDANCY_DEPS_AVAILABLE:
+            print("  ⚠ datasketch not available. Redundancy scores will be 0.")
+            self._available = False
+            return
+
         if not Path(index_path).exists():
-            print(f"  ⚠ Corpus index not found at {index_path}. "
-                  "Redundancy scores will be 0. Run 2a_build_corpus_index.py first.")
+            print(
+                f"  ⚠ Corpus index not found at {index_path}. "
+                "Redundancy scores will be 0. Run 2a_build_corpus_index.py first."
+            )
             self._available = False
             return
 
@@ -253,46 +516,126 @@ class RedundancyChecker:
         with open(index_path, "rb") as f:
             idx = pickle.load(f)
 
-        self._available    = True
-        self._exact_hashes = idx["exact_hashes"]
-        self._lsh          = idx["lsh"]
-        self._minhashes    = idx["minhashes"]
-        self._num_perm     = 128
-        self._MinHash      = _MinHash
+        self._available = True
+        self._exact_hash_counts = idx.get("exact_hash_counts") or {
+            h: 1 for h in idx.get("exact_hashes", set())
+        }
+        self._doc_hash_by_id = idx.get("doc_hash_by_id", {})
+        self._doc_texts = idx.get("doc_texts", {})
+        self._lsh = idx["lsh"]
+        self._minhashes = idx["minhashes"]
+        self._num_perm = 128
+        self._MinHash = _MinHash
+        self._vectorizer = idx.get("vectorizer")
+        self._corpus_matrix = idx.get("corpus_matrix")
+        self._doc_ids = idx.get("doc_ids", [])
+        self._doc_row_index = {doc_id: i for i, doc_id in enumerate(self._doc_ids)}
+        self._doc_ids_by_hash: Dict[str, List[str]] = {}
+        for doc_id, h in self._doc_hash_by_id.items():
+            self._doc_ids_by_hash.setdefault(h, []).append(doc_id)
         print(f"✓ Corpus index loaded ({len(self._minhashes):,} chunks)")
 
-    def compute(self, text: str) -> Dict:
+    @property
+    def available(self) -> bool:
+        return self._available
+
+    @staticmethod
+    def _token_ngrams(text: str, n: int) -> set:
+        tokens = re.findall(r"\w+", text.lower())
+        if len(tokens) < n:
+            return set()
+        return {" ".join(tokens[i : i + n]) for i in range(len(tokens) - n + 1)}
+
+    @staticmethod
+    def _jaccard(a: set, b: set) -> float:
+        if not a or not b:
+            return 0.0
+        inter = len(a.intersection(b))
+        union = len(a.union(b))
+        return inter / union if union else 0.0
+
+    def _semantic_score(self, text: str, candidate_ids: List[str]) -> float:
+        if (
+            not candidate_ids
+            or self._vectorizer is None
+            or self._corpus_matrix is None
+            or not self._doc_row_index
+        ):
+            return 0.0
+        row_ids = [self._doc_row_index[c] for c in candidate_ids if c in self._doc_row_index]
+        if not row_ids:
+            return 0.0
+        try:
+            qv = self._vectorizer.transform([text])
+            cand_matrix = self._corpus_matrix[row_ids]
+            sims = cosine_similarity(qv, cand_matrix).ravel()
+            return float(np.max(sims)) if sims.size else 0.0
+        except Exception:
+            return 0.0
+
+    def _ngram_scores(self, text: str, candidate_ids: List[str]) -> Tuple[float, float]:
+        if not candidate_ids or not self._doc_texts:
+            return 0.0, 0.0
+        q3 = self._token_ngrams(text, 3)
+        q5 = self._token_ngrams(text, 5)
+        best3, best5 = 0.0, 0.0
+        for cid in candidate_ids[:50]:
+            cand_text = self._doc_texts.get(cid)
+            if not cand_text:
+                continue
+            c3 = self._token_ngrams(cand_text, 3)
+            c5 = self._token_ngrams(cand_text, 5)
+            best3 = max(best3, self._jaccard(q3, c3))
+            best5 = max(best5, self._jaccard(q5, c5))
+        return best3, best5
+
+    def compute(self, text: str, current_doc_id: Optional[str] = None) -> Dict:
         if not self._available:
             return {
-                "exact_duplicate":          False,
-                "near_duplicate_score":     0.0,
+                "exact_duplicate": False,
+                "near_duplicate_score": 0.0,
                 "semantic_duplicate_score": 0.0,
-                "n_gram_overlap_3":         0.0,
-                "n_gram_overlap_5":         0.0,
+                "n_gram_overlap_3": 0.0,
+                "n_gram_overlap_5": 0.0,
             }
 
-        # 1. Exact duplicate
-        text_hash = hashlib.md5(text.encode()).hexdigest()
-        exact_dup = text_hash in self._exact_hashes
+        text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
+        hash_count = int(self._exact_hash_counts.get(text_hash, 0))
+        if current_doc_id and self._doc_hash_by_id.get(current_doc_id) == text_hash:
+            exact_dup = (hash_count - 1) > 0
+        else:
+            exact_dup = hash_count > 0
 
-        # 2. Near-duplicate (MinHash Jaccard)
         mh = self._MinHash(num_perm=self._num_perm)
         for word in text.lower().split():
             mh.update(word.encode("utf-8"))
-        similar = self._lsh.query(mh)
+
+        candidate_ids = set(self._lsh.query(mh))
+        if text_hash in self._doc_ids_by_hash:
+            candidate_ids.update(self._doc_ids_by_hash[text_hash])
+        if current_doc_id:
+            candidate_ids.discard(current_doc_id)
+
         near_score = 0.0
-        if similar:
-            near_score = max(
-                mh.jaccard(self._minhashes[d]) for d in similar
-                if d in self._minhashes
-            )
+        if candidate_ids:
+            scores = [
+                mh.jaccard(self._minhashes[cid])
+                for cid in candidate_ids
+                if cid in self._minhashes
+            ]
+            if scores:
+                near_score = float(max(scores))
+
+        cand_list = list(candidate_ids)
+        semantic_score = self._semantic_score(text, cand_list)
+        ngram3, ngram5 = self._ngram_scores(text, cand_list)
 
         return {
-            "exact_duplicate":          exact_dup,
-            "near_duplicate_score":     round(near_score, 4),
-            "semantic_duplicate_score": round(near_score, 4),  # MinHash로 통합
-            "n_gram_overlap_3":         0.0,
-            "n_gram_overlap_5":         0.0,
+            "exact_duplicate": bool(exact_dup),
+            "near_duplicate_score": round(near_score, 4),
+            "semantic_duplicate_score": round(semantic_score, 4),
+            "n_gram_overlap_3": round(ngram3, 4),
+            "n_gram_overlap_5": round(ngram5, 4),
         }
 
 
@@ -325,6 +668,10 @@ class PerplexityScorer:
             print("✓ GPT-2 loaded")
         except Exception as e:
             print(f"  ⚠ GPT-2 load failed ({e}). Perplexity will be null.")
+
+    @property
+    def available(self) -> bool:
+        return self._available
 
     def _score_batch(self, texts: List[str]) -> List[Optional[float]]:
         """Score a list of texts in a single GPU forward pass (with padding)."""
@@ -433,12 +780,45 @@ def chunk_text(text: str, chunk_size: int = 200) -> List[str]:
 # Dataset Processing
 # ==============================================================================
 
+def _build_index_chunk_id(doc_meta: Dict, chunk_id: int) -> Optional[str]:
+    source = doc_meta.get("source")
+    if source == "khan_academy":
+        return f"khan::{doc_meta.get('doc_id', 'unknown')}::{chunk_id}"
+    if source == "tiny_textbooks":
+        return (
+            f"tiny::{doc_meta.get('batch_file', 'unknown')}"
+            f"::{doc_meta.get('doc_id', 'unknown')}::{chunk_id}"
+        )
+    return None
+
+
+def _build_validity_flags(
+    domain_labels: Dict,
+    quality_score: float,
+    markers: Dict,
+    difficulty: Dict,
+    redundancy_metrics: Dict,
+    redundancy_available: bool,
+    perplexity_metrics: Dict,
+) -> Dict[str, bool]:
+    return {
+        "domain_valid": _is_domain_valid(domain_labels),
+        "quality_valid": _is_quality_valid(quality_score, markers),
+        "difficulty_valid": _is_difficulty_valid(difficulty),
+        "redundancy_valid": _is_redundancy_valid(
+            redundancy_metrics, redundancy_available
+        ),
+        "perplexity_valid": _is_perplexity_valid(perplexity_metrics),
+    }
+
+
 def _process_chunks(
     chunks: List[str],
     doc_meta: Dict,
     classifier: DomainClassifier,
     redundancy: RedundancyChecker,
     perplexity: PerplexityScorer,
+    tracker: Optional[ReliabilityTracker] = None,
 ) -> List[Dict]:
     results = []
     for chunk_id, chunk in enumerate(chunks):
@@ -448,24 +828,40 @@ def _process_chunks(
         # Tokenize sentences once — shared by difficulty and perplexity
         sentences  = sent_tokenize(chunk)
 
-        quality    = compute_quality(chunk)
+        domain_labels = classifier.classify(chunk)
+        quality = compute_quality(chunk)
         difficulty = compute_difficulty(chunk, sentences=sentences)
-        redun      = redundancy.compute(chunk)
-        ppl        = perplexity.compute(chunk, sentences=sentences)
+        index_chunk_id = _build_index_chunk_id(doc_meta, chunk_id)
+        redun = redundancy.compute(chunk, current_doc_id=index_chunk_id)
+        ppl = perplexity.compute(chunk, sentences=sentences)
+        validity_flags = _build_validity_flags(
+            domain_labels=domain_labels,
+            quality_score=quality["quality_score"],
+            markers=quality["educational_markers"],
+            difficulty=difficulty,
+            redundancy_metrics=redun,
+            redundancy_available=redundancy.available,
+            perplexity_metrics=ppl,
+        )
 
         record = {
             **doc_meta,
-            "chunk_id":   chunk_id,
-            "text":       chunk,
+            "schema_version": SCHEMA_VERSION,
+            "chunk_id": chunk_id,
+            "text": chunk,
             "word_count": len(chunk.split()),
-            "domain_labels":        classifier.classify(chunk),
-            "educational_markers":  quality["educational_markers"],
-            "quality_score":        quality["quality_score"],
-            "difficulty":           difficulty,
-            "redundancy":           redun,
-            "perplexity":           ppl,
+            "domain_labels": domain_labels,
+            "educational_markers": quality["educational_markers"],
+            "quality_score": quality["quality_score"],
+            "difficulty": difficulty,
+            "redundancy": redun,
+            "perplexity": ppl,
+            "metric_tier": dict(METRIC_TIER),
+            "validity_flags": validity_flags,
         }
         results.append(record)
+        if tracker is not None:
+            tracker.observe(record)
     return results
 
 
@@ -473,6 +869,7 @@ def process_khan_academy(
     classifier: DomainClassifier,
     redundancy: RedundancyChecker,
     perplexity: PerplexityScorer,
+    tracker: Optional[ReliabilityTracker] = None,
 ):
     print("\n" + "="*60)
     print("Processing Khan Academy Dataset")
@@ -482,32 +879,48 @@ def process_khan_academy(
         khan_data = json.load(f)
 
     results: List[Dict] = []
+    docs_used = 0
     for doc in tqdm(khan_data, desc="Khan"):
         text = doc.get("content", "")
         if len(text.strip()) < 50:
             continue
+        docs_used += 1
         meta = {
-            "source":  "khan_academy",
-            "doc_id":  doc.get("url", "unknown"),
+            "source": "khan_academy",
+            "doc_id": doc.get("doc_id") or doc.get("url", "unknown"),
             "subject": doc.get("subject", "Unknown"),
-            "grade":   doc.get("grade",   "Unknown"),
-            "title":   doc.get("title",   "Untitled"),
+            "grade": doc.get("grade", "Unknown"),
+            "title": doc.get("title", "Untitled"),
         }
         results.extend(
-            _process_chunks(chunk_text(text, CHUNK_SIZE), meta,
-                            classifier, redundancy, perplexity)
+            _process_chunks(
+                chunk_text(text, CHUNK_SIZE),
+                meta,
+                classifier,
+                redundancy,
+                perplexity,
+                tracker=tracker,
+            )
         )
 
     with jsonlines.open(KHAN_OUTPUT, "w") as w:
         w.write_all(results)
     print(f"\n✓ {len(results):,} chunks → {KHAN_OUTPUT}")
+    return {
+        "dataset": "khan_academy",
+        "input_path": KHAN_DATA_PATH,
+        "docs_total": len(khan_data),
+        "docs_used": docs_used,
+        "chunks_written": len(results),
+    }
 
 
 def process_tiny_textbooks(
     classifier: DomainClassifier,
     redundancy: RedundancyChecker,
     perplexity: PerplexityScorer,
-    max_batches: int = 5,
+    max_batches: Optional[int] = 5,
+    tracker: Optional[ReliabilityTracker] = None,
 ):
     print("\n" + "="*60)
     print("Processing Tiny-Textbooks Dataset")
@@ -529,23 +942,100 @@ def process_tiny_textbooks(
             if len(text.strip()) < 100:
                 continue
             meta = {
-                "source":     "tiny_textbooks",
-                "doc_id":     doc.get("id", "unknown"),
+                "source": "tiny_textbooks",
+                "doc_id": doc.get("id", "unknown"),
                 "batch_file": bf.name,
             }
             results.extend(
-                _process_chunks(chunk_text(text, CHUNK_SIZE), meta,
-                                classifier, redundancy, perplexity)
+                _process_chunks(
+                    chunk_text(text, CHUNK_SIZE),
+                    meta,
+                    classifier,
+                    redundancy,
+                    perplexity,
+                    tracker=tracker,
+                )
             )
 
     with jsonlines.open(TINY_OUTPUT, "w") as w:
         w.write_all(results)
     print(f"\n✓ {len(results):,} chunks from {total_docs:,} docs → {TINY_OUTPUT}")
+    return {
+        "dataset": "tiny_textbooks",
+        "input_dir": TINY_TEXTBOOKS_DIR,
+        "batch_count": len(batch_files),
+        "batch_files": [bf.name for bf in batch_files],
+        "docs_total": total_docs,
+        "chunks_written": len(results),
+    }
 
 
 # ==============================================================================
 # Main
 # ==============================================================================
+
+def build_run_manifest(
+    khan_stats: Dict,
+    tiny_stats: Dict,
+    tracker: ReliabilityTracker,
+    redundancy: RedundancyChecker,
+    perplexity: PerplexityScorer,
+) -> Dict:
+    khan_path = Path(khan_stats.get("input_path", KHAN_DATA_PATH))
+    tiny_files = sorted(Path(TINY_TEXTBOOKS_DIR).glob("batch_*.json"))
+    if tiny_stats.get("batch_count"):
+        tiny_files = tiny_files[: tiny_stats["batch_count"]]
+
+    gate_outcomes = tracker.gate_outcomes()
+    perplexity_gate = gate_outcomes["perplexity"]["non_null_coverage"]
+
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "phase": "phase-1",
+        "objective_mode": "descriptive_comparative_only",
+        "generated_by": "2_compute_metrics.py",
+        "code_commit_hash": _git_commit_hash(),
+        "dataset_versions_and_counts": {
+            "khan_academy": {
+                "input_path": str(khan_path),
+                "sha256": _hash_file(khan_path),
+                "docs_total": khan_stats.get("docs_total"),
+                "docs_used": khan_stats.get("docs_used"),
+                "chunks_written": khan_stats.get("chunks_written"),
+            },
+            "tiny_textbooks": {
+                "input_dir": tiny_stats.get("input_dir"),
+                "batch_count": tiny_stats.get("batch_count"),
+                "batch_manifest_sha256": _fingerprint_files(tiny_files),
+                "docs_total": tiny_stats.get("docs_total"),
+                "chunks_written": tiny_stats.get("chunks_written"),
+            },
+        },
+        "threshold_config": {
+            "TOP_K_DOMAINS": TOP_K_DOMAINS,
+            "MIN_SIMILARITY": MIN_SIMILARITY,
+            "CHUNK_SIZE": CHUNK_SIZE,
+        },
+        "metric_tier": dict(METRIC_TIER),
+        "reliability_gate_outcomes": gate_outcomes,
+        "perplexity_fallback_behavior": {
+            "model_available": perplexity.available,
+            "coverage_on_this_run": perplexity_gate.get("value"),
+            "remains_exploratory": not bool(perplexity_gate.get("pass")),
+            "policy": (
+                "Perplexity remains exploratory unless non-null coverage "
+                f">= {PERPLEXITY_COVERAGE_GATE:.2f}."
+            ),
+        },
+        "redundancy_runtime_status": {
+            "index_available": redundancy.available,
+            "policy": (
+                "Redundancy is exploratory and non-claimable until "
+                "distribution validity gate passes."
+            ),
+        },
+    }
+
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -566,12 +1056,30 @@ def main():
     # Load perplexity scorer
     perplexity = PerplexityScorer(use_gpu=USE_GPU)
 
+    tracker = ReliabilityTracker()
+
     # Process datasets
-    process_khan_academy(classifier, redundancy, perplexity)
-    process_tiny_textbooks(
-        classifier, redundancy, perplexity,
-        max_batches=None,  # full run
+    khan_stats = process_khan_academy(
+        classifier, redundancy, perplexity, tracker=tracker
     )
+    tiny_stats = process_tiny_textbooks(
+        classifier,
+        redundancy,
+        perplexity,
+        max_batches=None,  # full run
+        tracker=tracker,
+    )
+
+    manifest = build_run_manifest(
+        khan_stats=khan_stats,
+        tiny_stats=tiny_stats,
+        tracker=tracker,
+        redundancy=redundancy,
+        perplexity=perplexity,
+    )
+    with open(RUN_MANIFEST_OUTPUT, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False)
+    print(f"\n✓ Run manifest saved → {RUN_MANIFEST_OUTPUT}")
 
     print("\n" + "="*60)
     print("✓ All 5 metrics computed!")

@@ -6,7 +6,9 @@ so Step 2 can efficiently compute redundancy metrics without O(n²) comparisons.
 
 Output:
   outputs/corpus_index.pkl
-  - exact_hashes: set of MD5 hashes for exact-duplicate detection
+  - exact_hash_counts: Counter of MD5 hashes for exact-duplicate detection
+  - doc_hash_by_id: {doc_id: text_hash} mapping
+  - doc_texts: {doc_id: raw chunk text} for n-gram overlap checks
   - lsh: MinHash LSH index for near-duplicate detection
   - minhashes: {doc_id: MinHash} for Jaccard similarity
   - corpus_matrix: sparse TF-IDF matrix for semantic similarity
@@ -17,6 +19,7 @@ Output:
 import hashlib
 import json
 import pickle
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -88,7 +91,9 @@ def chunk_text(text: str, chunk_size: int = 200):
 def iter_documents():
     """
     Yield (doc_id, text) for every chunk from both datasets.
-    doc_id format: "khan::<url>::<chunk_id>" or "tiny::<batch>::<doc_id>::<chunk_id>"
+    doc_id format:
+      - "khan::<stable_doc_id>::<chunk_id>"
+      - "tiny::<batch>::<doc_id>::<chunk_id>"
     """
     # Khan Academy
     khan_path = Path(KHAN_DATA_PATH)
@@ -98,11 +103,11 @@ def iter_documents():
             khan_data = json.load(f)
         for doc in tqdm(khan_data, desc="Khan chunks"):
             text = doc.get("content", "")
-            url  = doc.get("url", "unknown")
+            base_id = doc.get("doc_id") or doc.get("url", "unknown")
             if len(text.strip()) < 50:
                 continue
             for i, chunk in enumerate(chunk_text(text, CHUNK_SIZE)):
-                yield f"khan::{url}::{i}", chunk
+                yield f"khan::{base_id}::{i}", chunk
 
     # Tiny-Textbooks (all batches)
     tiny_dir = Path(TINY_DATA_DIR)
@@ -134,7 +139,9 @@ def build_corpus_index():
 
     doc_ids   = []
     texts     = []
-    exact_hashes   = set()
+    exact_hash_counts = Counter()
+    doc_hash_by_id = {}
+    doc_texts = {}
     minhashes = {}
     lsh = MinHashLSH(threshold=LSH_THRESHOLD, num_perm=NUM_PERM)
 
@@ -143,8 +150,11 @@ def build_corpus_index():
         doc_ids.append(doc_id)
         texts.append(text)
 
-        # Exact duplicate hash
-        exact_hashes.add(hashlib.md5(text.encode()).hexdigest())
+        # Exact duplicate hash/counts + doc lookup
+        text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
+        exact_hash_counts[text_hash] += 1
+        doc_hash_by_id[doc_id] = text_hash
+        doc_texts[doc_id] = text
 
         # MinHash
         mh = MinHash(num_perm=NUM_PERM)
@@ -170,22 +180,31 @@ def build_corpus_index():
     corpus_matrix = vectorizer.fit_transform(texts)
     print(f"✓ TF-IDF matrix: {corpus_matrix.shape}")
 
+    exact_hashes = set(exact_hash_counts.keys())  # backward compatibility
+
     index = {
-        "exact_hashes":  exact_hashes,
-        "lsh":           lsh,
-        "minhashes":     minhashes,
-        "corpus_matrix": corpus_matrix,
-        "vectorizer":    vectorizer,
-        "doc_ids":       doc_ids,
+        "exact_hashes":      exact_hashes,  # legacy key
+        "exact_hash_counts": exact_hash_counts,
+        "doc_hash_by_id":    doc_hash_by_id,
+        "doc_texts":         doc_texts,
+        "lsh":               lsh,
+        "minhashes":         minhashes,
+        "corpus_matrix":     corpus_matrix,
+        "vectorizer":        vectorizer,
+        "doc_ids":           doc_ids,
     }
 
     with open(OUTPUT_PATH, "wb") as f:
         pickle.dump(index, f)
 
     print(f"\n✓ Saved corpus index to {OUTPUT_PATH}")
-    print(f"  Chunks indexed : {len(doc_ids):,}")
-    print(f"  Unique hashes  : {len(exact_hashes):,}")
-    print(f"  TF-IDF vocab   : {len(vectorizer.vocabulary_):,}")
+    duplicate_chunks = sum(c for c in exact_hash_counts.values() if c > 1)
+    duplicate_hashes = sum(1 for c in exact_hash_counts.values() if c > 1)
+    print(f"  Chunks indexed      : {len(doc_ids):,}")
+    print(f"  Unique hashes       : {len(exact_hashes):,}")
+    print(f"  Duplicate hash bins : {duplicate_hashes:,}")
+    print(f"  Duplicate chunks    : {duplicate_chunks:,}")
+    print(f"  TF-IDF vocab        : {len(vectorizer.vocabulary_):,}")
 
 
 if __name__ == "__main__":

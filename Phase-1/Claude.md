@@ -10,6 +10,20 @@
 **Location**: UNLV Lab Research (Week 4/16)
 **Researcher**: KeonSoo (bubbleguy10@gmail.com)
 
+## Phase-1 Objective Sync (Canonical)
+This status document is synchronized to `PHASE1_RESEARCH_OBJECTIVE_SPEC.md`.
+
+1. Phase-1 scope is descriptive/comparative characterization and reliability checks.
+2. Phase-1 does not claim causal training effects; causal evaluation is deferred to Phase-2.
+3. Canonical RQs:
+   1. Domain coverage differences.
+   2. Educational-structure quality differences.
+   3. Metric reliability/stability.
+4. Metric tiers:
+   1. Core: domain, quality, difficulty.
+   2. Exploratory: redundancy, perplexity.
+5. Claim policy: only Core metrics may be headline evidence; exploratory or failed-gate metrics are non-claimable.
+
 ---
 
 ## 📌 Current Blockers
