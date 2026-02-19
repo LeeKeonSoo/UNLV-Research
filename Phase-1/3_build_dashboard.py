@@ -28,6 +28,7 @@ import numpy as np
 
 KHAN_ANALYSIS = "outputs/khan_analysis.jsonl"
 TINY_ANALYSIS = "outputs/tiny_textbooks_analysis.jsonl"
+RUN_MANIFEST = "outputs/run_manifest.json"
 OUTPUT_HTML   = "outputs/dashboard.html"
 MAX_EXPLORER  = 2000   # documents sampled per dataset for the Explorer tab
 
@@ -64,6 +65,15 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
     near_dup_v: List[float] = []
     sem_dup_v:  List[float] = []
     ppl_v:      List[float] = []
+    schema_ctr: Counter = Counter()
+    validity_ctr: Counter = Counter()
+    metric_tier = {
+        "domain": "core",
+        "quality": "core",
+        "difficulty": "core",
+        "redundancy": "exploratory",
+        "perplexity": "exploratory",
+    }
 
     # --- reservoir sampling (Algorithm R, seed=42) ---
     rng       = random.Random(42)
@@ -77,6 +87,8 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
         r = item.get("redundancy")  or {}
         p = item.get("perplexity")  or {}
         m = item.get("educational_markers") or {}
+        mt = item.get("metric_tier") or {}
+        vf = item.get("validity_flags") or {}
 
         def rv(x, dec=2):
             v = _flt(x)
@@ -107,6 +119,17 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
             "semantic_dup":     rv(r.get("semantic_duplicate_score"), 3),
             "ngram3":           rv(r.get("n_gram_overlap_3"), 3),
             "perplexity":       rv(p.get("gpt2"), 1),
+            "schema_version":   item.get("schema_version", "v1"),
+            "tier_domain":      mt.get("domain", "core"),
+            "tier_quality":     mt.get("quality", "core"),
+            "tier_difficulty":  mt.get("difficulty", "core"),
+            "tier_redundancy":  mt.get("redundancy", "exploratory"),
+            "tier_perplexity":  mt.get("perplexity", "exploratory"),
+            "domain_valid":     bool(vf.get("domain_valid")),
+            "quality_valid":    bool(vf.get("quality_valid")),
+            "difficulty_valid": bool(vf.get("difficulty_valid")),
+            "redundancy_valid": bool(vf.get("redundancy_valid")),
+            "perplexity_valid": bool(vf.get("perplexity_valid")),
             "domain_labels":    {k: round(float(v), 3) for k, v in list(domains.items())[:8]},
             "text_preview":     text[:300] + ("..." if len(text) > 300 else ""),
         }
@@ -157,6 +180,21 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
             if pv is not None and pv < 2000:
                 ppl_v.append(pv)
 
+            schema_ctr[item.get("schema_version", "v1")] += 1
+            mt = item.get("metric_tier") or {}
+            if mt:
+                for key in metric_tier:
+                    metric_tier[key] = mt.get(key, metric_tier[key])
+            vf = item.get("validity_flags") or {}
+            for key in (
+                "domain_valid",
+                "quality_valid",
+                "difficulty_valid",
+                "redundancy_valid",
+                "perplexity_valid",
+            ):
+                validity_ctr[key] += int(bool(vf.get(key)))
+
             # --- reservoir sample (Algorithm R) ---
             row = to_row(item)
             if len(reservoir) < n_explorer:
@@ -192,6 +230,15 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
         "perplexity_available": len(ppl_v) > 0,
         "avg_perplexity":      _mean(ppl_v),
         "ppl_hist":            _hist(ppl_v, 20),
+        "schema_versions":     dict(schema_ctr),
+        "metric_tier":         metric_tier,
+        "validity_rates": {
+            "domain_valid": validity_ctr["domain_valid"] / n,
+            "quality_valid": validity_ctr["quality_valid"] / n,
+            "difficulty_valid": validity_ctr["difficulty_valid"] / n,
+            "redundancy_valid": validity_ctr["redundancy_valid"] / n,
+            "perplexity_valid": validity_ctr["perplexity_valid"] / n,
+        },
     }
 
     rng.shuffle(reservoir)
@@ -249,8 +296,33 @@ def _fmt(v, fmt=".1f", fallback="N/A") -> str:
     return format(v, fmt)
 
 
-def generate_dashboard_html(ks: dict, khan_exp: List[dict],
-                            ts: dict, tiny_exp: List[dict]) -> str:
+def _load_manifest(path: str) -> dict:
+    p = Path(path)
+    if not p.exists():
+        return {}
+    try:
+        with open(p, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def generate_dashboard_html(
+    ks: dict,
+    khan_exp: List[dict],
+    ts: dict,
+    tiny_exp: List[dict],
+    manifest: Optional[dict] = None,
+) -> str:
+    manifest = manifest or {}
+    gate_outcomes = manifest.get("reliability_gate_outcomes") or {}
+    tier_map = ks.get("metric_tier") or ts.get("metric_tier") or {
+        "domain": "core",
+        "quality": "core",
+        "difficulty": "core",
+        "redundancy": "exploratory",
+        "perplexity": "exploratory",
+    }
 
     # Subject chart data
     all_subj = sorted(set(ks["subject_counts"]) | set(ts["subject_counts"]))
@@ -263,6 +335,45 @@ def generate_dashboard_html(ks: dict, khan_exp: List[dict],
 
     embedded = {"khan": {"stats": ks, "explorer": khan_exp},
                 "tiny": {"stats": ts, "explorer": tiny_exp}}
+
+    def metric_gate_status(metric: str) -> Optional[bool]:
+        g = gate_outcomes.get(metric)
+        if not isinstance(g, dict) or not g:
+            return None
+        passes = []
+        for v in g.values():
+            if isinstance(v, dict) and "pass" in v:
+                passes.append(v.get("pass"))
+        if not passes:
+            return None
+        if any(p is False for p in passes):
+            return False
+        if all(p is True for p in passes):
+            return True
+        return None
+
+    def metric_claimable(metric: str) -> bool:
+        if tier_map.get(metric) != "core":
+            return False
+        gate_ok = metric_gate_status(metric)
+        if gate_ok is not True:
+            return False
+        valid_key = f"{metric}_valid"
+        kvr = ks.get("validity_rates", {}).get(valid_key, 0.0)
+        tvr = ts.get("validity_rates", {}).get(valid_key, 0.0)
+        return min(kvr, tvr) >= 0.95
+
+    def metric_badges(metric: str) -> str:
+        tier = tier_map.get(metric, "exploratory")
+        claimable = metric_claimable(metric)
+        tier_cls = "tier-core" if tier == "core" else "tier-exploratory"
+        claim_cls = "claimable-yes" if claimable else "claimable-no"
+        claim_text = "Claimable" if claimable else "Non-Claimable"
+        tier_text = "Core" if tier == "core" else "Exploratory"
+        return (
+            f'<span class="metric-badge {tier_cls}">{tier_text}</span> '
+            f'<span class="metric-badge {claim_cls}">{claim_text}</span>'
+        )
 
     # -------- Comparison table rows (Python side, no JS braces needed) --------
     def winner(k_val, t_val, higher_is_better=True):
@@ -278,24 +389,147 @@ def generate_dashboard_html(ks: dict, khan_exp: List[dict],
 
     kq = (ks.get("avg_quality") or 0) * 100
     tq = (ts.get("avg_quality") or 0) * 100
-    kqc, tqc = winner(kq, tq)
-    kec, tec = winner(ks["has_examples_pct"], ts["has_examples_pct"])
-    kxc, txc = winner(ks["has_explanation_pct"], ts["has_explanation_pct"])
-    ksc, tsc = winner(ks["has_structure_pct"], ts["has_structure_pct"])
-    kdc, tdc = winner(ks["exact_dup_pct"], ts["exact_dup_pct"], higher_is_better=False)
+    comparison_rows = [
+        {
+            "label": "Total Chunks",
+            "metric": None,
+            "k_val": ks["total"],
+            "t_val": ts["total"],
+            "k_disp": f"{ks['total']:,}",
+            "t_disp": f"{ts['total']:,}",
+            "higher_is_better": True,
+            "note": "Text segments analyzed",
+        },
+        {
+            "label": "Avg Quality Score",
+            "metric": "quality",
+            "k_val": kq,
+            "t_val": tq,
+            "k_disp": f"{kq:.1f}%",
+            "t_disp": f"{tq:.1f}%",
+            "higher_is_better": True,
+            "note": "Avg of 3 educational markers",
+        },
+        {
+            "label": "Has Examples",
+            "metric": "quality",
+            "k_val": ks["has_examples_pct"],
+            "t_val": ts["has_examples_pct"],
+            "k_disp": f"{ks['has_examples_pct']:.1f}%",
+            "t_disp": f"{ts['has_examples_pct']:.1f}%",
+            "higher_is_better": True,
+            "note": "\"for example\", \"such as\"",
+        },
+        {
+            "label": "Has Explanation",
+            "metric": "quality",
+            "k_val": ks["has_explanation_pct"],
+            "t_val": ts["has_explanation_pct"],
+            "k_disp": f"{ks['has_explanation_pct']:.1f}%",
+            "t_disp": f"{ts['has_explanation_pct']:.1f}%",
+            "higher_is_better": True,
+            "note": "\"because\", \"therefore\"",
+        },
+        {
+            "label": "Has Structure",
+            "metric": "quality",
+            "k_val": ks["has_structure_pct"],
+            "t_val": ts["has_structure_pct"],
+            "k_disp": f"{ks['has_structure_pct']:.1f}%",
+            "t_disp": f"{ts['has_structure_pct']:.1f}%",
+            "higher_is_better": True,
+            "note": "\"first\", \"second\", \"in summary\"",
+        },
+        {
+            "label": "Avg FK Grade Level",
+            "metric": "difficulty",
+            "k_val": ks["avg_fk_grade"],
+            "t_val": ts["avg_fk_grade"],
+            "k_disp": _fmt(ks["avg_fk_grade"]),
+            "t_disp": _fmt(ts["avg_fk_grade"]),
+            "higher_is_better": False,
+            "note": "Flesch-Kincaid reading grade",
+        },
+        {
+            "label": "Avg Reading Ease",
+            "metric": "difficulty",
+            "k_val": ks["avg_fk_ease"],
+            "t_val": ts["avg_fk_ease"],
+            "k_disp": _fmt(ks["avg_fk_ease"]),
+            "t_disp": _fmt(ts["avg_fk_ease"]),
+            "higher_is_better": True,
+            "note": "Flesch Reading Ease (0-100, higher=easier)",
+        },
+        {
+            "label": "Multi-Domain %",
+            "metric": "domain",
+            "k_val": ks["multi_domain_ratio"] * 100,
+            "t_val": ts["multi_domain_ratio"] * 100,
+            "k_disp": f"{ks['multi_domain_ratio']*100:.1f}%",
+            "t_disp": f"{ts['multi_domain_ratio']*100:.1f}%",
+            "higher_is_better": None,
+            "note": "Documents spanning 2+ domains",
+        },
+        {
+            "label": "Exact Duplicates",
+            "metric": "redundancy",
+            "k_val": ks["exact_dup_pct"],
+            "t_val": ts["exact_dup_pct"],
+            "k_disp": f"{ks['exact_dup_pct']:.2f}%",
+            "t_disp": f"{ts['exact_dup_pct']:.2f}%",
+            "higher_is_better": False,
+            "note": "MD5 exact match rate (diagnostic)",
+        },
+        {
+            "label": "Avg Near-Dup Score",
+            "metric": "redundancy",
+            "k_val": ks.get("avg_near_dup"),
+            "t_val": ts.get("avg_near_dup"),
+            "k_disp": _fmt(ks.get("avg_near_dup"), ".3f"),
+            "t_disp": _fmt(ts.get("avg_near_dup"), ".3f"),
+            "higher_is_better": False,
+            "note": "Near-duplicate similarity (diagnostic)",
+        },
+        {
+            "label": "Avg Perplexity (GPT-2)",
+            "metric": "perplexity",
+            "k_val": ks.get("avg_perplexity"),
+            "t_val": ts.get("avg_perplexity"),
+            "k_disp": _fmt(ks.get("avg_perplexity"), ".1f"),
+            "t_disp": _fmt(ts.get("avg_perplexity"), ".1f"),
+            "higher_is_better": False,
+            "note": "Lower = more predictable text (diagnostic)",
+        },
+    ]
 
-    cmp_rows = f"""
-<tr><td>Total Chunks</td><td>{ks["total"]:,}</td><td>{ts["total"]:,}</td><td>Text segments analyzed</td></tr>
-<tr><td>Avg Quality Score</td><td{kqc}>{kq:.1f}%</td><td{tqc}>{tq:.1f}%</td><td>Avg of 3 educational markers</td></tr>
-<tr><td>Has Examples</td><td{kec}>{ks['has_examples_pct']:.1f}%</td><td{tec}>{ts['has_examples_pct']:.1f}%</td><td>"for example", "such as"</td></tr>
-<tr><td>Has Explanation</td><td{kxc}>{ks['has_explanation_pct']:.1f}%</td><td{txc}>{ts['has_explanation_pct']:.1f}%</td><td>"because", "therefore"</td></tr>
-<tr><td>Has Structure</td><td{ksc}>{ks['has_structure_pct']:.1f}%</td><td{tsc}>{ts['has_structure_pct']:.1f}%</td><td>"first", "second", "in summary"</td></tr>
-<tr><td>Avg FK Grade Level</td><td>{_fmt(ks['avg_fk_grade'])}</td><td>{_fmt(ts['avg_fk_grade'])}</td><td>Flesch-Kincaid reading grade</td></tr>
-<tr><td>Avg Reading Ease</td><td>{_fmt(ks['avg_fk_ease'])}</td><td>{_fmt(ts['avg_fk_ease'])}</td><td>Flesch Reading Ease (0-100, higher=easier)</td></tr>
-<tr><td>Exact Duplicates</td><td{kdc}>{ks['exact_dup_pct']:.2f}%</td><td{tdc}>{ts['exact_dup_pct']:.2f}%</td><td>MD5 exact match rate</td></tr>
-<tr><td>Multi-Domain %</td><td>{ks['multi_domain_ratio']*100:.1f}%</td><td>{ts['multi_domain_ratio']*100:.1f}%</td><td>Documents spanning 2+ domains</td></tr>
-<tr><td>Avg Perplexity (GPT-2)</td><td>{_fmt(ks.get('avg_perplexity'), '.1f')}</td><td>{_fmt(ts.get('avg_perplexity'), '.1f')}</td><td>Lower = more predictable text</td></tr>
-"""
+    cmp_rows_list = []
+    diagnostic_rows_list = []
+    for row in comparison_rows:
+        metric = row["metric"]
+        if row["higher_is_better"] is None:
+            kc, tc = "", ""
+        else:
+            kc, tc = winner(row["k_val"], row["t_val"], row["higher_is_better"])
+        label = row["label"]
+        if metric:
+            label = f'{label} {metric_badges(metric)}'
+        html_row = (
+            f"<tr><td>{label}</td><td{kc}>{row['k_disp']}</td>"
+            f"<td{tc}>{row['t_disp']}</td><td>{row['note']}</td></tr>"
+        )
+        if metric is None or metric_claimable(metric):
+            cmp_rows_list.append(html_row)
+        else:
+            diagnostic_rows_list.append(html_row)
+
+    if not cmp_rows_list:
+        cmp_rows_list.append(
+            "<tr><td colspan='4'>No claimable core metrics available. "
+            "Check reliability gates in run_manifest.json.</td></tr>"
+        )
+
+    cmp_rows = "\n".join(cmp_rows_list)
+    diagnostic_rows = "\n".join(diagnostic_rows_list)
 
     diff_cmp_rows = f"""
 <tr><td>Avg FK Grade Level</td><td>{_fmt(ks['avg_fk_grade'])}</td><td>{_fmt(ts['avg_fk_grade'])}</td></tr>
@@ -307,9 +541,15 @@ def generate_dashboard_html(ks: dict, khan_exp: List[dict],
 <tr><td>Avg Near-Dup Score</td><td>{_fmt(ks['avg_near_dup'], '.3f')}</td><td>{_fmt(ts['avg_near_dup'], '.3f')}</td></tr>
 """
 
-    ppl_note = ""
+    ppl_note = (
+        "Perplexity is exploratory. It is hidden from headline comparison "
+        "until coverage and reliability gates pass."
+    )
     if not ks.get("perplexity_available") and not ts.get("perplexity_available"):
-        ppl_note = "Perplexity data not available (GPT-2 model was not loaded during Step 2)."
+        ppl_note = (
+            "Perplexity unavailable in this run. Dashboard excludes perplexity from "
+            "headline comparison and marks it diagnostic-only."
+        )
 
     # KPI values
     kpi_html = f"""
@@ -379,6 +619,11 @@ canvas{{max-height:340px!important}}
 .bk{{background:#ebf4ff;color:#3182ce}}
 .bt{{background:#faf0ff;color:#805ad5}}
 .bd{{background:#fff5f5;color:#e53e3e}}
+.metric-badge{{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.72em;font-weight:600;margin-left:4px}}
+.tier-core{{background:#e6fffa;color:#0f766e}}
+.tier-exploratory{{background:#fef3c7;color:#92400e}}
+.claimable-yes{{background:#dcfce7;color:#166534}}
+.claimable-no{{background:#fee2e2;color:#991b1b}}
 .modal-overlay{{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;overflow:auto}}
 .modal-overlay.open{{display:flex;align-items:flex-start;justify-content:center;padding:40px 16px}}
 .modal{{background:white;border-radius:16px;max-width:860px;width:100%;padding:32px;position:relative}}
@@ -431,10 +676,17 @@ canvas{{max-height:340px!important}}
     <div class="card"><h3>Top 15 Domains — Tiny-Textbooks</h3><canvas id="tDomChart"></canvas></div>
   </div>
   <div class="card" style="margin-bottom:20px">
-    <h3>Metrics Comparison</h3>
+    <h3>Headline Comparison (Claimable Core Metrics Only)</h3>
     <table class="cmp-table">
       <thead><tr><th>Metric</th><th>Khan Academy</th><th>Tiny-Textbooks</th><th>Notes</th></tr></thead>
       <tbody>{cmp_rows}</tbody>
+    </table>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <h3>Diagnostic Comparison (Exploratory or Non-Claimable)</h3>
+    <table class="cmp-table">
+      <thead><tr><th>Metric</th><th>Khan Academy</th><th>Tiny-Textbooks</th><th>Notes</th></tr></thead>
+      <tbody>{diagnostic_rows}</tbody>
     </table>
   </div>
 </div>
@@ -861,7 +1113,13 @@ function resetFilters() {{
 }}
 
 function exportCSV() {{
-  const cols = ['source','subject','grade','top_domain','top_domain_score','quality_score','fk_grade','fk_ease','near_dup','semantic_dup','ngram3','perplexity','word_count','exact_dup'];
+  const cols = [
+    'schema_version','source','subject','grade','top_domain','top_domain_score',
+    'quality_score','fk_grade','fk_ease','near_dup','semantic_dup','ngram3','perplexity',
+    'word_count','exact_dup',
+    'tier_domain','tier_quality','tier_difficulty','tier_redundancy','tier_perplexity',
+    'domain_valid','quality_valid','difficulty_valid','redundancy_valid','perplexity_valid'
+  ];
   const hdr  = cols.join(',');
   const rows = currDocs.map(d => cols.map(c => {{
     const v = d[c];
@@ -894,7 +1152,18 @@ function openModal(idx) {{
     options: {{ indexAxis:'y', responsive:true, plugins:{{legend:{{display:false}}}}, scales:{{x:{{beginAtZero:true,max:1}}}} }}
   }});
   const mets = [
+    ['Schema Version', doc.schema_version || '—'],
+    ['Domain Tier', doc.tier_domain || '—'],
+    ['Quality Tier', doc.tier_quality || '—'],
+    ['Difficulty Tier', doc.tier_difficulty || '—'],
+    ['Redundancy Tier', doc.tier_redundancy || '—'],
+    ['Perplexity Tier', doc.tier_perplexity || '—'],
     ['Quality Score', doc.quality_score!==null ? (doc.quality_score*100).toFixed(0)+'%' : '—'],
+    ['Domain Valid', doc.domain_valid ? '✓ Yes' : '✗ No'],
+    ['Quality Valid', doc.quality_valid ? '✓ Yes' : '✗ No'],
+    ['Difficulty Valid', doc.difficulty_valid ? '✓ Yes' : '✗ No'],
+    ['Redundancy Valid', doc.redundancy_valid ? '✓ Yes' : '✗ No'],
+    ['Perplexity Valid', doc.perplexity_valid ? '✓ Yes' : '✗ No'],
     ['Has Examples',   doc.has_examples   ? '✓ Yes' : '✗ No'],
     ['Has Explanation',doc.has_explanation ? '✓ Yes' : '✗ No'],
     ['Has Structure',  doc.has_structure   ? '✓ Yes' : '✗ No'],
@@ -965,8 +1234,14 @@ def main():
         print("\nERROR: No analysis files found. Run 2_compute_metrics.py first.")
         return
 
+    manifest = _load_manifest(RUN_MANIFEST)
+    if manifest:
+        print(f"  Loaded run manifest: {RUN_MANIFEST}")
+    else:
+        print(f"  WARNING: {RUN_MANIFEST} not found. Claimability defaults to conservative mode.")
+
     print("\nGenerating dashboard HTML...")
-    html = generate_dashboard_html(ks, khan_exp, ts, tiny_exp)
+    html = generate_dashboard_html(ks, khan_exp, ts, tiny_exp, manifest=manifest)
 
     Path("outputs").mkdir(exist_ok=True)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:

@@ -2,6 +2,21 @@
 
 **Research Goal**: Analyze domain coverage and quality characteristics of educational datasets to inform curriculum-aware pretraining strategies for Small Language Models (SLMs).
 
+## Phase-1 Objective Sync (Canonical)
+This README is synchronized to `PHASE1_RESEARCH_OBJECTIVE_SPEC.md` and uses the same Phase-1 scope and claim policy.
+
+1. Problem statement: characterize educational pretraining corpora with measurable and reproducible properties.
+2. In scope: dataset characterization, metric reliability, and descriptive cross-dataset comparison.
+3. Out of scope: causal claims on training efficiency/performance uplift (deferred to Phase-2).
+4. RQ set:
+   1. RQ1 domain coverage differences.
+   2. RQ2 educational-structure quality differences.
+   3. RQ3 metric reliability/stability under validation checks.
+5. Claim policy:
+   1. Core metrics (`domain`, `quality`, `difficulty`) are the only headline candidates.
+   2. Exploratory metrics (`redundancy`, `perplexity`) are diagnostic only.
+   3. Any metric failing reliability gates is `non-claimable`.
+
 ---
 
 ## 📋 Overview

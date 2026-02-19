@@ -1,10 +1,14 @@
 # Core ML libraries
+# CUDA wheels for Windows/Linux are served from the PyTorch index below.
 --extra-index-url https://download.pytorch.org/whl/cu121
 transformers==5.0.0
-torch==2.5.1+cu121; sys_platform == "win32" or sys_platform == "linux"
-torchvision==0.20.1+cu121; sys_platform == "win32" or sys_platform == "linux"
-torchaudio==2.5.1+cu121; sys_platform == "win32" or sys_platform == "linux"
-torch==2.5.1; sys_platform == "darwin"
+
+# PyTorch (platform-specific)
+torch==2.5.1+cu121; platform_system == "Windows" or platform_system == "Linux"
+# macOS: use non-CUDA builds; torch 2.5.1 wheels are unavailable on newer Python.
+torch>=2.6.0; platform_system == "Darwin"
+
+# torchvision/torchaudio are intentionally omitted (not used in this project).
 sentence-transformers>=2.2.0
 
 # Data processing
