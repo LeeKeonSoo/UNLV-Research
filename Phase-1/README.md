@@ -102,6 +102,10 @@ python 2_compute_metrics.py
 **Configuration**:
 - Edit `2_compute_metrics.py` to set `max_batches=5` for quick testing
 - Full run processes all 42 Tiny-Textbooks batches (~420K documents)
+- Device override via environment variables:
+  - `PHASE1_DEVICE=auto|cuda|mps|cpu`
+  - `PHASE1_CUDA_DEVICE=0`
+  - `PHASE1_DOMAIN_BATCH_SIZE=256`
 
 ---
 

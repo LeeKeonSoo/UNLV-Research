@@ -158,7 +158,8 @@ def build_corpus_index():
 
         # MinHash
         mh = MinHash(num_perm=NUM_PERM)
-        for word in text.lower().split():
+        # MinHash models set similarity; repeated tokens do not add information.
+        for word in set(text.lower().split()):
             mh.update(word.encode("utf-8"))
         minhashes[doc_id] = mh
 
@@ -176,6 +177,7 @@ def build_corpus_index():
         stop_words="english",
         ngram_range=(1, 1),
         min_df=2,
+        dtype=np.float32,
     )
     corpus_matrix = vectorizer.fit_transform(texts)
     print(f"✓ TF-IDF matrix: {corpus_matrix.shape}")

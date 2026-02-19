@@ -22,6 +22,7 @@ Output:
 
 import hashlib
 import json
+import os
 import pickle
 import re
 import subprocess
@@ -35,7 +36,6 @@ import textstat
 from nltk.tokenize import sent_tokenize, word_tokenize
 from tqdm import tqdm
 import jsonlines
-from sklearn.metrics.pairwise import cosine_similarity
 
 # Ensure required NLTK data is present (silent if already downloaded)
 for _nltk_pkg in ("punkt_tab", "punkt", "words"):
@@ -84,7 +84,12 @@ TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
 CHUNK_SIZE     = 200
 USE_GPU        = True
-CUDA_DEVICE    = 1    # GPU 번호: 0 또는 1 (그래픽카드 두 개인 경우)
+# Device config (override via env):
+#   PHASE1_DEVICE=auto|cuda|mps|cpu
+#   PHASE1_CUDA_DEVICE=0
+DEVICE_PREFERENCE = os.getenv("PHASE1_DEVICE", "auto").strip().lower()
+CUDA_DEVICE       = int(os.getenv("PHASE1_CUDA_DEVICE", "1"))
+DOMAIN_BATCH_SIZE = int(os.getenv("PHASE1_DOMAIN_BATCH_SIZE", "256"))
 
 SCHEMA_VERSION = "v2"
 METRIC_TIER = {
@@ -155,6 +160,54 @@ def _git_commit_hash() -> str:
         ).strip()
     except Exception:
         return "unknown"
+
+
+def _mps_available() -> bool:
+    if not TORCH_AVAILABLE:
+        return False
+    backend = getattr(torch.backends, "mps", None)
+    if backend is None:
+        return False
+    return bool(backend.is_available())
+
+
+def _resolve_torch_device(
+    use_gpu: bool = True,
+    preference: str = "auto",
+    cuda_device: int = 0,
+) -> Tuple[str, str]:
+    """
+    Returns (device, reason) where device is one of:
+      - "cuda:<id>"
+      - "mps"
+      - "cpu"
+    """
+    pref = (preference or "auto").lower()
+    if not use_gpu:
+        return "cpu", "GPU disabled by config"
+    if not TORCH_AVAILABLE:
+        return "cpu", "torch not available"
+
+    if pref.startswith("cuda"):
+        requested = f"cuda:{cuda_device}" if pref == "cuda" else pref
+        if torch.cuda.is_available():
+            return requested, "forced CUDA"
+        return "cpu", f"{requested} requested but CUDA unavailable"
+
+    if pref == "mps":
+        if _mps_available():
+            return "mps", "forced MPS"
+        return "cpu", "MPS requested but unavailable"
+
+    if pref == "cpu":
+        return "cpu", "forced CPU"
+
+    # auto
+    if torch.cuda.is_available():
+        return f"cuda:{cuda_device}", "auto-selected CUDA"
+    if _mps_available():
+        return "mps", "auto-selected MPS"
+    return "cpu", "auto-selected CPU"
 
 
 def _is_domain_valid(domain_labels: Dict[str, float]) -> bool:
@@ -376,38 +429,34 @@ def _build_prototype_matrix(prototypes: Dict) -> Tuple[List[str], np.ndarray]:
 
 class DomainClassifier:
     def __init__(self, vectorizer, proto_ids, proto_matrix, use_gpu=True):
-        self.vectorizer    = vectorizer
-        self.proto_ids     = proto_ids
-        self.proto_matrix  = proto_matrix
-        self.use_torch     = False
-        self.device        = "cpu"
+        self.vectorizer = vectorizer
+        self.proto_ids = proto_ids
+        self.proto_matrix = proto_matrix
+        self.use_torch = False
+        self.device, reason = _resolve_torch_device(
+            use_gpu=use_gpu,
+            preference=DEVICE_PREFERENCE,
+            cuda_device=CUDA_DEVICE,
+        )
 
-        if use_gpu and TORCH_AVAILABLE and torch.cuda.is_available():
+        if TORCH_AVAILABLE and self.device.startswith("cuda"):
+            try:
+                torch.set_float32_matmul_precision("high")
+            except Exception:
+                pass
+            try:
+                torch.backends.cuda.matmul.allow_tf32 = True
+            except Exception:
+                pass
+
+        if TORCH_AVAILABLE and self.device != "cpu":
             self.use_torch = True
-            self.device    = f"cuda:{CUDA_DEVICE}"
-            self.proto_t   = torch.from_numpy(proto_matrix).to(self.device)
-            print(f"Domain classifier: using {self.device}")
+            self.proto_t = torch.from_numpy(proto_matrix).to(self.device)
+            print(f"Domain classifier: using {self.device} ({reason})")
         else:
-            print("Domain classifier: using CPU")
+            print(f"Domain classifier: using CPU ({reason})")
 
-    def classify(self, text: str) -> Dict[str, float]:
-        try:
-            qv = self.vectorizer.transform([text])
-        except Exception:
-            return {}
-        if qv.nnz == 0:
-            return {}
-        norm = float(np.sqrt(qv.multiply(qv).sum()))
-        if norm == 0.0:
-            return {}
-
-        if self.use_torch:
-            q = torch.from_numpy(qv.toarray().astype(np.float32)).to(self.device)
-            sims = (q @ self.proto_t.T / norm).squeeze(0).cpu().numpy()
-        else:
-            q = qv.toarray().astype(np.float32)
-            sims = (q @ self.proto_matrix.T).ravel() / norm
-
+    def _to_label_distribution(self, sims: np.ndarray) -> Dict[str, float]:
         valid = np.where(sims >= MIN_SIMILARITY)[0]
         if valid.size == 0:
             return {}
@@ -419,6 +468,46 @@ class DomainClassifier:
         result = {self.proto_ids[i]: float(sims[i]) for i in top}
         total = sum(result.values())
         return {k: v / total for k, v in result.items()} if total > 0 else result
+
+    def classify_batch(
+        self,
+        texts: List[str],
+        batch_size: int = DOMAIN_BATCH_SIZE,
+    ) -> List[Dict[str, float]]:
+        if not texts:
+            return []
+
+        outputs: List[Dict[str, float]] = []
+        for i in range(0, len(texts), max(batch_size, 1)):
+            b_texts = texts[i : i + max(batch_size, 1)]
+            try:
+                qv = self.vectorizer.transform(b_texts)
+            except Exception:
+                outputs.extend({} for _ in b_texts)
+                continue
+
+            q = qv.toarray().astype(np.float32)
+            norms = np.linalg.norm(q, axis=1)
+
+            if self.use_torch:
+                qt = torch.from_numpy(q).to(self.device)
+                with torch.inference_mode():
+                    sims_mat = (qt @ self.proto_t.T).cpu().numpy()
+            else:
+                sims_mat = q @ self.proto_matrix.T
+
+            for row_idx in range(len(b_texts)):
+                norm = float(norms[row_idx])
+                if norm <= 0.0:
+                    outputs.append({})
+                    continue
+                sims = sims_mat[row_idx] / norm
+                outputs.append(self._to_label_distribution(sims))
+
+        return outputs
+
+    def classify(self, text: str) -> Dict[str, float]:
+        return self.classify_batch([text], batch_size=1)[0]
 
 
 # ==============================================================================
@@ -531,6 +620,10 @@ class RedundancyChecker:
         self._doc_ids = idx.get("doc_ids", [])
         self._doc_row_index = {doc_id: i for i, doc_id in enumerate(self._doc_ids)}
         self._doc_ids_by_hash: Dict[str, List[str]] = {}
+        self._query_vec_cache: Dict[str, object] = {}
+        self._ngram_cache_3: Dict[str, set] = {}
+        self._ngram_cache_5: Dict[str, set] = {}
+        self._cache_limit = 20000
         for doc_id, h in self._doc_hash_by_id.items():
             self._doc_ids_by_hash.setdefault(h, []).append(doc_id)
         print(f"✓ Corpus index loaded ({len(self._minhashes):,} chunks)")
@@ -554,6 +647,29 @@ class RedundancyChecker:
         union = len(a.union(b))
         return inter / union if union else 0.0
 
+    def _cache_put(self, cache: Dict, key, value):
+        if len(cache) >= self._cache_limit:
+            cache.clear()
+        cache[key] = value
+
+    def _vectorize_query(self, text: str):
+        key = hashlib.md5(text.encode("utf-8")).hexdigest()
+        cached = self._query_vec_cache.get(key)
+        if cached is not None:
+            return cached
+        qv = self._vectorizer.transform([text])
+        self._cache_put(self._query_vec_cache, key, qv)
+        return qv
+
+    def _doc_ngrams(self, doc_id: str, text: str, n: int) -> set:
+        cache = self._ngram_cache_3 if n == 3 else self._ngram_cache_5
+        cached = cache.get(doc_id)
+        if cached is not None:
+            return cached
+        grams = self._token_ngrams(text, n)
+        self._cache_put(cache, doc_id, grams)
+        return grams
+
     def _semantic_score(self, text: str, candidate_ids: List[str]) -> float:
         if (
             not candidate_ids
@@ -566,10 +682,12 @@ class RedundancyChecker:
         if not row_ids:
             return 0.0
         try:
-            qv = self._vectorizer.transform([text])
+            qv = self._vectorize_query(text)
             cand_matrix = self._corpus_matrix[row_ids]
-            sims = cosine_similarity(qv, cand_matrix).ravel()
-            return float(np.max(sims)) if sims.size else 0.0
+            sims = qv @ cand_matrix.T
+            if sims.nnz == 0:
+                return 0.0
+            return float(sims.data.max())
         except Exception:
             return 0.0
 
@@ -583,8 +701,8 @@ class RedundancyChecker:
             cand_text = self._doc_texts.get(cid)
             if not cand_text:
                 continue
-            c3 = self._token_ngrams(cand_text, 3)
-            c5 = self._token_ngrams(cand_text, 5)
+            c3 = self._doc_ngrams(cid, cand_text, 3)
+            c5 = self._doc_ngrams(cid, cand_text, 5)
             best3 = max(best3, self._jaccard(q3, c3))
             best5 = max(best5, self._jaccard(q5, c5))
         return best3, best5
@@ -607,7 +725,7 @@ class RedundancyChecker:
             exact_dup = hash_count > 0
 
         mh = self._MinHash(num_perm=self._num_perm)
-        for word in text.lower().split():
+        for word in set(text.lower().split()):
             mh.update(word.encode("utf-8"))
 
         candidate_ids = set(self._lsh.query(mh))
@@ -652,18 +770,29 @@ class PerplexityScorer:
 
     def __init__(self, use_gpu: bool = True):
         self._available = False
+        self._device = "cpu"
         if not TRANSFORMERS_AVAILABLE:
             print("  ⚠ transformers not available. Perplexity will be null.")
             return
         try:
-            device_str = f"cuda:{CUDA_DEVICE}" if (use_gpu and TORCH_AVAILABLE
-                                                   and torch.cuda.is_available()) else "cpu"
-            print(f"Loading GPT-2 model (device={device_str})...")
+            device_str, reason = _resolve_torch_device(
+                use_gpu=use_gpu,
+                preference=DEVICE_PREFERENCE,
+                cuda_device=CUDA_DEVICE,
+            )
+            self._device = device_str
+            print(f"Loading GPT-2 model (device={device_str}, {reason})...")
+
             self._tokenizer = GPT2Tokenizer.from_pretrained(
                 "gpt2", cache_dir="./models")
+
+            model_kwargs = {"cache_dir": "./models"}
+            if device_str.startswith("cuda"):
+                model_kwargs["torch_dtype"] = torch.float16
+
             self._model = GPT2LMHeadModel.from_pretrained(
-                "gpt2", cache_dir="./models").to(device_str).eval()
-            self._device    = device_str
+                "gpt2", **model_kwargs
+            ).to(device_str).eval()
             self._available = True
             print("✓ GPT-2 loaded")
         except Exception as e:
@@ -672,6 +801,10 @@ class PerplexityScorer:
     @property
     def available(self) -> bool:
         return self._available
+
+    @property
+    def device(self) -> str:
+        return self._device
 
     def _score_batch(self, texts: List[str]) -> List[Optional[float]]:
         """Score a list of texts in a single GPU forward pass (with padding)."""
@@ -689,7 +822,7 @@ class PerplexityScorer:
             attention_mask = enc["attention_mask"].to(self._device)   # (B, T)
             if input_ids.shape[1] < 2:
                 return [None] * len(texts)
-            with torch.no_grad():
+            with torch.inference_mode():
                 logits = self._model(input_ids).logits                # (B, T, V)
             # Causal LM loss: each token predicts the next
             shift_logits = logits[:, :-1, :].contiguous()             # (B, T-1, V)
@@ -820,15 +953,24 @@ def _process_chunks(
     perplexity: PerplexityScorer,
     tracker: Optional[ReliabilityTracker] = None,
 ) -> List[Dict]:
-    results = []
+    candidates = []
     for chunk_id, chunk in enumerate(chunks):
         if len(chunk.split()) < 20:
             continue
+        sentences = sent_tokenize(chunk)
+        candidates.append((chunk_id, chunk, sentences))
 
-        # Tokenize sentences once — shared by difficulty and perplexity
-        sentences  = sent_tokenize(chunk)
+    if not candidates:
+        return []
 
-        domain_labels = classifier.classify(chunk)
+    # Batch domain classification improves CUDA/MPS utilization.
+    batched_domains = classifier.classify_batch(
+        [chunk for _, chunk, _ in candidates],
+        batch_size=DOMAIN_BATCH_SIZE,
+    )
+
+    results = []
+    for (chunk_id, chunk, sentences), domain_labels in zip(candidates, batched_domains):
         quality = compute_quality(chunk)
         difficulty = compute_difficulty(chunk, sentences=sentences)
         index_chunk_id = _build_index_chunk_id(doc_meta, chunk_id)
@@ -977,6 +1119,7 @@ def process_tiny_textbooks(
 def build_run_manifest(
     khan_stats: Dict,
     tiny_stats: Dict,
+    classifier: DomainClassifier,
     tracker: ReliabilityTracker,
     redundancy: RedundancyChecker,
     perplexity: PerplexityScorer,
@@ -1015,6 +1158,14 @@ def build_run_manifest(
             "TOP_K_DOMAINS": TOP_K_DOMAINS,
             "MIN_SIMILARITY": MIN_SIMILARITY,
             "CHUNK_SIZE": CHUNK_SIZE,
+            "DOMAIN_BATCH_SIZE": DOMAIN_BATCH_SIZE,
+        },
+        "runtime_device": {
+            "requested": DEVICE_PREFERENCE,
+            "domain_classifier": classifier.device,
+            "perplexity_model": perplexity.device,
+            "cuda_available": bool(TORCH_AVAILABLE and torch.cuda.is_available()),
+            "mps_available": bool(_mps_available()),
         },
         "metric_tier": dict(METRIC_TIER),
         "reliability_gate_outcomes": gate_outcomes,
@@ -1043,6 +1194,7 @@ def main():
     print("="*60)
     print("DATASET ANALYSIS — ALL 5 METRICS")
     print("="*60)
+    print(f"Device preference: {DEVICE_PREFERENCE} (CUDA device index: {CUDA_DEVICE})")
 
     # Load domain classifier
     prototypes, domain_vectorizer = _load_prototypes()
@@ -1073,6 +1225,7 @@ def main():
     manifest = build_run_manifest(
         khan_stats=khan_stats,
         tiny_stats=tiny_stats,
+        classifier=classifier,
         tracker=tracker,
         redundancy=redundancy,
         perplexity=perplexity,
