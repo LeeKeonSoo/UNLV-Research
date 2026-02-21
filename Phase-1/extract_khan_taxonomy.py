@@ -185,7 +185,7 @@ def main():
     print("\n" + "="*60)
     print("✓ Khan Academy taxonomy extraction complete!")
     print("="*60)
-    print(f"\nNext step: Run 2_compute_metrics_simple.py to analyze datasets")
+    print(f"\nNext step: Run compute_metrics.py to analyze datasets")
     print("\nNote: Using TF-IDF vectors instead of SentenceTransformers")
     print("      This works offline but may be less accurate than embeddings.")
 

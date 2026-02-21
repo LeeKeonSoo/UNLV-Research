@@ -43,12 +43,13 @@ NUM_PERM      = 128   # MinHash permutations (higher = more accurate)
 # TF-IDF for semantic similarity
 TFIDF_MAX_FEATURES = 5000   # Larger vocab for semantic comparison
 
-# Chunk size mirror of 2_compute_metrics.py
+# Chunk size mirror of compute_metrics.py
 CHUNK_SIZE = 200
+MIN_CHUNK_WORDS = 20
 
 
 # ==============================================================================
-# Text chunking (mirrors 2_compute_metrics.py)
+# Text chunking (mirrors compute_metrics.py)
 # ==============================================================================
 
 import re
@@ -62,7 +63,7 @@ def chunk_text(text: str, chunk_size: int = 200):
             continue
         words = para.split()
         if len(words) <= chunk_size:
-            if len(words) >= 20:
+            if len(words) >= MIN_CHUNK_WORDS:
                 chunks.append(para)
         else:
             sentences = re.split(r'(?<=[.!?])\s+', para)
@@ -71,7 +72,7 @@ def chunk_text(text: str, chunk_size: int = 200):
                 sw = len(sent.split())
                 if cur_len + sw > chunk_size and cur:
                     joined = " ".join(cur)
-                    if len(joined.split()) >= 20:
+                    if len(joined.split()) >= MIN_CHUNK_WORDS:
                         chunks.append(joined)
                     cur, cur_len = [sent], sw
                 else:
@@ -79,7 +80,7 @@ def chunk_text(text: str, chunk_size: int = 200):
                     cur_len += sw
             if cur:
                 joined = " ".join(cur)
-                if len(joined.split()) >= 20:
+                if len(joined.split()) >= MIN_CHUNK_WORDS:
                     chunks.append(joined)
     return chunks
 

@@ -1231,7 +1231,7 @@ def main():
     print(f"  Tiny-Textbooks: {ts.get('total', 0):,} chunks → {len(tiny_exp)} explorer rows")
 
     if ks.get("total", 0) == 0 and ts.get("total", 0) == 0:
-        print("\nERROR: No analysis files found. Run 2_compute_metrics.py first.")
+        print("\nERROR: No analysis files found. Run compute_metrics.py first.")
         return
 
     manifest = _load_manifest(RUN_MANIFEST)

@@ -356,7 +356,7 @@ def check_existing_data():
                 print(f"     - {subj}: {cnt} entries")
 
             print("\n✅ Using existing data.")
-            print("   Proceed to Step 1: python 1_extract_khan_taxonomy.py")
+            print("   Proceed to Step 1: python extract_khan_taxonomy.py")
             return True
     return False
 
@@ -411,7 +411,7 @@ def main():
         json.dump(concepts, f, indent=2, ensure_ascii=False)
 
     print(f"\n✅ Saved {len(concepts)} concepts to {output_file}")
-    print("\n   Next step: python 1_extract_khan_taxonomy.py")
+    print("\n   Next step: python extract_khan_taxonomy.py")
     return 0
 
 

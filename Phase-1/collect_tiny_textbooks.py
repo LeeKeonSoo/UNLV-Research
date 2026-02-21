@@ -85,8 +85,8 @@ class TinyTextbooksCollector:
         print(f"\n💾 Saved to: {self.output_dir}/")
         print(f"   Files: batch_000.json through batch_{num_batches-1:03d}.json")
 
-        print("\n💡 Next steps:")
-        print("   python build_deep_graph.py")
+        print("\n💡 Next step:")
+        print("   python extract_khan_taxonomy.py")
 
         return len(documents)
 

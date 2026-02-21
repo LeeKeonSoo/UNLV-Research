@@ -60,63 +60,81 @@ pip install -r requirements.txt
 python -c "import nltk; nltk.download('punkt')"
 ```
 
-### Three-Step Pipeline
+### Four-Step Pipeline
 
 #### Step 1: Extract Khan Academy Taxonomy (5-10 minutes)
 
 ```bash
-python 1_extract_khan_taxonomy.py
+python extract_khan_taxonomy.py
 ```
 
 **What it does**:
 - Loads Khan Academy K-12 concepts
 - Extracts Subject → Grade → Concept hierarchy
-- Creates concept prototypes using SentenceTransformer embeddings
-- Saves taxonomy and embeddings to `outputs/`
+- Creates course prototypes using TF-IDF vectors
+- Saves taxonomy and prototype vectors to `outputs/`
 
 **Output**:
 - `outputs/khan_taxonomy.json` - Hierarchical structure
-- `outputs/concept_prototypes.pkl` - Concept embeddings (384-dim)
+- `outputs/concept_prototypes_tfidf.pkl` - Concept prototype vectors
 - `outputs/metadata.json` - Dataset statistics
 
 ---
 
-#### Step 2: Compute Metrics (1-2 hours for full datasets)
+#### Step 2: Build Corpus Index (can take a long time on full data)
 
 ```bash
-python 2_compute_metrics.py
+python build_corpus_index.py
 ```
 
 **What it does**:
-- Loads concept prototypes from Step 1
+- Builds exact-hash, MinHash-LSH, and TF-IDF index over all chunks
+- Prepares fast lookup structures for redundancy metrics
+
+**Output**:
+- `outputs/corpus_index.pkl`
+
+---
+
+#### Step 3: Compute Metrics (1-2 hours for full datasets)
+
+```bash
+python compute_metrics.py
+```
+
+**What it does**:
+- Loads concept prototypes and corpus index
 - Processes both Khan Academy and Tiny-Textbooks
 - For each text chunk (paragraph), computes:
-  - **Domain Classification**: Multi-label, soft assignment via embedding similarity
-  - **Quality Metrics**: Perplexity (GPT-2), educational markers (examples, explanations, structure)
+  - **Domain Classification**: Multi-label soft assignment via TF-IDF similarity
+  - **Quality Metrics**: Educational markers (examples, explanations, structure)
+  - **Difficulty / Redundancy / Perplexity**: additional metric families with validity flags
 - Saves annotated datasets to `outputs/`
 
 **Output**:
 - `outputs/khan_analysis.jsonl` - Khan Academy analysis results
 - `outputs/tiny_textbooks_analysis.jsonl` - Tiny-Textbooks analysis results
+- `outputs/run_manifest.json` - Run config, gates, and reliability outcomes
 
 **Configuration**:
-- Edit `2_compute_metrics.py` to set `max_batches=5` for quick testing
+- Edit `compute_metrics.py` to set `max_batches=5` for quick testing
 - Full run processes all 42 Tiny-Textbooks batches (~420K documents)
 - Device override via environment variables:
   - `PHASE1_DEVICE=auto|cuda|mps|cpu`
   - `PHASE1_CUDA_DEVICE=0`
   - `PHASE1_DOMAIN_BATCH_SIZE=256`
+  - `PHASE1_MAX_BATCHES=2` (optional quick test on Tiny-Textbooks)
 
 ---
 
-#### Step 3: Build Dashboard (< 1 minute)
+#### Step 4: Build Dashboard (< 1 minute)
 
 ```bash
-python 3_build_dashboard.py
+python build_dashboard.py
 ```
 
 **What it does**:
-- Loads analysis results from Step 2
+- Loads analysis results from Step 3
 - Aggregates statistics (domain distributions, quality metrics)
 - Generates interactive HTML dashboard with Chart.js visualizations
 
@@ -139,9 +157,10 @@ Phase-1/
 ├── README.md                           # This file
 ├── requirements.txt                    # Python dependencies
 │
-├── 1_extract_khan_taxonomy.py          # Step 1: Build taxonomy
-├── 2_compute_metrics.py                # Step 2: Analyze datasets
-├── 3_build_dashboard.py                # Step 3: Visualize results
+├── extract_khan_taxonomy.py            # Step 1: Build taxonomy
+├── build_corpus_index.py               # Step 2: Build redundancy index
+├── compute_metrics.py                  # Step 3: Analyze datasets
+├── build_dashboard.py                  # Step 4: Visualize results
 │
 ├── khan_k12_concepts/                  # Khan Academy data (19 subjects)
 │   ├── all_k12_concepts.json           # Merged dataset (982KB)
@@ -154,18 +173,25 @@ Phase-1/
 │
 ├── outputs/                            # Analysis outputs
 │   ├── khan_taxonomy.json              # Hierarchical taxonomy
-│   ├── concept_prototypes.pkl          # Concept embeddings
+│   ├── concept_prototypes_tfidf.pkl    # Concept prototypes
+│   ├── corpus_index.pkl                # Redundancy index
 │   ├── metadata.json                   # Statistics
 │   ├── khan_analysis.jsonl             # Khan analysis results
 │   ├── tiny_textbooks_analysis.jsonl   # Tiny-Textbooks analysis
+│   ├── run_manifest.json               # Run metadata + gate outcomes
 │   └── dashboard.html                  # Interactive dashboard
 │
-├── legacy/                             # Archived old implementations
-│   ├── old_analysis/                   # Previous graph-based approach
-│   └── ...
+├── legacy/                             # Archived historical experiments
+│   ├── LIBRARY_INDEX.md                # Legacy catalog
+│   ├── shelf_01_docs/
+│   ├── shelf_02_collection/
+│   ├── shelf_03_graph_pipeline/
+│   ├── shelf_04_visualization/
+│   └── shelf_05_old_analysis_bundle/
 │
-├── research_plan_refined.md            # Detailed research plan
-└── subtask1_metrics_design.md          # Metrics documentation
+├── PHASE1_RESEARCH_OBJECTIVE_SPEC.md   # Canonical objective spec
+├── PHASE1_REVIEW_BRIEF.md              # One-page reviewer brief
+└── ANALYSIS_SCHEMA_V2.md               # Output contract
 ```
 
 ---
@@ -255,7 +281,7 @@ domain_labels = {
 **Symptom**: `torch.cuda.OutOfMemoryError` or process killed
 
 **Solutions**:
-1. Reduce batch size in `2_compute_metrics.py`:
+1. Reduce batch size in `compute_metrics.py`:
    ```python
    embeddings = model.encode(texts, batch_size=8)  # Default: 32
    ```

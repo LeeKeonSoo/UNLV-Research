@@ -83,13 +83,16 @@ RUN_MANIFEST_OUTPUT = OUTPUT_DIR / "run_manifest.json"
 TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
 CHUNK_SIZE     = 200
+MIN_CHUNK_WORDS = 20
 USE_GPU        = True
 # Device config (override via env):
 #   PHASE1_DEVICE=auto|cuda|mps|cpu
 #   PHASE1_CUDA_DEVICE=0
 DEVICE_PREFERENCE = os.getenv("PHASE1_DEVICE", "auto").strip().lower()
-CUDA_DEVICE       = int(os.getenv("PHASE1_CUDA_DEVICE", "1"))
+CUDA_DEVICE       = int(os.getenv("PHASE1_CUDA_DEVICE", "0"))
 DOMAIN_BATCH_SIZE = int(os.getenv("PHASE1_DOMAIN_BATCH_SIZE", "256"))
+_max_batches_env = os.getenv("PHASE1_MAX_BATCHES", "").strip()
+TINY_MAX_BATCHES = int(_max_batches_env) if _max_batches_env else None
 
 SCHEMA_VERSION = "v2"
 METRIC_TIER = {
@@ -596,7 +599,7 @@ class RedundancyChecker:
         if not Path(index_path).exists():
             print(
                 f"  ⚠ Corpus index not found at {index_path}. "
-                "Redundancy scores will be 0. Run 2a_build_corpus_index.py first."
+                "Redundancy scores will be 0. Run build_corpus_index.py first."
             )
             self._available = False
             return
@@ -697,7 +700,7 @@ class RedundancyChecker:
         q3 = self._token_ngrams(text, 3)
         q5 = self._token_ngrams(text, 5)
         best3, best5 = 0.0, 0.0
-        for cid in candidate_ids[:50]:
+        for cid in candidate_ids[:200]:
             cand_text = self._doc_texts.get(cid)
             if not cand_text:
                 continue
@@ -719,20 +722,25 @@ class RedundancyChecker:
 
         text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
         hash_count = int(self._exact_hash_counts.get(text_hash, 0))
-        if current_doc_id and self._doc_hash_by_id.get(current_doc_id) == text_hash:
-            exact_dup = (hash_count - 1) > 0
-        else:
-            exact_dup = hash_count > 0
+        exact_dup = hash_count > 1
+        hash_bucket_ids = list(self._doc_ids_by_hash.get(text_hash, []))
+        hash_bucket_set = set(hash_bucket_ids)
 
         mh = self._MinHash(num_perm=self._num_perm)
         for word in set(text.lower().split()):
             mh.update(word.encode("utf-8"))
 
         candidate_ids = set(self._lsh.query(mh))
-        if text_hash in self._doc_ids_by_hash:
-            candidate_ids.update(self._doc_ids_by_hash[text_hash])
+        if hash_bucket_ids:
+            candidate_ids.update(hash_bucket_ids)
         if current_doc_id:
             candidate_ids.discard(current_doc_id)
+
+        # Robust self-match mitigation:
+        # If current_doc_id is missing/misaligned, remove one deterministic hash-bucket
+        # candidate so a chunk is less likely to match itself at score~1 by default.
+        if hash_bucket_ids and (not current_doc_id or current_doc_id not in hash_bucket_set):
+            candidate_ids.discard(min(hash_bucket_ids))
 
         near_score = 0.0
         if candidate_ids:
@@ -744,7 +752,9 @@ class RedundancyChecker:
             if scores:
                 near_score = float(max(scores))
 
-        cand_list = list(candidate_ids)
+        hash_first = [cid for cid in sorted(hash_bucket_ids) if cid in candidate_ids]
+        others = [cid for cid in candidate_ids if cid not in set(hash_first)]
+        cand_list = hash_first + others
         semantic_score = self._semantic_score(text, cand_list)
         ngram3, ngram5 = self._ngram_scores(text, cand_list)
 
@@ -771,6 +781,7 @@ class PerplexityScorer:
     def __init__(self, use_gpu: bool = True):
         self._available = False
         self._device = "cpu"
+        self._batch_error_logged = False
         if not TRANSFORMERS_AVAILABLE:
             print("  ⚠ transformers not available. Perplexity will be null.")
             return
@@ -785,6 +796,8 @@ class PerplexityScorer:
 
             self._tokenizer = GPT2Tokenizer.from_pretrained(
                 "gpt2", cache_dir="./models")
+            if self._tokenizer.pad_token_id is None:
+                self._tokenizer.pad_token = self._tokenizer.eos_token
 
             model_kwargs = {"cache_dir": "./models"}
             if device_str.startswith("cuda"):
@@ -793,6 +806,7 @@ class PerplexityScorer:
             self._model = GPT2LMHeadModel.from_pretrained(
                 "gpt2", **model_kwargs
             ).to(device_str).eval()
+            self._model.config.pad_token_id = self._tokenizer.pad_token_id
             self._available = True
             print("✓ GPT-2 loaded")
         except Exception as e:
@@ -841,7 +855,10 @@ class PerplexityScorer:
                 round(p.item(), 2) if np.isfinite(p.item()) else None
                 for p in ppls
             ]
-        except Exception:
+        except Exception as e:
+            if not self._batch_error_logged:
+                print(f"  ⚠ GPT-2 scoring failed once ({e}). Returning null perplexity.")
+                self._batch_error_logged = True
             return [None] * len(texts)
 
     def compute(self, text: str, sentences: List[str] = None) -> Dict:
@@ -954,9 +971,11 @@ def _process_chunks(
     tracker: Optional[ReliabilityTracker] = None,
 ) -> List[Dict]:
     candidates = []
-    for chunk_id, chunk in enumerate(chunks):
-        if len(chunk.split()) < 20:
+    for chunk in chunks:
+        if len(chunk.split()) < MIN_CHUNK_WORDS:
             continue
+        # Match Step 2a index IDs, which enumerate only >=20-word chunks.
+        chunk_id = len(candidates)
         sentences = sent_tokenize(chunk)
         candidates.append((chunk_id, chunk, sentences))
 
@@ -1136,7 +1155,7 @@ def build_run_manifest(
         "schema_version": SCHEMA_VERSION,
         "phase": "phase-1",
         "objective_mode": "descriptive_comparative_only",
-        "generated_by": "2_compute_metrics.py",
+        "generated_by": "compute_metrics.py",
         "code_commit_hash": _git_commit_hash(),
         "dataset_versions_and_counts": {
             "khan_academy": {
@@ -1195,6 +1214,10 @@ def main():
     print("DATASET ANALYSIS — ALL 5 METRICS")
     print("="*60)
     print(f"Device preference: {DEVICE_PREFERENCE} (CUDA device index: {CUDA_DEVICE})")
+    if TINY_MAX_BATCHES is None:
+        print("Tiny-Textbooks batch mode: full run")
+    else:
+        print(f"Tiny-Textbooks batch mode: first {TINY_MAX_BATCHES} batch(es)")
 
     # Load domain classifier
     prototypes, domain_vectorizer = _load_prototypes()
@@ -1218,7 +1241,7 @@ def main():
         classifier,
         redundancy,
         perplexity,
-        max_batches=None,  # full run
+        max_batches=TINY_MAX_BATCHES,
         tracker=tracker,
     )
 
@@ -1237,7 +1260,7 @@ def main():
     print("\n" + "="*60)
     print("✓ All 5 metrics computed!")
     print("="*60)
-    print("\nNext step: python 3_build_dashboard.py")
+    print("\nNext step: python build_dashboard.py")
 
 
 if __name__ == "__main__":
