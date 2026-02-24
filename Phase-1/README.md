@@ -99,16 +99,19 @@ python -c "import nltk; nltk.download('punkt')"
 Run this when RAM is constrained:
 
 ```bash
-python run_phase1_lowmem.py
+python Phase-1/run_phase1_lowmem.py
 ```
 
 It applies these defaults (can be changed in script/env):
-- `PHASE1_INDEX_MAX_BATCHES=2`, `PHASE1_MAX_BATCHES=2` (quick subset)
-- `PHASE1_TFIDF_MAX_FEATURES=3000`
-- `PHASE1_QUERY_CACHE_LIMIT=1200`
-- `PHASE1_NGRAM_CACHE_LIMIT=2500`
-- `PHASE1_SEMANTIC_CANDIDATE_LIMIT=300`
-- `PHASE1_NGRAM_CANDIDATE_LIMIT=120`
+- `PHASE1_INDEX_MAX_BATCHES=1`, `PHASE1_MAX_BATCHES=1` (high-memory-pressure default)
+- `PHASE1_TFIDF_MAX_FEATURES=2000`
+- `PHASE1_QUERY_CACHE_LIMIT=256`
+- `PHASE1_NGRAM_CACHE_LIMIT=512`
+- `PHASE1_SEMANTIC_CANDIDATE_LIMIT=80`
+- `PHASE1_NGRAM_CANDIDATE_LIMIT=40`
+- `PHASE1_SKIP_REDUNDANCY=1`
+- `PHASE1_STORE_DOC_TEXTS=0`
+- `PHASE1_ENABLE_MINHASH=0`
 
 Run in one click from VS Code with configuration:
 `Phase-1: Low-Memory Orchestrator`

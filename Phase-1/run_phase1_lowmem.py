@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""Run Phase-1 pipeline with a tuned low-memory profile.
+"""Run Phase-1 pipeline with a memory-sensitive profile.
 
-Recommended for memory constrained environments while keeping metrics quality-oriented settings.
-
-Defaults:
-- corpus index built on first 2 tiny batches (for stability)
-- TF-IDF matrix kept on (reduced vocab)
-- redundancy/perplexity enabled
-- reduced cache + candidate caps
+Defaults are tuned for high RAM pressure while preserving normal metric outputs:
+- corpus index built on first 1 tiny batch
+- reduced vocab TF-IDF
+- redundancy disabled for memory stability
+- perplexity enabled
 """
 
 from __future__ import annotations
@@ -43,23 +41,23 @@ def main() -> int:
         "PHASE1_CUDA_DEVICE": "0",
         "PHASE1_USE_GPU": "1",
         "PHASE1_DOMAIN_BATCH_SIZE": "256",
-        "PHASE1_MAX_BATCHES": "2",               # tune to all for full run
+        "PHASE1_MAX_BATCHES": "1",               # tune to all for full run
 
         # Index build profile
-        "PHASE1_INDEX_MAX_BATCHES": "2",         # tune to all for full run
-        "PHASE1_TFIDF_MAX_FEATURES": "3000",      # keep quality with lower memory
+        "PHASE1_INDEX_MAX_BATCHES": "1",         # tune to all for full run
+        "PHASE1_TFIDF_MAX_FEATURES": "2000",      # keep quality with lower memory
         "PHASE1_BUILD_TFIDF_MATRIX": "1",
-        "PHASE1_STORE_DOC_TEXTS": "1",
-        "PHASE1_ENABLE_MINHASH": "1",
+        "PHASE1_STORE_DOC_TEXTS": "0",
+        "PHASE1_ENABLE_MINHASH": "0",
 
         # Per-request throttling (cache/candidate controls)
-        "PHASE1_QUERY_CACHE_LIMIT": "1200",
-        "PHASE1_NGRAM_CACHE_LIMIT": "2500",
-        "PHASE1_SEMANTIC_CANDIDATE_LIMIT": "300",
-        "PHASE1_NGRAM_CANDIDATE_LIMIT": "120",
+        "PHASE1_QUERY_CACHE_LIMIT": "256",
+        "PHASE1_NGRAM_CACHE_LIMIT": "512",
+        "PHASE1_SEMANTIC_CANDIDATE_LIMIT": "80",
+        "PHASE1_NGRAM_CANDIDATE_LIMIT": "40",
 
         # Keep metrics enabled (do not skip for quality pass)
-        "PHASE1_SKIP_REDUNDANCY": "0",
+        "PHASE1_SKIP_REDUNDANCY": "1",
         "PHASE1_SKIP_PERPLEXITY": "0",
     }
 
