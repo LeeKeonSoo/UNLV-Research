@@ -18,6 +18,7 @@ Output:
   - outputs/khan_analysis.jsonl
   - outputs/tiny_textbooks_analysis.jsonl
   - outputs/run_manifest.json
+  - outputs/run_summary.json
 """
 
 import hashlib
@@ -27,8 +28,9 @@ import pickle
 import re
 import subprocess
 import warnings
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 import nltk
 import numpy as np
@@ -79,6 +81,7 @@ OUTPUT_DIR   = Path("outputs")
 KHAN_OUTPUT  = OUTPUT_DIR / "khan_analysis.jsonl"
 TINY_OUTPUT  = OUTPUT_DIR / "tiny_textbooks_analysis.jsonl"
 RUN_MANIFEST_OUTPUT = OUTPUT_DIR / "run_manifest.json"
+RUN_SUMMARY_OUTPUT = OUTPUT_DIR / "run_summary.json"
 
 TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
@@ -270,6 +273,13 @@ def _is_perplexity_valid(perplexity: Dict) -> bool:
     if not isinstance(perplexity, dict):
         return False
     return _safe_float(perplexity.get("gpt2")) is not None
+
+
+def _jsonl_line_count(path: Path) -> int:
+    if not path.exists():
+        return 0
+    with path.open("r", encoding="utf-8", errors="replace") as f:
+        return sum(1 for _ in f)
 
 
 class RunningStat:
@@ -962,14 +972,14 @@ def _build_validity_flags(
     }
 
 
-def _process_chunks(
+def _iter_chunk_records(
     chunks: List[str],
     doc_meta: Dict,
     classifier: DomainClassifier,
     redundancy: RedundancyChecker,
     perplexity: PerplexityScorer,
     tracker: Optional[ReliabilityTracker] = None,
-) -> List[Dict]:
+) -> Iterator[Dict]:
     candidates = []
     for chunk in chunks:
         if len(chunk.split()) < MIN_CHUNK_WORDS:
@@ -980,7 +990,7 @@ def _process_chunks(
         candidates.append((chunk_id, chunk, sentences))
 
     if not candidates:
-        return []
+        return
 
     # Batch domain classification improves CUDA/MPS utilization.
     batched_domains = classifier.classify_batch(
@@ -988,7 +998,6 @@ def _process_chunks(
         batch_size=DOMAIN_BATCH_SIZE,
     )
 
-    results = []
     for (chunk_id, chunk, sentences), domain_labels in zip(candidates, batched_domains):
         quality = compute_quality(chunk)
         difficulty = compute_difficulty(chunk, sentences=sentences)
@@ -1020,10 +1029,9 @@ def _process_chunks(
             "metric_tier": dict(METRIC_TIER),
             "validity_flags": validity_flags,
         }
-        results.append(record)
         if tracker is not None:
             tracker.observe(record)
-    return results
+        yield record
 
 
 def process_khan_academy(
@@ -1039,40 +1047,38 @@ def process_khan_academy(
     with open(KHAN_DATA_PATH, "r", encoding="utf-8", errors="replace") as f:
         khan_data = json.load(f)
 
-    results: List[Dict] = []
+    chunks_written = 0
     docs_used = 0
-    for doc in tqdm(khan_data, desc="Khan"):
-        text = doc.get("content", "")
-        if len(text.strip()) < 50:
-            continue
-        docs_used += 1
-        meta = {
-            "source": "khan_academy",
-            "doc_id": doc.get("doc_id") or doc.get("url", "unknown"),
-            "subject": doc.get("subject", "Unknown"),
-            "grade": doc.get("grade", "Unknown"),
-            "title": doc.get("title", "Untitled"),
-        }
-        results.extend(
-            _process_chunks(
+    with jsonlines.open(KHAN_OUTPUT, "w") as w:
+        for doc in tqdm(khan_data, desc="Khan"):
+            text = doc.get("content", "")
+            if len(text.strip()) < 50:
+                continue
+            docs_used += 1
+            meta = {
+                "source": "khan_academy",
+                "doc_id": doc.get("doc_id") or doc.get("url", "unknown"),
+                "subject": doc.get("subject", "Unknown"),
+                "grade": doc.get("grade", "Unknown"),
+                "title": doc.get("title", "Untitled"),
+            }
+            for record in _iter_chunk_records(
                 chunk_text(text, CHUNK_SIZE),
                 meta,
                 classifier,
                 redundancy,
                 perplexity,
                 tracker=tracker,
-            )
-        )
-
-    with jsonlines.open(KHAN_OUTPUT, "w") as w:
-        w.write_all(results)
-    print(f"\n✓ {len(results):,} chunks → {KHAN_OUTPUT}")
+            ):
+                w.write(record)
+                chunks_written += 1
+    print(f"\n✓ {chunks_written:,} chunks → {KHAN_OUTPUT}")
     return {
         "dataset": "khan_academy",
         "input_path": KHAN_DATA_PATH,
         "docs_total": len(khan_data),
         "docs_used": docs_used,
-        "chunks_written": len(results),
+        "chunks_written": chunks_written,
     }
 
 
@@ -1092,42 +1098,40 @@ def process_tiny_textbooks(
         batch_files = batch_files[:max_batches]
         print(f"  (first {max_batches} batches)")
 
-    results: List[Dict] = []
+    chunks_written = 0
     total_docs = 0
-    for bf in tqdm(batch_files, desc="Tiny batches"):
-        with open(bf, "r", encoding="utf-8", errors="replace") as f:
-            batch = json.load(f)
-        for doc in batch:
-            total_docs += 1
-            text = doc.get("text", "")
-            if len(text.strip()) < 100:
-                continue
-            meta = {
-                "source": "tiny_textbooks",
-                "doc_id": doc.get("id", "unknown"),
-                "batch_file": bf.name,
-            }
-            results.extend(
-                _process_chunks(
+    with jsonlines.open(TINY_OUTPUT, "w") as w:
+        for bf in tqdm(batch_files, desc="Tiny batches"):
+            with open(bf, "r", encoding="utf-8", errors="replace") as f:
+                batch = json.load(f)
+            for doc in batch:
+                total_docs += 1
+                text = doc.get("text", "")
+                if len(text.strip()) < 100:
+                    continue
+                meta = {
+                    "source": "tiny_textbooks",
+                    "doc_id": doc.get("id", "unknown"),
+                    "batch_file": bf.name,
+                }
+                for record in _iter_chunk_records(
                     chunk_text(text, CHUNK_SIZE),
                     meta,
                     classifier,
                     redundancy,
                     perplexity,
                     tracker=tracker,
-                )
-            )
-
-    with jsonlines.open(TINY_OUTPUT, "w") as w:
-        w.write_all(results)
-    print(f"\n✓ {len(results):,} chunks from {total_docs:,} docs → {TINY_OUTPUT}")
+                ):
+                    w.write(record)
+                    chunks_written += 1
+    print(f"\n✓ {chunks_written:,} chunks from {total_docs:,} docs → {TINY_OUTPUT}")
     return {
         "dataset": "tiny_textbooks",
         "input_dir": TINY_TEXTBOOKS_DIR,
         "batch_count": len(batch_files),
         "batch_files": [bf.name for bf in batch_files],
         "docs_total": total_docs,
-        "chunks_written": len(results),
+        "chunks_written": chunks_written,
     }
 
 
@@ -1207,6 +1211,57 @@ def build_run_manifest(
     }
 
 
+def write_run_summary(manifest: Dict) -> None:
+    summary = {
+        "schema_version": SCHEMA_VERSION,
+        "run_summary_version": "v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "run_manifest_path": str(RUN_MANIFEST_OUTPUT),
+        "dataset_chunk_counts": {
+            "khan_academy": {
+                "file_path": str(KHAN_OUTPUT),
+                "chunks_written": _jsonl_line_count(KHAN_OUTPUT),
+                "sha256": _hash_file(KHAN_OUTPUT),
+            },
+            "tiny_textbooks": {
+                "file_path": str(TINY_OUTPUT),
+                "chunks_written": _jsonl_line_count(TINY_OUTPUT),
+                "sha256": _hash_file(TINY_OUTPUT),
+            },
+        },
+        "core_claimability": {
+            "domain": manifest.get("reliability_gate_outcomes", {})
+            .get("domain", {})
+            .get("top1_accuracy", {})
+            .get("pass"),
+            "quality": manifest.get("reliability_gate_outcomes", {})
+            .get("quality", {})
+            .get("macro_precision", {})
+            .get("pass"),
+            "difficulty": manifest.get("reliability_gate_outcomes", {})
+            .get("difficulty", {})
+            .get("out_of_range_rate", {})
+            .get("pass"),
+        },
+        "exploratory_guardrails": {
+            "redundancy": manifest.get("reliability_gate_outcomes", {})
+            .get("redundancy", {})
+            .get("non_degenerate_distribution", {})
+            .get("pass"),
+            "perplexity": manifest.get("reliability_gate_outcomes", {})
+            .get("perplexity", {})
+            .get("non_null_coverage", {})
+            .get("pass"),
+        },
+        "threshold_config": manifest.get("threshold_config"),
+        "runtime_device": manifest.get("runtime_device"),
+        "metric_tier": manifest.get("metric_tier"),
+    }
+    with RUN_SUMMARY_OUTPUT.open("w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2, ensure_ascii=False)
+    print(f"✓ Run summary saved → {RUN_SUMMARY_OUTPUT}")
+
+
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -1256,6 +1311,7 @@ def main():
     with open(RUN_MANIFEST_OUTPUT, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
     print(f"\n✓ Run manifest saved → {RUN_MANIFEST_OUTPUT}")
+    write_run_summary(manifest)
 
     print("\n" + "="*60)
     print("✓ All 5 metrics computed!")

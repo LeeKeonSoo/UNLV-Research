@@ -30,6 +30,38 @@ This project develops a systematic methodology to characterize pretraining datas
 
 ---
 
+## ✅ Phase-1 Closeout Rule
+
+Before ending Phase-1, run:
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+
+manifest = Path("outputs/run_manifest.json")
+if not manifest.exists():
+    raise SystemExit("NOT READY: outputs/run_manifest.json missing")
+with manifest.open("r", encoding="utf-8") as f:
+    data = json.load(f)
+schema_version = data.get("schema_version")
+if schema_version != "v2":
+    raise SystemExit(f"NOT READY: schema_version={schema_version}")
+print(f"READY: schema_version={schema_version}")
+print(f"core claimable metrics: {list(data.get('metric_claimability', {}).keys())}")
+PY
+```
+
+If the output is `NOT READY`, do not move to Phase-2 experiments.
+Closeout criteria are documented in:
+
+- `PHASE1_CLOSEOUT_CRITERIA.md`
+
+This project keeps execution-focused docs minimal; optional historical helper scripts have been archived.
+
+
+---
+
 ## 🎯 Research Questions
 
 1. How can we build a fine-grained domain taxonomy from educational resources?
@@ -60,7 +92,39 @@ pip install -r requirements.txt
 python -c "import nltk; nltk.download('punkt')"
 ```
 
-### Four-Step Pipeline
+### Recommended Execution Order
+
+Run only the scripts below in order:
+
+```bash
+python collect_khan_academy.py
+python collect_tiny_textbooks.py
+python extract_khan_taxonomy.py
+python build_corpus_index.py
+python compute_metrics.py
+python build_dashboard.py
+```
+
+Notes:
+- Keep `collect_*` scripts only when the raw source data is not already present.
+- Run-time and reproducibility controls are in `compute_metrics.py` and environment variables:
+  - `PHASE1_DEVICE=auto|cuda|mps|cpu`
+  - `PHASE1_CUDA_DEVICE=0`
+  - `PHASE1_DOMAIN_BATCH_SIZE=256`
+  - `PHASE1_MAX_BATCHES=2` for quick Tiny-Textbooks subset
+
+### Active Pipeline
+
+#### Step 0 (Optional): Collect Raw Corpora
+
+Only run these if `khan_k12_concepts/` and `tiny_textbooks_raw/` are missing:
+
+```bash
+python collect_khan_academy.py
+python collect_tiny_textbooks.py
+```
+
+## Four-Step Pipeline
 
 #### Step 1: Extract Khan Academy Taxonomy (5-10 minutes)
 
@@ -115,6 +179,7 @@ python compute_metrics.py
 - `outputs/khan_analysis.jsonl` - Khan Academy analysis results
 - `outputs/tiny_textbooks_analysis.jsonl` - Tiny-Textbooks analysis results
 - `outputs/run_manifest.json` - Run config, gates, and reliability outcomes
+- `outputs/run_summary.json` - Reproducibility-focused run snapshot
 
 **Configuration**:
 - Edit `compute_metrics.py` to set `max_batches=5` for quick testing
@@ -123,7 +188,8 @@ python compute_metrics.py
   - `PHASE1_DEVICE=auto|cuda|mps|cpu`
   - `PHASE1_CUDA_DEVICE=0`
   - `PHASE1_DOMAIN_BATCH_SIZE=256`
-  - `PHASE1_MAX_BATCHES=2` (optional quick test on Tiny-Textbooks)
+- `PHASE1_MAX_BATCHES=2` (optional quick test on Tiny-Textbooks)  
+
 
 ---
 
@@ -152,11 +218,13 @@ python build_dashboard.py
 
 ## 📁 Directory Structure
 
-```
+``` 
 Phase-1/
 ├── README.md                           # This file
 ├── requirements.txt                    # Python dependencies
 │
+├── collect_khan_academy.py            # Optional Step 0: collect Khan Academy raw concepts
+├── collect_tiny_textbooks.py          # Optional Step 0: collect Tiny-Textbooks batches
 ├── extract_khan_taxonomy.py            # Step 1: Build taxonomy
 ├── build_corpus_index.py               # Step 2: Build redundancy index
 ├── compute_metrics.py                  # Step 3: Analyze datasets
@@ -179,15 +247,8 @@ Phase-1/
 │   ├── khan_analysis.jsonl             # Khan analysis results
 │   ├── tiny_textbooks_analysis.jsonl   # Tiny-Textbooks analysis
 │   ├── run_manifest.json               # Run metadata + gate outcomes
+│   ├── run_summary.json                # Snapshot for reproducibility checks
 │   └── dashboard.html                  # Interactive dashboard
-│
-├── legacy/                             # Archived historical experiments
-│   ├── LIBRARY_INDEX.md                # Legacy catalog
-│   ├── shelf_01_docs/
-│   ├── shelf_02_collection/
-│   ├── shelf_03_graph_pipeline/
-│   ├── shelf_04_visualization/
-│   └── shelf_05_old_analysis_bundle/
 │
 ├── PHASE1_RESEARCH_OBJECTIVE_SPEC.md   # Canonical objective spec
 ├── PHASE1_REVIEW_BRIEF.md              # One-page reviewer brief
@@ -354,7 +415,7 @@ If offline, download `chart.js` locally and update HTML `<script>` tag.
 
 ## 🔗 Resources
 
-- **Khan Academy Data**: Collected via `collect_khan_academy.py` (legacy)
+- **Khan Academy Data**: Collected via `collect_khan_academy.py` (current phase-1 code)
 - **Tiny-Textbooks**: [HuggingFace: nampdn-ai/tiny-textbooks](https://huggingface.co/datasets/nampdn-ai/tiny-textbooks)
 - **SentenceTransformers**: [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
 - **GPT-2**: [Hugging Face: gpt2](https://huggingface.co/gpt2)
