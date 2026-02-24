@@ -112,6 +112,18 @@ It applies these defaults (can be changed in script/env):
 - `PHASE1_SKIP_REDUNDANCY=1`
 - `PHASE1_STORE_DOC_TEXTS=0`
 - `PHASE1_ENABLE_MINHASH=0`
+- `PHASE1_SKIP_PERPLEXITY=0`
+
+If RAM still stays above 95%, use the temporary emergency profile before rerun:
+
+```bash
+set PHASE1_SKIP_PERPLEXITY=1
+set PHASE1_BUILD_TFIDF_MATRIX=0
+set PHASE1_LSH_THRESHOLD=0.85
+python Phase-1/run_phase1_lowmem.py
+```
+
+That profile reduces memory pressure but temporarily disables redundancy/perplexity-heavy pathways. Re-enable later for final metrics.
 
 Run in one click from VS Code with configuration:
 `Phase-1: Low-Memory Orchestrator`

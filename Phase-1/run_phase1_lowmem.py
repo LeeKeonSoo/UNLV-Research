@@ -34,7 +34,7 @@ def _safe_exists(p: Path) -> bool:
 
 
 def main() -> int:
-    # Tuned low-memory profile defaults (can be overridden by pre-set env vars).
+    # Tuned low-memory profile defaults.
     profile: Dict[str, str] = {
         # Device / batch behavior
         "PHASE1_DEVICE": "auto",
@@ -62,8 +62,7 @@ def main() -> int:
     }
 
     env = os.environ.copy()
-    for k, v in profile.items():
-        env.setdefault(k, v)
+    env.update(profile)
 
     print("[Phase-1] Using low-memory profile:")
     for k in sorted(profile):

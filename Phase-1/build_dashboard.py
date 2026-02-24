@@ -37,6 +37,73 @@ MAX_EXPLORER  = 2000   # documents sampled per dataset for the Explorer tab
 # Data loading — single-pass streaming
 # ==============================================================================
 
+
+class _RunningStat:
+    def __init__(self):
+        self.n = 0
+        self.sum = 0.0
+
+    def add(self, value: Optional[float]) -> None:
+        if value is None:
+            return
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            return
+        if not math.isfinite(v):
+            return
+        self.n += 1
+        self.sum += v
+
+    @property
+    def mean(self) -> Optional[float]:
+        if self.n <= 0:
+            return None
+        return self.sum / self.n
+
+
+class _RunningHistogram:
+    def __init__(self, bins: int = 20, vmin: float = 0.0, vmax: float = 1.0):
+        self.bins = max(1, int(bins))
+        self.vmin = float(vmin)
+        self.vmax = float(vmax)
+        self.counts = [0 for _ in range(self.bins)]
+        if self.bins <= 0:
+            self.edges = [round(self.vmin, 3), round(self.vmax, 3)]
+        else:
+            step = (self.vmax - self.vmin) / self.bins if self.vmax != self.vmin else 0.0
+            if step <= 0:
+                self.edges = [round(self.vmin, 3), round(self.vmax, 3)]
+            else:
+                self.edges = [round(self.vmin + i * step, 3) for i in range(self.bins + 1)]
+
+    def add(self, value: Optional[float]) -> None:
+        if value is None:
+            return
+        try:
+            v = float(value)
+        except (TypeError, ValueError):
+            return
+        if not math.isfinite(v):
+            return
+        if v <= self.vmin:
+            idx = 0
+        elif v >= self.vmax:
+            idx = self.bins - 1
+        else:
+            idx = int((v - self.vmin) / (self.vmax - self.vmin) * self.bins)
+            if idx < 0:
+                idx = 0
+            elif idx >= self.bins:
+                idx = self.bins - 1
+        self.counts[idx] += 1
+
+    def as_dict(self) -> dict:
+        return {
+            "counts": self.counts,
+            "edges": self.edges,
+        }
+
 def process_dataset(filepath: str, n_explorer: int = 2000):
     """
     Stream through a JSONL file exactly once, simultaneously computing:
@@ -55,18 +122,27 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
     domain_ctr:  Counter = Counter()
     subject_ctr: Counter = Counter()
     multi_domain = 0
-    quality_scores: List[float] = []
     has_ex = has_expl = has_struct = 0
-    fk_grades: List[float] = []
-    fk_ease_v: List[float] = []
-    smog_v:    List[float] = []
-    lex_v:     List[float] = []
+    quality_stat = _RunningStat()
+    fk_grade_stat = _RunningStat()
+    fk_ease_stat = _RunningStat()
+    smog_stat = _RunningStat()
+    lex_stat = _RunningStat()
+    ppl_stat = _RunningStat()
     exact_dup = 0
-    near_dup_v: List[float] = []
-    sem_dup_v:  List[float] = []
-    ppl_v:      List[float] = []
+    near_dup = _RunningStat()
+    sem_dup = _RunningStat()
     schema_ctr: Counter = Counter()
     validity_ctr: Counter = Counter()
+    quality_hist = _RunningHistogram(bins=10, vmin=0.0, vmax=1.0)
+    fk_grade_hist = _RunningHistogram(bins=15, vmin=0.0, vmax=18.0)
+    fk_ease_hist = _RunningHistogram(bins=15, vmin=0.0, vmax=100.0)
+    smog_hist = _RunningHistogram(bins=15, vmin=0.0, vmax=18.0)
+    lex_hist = _RunningHistogram(bins=10, vmin=0.0, vmax=1.0)
+    near_dup_hist = _RunningHistogram(bins=20, vmin=0.0, vmax=1.0)
+    sem_dup_hist = _RunningHistogram(bins=20, vmin=0.0, vmax=1.0)
+    ppl_hist = _RunningHistogram(bins=20, vmin=0.0, vmax=2000.0)
+
     metric_tier = {
         "domain": "core",
         "quality": "core",
@@ -147,38 +223,38 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
                 multi_domain += 1
 
             qs = _flt(item.get("quality_score"))
-            if qs is not None:
-                quality_scores.append(qs)
+            quality_stat.add(qs)
+            quality_hist.add(qs)
             mk = item.get("educational_markers") or {}
             has_ex    += int(bool(mk.get("has_examples")))
             has_expl  += int(bool(mk.get("has_explanation")))
             has_struct += int(bool(mk.get("has_structure")))
 
             d = item.get("difficulty") or {}
-            for key, lst in [
-                ("flesch_kincaid_grade", fk_grades),
-                ("flesch_reading_ease",  fk_ease_v),
-                ("smog_index",           smog_v),
-                ("lexical_diversity",    lex_v),
+            for key, stat, hist in [
+                ("flesch_kincaid_grade", fk_grade_stat, fk_grade_hist),
+                ("flesch_reading_ease",  fk_ease_stat, fk_ease_hist),
+                ("smog_index",           smog_stat, smog_hist),
+                ("lexical_diversity",    lex_stat, lex_hist),
             ]:
                 v = _flt(d.get(key))
-                if v is not None:
-                    lst.append(v)
+                stat.add(v)
+                hist.add(v)
 
             r = item.get("redundancy") or {}
             exact_dup += int(bool(r.get("exact_duplicate")))
-            for key, lst in [
-                ("near_duplicate_score",     near_dup_v),
-                ("semantic_duplicate_score", sem_dup_v),
+            for key, stat, hist in [
+                ("near_duplicate_score",     near_dup, near_dup_hist),
+                ("semantic_duplicate_score", sem_dup, sem_dup_hist),
             ]:
                 v = _flt(r.get(key))
-                if v is not None:
-                    lst.append(v)
+                stat.add(v)
+                hist.add(v)
 
             p = item.get("perplexity") or {}
             pv = _flt(p.get("gpt2"))
-            if pv is not None and pv < 2000:
-                ppl_v.append(pv)
+            ppl_stat.add(pv if pv is not None and pv < 2000.0 else None)
+            ppl_hist.add(pv if pv is not None and pv < 2000.0 else None)
 
             schema_ctr[item.get("schema_version", "v1")] += 1
             mt = item.get("metric_tier") or {}
@@ -212,24 +288,24 @@ def process_dataset(filepath: str, n_explorer: int = 2000):
         "subject_counts":      dict(subject_ctr),
         "top_domains":         [[k, v] for k, v in domain_ctr.most_common(20)],
         "multi_domain_ratio":  multi_domain / n,
-        "avg_quality":         _mean(quality_scores),
-        "quality_hist":        _hist(quality_scores, 10, 0.0, 1.0),
+        "avg_quality":         quality_stat.mean,
+        "quality_hist":        quality_hist.as_dict(),
         "has_examples_pct":    has_ex    / n * 100,
         "has_explanation_pct": has_expl  / n * 100,
         "has_structure_pct":   has_struct / n * 100,
-        "avg_fk_grade":        _mean(fk_grades),
-        "avg_fk_ease":         _mean(fk_ease_v),
-        "fk_grade_hist":       _hist(fk_grades, 15, 0, 18),
-        "fk_ease_hist":        _hist(fk_ease_v, 15, 0, 100),
-        "smog_hist":           _hist(smog_v, 15, 0, 18),
-        "lex_div_hist":        _hist(lex_v, 10, 0, 1),
+        "avg_fk_grade":        fk_grade_stat.mean,
+        "avg_fk_ease":         fk_ease_stat.mean,
+        "fk_grade_hist":       fk_grade_hist.as_dict(),
+        "fk_ease_hist":        fk_ease_hist.as_dict(),
+        "smog_hist":           smog_hist.as_dict(),
+        "lex_div_hist":        lex_hist.as_dict(),
         "exact_dup_pct":       exact_dup / n * 100,
-        "avg_near_dup":        _mean(near_dup_v),
-        "near_dup_hist":       _hist(near_dup_v, 20, 0, 1),
-        "semantic_dup_hist":   _hist(sem_dup_v, 20, 0, 1),
-        "perplexity_available": len(ppl_v) > 0,
-        "avg_perplexity":      _mean(ppl_v),
-        "ppl_hist":            _hist(ppl_v, 20),
+        "avg_near_dup":        near_dup.mean,
+        "near_dup_hist":       near_dup_hist.as_dict(),
+        "semantic_dup_hist":   sem_dup_hist.as_dict(),
+        "perplexity_available": ppl_stat.n > 0,
+        "avg_perplexity":      ppl_stat.mean,
+        "ppl_hist":            ppl_hist.as_dict(),
         "schema_versions":     dict(schema_ctr),
         "metric_tier":         metric_tier,
         "validity_rates": {
