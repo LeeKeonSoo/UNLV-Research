@@ -67,5 +67,9 @@ Use these thresholds as expected ranges and investigate only when outside range:
   - `python build_corpus_index.py`
   - `python compute_metrics.py`
   - `python build_dashboard.py`
+
+Optimization knobs for the same run semantics:
+- `PHASE1_QUERY_CACHE_LIMIT` / `PHASE1_NGRAM_CACHE_LIMIT` control redundancy in-memory caches.
+- `PHASE1_SEMANTIC_CANDIDATE_LIMIT` and `PHASE1_NGRAM_CANDIDATE_LIMIT` limit per-chunk candidate scoring work while keeping scoring logic unchanged.
 - Quick verification:
   - Set `PHASE1_MAX_BATCHES=2` in env for a limited run of `compute_metrics.py`.

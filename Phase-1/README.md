@@ -94,6 +94,29 @@ python -c "import nltk; nltk.download('punkt')"
 
 ### Recommended Execution Order
 
+### Low-memory click-run profile
+
+Run this when RAM is constrained:
+
+```bash
+python run_phase1_lowmem.py
+```
+
+It applies these defaults (can be changed in script/env):
+- `PHASE1_INDEX_MAX_BATCHES=2`, `PHASE1_MAX_BATCHES=2` (quick subset)
+- `PHASE1_TFIDF_MAX_FEATURES=3000`
+- `PHASE1_QUERY_CACHE_LIMIT=1200`
+- `PHASE1_NGRAM_CACHE_LIMIT=2500`
+- `PHASE1_SEMANTIC_CANDIDATE_LIMIT=300`
+- `PHASE1_NGRAM_CANDIDATE_LIMIT=120`
+
+Run in one click from VS Code with configuration:
+`Phase-1: Low-Memory Orchestrator`
+
+- If you open the repo root, press `F5` and choose
+  `Phase-1: Low-Memory Orchestrator` from the run dropdown.
+- Config is loaded from `/.vscode/launch.json`.
+
 Run only the scripts below in order:
 
 ```bash
@@ -105,6 +128,12 @@ python compute_metrics.py
 python build_dashboard.py
 ```
 
+On Windows with File Explorer double-click:
+
+```bash
+Phase-1\run_phase1_lowmem.bat
+```
+
 Notes:
 - Keep `collect_*` scripts only when the raw source data is not already present.
 - Run-time and reproducibility controls are in `compute_metrics.py` and environment variables:
@@ -112,6 +141,18 @@ Notes:
   - `PHASE1_CUDA_DEVICE=0`
   - `PHASE1_DOMAIN_BATCH_SIZE=256`
   - `PHASE1_MAX_BATCHES=2` for quick Tiny-Textbooks subset
+  - `PHASE1_INDEX_MAX_BATCHES=2` for quick corpus-index build
+  - `PHASE1_BUILD_TFIDF_MATRIX=0` to skip TF-IDF matrix build
+  - `PHASE1_TFIDF_MAX_FEATURES` (default: 5000)
+  - `PHASE1_STORE_DOC_TEXTS=0` to skip doc-text storage
+  - `PHASE1_ENABLE_MINHASH=0` to skip MinHash/near-duplicate candidates
+  - `PHASE1_SKIP_REDUNDANCY=1` in compute stage
+  - `PHASE1_SKIP_PERPLEXITY=1` in compute stage
+  - `PHASE1_USE_GPU=0` if GPU RAM is the bottleneck
+  - `PHASE1_QUERY_CACHE_LIMIT` (default: 2000)
+  - `PHASE1_NGRAM_CACHE_LIMIT` (default: 5000)
+  - `PHASE1_SEMANTIC_CANDIDATE_LIMIT` (default: 0, means all)
+  - `PHASE1_NGRAM_CANDIDATE_LIMIT` (default: 200)
 
 ### Active Pipeline
 
@@ -182,13 +223,13 @@ python compute_metrics.py
 - `outputs/run_summary.json` - Reproducibility-focused run snapshot
 
 **Configuration**:
-- Edit `compute_metrics.py` to set `max_batches=5` for quick testing
+- Use `PHASE1_MAX_BATCHES=2` (optional quick test on Tiny-Textbooks)
 - Full run processes all 42 Tiny-Textbooks batches (~420K documents)
 - Device override via environment variables:
   - `PHASE1_DEVICE=auto|cuda|mps|cpu`
   - `PHASE1_CUDA_DEVICE=0`
   - `PHASE1_DOMAIN_BATCH_SIZE=256`
-- `PHASE1_MAX_BATCHES=2` (optional quick test on Tiny-Textbooks)  
+- `PHASE1_SKIP_REDUNDANCY=1` / `PHASE1_SKIP_PERPLEXITY=1` for fast smoke tests
 
 
 ---

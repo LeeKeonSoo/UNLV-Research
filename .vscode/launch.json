@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Phase-1: Low-Memory Orchestrator",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/Phase-1/run_phase1_lowmem.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

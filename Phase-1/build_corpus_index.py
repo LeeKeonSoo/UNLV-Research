@@ -21,6 +21,7 @@ import json
 import pickle
 from collections import Counter
 from pathlib import Path
+import os
 
 import numpy as np
 from datasketch import MinHash, MinHashLSH
@@ -37,15 +38,42 @@ TINY_DATA_DIR    = "tiny_textbooks_raw"
 OUTPUT_PATH      = "outputs/corpus_index.pkl"
 
 # For LSH: lower threshold = more candidate pairs (more recall, less precision)
-LSH_THRESHOLD = 0.5
-NUM_PERM      = 128   # MinHash permutations (higher = more accurate)
+def _env_bool(name: str, default: bool) -> bool:
+    return os.getenv(name, "1" if default else "0").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def _env_float(name: str, default: float) -> float:
+    try:
+        return float(os.getenv(name, str(default)))
+    except ValueError:
+        return default
+
+
+def _env_int(name: str, default: int):
+    try:
+        return int(os.getenv(name, str(default)))
+    except ValueError:
+        return default
+
+
+LSH_THRESHOLD = _env_float("PHASE1_LSH_THRESHOLD", 0.5)
+NUM_PERM = _env_int("PHASE1_NUM_PERM", 128)   # MinHash permutations (higher = more accurate)
 
 # TF-IDF for semantic similarity
-TFIDF_MAX_FEATURES = 5000   # Larger vocab for semantic comparison
+TFIDF_MAX_FEATURES = _env_int("PHASE1_TFIDF_MAX_FEATURES", 5000)  # Larger vocab for semantic comparison
+BUILD_TFIDF_MATRIX = _env_bool("PHASE1_BUILD_TFIDF_MATRIX", True)
+STORE_DOC_TEXTS = _env_bool("PHASE1_STORE_DOC_TEXTS", True)
+ENABLE_MINHASH = _env_bool("PHASE1_ENABLE_MINHASH", True)
 
 # Chunk size mirror of compute_metrics.py
 CHUNK_SIZE = 200
 MIN_CHUNK_WORDS = 20
+INDEX_MAX_BATCHES = _env_int("PHASE1_INDEX_MAX_BATCHES", 0) or None
 
 
 # ==============================================================================
@@ -114,6 +142,9 @@ def iter_documents():
     tiny_dir = Path(TINY_DATA_DIR)
     if tiny_dir.exists():
         batch_files = sorted(tiny_dir.glob("batch_*.json"))
+        if INDEX_MAX_BATCHES:
+            batch_files = batch_files[:INDEX_MAX_BATCHES]
+            print(f"  (index mode: first {INDEX_MAX_BATCHES} batches only)")
         print(f"\nLoading Tiny-Textbooks ({len(batch_files)} batches)...")
         for batch_file in tqdm(batch_files, desc="Tiny batches"):
             with open(batch_file, "r", encoding="utf-8", errors="replace") as f:
@@ -144,7 +175,9 @@ def build_corpus_index():
     doc_hash_by_id = {}
     doc_texts = {}
     minhashes = {}
-    lsh = MinHashLSH(threshold=LSH_THRESHOLD, num_perm=NUM_PERM)
+    lsh = None if not ENABLE_MINHASH else MinHashLSH(
+        threshold=LSH_THRESHOLD, num_perm=NUM_PERM
+    )
 
     print("\nPass 1: collecting chunks, exact hashes, MinHash signatures...")
     for doc_id, text in iter_documents():
@@ -155,33 +188,41 @@ def build_corpus_index():
         text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
         exact_hash_counts[text_hash] += 1
         doc_hash_by_id[doc_id] = text_hash
-        doc_texts[doc_id] = text
+        if STORE_DOC_TEXTS:
+            doc_texts[doc_id] = text
 
         # MinHash
-        mh = MinHash(num_perm=NUM_PERM)
-        # MinHash models set similarity; repeated tokens do not add information.
-        for word in set(text.lower().split()):
-            mh.update(word.encode("utf-8"))
-        minhashes[doc_id] = mh
+        if ENABLE_MINHASH:
+            mh = MinHash(num_perm=NUM_PERM)
+            # MinHash models set similarity; repeated tokens do not add information.
+            for word in set(text.lower().split()):
+                mh.update(word.encode("utf-8"))
+            minhashes[doc_id] = mh
 
-        # Insert into LSH (silently skip if collision)
-        try:
-            lsh.insert(doc_id, mh)
-        except ValueError:
-            pass  # duplicate key – already indexed
+            # Insert into LSH (silently skip if collision)
+            try:
+                lsh.insert(doc_id, mh)
+            except ValueError:
+                pass  # duplicate key – already indexed
 
     print(f"\n✓ Collected {len(doc_ids):,} chunks total")
 
     print("\nPass 2: building TF-IDF matrix for semantic similarity...")
-    vectorizer = TfidfVectorizer(
-        max_features=TFIDF_MAX_FEATURES,
-        stop_words="english",
-        ngram_range=(1, 1),
-        min_df=2,
-        dtype=np.float32,
-    )
-    corpus_matrix = vectorizer.fit_transform(texts)
-    print(f"✓ TF-IDF matrix: {corpus_matrix.shape}")
+    vectorizer = None
+    corpus_matrix = None
+    if BUILD_TFIDF_MATRIX:
+        vectorizer = TfidfVectorizer(
+            max_features=TFIDF_MAX_FEATURES,
+            stop_words="english",
+            ngram_range=(1, 1),
+            min_df=2,
+            dtype=np.float32,
+        )
+        corpus_matrix = vectorizer.fit_transform(texts)
+        print(f"✓ TF-IDF matrix: {corpus_matrix.shape}")
+    else:
+        print("⚠️ Skipping TF-IDF matrix build (PHASE1_BUILD_TFIDF_MATRIX=0). "
+              "Semantic redundancy scores will be 0/NA.")
 
     exact_hashes = set(exact_hash_counts.keys())  # backward compatibility
 

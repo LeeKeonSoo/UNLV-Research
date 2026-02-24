@@ -28,6 +28,7 @@ import pickle
 import re
 import subprocess
 import warnings
+from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Tuple
@@ -85,9 +86,15 @@ RUN_SUMMARY_OUTPUT = OUTPUT_DIR / "run_summary.json"
 
 TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
-CHUNK_SIZE     = 200
+CHUNK_SIZE      = 200
 MIN_CHUNK_WORDS = 20
-USE_GPU        = True
+USE_GPU         = os.getenv("PHASE1_USE_GPU", "1") not in {"0", "false", "False", "FALSE", "no", "No", "NO"}
+SKIP_REDUNDANCY = os.getenv("PHASE1_SKIP_REDUNDANCY", "0") in {"1", "true", "True", "TRUE", "yes", "Yes", "YES"}
+SKIP_PERPLEXITY = os.getenv("PHASE1_SKIP_PERPLEXITY", "0") in {"1", "true", "True", "TRUE", "yes", "Yes", "YES"}
+REDUNDANCY_QUERY_CACHE_LIMIT = max(128, int(os.getenv("PHASE1_QUERY_CACHE_LIMIT", "2000")))
+REDUNDANCY_NGRAM_CACHE_LIMIT = max(256, int(os.getenv("PHASE1_NGRAM_CACHE_LIMIT", "5000")))
+REDUNDANCY_SEMANTIC_LIMIT = max(0, int(os.getenv("PHASE1_SEMANTIC_CANDIDATE_LIMIT", "0") or 0))
+REDUNDANCY_NGRAM_LIMIT = max(1, int(os.getenv("PHASE1_NGRAM_CANDIDATE_LIMIT", "200") or 200))
 # Device config (override via env):
 #   PHASE1_DEVICE=auto|cuda|mps|cpu
 #   PHASE1_CUDA_DEVICE=0
@@ -600,10 +607,35 @@ class RedundancyChecker:
     Falls back to zeros when corpus index is unavailable.
     """
 
-    def __init__(self, index_path: str):
+    def __init__(self, index_path: str, enabled: bool = True):
+        self._available = False
+        self._query_vec_cache: Dict[str, object] = OrderedDict()
+        self._doc_hash_by_id = {}
+        self._doc_texts = {}
+        self._lsh = None
+        self._minhashes = {}
+        self._num_perm = 0
+        self._MinHash = _MinHash
+        self._vectorizer = None
+        self._corpus_matrix = None
+        self._doc_ids = []
+        self._doc_row_index = {}
+        self._doc_ids_by_hash: Dict[str, List[str]] = {}
+        self._ngram_cache_3: Dict[str, set] = OrderedDict()
+        self._ngram_cache_5: Dict[str, set] = OrderedDict()
+        self._query_cache_limit = max(128, REDUNDANCY_QUERY_CACHE_LIMIT)
+        self._ngram_cache_limit = max(256, REDUNDANCY_NGRAM_CACHE_LIMIT)
+        self._cache_limit = max(
+            self._query_cache_limit,
+            self._ngram_cache_limit,
+        )
+
+        if not enabled:
+            print("  ⚠ Redundancy checks skipped by PHASE1_SKIP_REDUNDANCY=1.")
+            return
+
         if not REDUNDANCY_DEPS_AVAILABLE:
             print("  ⚠ datasketch not available. Redundancy scores will be 0.")
-            self._available = False
             return
 
         if not Path(index_path).exists():
@@ -611,7 +643,6 @@ class RedundancyChecker:
                 f"  ⚠ Corpus index not found at {index_path}. "
                 "Redundancy scores will be 0. Run build_corpus_index.py first."
             )
-            self._available = False
             return
 
         print(f"Loading corpus index from {index_path}...")
@@ -624,8 +655,8 @@ class RedundancyChecker:
         }
         self._doc_hash_by_id = idx.get("doc_hash_by_id", {})
         self._doc_texts = idx.get("doc_texts", {})
-        self._lsh = idx["lsh"]
-        self._minhashes = idx["minhashes"]
+        self._lsh = idx.get("lsh")
+        self._minhashes = idx.get("minhashes")
         self._num_perm = 128
         self._MinHash = _MinHash
         self._vectorizer = idx.get("vectorizer")
@@ -633,10 +664,9 @@ class RedundancyChecker:
         self._doc_ids = idx.get("doc_ids", [])
         self._doc_row_index = {doc_id: i for i, doc_id in enumerate(self._doc_ids)}
         self._doc_ids_by_hash: Dict[str, List[str]] = {}
-        self._query_vec_cache: Dict[str, object] = {}
-        self._ngram_cache_3: Dict[str, set] = {}
-        self._ngram_cache_5: Dict[str, set] = {}
-        self._cache_limit = 20000
+        self._query_vec_cache: Dict[str, object] = OrderedDict()
+        self._ngram_cache_3: Dict[str, set] = OrderedDict()
+        self._ngram_cache_5: Dict[str, set] = OrderedDict()
         for doc_id, h in self._doc_hash_by_id.items():
             self._doc_ids_by_hash.setdefault(h, []).append(doc_id)
         print(f"✓ Corpus index loaded ({len(self._minhashes):,} chunks)")
@@ -661,14 +691,17 @@ class RedundancyChecker:
         return inter / union if union else 0.0
 
     def _cache_put(self, cache: Dict, key, value):
-        if len(cache) >= self._cache_limit:
-            cache.clear()
+        if key in cache:
+            cache.move_to_end(key)
         cache[key] = value
+        if len(cache) > self._cache_limit:
+            cache.popitem(last=False)
 
     def _vectorize_query(self, text: str):
         key = hashlib.md5(text.encode("utf-8")).hexdigest()
         cached = self._query_vec_cache.get(key)
         if cached is not None:
+            self._query_vec_cache.move_to_end(key)
             return cached
         qv = self._vectorizer.transform([text])
         self._cache_put(self._query_vec_cache, key, qv)
@@ -678,6 +711,7 @@ class RedundancyChecker:
         cache = self._ngram_cache_3 if n == 3 else self._ngram_cache_5
         cached = cache.get(doc_id)
         if cached is not None:
+            cache.move_to_end(doc_id)
             return cached
         grams = self._token_ngrams(text, n)
         self._cache_put(cache, doc_id, grams)
@@ -691,6 +725,8 @@ class RedundancyChecker:
             or not self._doc_row_index
         ):
             return 0.0
+        if REDUNDANCY_SEMANTIC_LIMIT > 0:
+            candidate_ids = candidate_ids[:REDUNDANCY_SEMANTIC_LIMIT]
         row_ids = [self._doc_row_index[c] for c in candidate_ids if c in self._doc_row_index]
         if not row_ids:
             return 0.0
@@ -710,7 +746,7 @@ class RedundancyChecker:
         q3 = self._token_ngrams(text, 3)
         q5 = self._token_ngrams(text, 5)
         best3, best5 = 0.0, 0.0
-        for cid in candidate_ids[:200]:
+        for cid in candidate_ids[:REDUNDANCY_NGRAM_LIMIT]:
             cand_text = self._doc_texts.get(cid)
             if not cand_text:
                 continue
@@ -736,11 +772,18 @@ class RedundancyChecker:
         hash_bucket_ids = list(self._doc_ids_by_hash.get(text_hash, []))
         hash_bucket_set = set(hash_bucket_ids)
 
-        mh = self._MinHash(num_perm=self._num_perm)
-        for word in set(text.lower().split()):
-            mh.update(word.encode("utf-8"))
+        mh = None
+        if self._lsh is not None and self._MinHash is not None and self._num_perm:
+            mh = self._MinHash(num_perm=self._num_perm)
+            for word in set(text.lower().split()):
+                mh.update(word.encode("utf-8"))
 
-        candidate_ids = set(self._lsh.query(mh))
+        candidate_ids = set()
+        if mh is not None and self._lsh is not None:
+            try:
+                candidate_ids = set(self._lsh.query(mh))
+            except Exception:
+                candidate_ids = set()
         if hash_bucket_ids:
             candidate_ids.update(hash_bucket_ids)
         if current_doc_id:
@@ -753,7 +796,7 @@ class RedundancyChecker:
             candidate_ids.discard(min(hash_bucket_ids))
 
         near_score = 0.0
-        if candidate_ids:
+        if candidate_ids and mh is not None:
             scores = [
                 mh.jaccard(self._minhashes[cid])
                 for cid in candidate_ids
@@ -788,10 +831,13 @@ class PerplexityScorer:
     """
     MAX_TOKENS = 512
 
-    def __init__(self, use_gpu: bool = True):
+    def __init__(self, use_gpu: bool = True, enabled: bool = True):
         self._available = False
         self._device = "cpu"
         self._batch_error_logged = False
+        if not enabled:
+            print("  ⚠ Perplexity scoring skipped by PHASE1_SKIP_PERPLEXITY=1.")
+            return
         if not TRANSFORMERS_AVAILABLE:
             print("  ⚠ transformers not available. Perplexity will be null.")
             return
@@ -1281,10 +1327,13 @@ def main():
         domain_vectorizer, proto_ids, proto_matrix, use_gpu=USE_GPU)
 
     # Load redundancy checker
-    redundancy = RedundancyChecker(CORPUS_INDEX_PATH)
+    redundancy = RedundancyChecker(CORPUS_INDEX_PATH, enabled=not SKIP_REDUNDANCY)
 
     # Load perplexity scorer
-    perplexity = PerplexityScorer(use_gpu=USE_GPU)
+    perplexity = PerplexityScorer(
+        use_gpu=USE_GPU,
+        enabled=not SKIP_PERPLEXITY,
+    )
 
     tracker = ReliabilityTracker()
 
