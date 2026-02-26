@@ -343,8 +343,18 @@ def check_existing_data():
     """Check if data already exists and is valid."""
     output_file = Path("khan_k12_concepts/all_k12_concepts.json")
     if output_file.exists():
-        with open(output_file, "r") as f:
-            data = json.load(f)
+        data = None
+        for enc in ("utf-8", "utf-8-sig", "cp949"):
+            try:
+                with open(output_file, "r", encoding=enc) as f:
+                    data = json.load(f)
+                break
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                data = None
+                continue
+        if data is None:
+            print("\n⚠ Existing cache is unreadable (encoding/JSON mismatch). Rebuilding cache...")
+            return False
         if len(data) > 0:
             print(f"\n✅ Khan Academy data already exists!")
             print(f"   Location: {output_file}")
