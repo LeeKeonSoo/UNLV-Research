@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run Phase-1 pipeline with a memory-sensitive profile and strict validation."""
+"""Run Phase-1 pipeline with final-validation defaults and memory-safe settings."""
 
 from __future__ import annotations
 
@@ -69,7 +69,19 @@ def _run_and_validate(
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run Phase-1 pipeline with strict validation")
+    parser = argparse.ArgumentParser(
+        description="Run Phase-1 pipeline with final-validation defaults and memory-safe settings"
+    )
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="Reduced-batch smoke run (not for final reporting).",
+    )
+    parser.add_argument(
+        "--reuse-existing",
+        action="store_true",
+        help="Reuse existing collection/taxonomy inputs when present.",
+    )
     parser.add_argument(
         "--max-tiny-batches",
         type=int,
@@ -83,19 +95,9 @@ def _parse_args() -> argparse.Namespace:
         help="Optional metrics JSONL record limit for validation after compute step.",
     )
     parser.add_argument(
-        "--require-gates",
+        "--allow-gate-fail",
         action="store_true",
-        help="Fail if run_manifest reliability gates have pass=False.",
-    )
-    parser.add_argument(
-        "--rerun-all",
-        action="store_true",
-        help="Re-run every stage even if outputs already exist.",
-    )
-    parser.add_argument(
-        "--full",
-        action="store_true",
-        help="Disable batching in compute/index stages before running.",
+        help="Do not fail when auto-computed reliability gates have pass=False.",
     )
     return parser.parse_args()
 
@@ -103,34 +105,44 @@ def _parse_args() -> argparse.Namespace:
 def main() -> int:
     args = _parse_args()
 
-    # Tuned low-memory profile defaults.
+    rerun_all = not args.reuse_existing
+    require_gates = not args.allow_gate_fail
+
+    # Final-validation defaults with RAM-safe redundancy settings.
     profile: Dict[str, str] = {
         "PHASE1_DEVICE": "auto",
         "PHASE1_CUDA_DEVICE": "0",
         "PHASE1_USE_GPU": "1",
         "PHASE1_DOMAIN_BATCH_SIZE": "256",
-        "PHASE1_MAX_BATCHES": "1",
-        "PHASE1_INDEX_MAX_BATCHES": "1",
-        "PHASE1_TFIDF_MAX_FEATURES": "2000",
-        "PHASE1_BUILD_TFIDF_MATRIX": "1",
-        "PHASE1_STORE_DOC_TEXTS": "0",
-        "PHASE1_ENABLE_MINHASH": "0",
-        "PHASE1_QUERY_CACHE_LIMIT": "256",
-        "PHASE1_NGRAM_CACHE_LIMIT": "512",
+        "PHASE1_MAX_BATCHES": "0",
+        "PHASE1_INDEX_MAX_BATCHES": "0",
+        "PHASE1_TFIDF_MAX_FEATURES": "3000",
+        "PHASE1_BUILD_TFIDF_MATRIX": "0",
+        "PHASE1_STORE_DOC_TEXTS": "1",
+        "PHASE1_DOC_TEXT_BACKEND": "sqlite",
+        "PHASE1_DOC_TEXT_INSERT_BATCH": "2000",
+        "PHASE1_DOC_TEXT_CACHE_LIMIT": "2500",
+        "PHASE1_ENABLE_MINHASH": "1",
+        "PHASE1_QUERY_CACHE_LIMIT": "1024",
+        "PHASE1_NGRAM_CACHE_LIMIT": "2048",
         "PHASE1_SEMANTIC_CANDIDATE_LIMIT": "80",
-        "PHASE1_NGRAM_CANDIDATE_LIMIT": "40",
-        "PHASE1_SKIP_REDUNDANCY": "1",
+        "PHASE1_NGRAM_CANDIDATE_LIMIT": "80",
+        "PHASE1_SKIP_REDUNDANCY": "0",
         "PHASE1_SKIP_PERPLEXITY": "0",
     }
 
-    if args.full:
-        profile["PHASE1_MAX_BATCHES"] = "0"
-        profile["PHASE1_INDEX_MAX_BATCHES"] = "0"
+    if args.quick:
+        profile["PHASE1_MAX_BATCHES"] = "1"
+        profile["PHASE1_INDEX_MAX_BATCHES"] = "1"
+        profile["PHASE1_SKIP_REDUNDANCY"] = "1"
+        profile["PHASE1_ENABLE_MINHASH"] = "0"
+        profile["PHASE1_STORE_DOC_TEXTS"] = "0"
+        profile["PHASE1_DOC_TEXT_BACKEND"] = "memory"
 
     env = os.environ.copy()
     env.update(profile)
 
-    print("[Phase-1] Using low-memory profile:")
+    print("[Phase-1] Using execution profile:")
     for k in sorted(profile):
         print(f"  {k}={env[k]}")
 
@@ -140,28 +152,28 @@ def main() -> int:
     concept_out = outputs / "concept_prototypes_tfidf.pkl"
 
     # Always validate pre-existing inputs before deciding which stages to skip.
-    if khan_path.exists() and not args.rerun_all:
+    if khan_path.exists() and not rerun_all:
         _print_results(validate_khan_collection(max_records=args.max_tiny_batches), "Khan collection")
-    if tiny_dir.exists() and not args.rerun_all:
+    if tiny_dir.exists() and not rerun_all:
         _print_results(validate_tiny_collection(max_files=args.max_tiny_batches), "Tiny collection")
 
     steps: List[Tuple[str, List[str], List[Callable[[], List[ValidationItem]]]]] = []
 
-    if args.rerun_all or not khan_path.exists():
+    if rerun_all or not khan_path.exists():
         steps.append((
             "collect_khan_academy",
             [sys.executable, "collect_khan_academy.py"],
             [lambda: validate_khan_collection(max_records=args.max_tiny_batches)],
         ))
 
-    if args.rerun_all or not tiny_dir.exists():
+    if rerun_all or not tiny_dir.exists():
         steps.append((
             "collect_tiny_textbooks",
             [sys.executable, "collect_tiny_textbooks.py"],
             [lambda: validate_tiny_collection(max_files=args.max_tiny_batches)],
         ))
 
-    if args.rerun_all or not concept_out.exists():
+    if rerun_all or not concept_out.exists():
         steps.append((
             "extract_khan_taxonomy",
             [sys.executable, "extract_khan_taxonomy.py"],
@@ -180,7 +192,7 @@ def main() -> int:
         [sys.executable, "compute_metrics.py"],
         [
             lambda: validate_analysis_outputs(max_records=args.max_metrics_records),
-            lambda: validate_manifest(require_gates=args.require_gates),
+            lambda: validate_manifest(require_gates=require_gates),
         ],
     ))
     steps.append(("build_dashboard", [sys.executable, "build_dashboard.py"], [validate_dashboard]))

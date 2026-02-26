@@ -1,23 +1,6 @@
 @echo off
 setlocal EnableExtensions
 
-:: Tuned low-memory profile for Windows click-run
-set PHASE1_DEVICE=auto
-set PHASE1_CUDA_DEVICE=0
-set PHASE1_USE_GPU=1
-set PHASE1_DOMAIN_BATCH_SIZE=256
-set PHASE1_MAX_BATCHES=1
-set PHASE1_INDEX_MAX_BATCHES=1
-set PHASE1_TFIDF_MAX_FEATURES=2000
-set PHASE1_BUILD_TFIDF_MATRIX=1
-set PHASE1_STORE_DOC_TEXTS=0
-set PHASE1_ENABLE_MINHASH=0
-set PHASE1_QUERY_CACHE_LIMIT=256
-set PHASE1_NGRAM_CACHE_LIMIT=512
-set PHASE1_SEMANTIC_CANDIDATE_LIMIT=80
-set PHASE1_NGRAM_CANDIDATE_LIMIT=40
-set PHASE1_SKIP_REDUNDANCY=1
-set PHASE1_SKIP_PERPLEXITY=0
-
+:: Canonical run: final-validation defaults + memory-safe profile
 python "%~dp0run_phase1_lowmem.py"
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%

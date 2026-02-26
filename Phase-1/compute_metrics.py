@@ -26,6 +26,7 @@ import json
 import os
 import pickle
 import re
+import sqlite3
 import subprocess
 import warnings
 from collections import OrderedDict
@@ -95,6 +96,7 @@ REDUNDANCY_QUERY_CACHE_LIMIT = max(128, int(os.getenv("PHASE1_QUERY_CACHE_LIMIT"
 REDUNDANCY_NGRAM_CACHE_LIMIT = max(256, int(os.getenv("PHASE1_NGRAM_CACHE_LIMIT", "5000")))
 REDUNDANCY_SEMANTIC_LIMIT = max(0, int(os.getenv("PHASE1_SEMANTIC_CANDIDATE_LIMIT", "0") or 0))
 REDUNDANCY_NGRAM_LIMIT = max(1, int(os.getenv("PHASE1_NGRAM_CANDIDATE_LIMIT", "200") or 200))
+REDUNDANCY_DOC_TEXT_CACHE_LIMIT = max(512, int(os.getenv("PHASE1_DOC_TEXT_CACHE_LIMIT", "4000")))
 # Device config (override via env):
 #   PHASE1_DEVICE=auto|cuda|mps|cpu
 #   PHASE1_CUDA_DEVICE=0
@@ -612,6 +614,12 @@ class RedundancyChecker:
         self._query_vec_cache: Dict[str, object] = OrderedDict()
         self._doc_hash_by_id = {}
         self._doc_texts = {}
+        self._doc_texts_backend = "memory"
+        self._doc_texts_db_path: Optional[str] = None
+        self._text_db_conn: Optional[sqlite3.Connection] = None
+        self._doc_text_cache: Dict[str, str] = OrderedDict()
+        self._doc_text_cache_limit = REDUNDANCY_DOC_TEXT_CACHE_LIMIT
+        self._has_doc_text_source = False
         self._lsh = None
         self._minhashes = {}
         self._num_perm = 0
@@ -621,6 +629,7 @@ class RedundancyChecker:
         self._doc_ids = []
         self._doc_row_index = {}
         self._doc_ids_by_hash: Dict[str, List[str]] = {}
+        self._ngram_cache_1: Dict[str, set] = OrderedDict()
         self._ngram_cache_3: Dict[str, set] = OrderedDict()
         self._ngram_cache_5: Dict[str, set] = OrderedDict()
         self._query_cache_limit = max(128, REDUNDANCY_QUERY_CACHE_LIMIT)
@@ -655,8 +664,10 @@ class RedundancyChecker:
         }
         self._doc_hash_by_id = idx.get("doc_hash_by_id", {})
         self._doc_texts = idx.get("doc_texts", {})
+        self._doc_texts_backend = str(idx.get("doc_texts_backend") or "memory")
+        self._doc_texts_db_path = idx.get("doc_texts_db_path")
         self._lsh = idx.get("lsh")
-        self._minhashes = idx.get("minhashes")
+        self._minhashes = idx.get("minhashes") or {}
         self._num_perm = 128
         self._MinHash = _MinHash
         self._vectorizer = idx.get("vectorizer")
@@ -665,11 +676,24 @@ class RedundancyChecker:
         self._doc_row_index = {doc_id: i for i, doc_id in enumerate(self._doc_ids)}
         self._doc_ids_by_hash: Dict[str, List[str]] = {}
         self._query_vec_cache: Dict[str, object] = OrderedDict()
+        self._ngram_cache_1: Dict[str, set] = OrderedDict()
         self._ngram_cache_3: Dict[str, set] = OrderedDict()
         self._ngram_cache_5: Dict[str, set] = OrderedDict()
+        self._doc_text_cache: Dict[str, str] = OrderedDict()
+
+        if self._doc_texts_backend == "sqlite" and self._doc_texts_db_path:
+            db_path = Path(self._doc_texts_db_path)
+            if db_path.exists():
+                try:
+                    self._text_db_conn = sqlite3.connect(str(db_path))
+                except Exception as e:
+                    print(f"  ⚠ Failed to open doc_text DB ({e}). N-gram/semantic fallback may be limited.")
+
+        self._has_doc_text_source = bool(self._doc_texts) or self._text_db_conn is not None
         for doc_id, h in self._doc_hash_by_id.items():
             self._doc_ids_by_hash.setdefault(h, []).append(doc_id)
-        print(f"✓ Corpus index loaded ({len(self._minhashes):,} chunks)")
+        minhash_count = len(self._minhashes or {})
+        print(f"✓ Corpus index loaded ({minhash_count:,} chunks)")
 
     @property
     def available(self) -> bool:
@@ -708,7 +732,12 @@ class RedundancyChecker:
         return qv
 
     def _doc_ngrams(self, doc_id: str, text: str, n: int) -> set:
-        cache = self._ngram_cache_3 if n == 3 else self._ngram_cache_5
+        if n == 1:
+            cache = self._ngram_cache_1
+        elif n == 3:
+            cache = self._ngram_cache_3
+        else:
+            cache = self._ngram_cache_5
         cached = cache.get(doc_id)
         if cached is not None:
             cache.move_to_end(doc_id)
@@ -717,16 +746,60 @@ class RedundancyChecker:
         self._cache_put(cache, doc_id, grams)
         return grams
 
+    def _get_doc_text(self, doc_id: str) -> Optional[str]:
+        if self._doc_texts:
+            return self._doc_texts.get(doc_id)
+        if self._text_db_conn is None:
+            return None
+        cached = self._doc_text_cache.get(doc_id)
+        if cached is not None:
+            self._doc_text_cache.move_to_end(doc_id)
+            return cached
+        try:
+            row = self._text_db_conn.execute(
+                "SELECT text FROM docs WHERE doc_id = ?",
+                (doc_id,),
+            ).fetchone()
+        except Exception:
+            return None
+        if not row:
+            return None
+        text = row[0]
+        self._cache_put(self._doc_text_cache, doc_id, text)
+        if len(self._doc_text_cache) > self._doc_text_cache_limit:
+            self._doc_text_cache.popitem(last=False)
+        return text
+
+    def _semantic_fallback_score(self, text: str, candidate_ids: List[str]) -> float:
+        if not candidate_ids or not self._has_doc_text_source:
+            return 0.0
+        q1 = self._token_ngrams(text, 1)
+        if not q1:
+            return 0.0
+        best = 0.0
+        limit = REDUNDANCY_SEMANTIC_LIMIT if REDUNDANCY_SEMANTIC_LIMIT > 0 else REDUNDANCY_NGRAM_LIMIT
+        for cid in candidate_ids[:limit]:
+            cand_text = self._get_doc_text(cid)
+            if not cand_text:
+                continue
+            c1 = self._doc_ngrams(cid, cand_text, 1)
+            best = max(best, self._jaccard(q1, c1))
+        return best
+
     def _semantic_score(self, text: str, candidate_ids: List[str]) -> float:
-        if (
-            not candidate_ids
-            or self._vectorizer is None
-            or self._corpus_matrix is None
-            or not self._doc_row_index
-        ):
+        if not candidate_ids:
             return 0.0
         if REDUNDANCY_SEMANTIC_LIMIT > 0:
             candidate_ids = candidate_ids[:REDUNDANCY_SEMANTIC_LIMIT]
+
+        # Memory-safe fallback when TF-IDF matrix is disabled.
+        if (
+            self._vectorizer is None
+            or self._corpus_matrix is None
+            or not self._doc_row_index
+        ):
+            return self._semantic_fallback_score(text, candidate_ids)
+
         row_ids = [self._doc_row_index[c] for c in candidate_ids if c in self._doc_row_index]
         if not row_ids:
             return 0.0
@@ -741,13 +814,13 @@ class RedundancyChecker:
             return 0.0
 
     def _ngram_scores(self, text: str, candidate_ids: List[str]) -> Tuple[float, float]:
-        if not candidate_ids or not self._doc_texts:
+        if not candidate_ids or not self._has_doc_text_source:
             return 0.0, 0.0
         q3 = self._token_ngrams(text, 3)
         q5 = self._token_ngrams(text, 5)
         best3, best5 = 0.0, 0.0
         for cid in candidate_ids[:REDUNDANCY_NGRAM_LIMIT]:
-            cand_text = self._doc_texts.get(cid)
+            cand_text = self._get_doc_text(cid)
             if not cand_text:
                 continue
             c3 = self._doc_ngrams(cid, cand_text, 3)
@@ -818,6 +891,13 @@ class RedundancyChecker:
             "n_gram_overlap_3": round(ngram3, 4),
             "n_gram_overlap_5": round(ngram5, 4),
         }
+
+    def __del__(self):
+        try:
+            if self._text_db_conn is not None:
+                self._text_db_conn.close()
+        except Exception:
+            pass
 
 
 # ==============================================================================
@@ -986,6 +1066,35 @@ def chunk_text(text: str, chunk_size: int = 200) -> List[str]:
 # Dataset Processing
 # ==============================================================================
 
+def _stable_khan_doc_base_id(doc: Dict, doc_idx: int) -> str:
+    raw = str(doc.get("doc_id") or doc.get("url") or "").strip()
+    if raw and raw.lower() != "unknown":
+        return raw
+    title = str(doc.get("title") or "").strip()
+    text = str(doc.get("content") or "").strip()
+    seed = f"{title}\n{text[:500]}"
+    suffix = hashlib.md5(seed.encode("utf-8")).hexdigest()[:12]
+    return f"missing_khan_id_{doc_idx}_{suffix}"
+
+
+def _stable_tiny_doc_id(doc: Dict, doc_idx: int) -> str:
+    raw = str(doc.get("id") or "").strip()
+    if raw and raw.lower() != "unknown":
+        return raw
+    text = str(doc.get("text") or "").strip()
+    seed = text[:500] if text else ""
+    suffix = hashlib.md5(seed.encode("utf-8")).hexdigest()[:12] if seed else "na"
+    return f"missing_tiny_id_{doc_idx}_{suffix}"
+
+
+def _dedupe_with_counter(base_id: str, seen: Dict[str, int]) -> str:
+    n = seen.get(base_id, 0) + 1
+    seen[base_id] = n
+    if n == 1:
+        return base_id
+    return f"{base_id}__dup{n}"
+
+
 def _build_index_chunk_id(doc_meta: Dict, chunk_id: int) -> Optional[str]:
     source = doc_meta.get("source")
     if source == "khan_academy":
@@ -1095,15 +1204,20 @@ def process_khan_academy(
 
     chunks_written = 0
     docs_used = 0
+    seen_khan_ids: Dict[str, int] = {}
     with jsonlines.open(KHAN_OUTPUT, "w") as w:
-        for doc in tqdm(khan_data, desc="Khan"):
+        for doc_idx, doc in enumerate(tqdm(khan_data, desc="Khan")):
             text = doc.get("content", "")
             if len(text.strip()) < 50:
                 continue
+            stable_doc_id = _dedupe_with_counter(
+                _stable_khan_doc_base_id(doc, doc_idx),
+                seen_khan_ids,
+            )
             docs_used += 1
             meta = {
                 "source": "khan_academy",
-                "doc_id": doc.get("doc_id") or doc.get("url", "unknown"),
+                "doc_id": stable_doc_id,
                 "subject": doc.get("subject", "Unknown"),
                 "grade": doc.get("grade", "Unknown"),
                 "title": doc.get("title", "Untitled"),
@@ -1150,14 +1264,19 @@ def process_tiny_textbooks(
         for bf in tqdm(batch_files, desc="Tiny batches"):
             with open(bf, "r", encoding="utf-8", errors="replace") as f:
                 batch = json.load(f)
-            for doc in batch:
+            seen_tiny_ids: Dict[str, int] = {}
+            for doc_idx, doc in enumerate(batch):
                 total_docs += 1
                 text = doc.get("text", "")
                 if len(text.strip()) < 100:
                     continue
+                stable_doc_id = _dedupe_with_counter(
+                    _stable_tiny_doc_id(doc, doc_idx),
+                    seen_tiny_ids,
+                )
                 meta = {
                     "source": "tiny_textbooks",
-                    "doc_id": doc.get("id", "unknown"),
+                    "doc_id": stable_doc_id,
                     "batch_file": bf.name,
                 }
                 for record in _iter_chunk_records(
@@ -1310,6 +1429,10 @@ def write_run_summary(manifest: Dict) -> None:
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    # Avoid stale metadata from failed/interrupted prior runs.
+    for stale in (RUN_MANIFEST_OUTPUT, RUN_SUMMARY_OUTPUT):
+        if stale.exists():
+            stale.unlink()
 
     print("="*60)
     print("DATASET ANALYSIS — ALL 5 METRICS")
