@@ -120,6 +120,10 @@ DOMAIN_TOP3_GATE = 0.85
 QUALITY_PREC_GATE = 0.80
 DIFFICULTY_OOR_GATE = 0.01
 PERPLEXITY_COVERAGE_GATE = 0.90
+DIFFICULTY_FK_MAX = float(os.getenv("PHASE1_DIFFICULTY_FK_MAX", "30.0"))
+DIFFICULTY_EASE_MIN = float(os.getenv("PHASE1_DIFFICULTY_EASE_MIN", "-100.0"))
+DIFFICULTY_EASE_MAX = float(os.getenv("PHASE1_DIFFICULTY_EASE_MAX", "130.0"))
+DIFFICULTY_SMOG_MAX = float(os.getenv("PHASE1_DIFFICULTY_SMOG_MAX", "40.0"))
 
 # Top-3000 common English words (lightweight proxy for rare-word detection)
 _COMMON_WORDS: Optional[set] = None
@@ -256,9 +260,9 @@ def _is_difficulty_valid(difficulty: Dict) -> bool:
     if fk_grade is None or fk_ease is None or smog is None or ttr is None or rare is None:
         return False
     return (
-        0.0 <= fk_grade <= 20.0
-        and -50.0 <= fk_ease <= 120.0
-        and 0.0 <= smog <= 30.0
+        0.0 <= fk_grade <= DIFFICULTY_FK_MAX
+        and DIFFICULTY_EASE_MIN <= fk_ease <= DIFFICULTY_EASE_MAX
+        and 0.0 <= smog <= DIFFICULTY_SMOG_MAX
         and 0.0 <= ttr <= 1.0
         and 0.0 <= rare <= 1.0
     )
@@ -1347,6 +1351,13 @@ def build_run_manifest(
             "MIN_SIMILARITY": MIN_SIMILARITY,
             "CHUNK_SIZE": CHUNK_SIZE,
             "DOMAIN_BATCH_SIZE": DOMAIN_BATCH_SIZE,
+            "DIFFICULTY_VALID_RANGE": {
+                "flesch_kincaid_grade": [0.0, DIFFICULTY_FK_MAX],
+                "flesch_reading_ease": [DIFFICULTY_EASE_MIN, DIFFICULTY_EASE_MAX],
+                "smog_index": [0.0, DIFFICULTY_SMOG_MAX],
+                "lexical_diversity": [0.0, 1.0],
+                "rare_words_pct": [0.0, 1.0],
+            },
         },
         "runtime_device": {
             "requested": DEVICE_PREFERENCE,
