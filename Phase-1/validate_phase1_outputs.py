@@ -24,6 +24,7 @@ import types
 
 PROJECT_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_DIR / "outputs"
+DATASETS_CONFIG_PATH = PROJECT_DIR / "datasets_config.json"
 KHAN_INPUT = PROJECT_DIR / "khan_k12_concepts" / "all_k12_concepts.json"
 TINY_INPUT = PROJECT_DIR / "tiny_textbooks_raw"
 KHAN_ANALYSIS = OUTPUT_DIR / "khan_analysis.jsonl"
@@ -52,6 +53,60 @@ REQUIRED_FLAGS = {
     "perplexity_valid",
 }
 ALLOWED_TIER_VALUES = {"core", "exploratory"}
+ALLOWED_OOD_LABELS = {"in_domain", "borderline", "ood_near", "ood_far"}
+
+
+def _slugify_dataset_name(raw: str) -> str:
+    cleaned = re.sub(r"[^a-zA-Z0-9_]+", "_", str(raw or "").strip().lower())
+    cleaned = cleaned.strip("_")
+    return cleaned or "dataset"
+
+
+def _iter_expected_analysis_outputs(
+    manifest_path: Path = RUN_MANIFEST,
+    datasets_config_path: Path = DATASETS_CONFIG_PATH,
+) -> List[Tuple[str, Path]]:
+    # Preferred source of truth: run_manifest
+    if manifest_path.exists():
+        try:
+            manifest = _load_json(manifest_path)
+            datasets = (manifest.get("dataset_versions_and_counts", {}) or {})
+            out: List[Tuple[str, Path]] = []
+            for dataset_name, meta in datasets.items():
+                if not isinstance(meta, dict):
+                    continue
+                output_file = str(meta.get("output_file") or f"{dataset_name}_analysis.jsonl")
+                out.append((dataset_name, OUTPUT_DIR / output_file))
+            if out:
+                return out
+        except Exception:
+            pass
+
+    # Secondary source: datasets config
+    if datasets_config_path.exists():
+        try:
+            payload = _load_json(datasets_config_path)
+            raw_specs = payload.get("datasets", []) if isinstance(payload, dict) else payload
+            out = []
+            if isinstance(raw_specs, list):
+                for i, spec in enumerate(raw_specs):
+                    if not isinstance(spec, dict):
+                        continue
+                    dataset_name = _slugify_dataset_name(spec.get("name", f"dataset_{i+1}"))
+                    output_file = Path(
+                        str(spec.get("output_file") or f"{dataset_name}_analysis.jsonl")
+                    ).name
+                    out.append((dataset_name, OUTPUT_DIR / output_file))
+            if out:
+                return out
+        except Exception:
+            pass
+
+    # Backward-compatible fallback
+    return [
+        ("khan_academy", KHAN_ANALYSIS),
+        ("tiny_textbooks", TINY_ANALYSIS),
+    ]
 
 
 @dataclass
@@ -376,6 +431,19 @@ def _validate_metric_record(record: Dict[str, Any], index: int, source: str, det
         if v is None:
             bad_ranges += 1
 
+    ood = record.get("ood")
+    if ood is not None:
+        if not isinstance(ood, dict):
+            bad_ranges += 1
+        else:
+            label = ood.get("label")
+            if label not in ALLOWED_OOD_LABELS:
+                bad_ranges += 1
+            for k in ("top1_similarity", "top2_similarity", "margin"):
+                v = ood.get(k)
+                if v is not None and _safe_float(v) is None:
+                    bad_ranges += 1
+
     return bad_schema, bad_tier, bad_flags, bad_ranges, bad_source
 
 
@@ -440,13 +508,13 @@ def _validate_analysis_jsonl(path: Path, source: str, max_records: Optional[int]
 
 
 def validate_analysis_outputs(
-    khan_path: Path = KHAN_ANALYSIS,
-    tiny_path: Path = TINY_ANALYSIS,
     max_records: Optional[int] = None,
 ) -> List[ValidationItem]:
     results: List[ValidationItem] = []
-    results.extend(_validate_analysis_jsonl(khan_path, "khan_academy", max_records=max_records))
-    results.extend(_validate_analysis_jsonl(tiny_path, "tiny_textbooks", max_records=max_records))
+    for source_name, path in _iter_expected_analysis_outputs():
+        results.extend(
+            _validate_analysis_jsonl(path, source_name, max_records=max_records)
+        )
     return results
 
 
@@ -692,8 +760,6 @@ def validate_corpus_index(path: Path = CORPUS_INDEX) -> List[ValidationItem]:
 def validate_manifest(
     manifest_path: Path = RUN_MANIFEST,
     run_summary_path: Path = RUN_SUMMARY,
-    khan_output: Path = KHAN_ANALYSIS,
-    tiny_output: Path = TINY_ANALYSIS,
     require_gates: bool = False,
 ) -> List[ValidationItem]:
     failures: List[ValidationItem] = []
@@ -724,22 +790,52 @@ def validate_manifest(
         if missing:
             failures.append(ValidationItem(name="run_manifest_keys", ok=False, message="FAIL", details={"missing_keys": missing}))
 
+    dataset_count_summary: Dict[str, Dict[str, Any]] = {}
     if isinstance(manifest, dict):
-        khan_counts = manifest.get("dataset_versions_and_counts", {}).get("khan_academy", {})
-        tiny_counts = manifest.get("dataset_versions_and_counts", {}).get("tiny_textbooks", {})
-        actual_k = _count_jsonl_lines(khan_output)
-        actual_t = _count_jsonl_lines(tiny_output)
-
-        if khan_counts.get("chunks_written") != actual_k:
-            failures.append(ValidationItem(name="run_manifest_khan_count", ok=False, message="FAIL", details={
-                "manifest": khan_counts.get("chunks_written"),
-                "actual": actual_k,
-            }))
-        if tiny_counts.get("chunks_written") != actual_t:
-            failures.append(ValidationItem(name="run_manifest_tiny_count", ok=False, message="FAIL", details={
-                "manifest": tiny_counts.get("chunks_written"),
-                "actual": actual_t,
-            }))
+        dataset_versions = manifest.get("dataset_versions_and_counts", {}) or {}
+        if not dataset_versions:
+            failures.append(
+                ValidationItem(
+                    name="run_manifest_dataset_counts",
+                    ok=False,
+                    message="FAIL",
+                    details={"reason": "dataset_versions_and_counts is empty"},
+                )
+            )
+        for dataset_name, dataset_meta in dataset_versions.items():
+            if not isinstance(dataset_meta, dict):
+                failures.append(
+                    ValidationItem(
+                        name="run_manifest_dataset_shape",
+                        ok=False,
+                        message="FAIL",
+                        details={"dataset": dataset_name, "type": type(dataset_meta).__name__},
+                    )
+                )
+                continue
+            output_file = str(dataset_meta.get("output_file") or f"{dataset_name}_analysis.jsonl")
+            output_path = OUTPUT_DIR / output_file
+            actual_count = _count_jsonl_lines(output_path)
+            manifest_count = dataset_meta.get("chunks_written")
+            dataset_count_summary[dataset_name] = {
+                "manifest": manifest_count,
+                "actual": actual_count,
+                "output_file": output_file,
+            }
+            if manifest_count != actual_count:
+                failures.append(
+                    ValidationItem(
+                        name=f"run_manifest_{dataset_name}_count",
+                        ok=False,
+                        message="FAIL",
+                        details={
+                            "dataset": dataset_name,
+                            "manifest": manifest_count,
+                            "actual": actual_count,
+                            "output_file": output_file,
+                        },
+                    )
+                )
 
         for metric in REQUIRED_TIER_KEYS:
             if manifest.get("metric_tier", {}).get(metric) not in ALLOWED_TIER_VALUES:
@@ -775,8 +871,7 @@ def validate_manifest(
             message="PASS",
             details={
                 "schema_version": manifest.get("schema_version"),
-                "khan_chunks": manifest.get("dataset_versions_and_counts", {}).get("khan_academy", {}).get("chunks_written"),
-                "tiny_chunks": manifest.get("dataset_versions_and_counts", {}).get("tiny_textbooks", {}).get("chunks_written"),
+                "dataset_chunks": dataset_count_summary,
                 "device": manifest.get("runtime_device", {}),
             },
         ))
@@ -797,7 +892,7 @@ def validate_dashboard(path: Path = DASHBOARD_HTML, manifest_path: Path = RUN_MA
         failures.append(ValidationItem(name="dashboard_embedded_data", ok=False, message="FAIL", details={"path": str(path)}))
 
     emb_match = re.search(
-        r"const\s+EMB\s*=\s*(\{.*?\});\s*\n\s*const\s+KS\s*=",
+        r"const\s+EMB\s*=\s*(\{.*?\});",
         text,
         flags=re.DOTALL,
     )
@@ -811,15 +906,33 @@ def validate_dashboard(path: Path = DASHBOARD_HTML, manifest_path: Path = RUN_MA
     else:
         try:
             emb = json.loads(emb_match.group(1))
-            if not isinstance(emb, dict) or not emb.get("khan") or not emb.get("tiny"):
-                failures.append(ValidationItem(name="dashboard_embedded_data", ok=False, message="FAIL", details={"embedded_shape": type(emb).__name__}))
+            if not isinstance(emb, dict) or not emb:
+                failures.append(
+                    ValidationItem(
+                        name="dashboard_embedded_data",
+                        ok=False,
+                        message="FAIL",
+                        details={"embedded_shape": type(emb).__name__},
+                    )
+                )
             else:
-                khan_stats = (emb.get("khan", {}) or {}).get("stats", {})
-                tiny_stats = (emb.get("tiny", {}) or {}).get("stats", {})
-                khan_total = khan_stats.get("total")
-                tiny_total = tiny_stats.get("total")
-                if not isinstance(khan_total, int) or not isinstance(tiny_total, int):
-                    failures.append(ValidationItem(name="dashboard_stats", ok=False, message="FAIL", details={"khan_total": khan_total, "tiny_total": tiny_total}))
+                bad_dataset_stats = []
+                for dataset_name, payload in emb.items():
+                    stats = (payload or {}).get("stats", {}) if isinstance(payload, dict) else {}
+                    total = stats.get("total")
+                    if not isinstance(total, int):
+                        bad_dataset_stats.append(
+                            {"dataset": dataset_name, "total": total}
+                        )
+                if bad_dataset_stats:
+                    failures.append(
+                        ValidationItem(
+                            name="dashboard_stats",
+                            ok=False,
+                            message="FAIL",
+                            details={"bad_dataset_stats": bad_dataset_stats[:10]},
+                        )
+                    )
         except Exception as e:
             failures.append(ValidationItem(name="dashboard_embedded_data", ok=False, message="FAIL", details={"error": str(e)}))
 

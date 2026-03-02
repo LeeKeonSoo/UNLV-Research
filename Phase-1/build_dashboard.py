@@ -383,12 +383,50 @@ def _load_manifest(path: str) -> dict:
         return {}
 
 
+def _resolve_dashboard_inputs(manifest: Optional[dict]) -> List[dict]:
+    manifest = manifest or {}
+    datasets = manifest.get("dataset_versions_and_counts", {}) or {}
+    resolved: List[dict] = []
+    for dataset_name, dataset_meta in datasets.items():
+        if not isinstance(dataset_meta, dict):
+            continue
+        output_file = Path(
+            str(dataset_meta.get("output_file") or f"{dataset_name}_analysis.jsonl")
+        ).name
+        resolved.append(
+            {
+                "name": str(dataset_name),
+                "label": str(dataset_name).replace("_", " ").title(),
+                "path": str(Path("outputs") / output_file),
+            }
+        )
+
+    if len(resolved) >= 2:
+        return resolved[:2]
+
+    fallback = [
+        {"name": "khan_academy", "label": "Khan Academy", "path": KHAN_ANALYSIS},
+        {"name": "tiny_textbooks", "label": "Tiny-Textbooks", "path": TINY_ANALYSIS},
+    ]
+    if not resolved:
+        return fallback
+    if len(resolved) == 1:
+        for item in fallback:
+            if item["name"] != resolved[0]["name"]:
+                return [resolved[0], item]
+    return resolved[:2]
+
+
 def generate_dashboard_html(
     ks: dict,
     khan_exp: List[dict],
     ts: dict,
     tiny_exp: List[dict],
     manifest: Optional[dict] = None,
+    label_k: str = "Khan Academy",
+    label_t: str = "Tiny-Textbooks",
+    source_k: str = "khan_academy",
+    source_t: str = "tiny_textbooks",
 ) -> str:
     manifest = manifest or {}
     gate_outcomes = manifest.get("reliability_gate_outcomes") or {}
@@ -409,8 +447,10 @@ def generate_dashboard_html(
     k_top = [[d[0].split("::")[-1][:35], d[1]] for d in ks["top_domains"][:15]]
     t_top = [[d[0].split("::")[-1][:35], d[1]] for d in ts["top_domains"][:15]]
 
-    embedded = {"khan": {"stats": ks, "explorer": khan_exp},
-                "tiny": {"stats": ts, "explorer": tiny_exp}}
+    embedded = {
+        "khan": {"id": source_k, "label": label_k, "stats": ks, "explorer": khan_exp},
+        "tiny": {"id": source_t, "label": label_t, "stats": ts, "explorer": tiny_exp},
+    }
 
     def metric_gate_status(metric: str) -> Optional[bool]:
         g = gate_outcomes.get(metric)
@@ -727,7 +767,7 @@ canvas{{max-height:340px!important}}
 
 <div class="header">
   <h1>📊 Dataset Analysis Dashboard</h1>
-  <p>Phase 1 · SLM Pretraining Dataset Characterization · Khan Academy ({ks["total"]:,} chunks) vs Tiny-Textbooks ({ts["total"]:,} chunks)</p>
+  <p>Phase 1 · SLM Pretraining Dataset Characterization · {label_k} ({ks["total"]:,} chunks) vs {label_t} ({ts["total"]:,} chunks)</p>
 </div>
 
 <div class="tab-nav">
@@ -748,20 +788,20 @@ canvas{{max-height:340px!important}}
     <div class="card"><h3>Educational Markers (%)</h3><canvas id="markersChart"></canvas></div>
   </div>
   <div class="chart-row">
-    <div class="card"><h3>Top 15 Domains — Khan Academy</h3><canvas id="kDomChart"></canvas></div>
-    <div class="card"><h3>Top 15 Domains — Tiny-Textbooks</h3><canvas id="tDomChart"></canvas></div>
+    <div class="card"><h3>Top 15 Domains — {label_k}</h3><canvas id="kDomChart"></canvas></div>
+    <div class="card"><h3>Top 15 Domains — {label_t}</h3><canvas id="tDomChart"></canvas></div>
   </div>
   <div class="card" style="margin-bottom:20px">
     <h3>Headline Comparison (Claimable Core Metrics Only)</h3>
     <table class="cmp-table">
-      <thead><tr><th>Metric</th><th>Khan Academy</th><th>Tiny-Textbooks</th><th>Notes</th></tr></thead>
+      <thead><tr><th>Metric</th><th>{label_k}</th><th>{label_t}</th><th>Notes</th></tr></thead>
       <tbody>{cmp_rows}</tbody>
     </table>
   </div>
   <div class="card" style="margin-bottom:20px">
     <h3>Diagnostic Comparison (Exploratory or Non-Claimable)</h3>
     <table class="cmp-table">
-      <thead><tr><th>Metric</th><th>Khan Academy</th><th>Tiny-Textbooks</th><th>Notes</th></tr></thead>
+      <thead><tr><th>Metric</th><th>{label_k}</th><th>{label_t}</th><th>Notes</th></tr></thead>
       <tbody>{diagnostic_rows}</tbody>
     </table>
   </div>
@@ -777,8 +817,8 @@ canvas{{max-height:340px!important}}
       <label style="font-size:.88em;font-weight:600;color:#718096">Dataset:</label>
       <select id="domDS" onchange="updateDomainView()">
         <option value="both">Both</option>
-        <option value="khan">Khan Academy</option>
-        <option value="tiny">Tiny-Textbooks</option>
+        <option value="khan">{label_k}</option>
+        <option value="tiny">{label_t}</option>
       </select>
       <label style="font-size:.88em;font-weight:600;color:#718096">Show top:</label>
       <select id="domN" onchange="updateDomainView()">
@@ -790,8 +830,8 @@ canvas{{max-height:340px!important}}
     <canvas id="domCompareChart" style="max-height:520px!important"></canvas>
   </div>
   <div class="chart-row">
-    <div class="card"><h3>Subject Coverage — Khan Academy</h3><canvas id="kSubjPie"></canvas></div>
-    <div class="card"><h3>Subject Coverage — Tiny-Textbooks</h3><canvas id="tSubjPie"></canvas></div>
+    <div class="card"><h3>Subject Coverage — {label_k}</h3><canvas id="kSubjPie"></canvas></div>
+    <div class="card"><h3>Subject Coverage — {label_t}</h3><canvas id="tSubjPie"></canvas></div>
   </div>
 </div>
 
@@ -804,8 +844,8 @@ canvas{{max-height:340px!important}}
       <label>Dataset</label>
       <select id="fDS" onchange="applyFilters()">
         <option value="all">All</option>
-        <option value="khan_academy">Khan Academy</option>
-        <option value="tiny_textbooks">Tiny-Textbooks</option>
+        <option value="{source_k}">{label_k}</option>
+        <option value="{source_t}">{label_t}</option>
       </select>
     </div>
     <div class="fg">
@@ -868,7 +908,7 @@ canvas{{max-height:340px!important}}
     <div class="card" style="margin-bottom:20px">
       <h3>Difficulty Comparison</h3>
       <table class="cmp-table">
-        <thead><tr><th>Metric</th><th>Khan Academy</th><th>Tiny-Textbooks</th></tr></thead>
+        <thead><tr><th>Metric</th><th>{label_k}</th><th>{label_t}</th></tr></thead>
         <tbody>{diff_cmp_rows}</tbody>
       </table>
     </div>
@@ -889,7 +929,7 @@ canvas{{max-height:340px!important}}
     <div class="card" style="margin-bottom:20px">
       <h3>Redundancy Summary</h3>
       <table class="cmp-table">
-        <thead><tr><th>Metric</th><th>Khan Academy</th><th>Tiny-Textbooks</th></tr></thead>
+        <thead><tr><th>Metric</th><th>{label_k}</th><th>{label_t}</th></tr></thead>
         <tbody>{red_cmp_rows}</tbody>
       </table>
     </div>
@@ -905,7 +945,7 @@ canvas{{max-height:340px!important}}
       <div class="card">
         <h3>Perplexity Summary</h3>
         <table class="cmp-table" style="margin-top:8px">
-          <thead><tr><th>Metric</th><th>Khan Academy</th><th>Tiny-Textbooks</th></tr></thead>
+          <thead><tr><th>Metric</th><th>{label_k}</th><th>{label_t}</th></tr></thead>
           <tbody>
             <tr><td>Avg Perplexity</td>
                 <td>{_fmt(ks.get('avg_perplexity'), '.1f')}</td>
@@ -945,6 +985,10 @@ canvas{{max-height:340px!important}}
 const EMB = {_j(embedded)};
 const KS = EMB.khan.stats;
 const TS = EMB.tiny.stats;
+const SOURCE_K = EMB.khan.id || {_j(source_k)};
+const SOURCE_T = EMB.tiny.id || {_j(source_t)};
+const LABEL_K = EMB.khan.label || {_j(label_k)};
+const LABEL_T = EMB.tiny.label || {_j(label_t)};
 const ALL_DOCS = [...EMB.khan.explorer, ...EMB.tiny.explorer];
 
 // ============================================================
@@ -982,8 +1026,8 @@ function barChart(id, labels, kVals, tVals, opts) {{
     data: {{
       labels,
       datasets: [
-        {{ label:'Khan Academy', data:kVals, backgroundColor:CK, borderColor:CKB, borderWidth:1 }},
-        {{ label:'Tiny-Textbooks', data:tVals, backgroundColor:CT, borderColor:CTB, borderWidth:1 }}
+        {{ label:LABEL_K, data:kVals, backgroundColor:CK, borderColor:CKB, borderWidth:1 }},
+        {{ label:LABEL_T, data:tVals, backgroundColor:CT, borderColor:CTB, borderWidth:1 }}
       ]
     }},
     options: {{
@@ -1008,8 +1052,8 @@ function histChart(id, hK, hT, xLabel) {{
     data: {{
       labels,
       datasets: [
-        {{ label:'Khan Academy',   data:kCounts, backgroundColor:CK, borderColor:CKB, borderWidth:1 }},
-        {{ label:'Tiny-Textbooks', data:tCounts, backgroundColor:CT, borderColor:CTB, borderWidth:1 }}
+        {{ label:LABEL_K,   data:kCounts, backgroundColor:CK, borderColor:CKB, borderWidth:1 }},
+        {{ label:LABEL_T, data:tCounts, backgroundColor:CT, borderColor:CTB, borderWidth:1 }}
       ]
     }},
     options: {{
@@ -1094,8 +1138,8 @@ function updateDomainView() {{
     data: {{
       labels: items.map(x=>x[0]),
       datasets: [
-        {{ label:'Khan Academy',   data:items.map(x=>x[1]), backgroundColor:CK, borderColor:CKB, borderWidth:1 }},
-        {{ label:'Tiny-Textbooks', data:items.map(x=>x[2]), backgroundColor:CT, borderColor:CTB, borderWidth:1 }}
+        {{ label:LABEL_K,   data:items.map(x=>x[1]), backgroundColor:CK, borderColor:CKB, borderWidth:1 }},
+        {{ label:LABEL_T, data:items.map(x=>x[2]), backgroundColor:CT, borderColor:CTB, borderWidth:1 }}
       ]
     }},
     options: {{
@@ -1142,9 +1186,9 @@ function renderTable() {{
   const tbody = document.getElementById('explorerBody');
   tbody.innerHTML = '';
   currDocs.forEach((doc, i) => {{
-    const srcBadge = doc.source === 'khan_academy'
-      ? '<span class="badge bk">Khan</span>'
-      : '<span class="badge bt">Tiny</span>';
+    const srcBadge = doc.source === SOURCE_K
+      ? `<span class="badge bk">${LABEL_K}</span>`
+      : `<span class="badge bt">${LABEL_T}</span>`;
     const dupBadge = doc.exact_dup ? ' <span class="badge bd">DUP</span>' : '';
     const ppl = doc.perplexity !== null && doc.perplexity !== undefined ? doc.perplexity.toFixed(1) : '—';
     const nd  = doc.near_dup  !== null && doc.near_dup  !== undefined ? doc.near_dup.toFixed(3)  : '—';
@@ -1297,27 +1341,41 @@ def main():
     print("BUILDING INTERACTIVE DASHBOARD")
     print("=" * 60)
 
-    print("\nStreaming analysis results...")
-    print("  Processing Khan Academy (single pass)...")
-    ks, khan_exp = process_dataset(KHAN_ANALYSIS, MAX_EXPLORER)
-    print(f"  Khan Academy:  {ks.get('total', 0):,} chunks → {len(khan_exp)} explorer rows")
-
-    print("  Processing Tiny-Textbooks (single pass)...")
-    ts, tiny_exp = process_dataset(TINY_ANALYSIS, MAX_EXPLORER)
-    print(f"  Tiny-Textbooks: {ts.get('total', 0):,} chunks → {len(tiny_exp)} explorer rows")
-
-    if ks.get("total", 0) == 0 and ts.get("total", 0) == 0:
-        print("\nERROR: No analysis files found. Run compute_metrics.py first.")
-        return
-
     manifest = _load_manifest(RUN_MANIFEST)
     if manifest:
         print(f"  Loaded run manifest: {RUN_MANIFEST}")
     else:
         print(f"  WARNING: {RUN_MANIFEST} not found. Claimability defaults to conservative mode.")
 
+    selected = _resolve_dashboard_inputs(manifest)
+    ds_k = selected[0]
+    ds_t = selected[1]
+
+    print("\nStreaming analysis results...")
+    print(f"  Processing {ds_k['label']} (single pass)...")
+    ks, khan_exp = process_dataset(ds_k["path"], MAX_EXPLORER)
+    print(f"  {ds_k['label']}: {ks.get('total', 0):,} chunks → {len(khan_exp)} explorer rows")
+
+    print(f"  Processing {ds_t['label']} (single pass)...")
+    ts, tiny_exp = process_dataset(ds_t["path"], MAX_EXPLORER)
+    print(f"  {ds_t['label']}: {ts.get('total', 0):,} chunks → {len(tiny_exp)} explorer rows")
+
+    if ks.get("total", 0) == 0 and ts.get("total", 0) == 0:
+        print("\nERROR: No analysis files found. Run 05_compute_metrics.py first.")
+        return
+
     print("\nGenerating dashboard HTML...")
-    html = generate_dashboard_html(ks, khan_exp, ts, tiny_exp, manifest=manifest)
+    html = generate_dashboard_html(
+        ks,
+        khan_exp,
+        ts,
+        tiny_exp,
+        manifest=manifest,
+        label_k=ds_k["label"],
+        label_t=ds_t["label"],
+        source_k=ds_k["name"],
+        source_t=ds_t["name"],
+    )
 
     Path("outputs").mkdir(exist_ok=True)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:

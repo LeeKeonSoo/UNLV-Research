@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -23,6 +24,29 @@ from validate_phase1_outputs import (
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
+
+
+def _load_dataset_names(config_path: str) -> List[str]:
+    cfg = Path(config_path)
+    if not cfg.is_absolute():
+        cfg = PROJECT_DIR / cfg
+    if not cfg.exists():
+        return ["khan_academy", "tiny_textbooks"]
+    try:
+        with cfg.open("r", encoding="utf-8", errors="replace") as f:
+            payload = json.load(f)
+    except Exception:
+        return ["khan_academy", "tiny_textbooks"]
+    raw_specs = payload.get("datasets", []) if isinstance(payload, dict) else payload
+    names: List[str] = []
+    if isinstance(raw_specs, list):
+        for i, spec in enumerate(raw_specs):
+            if not isinstance(spec, dict):
+                names.append(f"dataset_{i+1}")
+                continue
+            name = str(spec.get("name") or f"dataset_{i+1}").strip().lower()
+            names.append(name)
+    return names or ["khan_academy", "tiny_textbooks"]
 
 
 def _run(cmd: List[str], env: Dict[str, str], label: str) -> None:
@@ -99,6 +123,11 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Do not fail when auto-computed reliability gates have pass=False.",
     )
+    parser.add_argument(
+        "--datasets-config",
+        default="datasets_config.json",
+        help="Dataset config path (relative to Phase-1 root).",
+    )
     return parser.parse_args()
 
 
@@ -141,10 +170,14 @@ def main() -> int:
 
     env = os.environ.copy()
     env.update(profile)
+    env["PHASE1_DATASETS_CONFIG"] = args.datasets_config
 
     print("[Phase-1] Using execution profile:")
     for k in sorted(profile):
         print(f"  {k}={env[k]}")
+    print(f"  PHASE1_DATASETS_CONFIG={env['PHASE1_DATASETS_CONFIG']}")
+
+    dataset_names = set(_load_dataset_names(args.datasets_config))
 
     khan_path = PROJECT_DIR / "khan_k12_concepts" / "all_k12_concepts.json"
     tiny_dir = PROJECT_DIR / "tiny_textbooks_raw"
@@ -152,31 +185,31 @@ def main() -> int:
     concept_out = outputs / "concept_prototypes_tfidf.pkl"
 
     # Always validate pre-existing inputs before deciding which stages to skip.
-    if khan_path.exists() and not rerun_all:
+    if "khan_academy" in dataset_names and khan_path.exists() and not rerun_all:
         _print_results(validate_khan_collection(max_records=args.max_tiny_batches), "Khan collection")
-    if tiny_dir.exists() and not rerun_all:
+    if "tiny_textbooks" in dataset_names and tiny_dir.exists() and not rerun_all:
         _print_results(validate_tiny_collection(max_files=args.max_tiny_batches), "Tiny collection")
 
     steps: List[Tuple[str, List[str], List[Callable[[], List[ValidationItem]]]]] = []
 
-    if rerun_all or not khan_path.exists():
+    if "khan_academy" in dataset_names and (rerun_all or not khan_path.exists()):
         steps.append((
             "collect_khan_academy",
-            [sys.executable, "collect_khan_academy.py"],
+            [sys.executable, "01_collect_khan_academy.py"],
             [lambda: validate_khan_collection(max_records=args.max_tiny_batches)],
         ))
 
-    if rerun_all or not tiny_dir.exists():
+    if "tiny_textbooks" in dataset_names and (rerun_all or not tiny_dir.exists()):
         steps.append((
             "collect_tiny_textbooks",
-            [sys.executable, "collect_tiny_textbooks.py"],
+            [sys.executable, "02_collect_tiny_textbooks.py"],
             [lambda: validate_tiny_collection(max_files=args.max_tiny_batches)],
         ))
 
     if rerun_all or not concept_out.exists():
         steps.append((
             "extract_khan_taxonomy",
-            [sys.executable, "extract_khan_taxonomy.py"],
+            [sys.executable, "03_extract_khan_taxonomy.py"],
             [validate_taxonomy_outputs],
         ))
     else:
@@ -184,18 +217,18 @@ def main() -> int:
 
     steps.append((
         "build_corpus_index",
-        [sys.executable, "build_corpus_index.py"],
+        [sys.executable, "04_build_corpus_index.py"],
         [validate_corpus_index],
     ))
     steps.append((
         "compute_metrics",
-        [sys.executable, "compute_metrics.py"],
+        [sys.executable, "05_compute_metrics.py"],
         [
             lambda: validate_analysis_outputs(max_records=args.max_metrics_records),
             lambda: validate_manifest(require_gates=require_gates),
         ],
     ))
-    steps.append(("build_dashboard", [sys.executable, "build_dashboard.py"], [validate_dashboard]))
+    steps.append(("build_dashboard", [sys.executable, "06_build_dashboard.py"], [validate_dashboard]))
 
     for label, cmd, checks in steps:
         _run_and_validate(label, cmd, env, checks)

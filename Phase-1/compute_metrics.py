@@ -9,14 +9,12 @@ Metrics computed per chunk:
   5. Perplexity       - GPT-2 log-loss based (optional; skipped if model unavailable)
 
 Input:
-  - outputs/concept_prototypes_tfidf.pkl   (from Step 1)
-  - outputs/corpus_index.pkl               (from Step 2a)
-  - khan_k12_concepts/all_k12_concepts.json
-  - tiny_textbooks_raw/*.json
+  - outputs/concept_prototypes_tfidf.pkl   (from taxonomy extraction)
+  - outputs/corpus_index.pkl               (from index build)
+  - datasets_config.json                   (dataset specs)
 
 Output:
-  - outputs/khan_analysis.jsonl
-  - outputs/tiny_textbooks_analysis.jsonl
+  - outputs/<dataset_name>_analysis.jsonl
   - outputs/run_manifest.json
   - outputs/run_summary.json
 """
@@ -29,10 +27,10 @@ import re
 import sqlite3
 import subprocess
 import warnings
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import nltk
 import numpy as np
@@ -76,17 +74,18 @@ except Exception:
 
 PROTOTYPES_PATH    = "outputs/concept_prototypes_tfidf.pkl"
 CORPUS_INDEX_PATH  = "outputs/corpus_index.pkl"
-KHAN_DATA_PATH     = "khan_k12_concepts/all_k12_concepts.json"
-TINY_TEXTBOOKS_DIR = "tiny_textbooks_raw"
+DATASETS_CONFIG_PATH = os.getenv("PHASE1_DATASETS_CONFIG", "datasets_config.json")
+PROJECT_DIR = Path(__file__).resolve().parent
 
 OUTPUT_DIR   = Path("outputs")
-KHAN_OUTPUT  = OUTPUT_DIR / "khan_analysis.jsonl"
-TINY_OUTPUT  = OUTPUT_DIR / "tiny_textbooks_analysis.jsonl"
 RUN_MANIFEST_OUTPUT = OUTPUT_DIR / "run_manifest.json"
 RUN_SUMMARY_OUTPUT = OUTPUT_DIR / "run_summary.json"
 
 TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
+OOD_IN_DOMAIN_SIM = float(os.getenv("PHASE1_OOD_IN_DOMAIN_SIM", "0.20"))
+OOD_MARGIN_MIN = float(os.getenv("PHASE1_OOD_MARGIN_MIN", "0.03"))
+OOD_NEAR_SIM = float(os.getenv("PHASE1_OOD_NEAR_SIM", str(MIN_SIMILARITY)))
 CHUNK_SIZE      = 200
 MIN_CHUNK_WORDS = 20
 USE_GPU         = os.getenv("PHASE1_USE_GPU", "1") not in {"0", "false", "False", "FALSE", "no", "No", "NO"}
@@ -127,6 +126,96 @@ DIFFICULTY_SMOG_MAX = float(os.getenv("PHASE1_DIFFICULTY_SMOG_MAX", "40.0"))
 
 # Top-3000 common English words (lightweight proxy for rare-word detection)
 _COMMON_WORDS: Optional[set] = None
+
+
+def _slugify_dataset_name(raw: str) -> str:
+    cleaned = re.sub(r"[^a-zA-Z0-9_]+", "_", str(raw or "").strip().lower())
+    cleaned = cleaned.strip("_")
+    return cleaned or "dataset"
+
+
+def _default_dataset_specs() -> List[Dict[str, Any]]:
+    return [
+        {
+            "name": "khan_academy",
+            "format": "json_list",
+            "source": "khan_k12_concepts/all_k12_concepts.json",
+            "text_field": "content",
+            "id_fields": ["doc_id", "url"],
+            "metadata_fields": ["subject", "grade", "title"],
+            "min_text_chars": 50,
+            "output_file": "khan_analysis.jsonl",
+        },
+        {
+            "name": "tiny_textbooks",
+            "format": "json_batch_dir",
+            "source": "tiny_textbooks_raw",
+            "batch_glob": "batch_*.json",
+            "text_field": "text",
+            "id_fields": ["id"],
+            "metadata_fields": [],
+            "min_text_chars": 100,
+            "output_file": "tiny_textbooks_analysis.jsonl",
+        },
+    ]
+
+
+def _normalize_dataset_spec(raw: Dict[str, Any], idx: int) -> Dict[str, Any]:
+    name = _slugify_dataset_name(raw.get("name", f"dataset_{idx+1}"))
+    fmt = str(raw.get("format", "json_list")).strip().lower()
+    source = str(raw.get("source", "")).strip()
+    if not source:
+        raise ValueError(f"datasets[{idx}].source is required")
+    if fmt not in {"json_list", "json_batch_dir"}:
+        raise ValueError(
+            f"datasets[{idx}].format must be one of ['json_list','json_batch_dir']"
+        )
+
+    id_fields = raw.get("id_fields")
+    if isinstance(id_fields, str):
+        id_fields = [id_fields]
+    if not isinstance(id_fields, list) or not id_fields:
+        id_fields = ["doc_id", "id", "url"]
+
+    metadata_fields = raw.get("metadata_fields")
+    if isinstance(metadata_fields, str):
+        metadata_fields = [metadata_fields]
+    if not isinstance(metadata_fields, list):
+        metadata_fields = []
+
+    output_file = str(raw.get("output_file") or f"{name}_analysis.jsonl")
+    output_file = Path(output_file).name
+    if not output_file.endswith(".jsonl"):
+        output_file = f"{output_file}.jsonl"
+
+    return {
+        "name": name,
+        "format": fmt,
+        "source": source,
+        "batch_glob": str(raw.get("batch_glob") or "batch_*.json"),
+        "text_field": str(raw.get("text_field") or "text"),
+        "id_fields": [str(x) for x in id_fields],
+        "metadata_fields": [str(x) for x in metadata_fields],
+        "min_text_chars": int(raw.get("min_text_chars", 50)),
+        "output_file": output_file,
+    }
+
+
+def _load_dataset_specs(config_path: str = DATASETS_CONFIG_PATH) -> List[Dict[str, Any]]:
+    cfg = Path(config_path)
+    if not cfg.is_absolute():
+        cfg = PROJECT_DIR / cfg
+    if not cfg.exists():
+        return _default_dataset_specs()
+
+    with cfg.open("r", encoding="utf-8", errors="replace") as f:
+        payload = json.load(f)
+
+    raw_specs = payload.get("datasets", []) if isinstance(payload, dict) else payload
+    if not isinstance(raw_specs, list) or not raw_specs:
+        raise ValueError(f"Invalid dataset config at {cfg}. Expected non-empty datasets list.")
+
+    return [_normalize_dataset_spec(raw, i) for i, raw in enumerate(raw_specs)]
 
 def _load_common_words() -> set:
     global _COMMON_WORDS
@@ -239,6 +328,45 @@ def _is_domain_valid(domain_labels: Dict[str, float]) -> bool:
     return 0.80 <= total <= 1.20
 
 
+def _classify_ood(domain_labels: Dict[str, float]) -> Dict[str, Optional[float]]:
+    if not isinstance(domain_labels, dict) or not domain_labels:
+        return {
+            "label": "ood_far",
+            "top1_similarity": None,
+            "top2_similarity": None,
+            "margin": None,
+        }
+    vals = [(_safe_float(v), k) for k, v in domain_labels.items()]
+    vals = [(v, k) for v, k in vals if v is not None]
+    if not vals:
+        return {
+            "label": "ood_far",
+            "top1_similarity": None,
+            "top2_similarity": None,
+            "margin": None,
+        }
+    vals.sort(key=lambda x: x[0], reverse=True)
+    top1 = float(vals[0][0])
+    top2 = float(vals[1][0]) if len(vals) > 1 else 0.0
+    margin = top1 - top2
+
+    if top1 >= OOD_IN_DOMAIN_SIM and margin >= OOD_MARGIN_MIN:
+        label = "in_domain"
+    elif top1 >= OOD_IN_DOMAIN_SIM and margin < OOD_MARGIN_MIN:
+        label = "borderline"
+    elif top1 >= OOD_NEAR_SIM:
+        label = "ood_near"
+    else:
+        label = "ood_far"
+
+    return {
+        "label": label,
+        "top1_similarity": round(top1, 6),
+        "top2_similarity": round(top2, 6),
+        "margin": round(margin, 6),
+    }
+
+
 def _is_quality_valid(quality_score: float, markers: Dict) -> bool:
     qs = _safe_float(quality_score)
     if qs is None or qs < 0.0 or qs > 1.0:
@@ -339,6 +467,7 @@ class ReliabilityTracker:
         self.perplexity_non_null = 0
         self.difficulty_out_of_range = 0
         self.exact_dup_true = 0
+        self.ood_label_counts = Counter()
         self.near_stats = RunningStat()
         self.semantic_stats = RunningStat()
         self.ngram3_stats = RunningStat()
@@ -350,6 +479,11 @@ class ReliabilityTracker:
         d = record.get("difficulty") or {}
         if not _is_difficulty_valid(d):
             self.difficulty_out_of_range += 1
+
+        ood = record.get("ood") or {}
+        label = str(ood.get("label") or "").strip()
+        if label:
+            self.ood_label_counts[label] += 1
 
         r = record.get("redundancy") or {}
         self.exact_dup_true += int(bool(r.get("exact_duplicate")))
@@ -388,6 +522,12 @@ class ReliabilityTracker:
                     "value": None,
                     "pass": None,
                     "status": "requires_manual_validation_set",
+                },
+                "ood_label_distribution": {
+                    "threshold": "monitor_only",
+                    "value": dict(self.ood_label_counts),
+                    "pass": None,
+                    "status": "diagnostic_only",
                 },
             },
             "quality": {
@@ -1070,25 +1210,23 @@ def chunk_text(text: str, chunk_size: int = 200) -> List[str]:
 # Dataset Processing
 # ==============================================================================
 
-def _stable_khan_doc_base_id(doc: Dict, doc_idx: int) -> str:
-    raw = str(doc.get("doc_id") or doc.get("url") or "").strip()
-    if raw and raw.lower() != "unknown":
-        return raw
+def _stable_doc_base_id(
+    doc: Dict[str, Any],
+    doc_idx: int,
+    dataset_name: str,
+    id_fields: List[str],
+    text_field: str,
+) -> str:
+    for key in id_fields:
+        raw = str(doc.get(key) or "").strip()
+        if raw and raw.lower() != "unknown":
+            return raw
+
     title = str(doc.get("title") or "").strip()
-    text = str(doc.get("content") or "").strip()
+    text = str(doc.get(text_field) or "").strip()
     seed = f"{title}\n{text[:500]}"
-    suffix = hashlib.md5(seed.encode("utf-8")).hexdigest()[:12]
-    return f"missing_khan_id_{doc_idx}_{suffix}"
-
-
-def _stable_tiny_doc_id(doc: Dict, doc_idx: int) -> str:
-    raw = str(doc.get("id") or "").strip()
-    if raw and raw.lower() != "unknown":
-        return raw
-    text = str(doc.get("text") or "").strip()
-    seed = text[:500] if text else ""
-    suffix = hashlib.md5(seed.encode("utf-8")).hexdigest()[:12] if seed else "na"
-    return f"missing_tiny_id_{doc_idx}_{suffix}"
+    suffix = hashlib.md5(seed.encode("utf-8")).hexdigest()[:12] if seed.strip() else "na"
+    return f"missing_{dataset_name}_id_{doc_idx}_{suffix}"
 
 
 def _dedupe_with_counter(base_id: str, seen: Dict[str, int]) -> str:
@@ -1100,15 +1238,12 @@ def _dedupe_with_counter(base_id: str, seen: Dict[str, int]) -> str:
 
 
 def _build_index_chunk_id(doc_meta: Dict, chunk_id: int) -> Optional[str]:
-    source = doc_meta.get("source")
-    if source == "khan_academy":
-        return f"khan::{doc_meta.get('doc_id', 'unknown')}::{chunk_id}"
-    if source == "tiny_textbooks":
-        return (
-            f"tiny::{doc_meta.get('batch_file', 'unknown')}"
-            f"::{doc_meta.get('doc_id', 'unknown')}::{chunk_id}"
-        )
-    return None
+    source = str(doc_meta.get("source") or "dataset")
+    doc_id = str(doc_meta.get("doc_id") or "unknown")
+    batch_file = str(doc_meta.get("batch_file") or "").strip()
+    if batch_file:
+        return f"{source}::{batch_file}::{doc_id}::{chunk_id}"
+    return f"{source}::{doc_id}::{chunk_id}"
 
 
 def _build_validity_flags(
@@ -1163,6 +1298,7 @@ def _iter_chunk_records(
         index_chunk_id = _build_index_chunk_id(doc_meta, chunk_id)
         redun = redundancy.compute(chunk, current_doc_id=index_chunk_id)
         ppl = perplexity.compute(chunk, sentences=sentences)
+        ood = _classify_ood(domain_labels)
         validity_flags = _build_validity_flags(
             domain_labels=domain_labels,
             quality_score=quality["quality_score"],
@@ -1180,6 +1316,7 @@ def _iter_chunk_records(
             "text": chunk,
             "word_count": len(chunk.split()),
             "domain_labels": domain_labels,
+            "ood": ood,
             "educational_markers": quality["educational_markers"],
             "quality_score": quality["quality_score"],
             "difficulty": difficulty,
@@ -1193,60 +1330,8 @@ def _iter_chunk_records(
         yield record
 
 
-def process_khan_academy(
-    classifier: DomainClassifier,
-    redundancy: RedundancyChecker,
-    perplexity: PerplexityScorer,
-    tracker: Optional[ReliabilityTracker] = None,
-):
-    print("\n" + "="*60)
-    print("Processing Khan Academy Dataset")
-    print("="*60)
-
-    with open(KHAN_DATA_PATH, "r", encoding="utf-8", errors="replace") as f:
-        khan_data = json.load(f)
-
-    chunks_written = 0
-    docs_used = 0
-    seen_khan_ids: Dict[str, int] = {}
-    with jsonlines.open(KHAN_OUTPUT, "w") as w:
-        for doc_idx, doc in enumerate(tqdm(khan_data, desc="Khan")):
-            text = doc.get("content", "")
-            if len(text.strip()) < 50:
-                continue
-            stable_doc_id = _dedupe_with_counter(
-                _stable_khan_doc_base_id(doc, doc_idx),
-                seen_khan_ids,
-            )
-            docs_used += 1
-            meta = {
-                "source": "khan_academy",
-                "doc_id": stable_doc_id,
-                "subject": doc.get("subject", "Unknown"),
-                "grade": doc.get("grade", "Unknown"),
-                "title": doc.get("title", "Untitled"),
-            }
-            for record in _iter_chunk_records(
-                chunk_text(text, CHUNK_SIZE),
-                meta,
-                classifier,
-                redundancy,
-                perplexity,
-                tracker=tracker,
-            ):
-                w.write(record)
-                chunks_written += 1
-    print(f"\n✓ {chunks_written:,} chunks → {KHAN_OUTPUT}")
-    return {
-        "dataset": "khan_academy",
-        "input_path": KHAN_DATA_PATH,
-        "docs_total": len(khan_data),
-        "docs_used": docs_used,
-        "chunks_written": chunks_written,
-    }
-
-
-def process_tiny_textbooks(
+def process_dataset_spec(
+    spec: Dict[str, Any],
     classifier: DomainClassifier,
     redundancy: RedundancyChecker,
     perplexity: PerplexityScorer,
@@ -1254,35 +1339,43 @@ def process_tiny_textbooks(
     tracker: Optional[ReliabilityTracker] = None,
 ):
     print("\n" + "="*60)
-    print("Processing Tiny-Textbooks Dataset")
+    print(f"Processing Dataset: {spec['name']}")
     print("="*60)
+    source_path = Path(spec["source"])
+    text_field = spec["text_field"]
+    id_fields = spec["id_fields"]
+    metadata_fields = spec["metadata_fields"]
+    output_path = OUTPUT_DIR / spec["output_file"]
+    min_text_chars = int(spec["min_text_chars"])
 
-    batch_files = sorted(Path(TINY_TEXTBOOKS_DIR).glob("batch_*.json"))
-    if max_batches:
-        batch_files = batch_files[:max_batches]
-        print(f"  (first {max_batches} batches)")
-
+    seen_doc_ids: Dict[str, int] = {}
     chunks_written = 0
     total_docs = 0
-    with jsonlines.open(TINY_OUTPUT, "w") as w:
-        for bf in tqdm(batch_files, desc="Tiny batches"):
-            with open(bf, "r", encoding="utf-8", errors="replace") as f:
-                batch = json.load(f)
-            seen_tiny_ids: Dict[str, int] = {}
-            for doc_idx, doc in enumerate(batch):
-                total_docs += 1
-                text = doc.get("text", "")
-                if len(text.strip()) < 100:
+    docs_used = 0
+    batch_files: List[Path] = []
+
+    with jsonlines.open(output_path, "w") as w:
+        if spec["format"] == "json_list":
+            with source_path.open("r", encoding="utf-8", errors="replace") as f:
+                docs = json.load(f)
+            if not isinstance(docs, list):
+                raise ValueError(f"{source_path} must contain a top-level list for json_list format")
+            total_docs = len(docs)
+            for doc_idx, doc in enumerate(tqdm(docs, desc=spec["name"])):
+                text = str(doc.get(text_field, ""))
+                if len(text.strip()) < min_text_chars:
                     continue
                 stable_doc_id = _dedupe_with_counter(
-                    _stable_tiny_doc_id(doc, doc_idx),
-                    seen_tiny_ids,
+                    _stable_doc_base_id(doc, doc_idx, spec["name"], id_fields, text_field),
+                    seen_doc_ids,
                 )
+                docs_used += 1
                 meta = {
-                    "source": "tiny_textbooks",
+                    "source": spec["name"],
                     "doc_id": stable_doc_id,
-                    "batch_file": bf.name,
                 }
+                for field in metadata_fields:
+                    meta[field] = doc.get(field)
                 for record in _iter_chunk_records(
                     chunk_text(text, CHUNK_SIZE),
                     meta,
@@ -1293,14 +1386,58 @@ def process_tiny_textbooks(
                 ):
                     w.write(record)
                     chunks_written += 1
-    print(f"\n✓ {chunks_written:,} chunks from {total_docs:,} docs → {TINY_OUTPUT}")
+        else:
+            batch_files = sorted(source_path.glob(spec["batch_glob"]))
+            if max_batches:
+                batch_files = batch_files[:max_batches]
+                print(f"  (first {max_batches} batches)")
+
+            for bf in tqdm(batch_files, desc=f"{spec['name']} batches"):
+                with bf.open("r", encoding="utf-8", errors="replace") as f:
+                    batch = json.load(f)
+                if not isinstance(batch, list):
+                    continue
+                seen_in_batch: Dict[str, int] = {}
+                for doc_idx, doc in enumerate(batch):
+                    total_docs += 1
+                    text = str(doc.get(text_field, ""))
+                    if len(text.strip()) < min_text_chars:
+                        continue
+                    stable_doc_id = _dedupe_with_counter(
+                        _stable_doc_base_id(doc, doc_idx, spec["name"], id_fields, text_field),
+                        seen_in_batch,
+                    )
+                    docs_used += 1
+                    meta = {
+                        "source": spec["name"],
+                        "doc_id": stable_doc_id,
+                        "batch_file": bf.name,
+                    }
+                    for field in metadata_fields:
+                        meta[field] = doc.get(field)
+                    for record in _iter_chunk_records(
+                        chunk_text(text, CHUNK_SIZE),
+                        meta,
+                        classifier,
+                        redundancy,
+                        perplexity,
+                        tracker=tracker,
+                    ):
+                        w.write(record)
+                        chunks_written += 1
+
+    print(f"\n✓ {chunks_written:,} chunks from {total_docs:,} docs → {output_path}")
     return {
-        "dataset": "tiny_textbooks",
-        "input_dir": TINY_TEXTBOOKS_DIR,
-        "batch_count": len(batch_files),
-        "batch_files": [bf.name for bf in batch_files],
+        "dataset": spec["name"],
+        "format": spec["format"],
+        "source": spec["source"],
+        "batch_glob": spec.get("batch_glob"),
+        "batch_count": len(batch_files) if spec["format"] == "json_batch_dir" else None,
+        "batch_files": [bf.name for bf in batch_files] if batch_files else [],
         "docs_total": total_docs,
+        "docs_used": docs_used,
         "chunks_written": chunks_written,
+        "output_file": spec["output_file"],
     }
 
 
@@ -1309,20 +1446,41 @@ def process_tiny_textbooks(
 # ==============================================================================
 
 def build_run_manifest(
-    khan_stats: Dict,
-    tiny_stats: Dict,
+    dataset_stats: List[Dict[str, Any]],
     classifier: DomainClassifier,
     tracker: ReliabilityTracker,
     redundancy: RedundancyChecker,
     perplexity: PerplexityScorer,
 ) -> Dict:
-    khan_path = Path(khan_stats.get("input_path", KHAN_DATA_PATH))
-    tiny_files = sorted(Path(TINY_TEXTBOOKS_DIR).glob("batch_*.json"))
-    if tiny_stats.get("batch_count"):
-        tiny_files = tiny_files[: tiny_stats["batch_count"]]
-
     gate_outcomes = tracker.gate_outcomes()
     perplexity_gate = gate_outcomes["perplexity"]["non_null_coverage"]
+
+    dataset_versions_and_counts: Dict[str, Any] = {}
+    for stat in dataset_stats:
+        name = stat.get("dataset")
+        if not name:
+            continue
+        entry: Dict[str, Any] = {
+            "format": stat.get("format"),
+            "output_file": stat.get("output_file", f"{name}_analysis.jsonl"),
+            "docs_total": stat.get("docs_total"),
+            "docs_used": stat.get("docs_used"),
+            "chunks_written": stat.get("chunks_written"),
+        }
+        source = Path(str(stat.get("source") or ""))
+        if stat.get("format") == "json_list":
+            entry["input_path"] = str(source)
+            entry["sha256"] = _hash_file(source)
+        elif stat.get("format") == "json_batch_dir":
+            batch_glob = str(stat.get("batch_glob") or "batch_*.json")
+            batch_files = sorted(source.glob(batch_glob))
+            if stat.get("batch_count"):
+                batch_files = batch_files[: int(stat["batch_count"])]
+            entry["input_dir"] = str(source)
+            entry["batch_glob"] = batch_glob
+            entry["batch_count"] = stat.get("batch_count")
+            entry["batch_manifest_sha256"] = _fingerprint_files(batch_files)
+        dataset_versions_and_counts[name] = entry
 
     return {
         "schema_version": SCHEMA_VERSION,
@@ -1330,25 +1488,13 @@ def build_run_manifest(
         "objective_mode": "descriptive_comparative_only",
         "generated_by": "compute_metrics.py",
         "code_commit_hash": _git_commit_hash(),
-        "dataset_versions_and_counts": {
-            "khan_academy": {
-                "input_path": str(khan_path),
-                "sha256": _hash_file(khan_path),
-                "docs_total": khan_stats.get("docs_total"),
-                "docs_used": khan_stats.get("docs_used"),
-                "chunks_written": khan_stats.get("chunks_written"),
-            },
-            "tiny_textbooks": {
-                "input_dir": tiny_stats.get("input_dir"),
-                "batch_count": tiny_stats.get("batch_count"),
-                "batch_manifest_sha256": _fingerprint_files(tiny_files),
-                "docs_total": tiny_stats.get("docs_total"),
-                "chunks_written": tiny_stats.get("chunks_written"),
-            },
-        },
+        "dataset_versions_and_counts": dataset_versions_and_counts,
         "threshold_config": {
             "TOP_K_DOMAINS": TOP_K_DOMAINS,
             "MIN_SIMILARITY": MIN_SIMILARITY,
+            "OOD_IN_DOMAIN_SIM": OOD_IN_DOMAIN_SIM,
+            "OOD_MARGIN_MIN": OOD_MARGIN_MIN,
+            "OOD_NEAR_SIM": OOD_NEAR_SIM,
             "CHUNK_SIZE": CHUNK_SIZE,
             "DOMAIN_BATCH_SIZE": DOMAIN_BATCH_SIZE,
             "DIFFICULTY_VALID_RANGE": {
@@ -1388,23 +1534,24 @@ def build_run_manifest(
 
 
 def write_run_summary(manifest: Dict) -> None:
+    dataset_chunk_counts: Dict[str, Dict[str, Any]] = {}
+    for dataset_name, dataset_meta in (
+        manifest.get("dataset_versions_and_counts", {}) or {}
+    ).items():
+        output_file = dataset_meta.get("output_file", f"{dataset_name}_analysis.jsonl")
+        out_path = OUTPUT_DIR / output_file
+        dataset_chunk_counts[dataset_name] = {
+            "file_path": str(out_path),
+            "chunks_written": _jsonl_line_count(out_path),
+            "sha256": _hash_file(out_path),
+        }
+
     summary = {
         "schema_version": SCHEMA_VERSION,
         "run_summary_version": "v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "run_manifest_path": str(RUN_MANIFEST_OUTPUT),
-        "dataset_chunk_counts": {
-            "khan_academy": {
-                "file_path": str(KHAN_OUTPUT),
-                "chunks_written": _jsonl_line_count(KHAN_OUTPUT),
-                "sha256": _hash_file(KHAN_OUTPUT),
-            },
-            "tiny_textbooks": {
-                "file_path": str(TINY_OUTPUT),
-                "chunks_written": _jsonl_line_count(TINY_OUTPUT),
-                "sha256": _hash_file(TINY_OUTPUT),
-            },
-        },
+        "dataset_chunk_counts": dataset_chunk_counts,
         "core_claimability": {
             "domain": manifest.get("reliability_gate_outcomes", {})
             .get("domain", {})
@@ -1450,9 +1597,9 @@ def main():
     print("="*60)
     print(f"Device preference: {DEVICE_PREFERENCE} (CUDA device index: {CUDA_DEVICE})")
     if TINY_MAX_BATCHES is None:
-        print("Tiny-Textbooks batch mode: full run")
+        print("Batch dataset mode: full run")
     else:
-        print(f"Tiny-Textbooks batch mode: first {TINY_MAX_BATCHES} batch(es)")
+        print(f"Batch dataset mode: first {TINY_MAX_BATCHES} batch(es)")
 
     # Load domain classifier
     prototypes, domain_vectorizer = _load_prototypes()
@@ -1470,22 +1617,28 @@ def main():
     )
 
     tracker = ReliabilityTracker()
+    dataset_specs = _load_dataset_specs()
+    print(f"Datasets config: {DATASETS_CONFIG_PATH}")
+    for spec in dataset_specs:
+        print(
+            f"  - {spec['name']} ({spec['format']}) "
+            f"source={spec['source']} output=outputs/{spec['output_file']}"
+        )
 
-    # Process datasets
-    khan_stats = process_khan_academy(
-        classifier, redundancy, perplexity, tracker=tracker
-    )
-    tiny_stats = process_tiny_textbooks(
-        classifier,
-        redundancy,
-        perplexity,
-        max_batches=TINY_MAX_BATCHES,
-        tracker=tracker,
-    )
+    dataset_stats: List[Dict[str, Any]] = []
+    for spec in dataset_specs:
+        stats = process_dataset_spec(
+            spec=spec,
+            classifier=classifier,
+            redundancy=redundancy,
+            perplexity=perplexity,
+            max_batches=TINY_MAX_BATCHES if spec["format"] == "json_batch_dir" else None,
+            tracker=tracker,
+        )
+        dataset_stats.append(stats)
 
     manifest = build_run_manifest(
-        khan_stats=khan_stats,
-        tiny_stats=tiny_stats,
+        dataset_stats=dataset_stats,
         classifier=classifier,
         tracker=tracker,
         redundancy=redundancy,
@@ -1499,7 +1652,7 @@ def main():
     print("\n" + "="*60)
     print("✓ All 5 metrics computed!")
     print("="*60)
-    print("\nNext step: python build_dashboard.py")
+    print("\nNext step: python 06_build_dashboard.py")
 
 
 if __name__ == "__main__":

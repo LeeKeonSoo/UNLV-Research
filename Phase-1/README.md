@@ -1,52 +1,63 @@
-# Phase-1 (Execution-Only Layout)
+# Phase-1 (Ordered Execution Layout)
 
-This folder is intentionally trimmed for execution and validation.
-Root contains only the scripts needed to run Phase-1 end-to-end.
+This folder is now organized around ordered entry scripts and a dataset config.
+The same 5-feature pipeline applies to any dataset that matches `datasets_config.json`.
 
-## Canonical run
-
-Use this command for professor-facing final validation:
+## Canonical run (one command)
 
 ```bash
-python run_phase1_lowmem.py
+python 00_run_phase1.py
 ```
 
-Then verify outputs:
+Windows:
 
-```bash
-python validate_phase1_outputs.py
+```bat
+00_run_phase1.bat
 ```
 
-Optional smoke test (not final reporting):
+## Ordered scripts
 
-```bash
-python run_phase1_lowmem.py --quick
-```
+1. `01_collect_khan_academy.py`
+2. `02_collect_tiny_textbooks.py`
+3. `03_extract_khan_taxonomy.py`
+4. `04_build_corpus_index.py`
+5. `05_compute_metrics.py`
+6. `06_build_dashboard.py`
+7. `07_validate_phase1_outputs.py`
 
-## What each script does
+## Dataset-agnostic config
 
-- `collect_khan_academy.py`: collect and normalize Khan-side corpus.
-- `collect_tiny_textbooks.py`: collect Tiny-Textbooks raw batches.
-- `extract_khan_taxonomy.py`: build concept prototypes/taxonomy artifacts.
-- `build_corpus_index.py`: build redundancy index (`corpus_index.pkl`).
-- `compute_metrics.py`: compute Phase-1 metrics and run manifest.
-- `build_dashboard.py`: build dashboard HTML from output JSONL.
-- `validate_phase1_outputs.py`: strict artifact validation checks.
-- `run_phase1_lowmem.py`: orchestrator for all steps.
-- `run_phase1_lowmem.bat`: Windows launcher wrapper.
+Edit `datasets_config.json` to run the same evaluation criteria on new datasets.
 
-## Expected validated outputs
+Supported formats:
 
-- `outputs/khan_analysis.jsonl`
-- `outputs/tiny_textbooks_analysis.jsonl`
-- `outputs/corpus_index.pkl`
-- `outputs/corpus_texts.sqlite`
+- `json_list`: one JSON file containing a top-level list of records.
+- `json_batch_dir`: directory of batch JSON files (top-level list per file).
+
+Per-dataset keys:
+
+- `name`
+- `format`
+- `source`
+- `text_field`
+- `id_fields`
+- `min_text_chars`
+- optional: `metadata_fields`, `batch_glob`, `output_file`
+
+Robustness defaults now included in outputs:
+
+- OOD labeling per chunk: `in_domain`, `borderline`, `ood_near`, `ood_far`
+- OOD threshold config recorded in `run_manifest.json`
+- Gate-first validation via `07_validate_phase1_outputs.py`
+
+## Validation outputs
+
 - `outputs/run_manifest.json`
 - `outputs/run_summary.json`
-- `outputs/dashboard.html`
+- `outputs/validation/full_validation_report.json` (if `--write-report` used)
 
-## Archived docs
+Example final validation report command:
 
-Non-execution docs were moved to:
-
-- `legacy/docs/`
+```bash
+python 07_validate_phase1_outputs.py --profile full --require-gates --write-report outputs/validation/full_validation_report.json
+```
