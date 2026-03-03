@@ -1187,8 +1187,8 @@ function renderTable() {{
   tbody.innerHTML = '';
   currDocs.forEach((doc, i) => {{
     const srcBadge = doc.source === SOURCE_K
-      ? `<span class="badge bk">${LABEL_K}</span>`
-      : `<span class="badge bt">${LABEL_T}</span>`;
+      ? `<span class="badge bk">${{LABEL_K}}</span>`
+      : `<span class="badge bt">${{LABEL_T}}</span>`;
     const dupBadge = doc.exact_dup ? ' <span class="badge bd">DUP</span>' : '';
     const ppl = doc.perplexity !== null && doc.perplexity !== undefined ? doc.perplexity.toFixed(1) : '—';
     const nd  = doc.near_dup  !== null && doc.near_dup  !== undefined ? doc.near_dup.toFixed(3)  : '—';
