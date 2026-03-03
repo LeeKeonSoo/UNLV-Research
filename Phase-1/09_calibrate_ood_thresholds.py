@@ -19,6 +19,43 @@ CALIB_REPORT_PATH = OUTPUT_DIR / "validation" / "ood_calibration_report.json"
 
 REQUIRED_COLUMNS = ["dataset", "source", "doc_id", "chunk_id", "gold_in_domain", "split"]
 
+DEFAULT_IDENTITY_CONFIG: Dict[str, Any] = {
+    "identity_version": "v1",
+    "gates": {
+        "domain": {
+            "top1_accuracy": {"threshold": 0.6, "direction": "gte"},
+            "top3_recall": {"threshold": 0.85, "direction": "gte"},
+        },
+        "quality": {
+            "macro_precision": {"threshold": 0.8, "direction": "gte"},
+        },
+        "difficulty": {
+            "out_of_range_rate": {"threshold": 0.01, "direction": "lte"},
+        },
+        "redundancy": {
+            "non_degenerate_distribution": {"threshold": True, "direction": "eq"},
+        },
+        "perplexity": {
+            "non_null_coverage": {"threshold": 0.9, "direction": "gte"},
+        },
+    },
+    "ood_thresholds": {
+        "in_domain_sim": 0.2,
+        "margin_min": 0.03,
+        "ood_near_sim": 0.1,
+    },
+    "bootstrap": {
+        "iterations": 1000,
+        "seed": 42,
+        "ci": 0.95,
+    },
+    "transfer_policy": {
+        "required": False,
+        "min_datasets": 0,
+        "anchor_datasets": ["khan_academy", "tiny_textbooks"],
+    },
+}
+
 
 def _safe_float(v: Any):
     try:
@@ -48,6 +85,13 @@ def _save_json(path: Path, payload: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
+
+
+def _load_or_init_identity_config(path: Path) -> Dict[str, Any]:
+    if path.exists():
+        return _load_json(path)
+    _save_json(path, DEFAULT_IDENTITY_CONFIG)
+    return dict(DEFAULT_IDENTITY_CONFIG)
 
 
 def _load_calibration_rows(path: Path) -> List[Dict[str, Any]]:
@@ -180,7 +224,7 @@ def main() -> int:
     args = parser.parse_args()
 
     manifest = _load_json(MANIFEST_PATH)
-    config = _load_json(args.identity_config)
+    config = _load_or_init_identity_config(args.identity_config)
     rows = _load_calibration_rows(args.labels)
     if not rows:
         raise SystemExit("No calibration rows with labeled gold_in_domain found.")
