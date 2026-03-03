@@ -430,6 +430,15 @@ def generate_dashboard_html(
 ) -> str:
     manifest = manifest or {}
     gate_outcomes = manifest.get("reliability_gate_outcomes") or {}
+    cert_status = str(manifest.get("certification_status") or "pending").lower()
+    cert_label = (
+        "Certified PASS"
+        if cert_status == "pass"
+        else ("Certified FAIL" if cert_status == "fail" else "Certification Pending")
+    )
+    cert_class = (
+        "cert-pass" if cert_status == "pass" else ("cert-fail" if cert_status == "fail" else "cert-pending")
+    )
     tier_map = ks.get("metric_tier") or ts.get("metric_tier") or {
         "domain": "core",
         "quality": "core",
@@ -736,6 +745,10 @@ canvas{{max-height:340px!important}}
 .bt{{background:#faf0ff;color:#805ad5}}
 .bd{{background:#fff5f5;color:#e53e3e}}
 .metric-badge{{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.72em;font-weight:600;margin-left:4px}}
+.cert-badge{{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.76em;font-weight:700;margin-left:8px}}
+.cert-pass{{background:#dcfce7;color:#166534}}
+.cert-fail{{background:#fee2e2;color:#991b1b}}
+.cert-pending{{background:#fef3c7;color:#92400e}}
 .tier-core{{background:#e6fffa;color:#0f766e}}
 .tier-exploratory{{background:#fef3c7;color:#92400e}}
 .claimable-yes{{background:#dcfce7;color:#166534}}
@@ -766,7 +779,7 @@ canvas{{max-height:340px!important}}
 <body>
 
 <div class="header">
-  <h1>📊 Dataset Analysis Dashboard</h1>
+  <h1>📊 Dataset Analysis Dashboard <span class="cert-badge {cert_class}">{cert_label}</span></h1>
   <p>Phase 1 · SLM Pretraining Dataset Characterization · {label_k} ({ks["total"]:,} chunks) vs {label_t} ({ts["total"]:,} chunks)</p>
 </div>
 

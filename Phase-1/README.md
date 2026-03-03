@@ -24,6 +24,10 @@ Windows:
 5. `05_compute_metrics.py`
 6. `06_build_dashboard.py`
 7. `07_validate_phase1_outputs.py`
+8. `08_generate_label_templates.py`
+9. `09_calibrate_ood_thresholds.py`
+10. `10_score_metric_gates.py`
+11. `11_certify_phase1.py`
 
 ## Dataset-agnostic config
 
@@ -55,9 +59,49 @@ Robustness defaults now included in outputs:
 - `outputs/run_manifest.json`
 - `outputs/run_summary.json`
 - `outputs/validation/full_validation_report.json` (if `--write-report` used)
+- `outputs/validation/gate_scores_main.json`
+- `outputs/validation/gate_scores_transfer.json`
+- `outputs/validation/ood_calibration_report.json`
 
 Example final validation report command:
 
 ```bash
 python 07_validate_phase1_outputs.py --profile full --require-gates --write-report outputs/validation/full_validation_report.json
 ```
+
+`--require-gates` is strict:
+- required gate missing => FAIL
+- required gate `pass` is `null` => FAIL
+- required gate `pass` is `false` => FAIL
+
+## Certification flow (Strict Closeout)
+
+1. Generate label templates:
+
+```bash
+python 08_generate_label_templates.py
+```
+
+2. Fill gold labels in `validation/labels/*.csv`.
+
+3. Calibrate OOD thresholds on calibration split:
+
+```bash
+python 09_calibrate_ood_thresholds.py
+```
+
+4. Score gates:
+
+```bash
+python 10_score_metric_gates.py
+```
+
+5. Certify strict closeout:
+
+```bash
+python 11_certify_phase1.py
+```
+
+Current default in `configs/metric_identity_v1.json`:
+- `transfer_policy.required = false` (two-dataset closeout mode)
+- you can switch to strict transfer mode later by setting `required=true` and `min_datasets>=1`

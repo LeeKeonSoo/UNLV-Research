@@ -75,17 +75,52 @@ except Exception:
 PROTOTYPES_PATH    = "outputs/concept_prototypes_tfidf.pkl"
 CORPUS_INDEX_PATH  = "outputs/corpus_index.pkl"
 DATASETS_CONFIG_PATH = os.getenv("PHASE1_DATASETS_CONFIG", "datasets_config.json")
+IDENTITY_CONFIG_PATH = os.getenv(
+    "PHASE1_IDENTITY_CONFIG", "configs/metric_identity_v1.json"
+)
 PROJECT_DIR = Path(__file__).resolve().parent
 
 OUTPUT_DIR   = Path("outputs")
 RUN_MANIFEST_OUTPUT = OUTPUT_DIR / "run_manifest.json"
 RUN_SUMMARY_OUTPUT = OUTPUT_DIR / "run_summary.json"
 
+
+def _load_identity_config(path: str = IDENTITY_CONFIG_PATH) -> Dict[str, Any]:
+    cfg = Path(path)
+    if not cfg.is_absolute():
+        cfg = PROJECT_DIR / cfg
+    if not cfg.exists():
+        return {}
+    try:
+        with cfg.open("r", encoding="utf-8", errors="replace") as f:
+            payload = json.load(f)
+        return payload if isinstance(payload, dict) else {}
+    except Exception:
+        return {}
+
+
+IDENTITY_CONFIG = _load_identity_config()
+
 TOP_K_DOMAINS  = 5
 MIN_SIMILARITY = 0.1
-OOD_IN_DOMAIN_SIM = float(os.getenv("PHASE1_OOD_IN_DOMAIN_SIM", "0.20"))
-OOD_MARGIN_MIN = float(os.getenv("PHASE1_OOD_MARGIN_MIN", "0.03"))
-OOD_NEAR_SIM = float(os.getenv("PHASE1_OOD_NEAR_SIM", str(MIN_SIMILARITY)))
+OOD_IN_DOMAIN_SIM = float(
+    os.getenv(
+        "PHASE1_OOD_IN_DOMAIN_SIM",
+        str((IDENTITY_CONFIG.get("ood_thresholds", {}) or {}).get("in_domain_sim", 0.20)),
+    )
+)
+OOD_MARGIN_MIN = float(
+    os.getenv(
+        "PHASE1_OOD_MARGIN_MIN",
+        str((IDENTITY_CONFIG.get("ood_thresholds", {}) or {}).get("margin_min", 0.03)),
+    )
+)
+OOD_NEAR_SIM = float(
+    os.getenv(
+        "PHASE1_OOD_NEAR_SIM",
+        str((IDENTITY_CONFIG.get("ood_thresholds", {}) or {}).get("ood_near_sim", MIN_SIMILARITY)),
+    )
+)
 CHUNK_SIZE      = 200
 MIN_CHUNK_WORDS = 20
 USE_GPU         = os.getenv("PHASE1_USE_GPU", "1") not in {"0", "false", "False", "FALSE", "no", "No", "NO"}
@@ -119,6 +154,31 @@ DOMAIN_TOP3_GATE = 0.85
 QUALITY_PREC_GATE = 0.80
 DIFFICULTY_OOR_GATE = 0.01
 PERPLEXITY_COVERAGE_GATE = 0.90
+DOMAIN_TOP1_GATE = float(
+    ((IDENTITY_CONFIG.get("gates", {}) or {}).get("domain", {}) or {})
+    .get("top1_accuracy", {})
+    .get("threshold", DOMAIN_TOP1_GATE)
+)
+DOMAIN_TOP3_GATE = float(
+    ((IDENTITY_CONFIG.get("gates", {}) or {}).get("domain", {}) or {})
+    .get("top3_recall", {})
+    .get("threshold", DOMAIN_TOP3_GATE)
+)
+QUALITY_PREC_GATE = float(
+    ((IDENTITY_CONFIG.get("gates", {}) or {}).get("quality", {}) or {})
+    .get("macro_precision", {})
+    .get("threshold", QUALITY_PREC_GATE)
+)
+DIFFICULTY_OOR_GATE = float(
+    ((IDENTITY_CONFIG.get("gates", {}) or {}).get("difficulty", {}) or {})
+    .get("out_of_range_rate", {})
+    .get("threshold", DIFFICULTY_OOR_GATE)
+)
+PERPLEXITY_COVERAGE_GATE = float(
+    ((IDENTITY_CONFIG.get("gates", {}) or {}).get("perplexity", {}) or {})
+    .get("non_null_coverage", {})
+    .get("threshold", PERPLEXITY_COVERAGE_GATE)
+)
 DIFFICULTY_FK_MAX = float(os.getenv("PHASE1_DIFFICULTY_FK_MAX", "30.0"))
 DIFFICULTY_EASE_MIN = float(os.getenv("PHASE1_DIFFICULTY_EASE_MIN", "-100.0"))
 DIFFICULTY_EASE_MAX = float(os.getenv("PHASE1_DIFFICULTY_EASE_MAX", "130.0"))
@@ -1486,6 +1546,7 @@ def build_run_manifest(
         "schema_version": SCHEMA_VERSION,
         "phase": "phase-1",
         "objective_mode": "descriptive_comparative_only",
+        "metric_identity_version": IDENTITY_CONFIG.get("identity_version", "v1"),
         "generated_by": "compute_metrics.py",
         "code_commit_hash": _git_commit_hash(),
         "dataset_versions_and_counts": dataset_versions_and_counts,
@@ -1514,6 +1575,22 @@ def build_run_manifest(
         },
         "metric_tier": dict(METRIC_TIER),
         "reliability_gate_outcomes": gate_outcomes,
+        "gate_evidence": {
+            "identity_config_path": str(IDENTITY_CONFIG_PATH),
+        },
+        "manual_validation_counts": {},
+        "transfer_validation": {
+            "required": bool((IDENTITY_CONFIG.get("transfer_policy", {}) or {}).get("required", True)),
+            "min_datasets": int((IDENTITY_CONFIG.get("transfer_policy", {}) or {}).get("min_datasets", 1)),
+            "anchor_datasets": (IDENTITY_CONFIG.get("transfer_policy", {}) or {}).get(
+                "anchor_datasets", ["khan_academy", "tiny_textbooks"]
+            ),
+            "observed_datasets": [],
+            "observed_transfer_datasets": [],
+            "pass": None,
+        },
+        "certification_status": "pending",
+        "certification_failed_gates": [],
         "perplexity_fallback_behavior": {
             "model_available": perplexity.available,
             "coverage_on_this_run": perplexity_gate.get("value"),
@@ -1579,6 +1656,8 @@ def write_run_summary(manifest: Dict) -> None:
         "threshold_config": manifest.get("threshold_config"),
         "runtime_device": manifest.get("runtime_device"),
         "metric_tier": manifest.get("metric_tier"),
+        "metric_identity_version": manifest.get("metric_identity_version"),
+        "certification_status": manifest.get("certification_status"),
     }
     with RUN_SUMMARY_OUTPUT.open("w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)

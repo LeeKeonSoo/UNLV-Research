@@ -121,12 +121,22 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--allow-gate-fail",
         action="store_true",
-        help="Do not fail when auto-computed reliability gates have pass=False.",
+        help="Compatibility flag. Prefer --require-gates for strict pre-check.",
+    )
+    parser.add_argument(
+        "--require-gates",
+        action="store_true",
+        help="Fail compute-step validation when any required gate is not passed.",
     )
     parser.add_argument(
         "--datasets-config",
         default="datasets_config.json",
         help="Dataset config path (relative to Phase-1 root).",
+    )
+    parser.add_argument(
+        "--identity-config",
+        default="configs/metric_identity_v1.json",
+        help="Metric identity config path (relative to Phase-1 root).",
     )
     return parser.parse_args()
 
@@ -135,7 +145,7 @@ def main() -> int:
     args = _parse_args()
 
     rerun_all = not args.reuse_existing
-    require_gates = not args.allow_gate_fail
+    require_gates = bool(args.require_gates) and not bool(args.allow_gate_fail)
 
     # Final-validation defaults with RAM-safe redundancy settings.
     profile: Dict[str, str] = {
@@ -171,11 +181,13 @@ def main() -> int:
     env = os.environ.copy()
     env.update(profile)
     env["PHASE1_DATASETS_CONFIG"] = args.datasets_config
+    env["PHASE1_IDENTITY_CONFIG"] = args.identity_config
 
     print("[Phase-1] Using execution profile:")
     for k in sorted(profile):
         print(f"  {k}={env[k]}")
     print(f"  PHASE1_DATASETS_CONFIG={env['PHASE1_DATASETS_CONFIG']}")
+    print(f"  PHASE1_IDENTITY_CONFIG={env['PHASE1_IDENTITY_CONFIG']}")
 
     dataset_names = set(_load_dataset_names(args.datasets_config))
 

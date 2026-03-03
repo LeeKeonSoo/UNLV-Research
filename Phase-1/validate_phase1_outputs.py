@@ -54,6 +54,14 @@ REQUIRED_FLAGS = {
 }
 ALLOWED_TIER_VALUES = {"core", "exploratory"}
 ALLOWED_OOD_LABELS = {"in_domain", "borderline", "ood_near", "ood_far"}
+REQUIRED_GATE_PATHS = {
+    "domain.top1_accuracy",
+    "domain.top3_recall",
+    "quality.macro_precision",
+    "difficulty.out_of_range_rate",
+    "redundancy.non_degenerate_distribution",
+    "perplexity.non_null_coverage",
+}
 
 
 def _slugify_dataset_name(raw: str) -> str:
@@ -121,6 +129,17 @@ def _is_bool(v: Any) -> bool:
     return isinstance(v, bool)
 
 
+def _lookup_gate_state(gate_outcomes: Dict[str, Any], gate_path: str) -> Optional[Dict[str, Any]]:
+    metric, gate_name = gate_path.split(".", 1)
+    metric_map = gate_outcomes.get(metric)
+    if not isinstance(metric_map, dict):
+        return None
+    gate_state = metric_map.get(gate_name)
+    if not isinstance(gate_state, dict):
+        return None
+    return gate_state
+
+
 def _safe_float(v: Any) -> Optional[float]:
     try:
         x = float(v)
@@ -169,6 +188,15 @@ def _iter_jsonl_records(path: Path, limit: Optional[int] = None):
 def _load_json(path: Path):
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def _load_json_if_exists(path: Path):
+    if not path.exists():
+        return None
+    try:
+        return _load_json(path)
+    except Exception:
+        return None
 
 
 def _require(ok: bool, name: str, details: Dict[str, Any], failures: List[ValidationItem]):
@@ -784,6 +812,12 @@ def validate_manifest(
         "runtime_device",
         "metric_tier",
         "reliability_gate_outcomes",
+        "metric_identity_version",
+        "gate_evidence",
+        "manual_validation_counts",
+        "transfer_validation",
+        "certification_status",
+        "certification_failed_gates",
     }
     if isinstance(manifest, dict):
         missing = sorted(required - set(manifest.keys()))
@@ -845,16 +879,31 @@ def validate_manifest(
         if not isinstance(gate_outcomes, dict) or not gate_outcomes:
             failures.append(ValidationItem(name="run_manifest_gates", ok=False, message="FAIL", details={"reliability_gate_outcomes": gate_outcomes}))
         elif require_gates:
-            for metric, outcome in gate_outcomes.items():
-                if not isinstance(outcome, dict):
+            # Strict closeout mode: every required gate must exist and pass==True.
+            for gate_path in sorted(REQUIRED_GATE_PATHS):
+                state = _lookup_gate_state(gate_outcomes, gate_path)
+                if state is None:
+                    failures.append(
+                        ValidationItem(
+                            name="run_manifest_gate_missing",
+                            ok=False,
+                            message="FAIL",
+                            details={"gate_path": gate_path},
+                        )
+                    )
                     continue
-                for _, metric_state in outcome.items():
-                    if isinstance(metric_state, dict) and "pass" in metric_state:
-                        if metric_state.get("pass") is False:
-                            failures.append(ValidationItem(name="run_manifest_gate_threshold", ok=False, message="FAIL", details={
-                                "metric": metric,
-                                "metric_state": metric_state,
-                            }))
+                if state.get("pass") is not True:
+                    failures.append(
+                        ValidationItem(
+                            name="run_manifest_gate_not_passed",
+                            ok=False,
+                            message="FAIL",
+                            details={
+                                "gate_path": gate_path,
+                                "metric_state": state,
+                            },
+                        )
+                    )
 
     if run_summary_path.exists():
         try:
@@ -1052,16 +1101,56 @@ def main() -> int:
     if args.write_report:
         out_path = Path(args.write_report)
         out_path.parent.mkdir(parents=True, exist_ok=True)
+        gate_main = _load_json_if_exists(OUTPUT_DIR / "validation" / "gate_scores_main.json")
+        gate_transfer = _load_json_if_exists(OUTPUT_DIR / "validation" / "gate_scores_transfer.json")
+        manifest_for_report = _load_json_if_exists(RUN_MANIFEST) or {}
+        closeout_status = manifest_for_report.get("certification_status")
+        closeout_failed = manifest_for_report.get("certification_failed_gates")
+        transfer_results = manifest_for_report.get("transfer_validation")
+        gate_conf = None
+        if isinstance(gate_main, dict) or isinstance(gate_transfer, dict):
+            gate_conf = {
+                "main_eval": {
+                    "domain.top1_accuracy": (((gate_main or {}).get("gate_scores") or {}).get("domain") or {}).get("top1_accuracy", {}).get("ci95"),
+                    "domain.top3_recall": (((gate_main or {}).get("gate_scores") or {}).get("domain") or {}).get("top3_recall", {}).get("ci95"),
+                    "quality.macro_precision": (((gate_main or {}).get("gate_scores") or {}).get("quality") or {}).get("macro_precision", {}).get("ci95"),
+                    "difficulty.out_of_range_rate": (((gate_main or {}).get("gate_scores") or {}).get("difficulty") or {}).get("out_of_range_rate", {}).get("ci95"),
+                },
+                "transfer_eval": {
+                    "domain.top1_accuracy": (((gate_transfer or {}).get("gate_scores") or {}).get("domain") or {}).get("top1_accuracy", {}).get("ci95"),
+                    "domain.top3_recall": (((gate_transfer or {}).get("gate_scores") or {}).get("domain") or {}).get("top3_recall", {}).get("ci95"),
+                    "quality.macro_precision": (((gate_transfer or {}).get("gate_scores") or {}).get("quality") or {}).get("macro_precision", {}).get("ci95"),
+                    "difficulty.out_of_range_rate": (((gate_transfer or {}).get("gate_scores") or {}).get("difficulty") or {}).get("out_of_range_rate", {}).get("ci95"),
+                },
+            }
         with out_path.open("w", encoding="utf-8") as f:
-            json.dump({"summary": summary_payload, "results": [
+            json.dump(
                 {
-                    "name": r.name,
-                    "ok": r.ok,
-                    "message": r.message,
-                    "details": r.details,
-                }
-                for r in results
-            ]}, f, indent=2, ensure_ascii=False)
+                    "summary": summary_payload,
+                    "results": [
+                        {
+                            "name": r.name,
+                            "ok": r.ok,
+                            "message": r.message,
+                            "details": r.details,
+                        }
+                        for r in results
+                    ],
+                    "gate_scores": {
+                        "main_eval": gate_main,
+                        "transfer_eval": gate_transfer,
+                    },
+                    "gate_confidence_intervals": gate_conf,
+                    "transfer_results": transfer_results,
+                    "closeout_decision": {
+                        "status": closeout_status,
+                        "failed_gates": closeout_failed,
+                    },
+                },
+                f,
+                indent=2,
+                ensure_ascii=False,
+            )
 
     return 0 if pass_flag else 1
 
