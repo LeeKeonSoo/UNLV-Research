@@ -9,8 +9,9 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Callable, Dict, List, Sequence, Tuple
+from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
+from phase1_autosave import autosave_stage, resolve_autosave_target
 from validate_phase1_outputs import (
     ValidationItem,
     validate_analysis_outputs,
@@ -138,6 +139,20 @@ def _parse_args() -> argparse.Namespace:
         default="configs/metric_identity_v1.json",
         help="Metric identity config path (relative to Phase-1 root).",
     )
+    parser.add_argument(
+        "--autosave-root",
+        default="",
+        help=(
+            "Autosave destination root. "
+            "If omitted, auto-detects Google Drive in Colab. "
+            "Set to 'off' to disable."
+        ),
+    )
+    parser.add_argument(
+        "--disable-autosave",
+        action="store_true",
+        help="Disable autosave sync after each step.",
+    )
     return parser.parse_args()
 
 
@@ -182,6 +197,19 @@ def main() -> int:
     env.update(profile)
     env["PHASE1_DATASETS_CONFIG"] = args.datasets_config
     env["PHASE1_IDENTITY_CONFIG"] = args.identity_config
+
+    autosave_target: Optional[Path] = None
+    autosave_root = (args.autosave_root or "").strip() or None
+    if args.disable_autosave:
+        print("[Autosave] disabled by --disable-autosave")
+    else:
+        autosave_target = resolve_autosave_target(PROJECT_DIR, autosave_root)
+        if autosave_target is None:
+            print("[Autosave] disabled by config/env")
+        elif autosave_target.resolve() == PROJECT_DIR.resolve():
+            print(f"[Autosave] local mode (project path): {PROJECT_DIR}")
+        else:
+            print(f"[Autosave] external target: {autosave_target}")
 
     print("[Phase-1] Using execution profile:")
     for k in sorted(profile):
@@ -244,6 +272,21 @@ def main() -> int:
 
     for label, cmd, checks in steps:
         _run_and_validate(label, cmd, env, checks)
+        if not args.disable_autosave:
+            autosave_stage(
+                project_dir=PROJECT_DIR,
+                stage=label,
+                autosave_root=autosave_root,
+                resolved_target=autosave_target,
+            )
+
+    if not args.disable_autosave:
+        autosave_stage(
+            project_dir=PROJECT_DIR,
+            stage="final",
+            autosave_root=autosave_root,
+            resolved_target=autosave_target,
+        )
 
     print("\n[Phase-1] Pipeline complete.")
     return 0

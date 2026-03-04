@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from phase1_autosave import autosave_stage
+
 PROJECT_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_DIR / "outputs"
 MANIFEST_PATH = OUTPUT_DIR / "run_manifest.json"
@@ -546,6 +548,12 @@ def main() -> int:
 
     print(f"[10] main gates: {args.out_main}")
     print(f"[10] transfer gates: {args.out_transfer}")
+
+    try:
+        autosave_stage(PROJECT_DIR, "score_metric_gates")
+    except Exception as e:
+        print(f"[Autosave] warning (10): {e}")
+
     return 0
 
 

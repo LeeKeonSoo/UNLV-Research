@@ -18,6 +18,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from phase1_autosave import autosave_stage
+
 PROJECT_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_DIR / "outputs"
 MANIFEST_PATH = OUTPUT_DIR / "run_manifest.json"
@@ -375,6 +377,12 @@ def main() -> int:
     print(f"  quality:   {len(quality_rows)}")
     print(f"  difficulty:{len(diff_rows)}")
     print(f"  ood:       {len(ood_rows)}")
+
+    try:
+        autosave_stage(PROJECT_DIR, "generate_label_templates")
+    except Exception as e:
+        print(f"[Autosave] warning (08): {e}")
+
     return 0
 
 

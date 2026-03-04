@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from phase1_autosave import autosave_stage
+
 PROJECT_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_DIR / "outputs"
 MANIFEST_PATH = OUTPUT_DIR / "run_manifest.json"
@@ -294,6 +296,12 @@ def main() -> int:
     print(json.dumps(best_payload, indent=2))
     print(f"[09] Updated config: {args.identity_config}")
     print(f"[09] Report: {args.report}")
+
+    try:
+        autosave_stage(PROJECT_DIR, "calibrate_ood_thresholds")
+    except Exception as e:
+        print(f"[Autosave] warning (09): {e}")
+
     return 0
 
 

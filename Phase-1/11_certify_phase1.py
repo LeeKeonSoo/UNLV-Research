@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from phase1_autosave import autosave_stage
+
 PROJECT_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_DIR / "outputs"
 VALIDATION_DIR = OUTPUT_DIR / "validation"
@@ -255,6 +257,11 @@ def main() -> int:
     print(f"[11] certification_status: {status}")
     print(f"[11] updated manifest: {args.manifest}")
     print(f"[11] updated report: {args.full_report}")
+
+    try:
+        autosave_stage(PROJECT_DIR, "certify_phase1")
+    except Exception as e:
+        print(f"[Autosave] warning (11): {e}")
 
     return 0 if status == "pass" else 1
 
