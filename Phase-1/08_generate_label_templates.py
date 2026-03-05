@@ -54,6 +54,37 @@ def _safe_float(v: Any):
     return f
 
 
+def _safe_bool(v: Any):
+    if isinstance(v, bool):
+        return v
+    return None
+
+
+def _topk_domain_labels(record: Dict[str, Any], k: int = 3) -> str:
+    labels = record.get("domain_labels") or {}
+    if not isinstance(labels, dict):
+        return ""
+    ranked: List[Tuple[str, float]] = []
+    for name, score in labels.items():
+        s = _safe_float(score)
+        if s is None:
+            continue
+        ranked.append((str(name), s))
+    if not ranked:
+        return ""
+    ranked.sort(key=lambda x: x[1], reverse=True)
+    return "|".join(name for name, _ in ranked[:k])
+
+
+def _text_preview(record: Dict[str, Any], max_chars: int = 320) -> str:
+    text = str(record.get("text") or record.get("text_preview") or "").strip()
+    if not text:
+        return ""
+    if len(text) <= max_chars:
+        return text
+    return text[: max_chars - 3] + "..."
+
+
 def _reservoir_sample(path: Path, dataset: str, k: int, rng: random.Random) -> List[Dict[str, Any]]:
     sample: List[Dict[str, Any]] = []
     seen = 0
@@ -72,6 +103,15 @@ def _reservoir_sample(path: Path, dataset: str, k: int, rng: random.Random) -> L
                 "ood_label": str(((record.get("ood") or {}).get("label") or "ood_far")),
                 "quality_score": _safe_float(record.get("quality_score")),
                 "fk_grade": _safe_float((record.get("difficulty") or {}).get("flesch_kincaid_grade")),
+                # Human-labeling aids (read-only hints)
+                "text_preview": _text_preview(record),
+                "pred_top_domain": str(record.get("top_domain_full") or record.get("top_domain") or ""),
+                "pred_top3_domains_pipe": _topk_domain_labels(record, k=3),
+                "pred_has_examples": _safe_bool((record.get("educational_markers") or {}).get("has_examples")),
+                "pred_has_explanation": _safe_bool((record.get("educational_markers") or {}).get("has_explanation")),
+                "pred_has_structure": _safe_bool((record.get("educational_markers") or {}).get("has_structure")),
+                "pred_difficulty_valid": _safe_bool((record.get("validity_flags") or {}).get("difficulty_valid")),
+                "pred_ood_label": str(((record.get("ood") or {}).get("label") or "")),
             }
             if len(sample) < k:
                 sample.append(item)
@@ -291,6 +331,9 @@ def main() -> int:
                 "gold_primary": "",
                 "gold_alternates_pipe": "",
                 "split": split,
+                "pred_top_domain": x.get("pred_top_domain", ""),
+                "pred_top3_domains_pipe": x.get("pred_top3_domains_pipe", ""),
+                "text_preview": x.get("text_preview", ""),
             })
 
     def add_quality(rows_src: List[Dict[str, Any]], split: str):
@@ -304,6 +347,10 @@ def main() -> int:
                 "gold_has_explanation": "",
                 "gold_has_structure": "",
                 "split": split,
+                "pred_has_examples": x.get("pred_has_examples", ""),
+                "pred_has_explanation": x.get("pred_has_explanation", ""),
+                "pred_has_structure": x.get("pred_has_structure", ""),
+                "text_preview": x.get("text_preview", ""),
             })
 
     def add_diff(rows_src: List[Dict[str, Any]], split: str):
@@ -316,6 +363,9 @@ def main() -> int:
                 "gold_valid": "",
                 "reason": "",
                 "split": split,
+                "pred_difficulty_valid": x.get("pred_difficulty_valid", ""),
+                "fk_grade_hint": x.get("fk_grade", ""),
+                "text_preview": x.get("text_preview", ""),
             })
 
     def add_ood(rows_src: List[Dict[str, Any]], split: str):
@@ -327,6 +377,10 @@ def main() -> int:
                 "chunk_id": x["chunk_id"],
                 "gold_in_domain": "",
                 "split": split,
+                "pred_ood_label": x.get("pred_ood_label", ""),
+                "pred_top_domain": x.get("pred_top_domain", ""),
+                "pred_top3_domains_pipe": x.get("pred_top3_domains_pipe", ""),
+                "text_preview": x.get("text_preview", ""),
             })
 
     add_domain(_balanced_sample(candidates, args.main_domain, main_datasets, used_domain, rng), "main_eval")
@@ -344,7 +398,18 @@ def main() -> int:
 
     _write_csv(
         LABEL_DIR / "domain_labels_v1.csv",
-        ["dataset", "source", "doc_id", "chunk_id", "gold_primary", "gold_alternates_pipe", "split"],
+        [
+            "dataset",
+            "source",
+            "doc_id",
+            "chunk_id",
+            "gold_primary",
+            "gold_alternates_pipe",
+            "split",
+            "pred_top_domain",
+            "pred_top3_domains_pipe",
+            "text_preview",
+        ],
         domain_rows,
     )
     _write_csv(
@@ -358,17 +423,43 @@ def main() -> int:
             "gold_has_explanation",
             "gold_has_structure",
             "split",
+            "pred_has_examples",
+            "pred_has_explanation",
+            "pred_has_structure",
+            "text_preview",
         ],
         quality_rows,
     )
     _write_csv(
         LABEL_DIR / "difficulty_sanity_v1.csv",
-        ["dataset", "source", "doc_id", "chunk_id", "gold_valid", "reason", "split"],
+        [
+            "dataset",
+            "source",
+            "doc_id",
+            "chunk_id",
+            "gold_valid",
+            "reason",
+            "split",
+            "pred_difficulty_valid",
+            "fk_grade_hint",
+            "text_preview",
+        ],
         diff_rows,
     )
     _write_csv(
         LABEL_DIR / "ood_labels_v1.csv",
-        ["dataset", "source", "doc_id", "chunk_id", "gold_in_domain", "split"],
+        [
+            "dataset",
+            "source",
+            "doc_id",
+            "chunk_id",
+            "gold_in_domain",
+            "split",
+            "pred_ood_label",
+            "pred_top_domain",
+            "pred_top3_domains_pipe",
+            "text_preview",
+        ],
         ood_rows,
     )
 
