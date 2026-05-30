@@ -1,40 +1,23 @@
-# Data files
-pile/
-pile_compressed/
-*.jsonl
-
-# K-12 data directories
-k12_raw/
-k12_processed/
-k12_graphs/
-k12_reports/
-
-# Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
 .Python
 *.egg-info/
 dist/
 build/
-*.egg
-
-# IDE
 .vscode/
+.claude/
 .idea/
 *.swp
 *.swo
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Results (optional - uncomment if needed)
-results/
+*.zip
+outputs/
+legacy/phase1_educational_pipeline/outputs_snapshot/
 tiny_textbooks_raw/
-*-cwd
-*.json
-*.pkl
-
+validation/fixtures/openwebtext2_subset/
+validation/fixtures/wikitext103_subset/
+validation/calibration_samples/
+validation/utility/
+validation/token_budget_cache.json
 models/

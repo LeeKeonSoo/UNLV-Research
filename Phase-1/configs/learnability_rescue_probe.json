@@ -1,0 +1,195 @@
+{
+  "schema_version": "curation-profiles-v2",
+  "profiles": {
+    "learnability_rescue_no_anti_collapse": {
+      "stage_a_gate": {
+        "metric_floors": {
+          "structural_validity_gate": 1
+        },
+        "metric_ceilings": {
+          "exact_duplicate_indicator": 0,
+          "shingle_near_duplicate_indicator": 0
+        }
+      },
+      "stage_b_rank": {
+        "selection_threshold": 0.66,
+        "near_duplicate_risk_ceiling": 0.48,
+        "near_duplicate_risk_quantile_ceiling": 0.9,
+        "near_duplicate_risk_quantile_sample_size": 60000,
+        "weights": {
+          "quality": 0.74,
+          "redundancy": 0.26
+        }
+      },
+      "selector": {
+        "objective_weights": {
+          "quality": 0.7,
+          "redundancy_risk": 0.22
+        },
+        "constraint_penalties": {
+          "rare_cluster_bonus": 0.18,
+          "small_cluster_bonus": 0.1,
+          "penalty_growth": 1.4,
+          "threshold_relax_step": 0.015
+        },
+        "selection_adjustments": {
+          "useful_length_bonus": 0.03,
+          "lexical_diversity_bonus": 0.02,
+          "boilerplate_penalty": 0.1,
+          "useful_recurrence_bonus": 0.08,
+          "learnability_support_bonus": 0.07,
+          "pattern_recurrence_bonus": 0.04,
+          "quality_tail_penalty": 0.035
+        },
+        "iteration_cap": 12,
+        "hash_sampling_seed": 42,
+        "min_selected_ratio": 0.14,
+        "min_selected_tokens": 0,
+        "rare_cluster_min_count": 2,
+        "preserve_domain_bucket_exemplars": true,
+        "domain_bucket_min_count": 1,
+        "preserve_style_bucket_exemplars": true,
+        "style_bucket_min_count": 4,
+        "preserve_domain_distribution": true,
+        "preserve_style_distribution": true,
+        "preserve_length_distribution": true,
+        "preserve_quality_band_distribution": false,
+        "diagnose_quality_band_distribution": true,
+        "quality_band_distribution_min_quality": 0.8,
+        "matched_baseline_pool_multiplier": 4,
+        "quality_band_rebalance_mode": "diagnostic_only",
+        "quality_band_max_swap_ratio": 0.08,
+        "quality_top_band_max_share": 0.08,
+        "learning_signal_diagnostic_sample_size": 3000,
+        "enable_learnability_rebalance": true,
+        "learnability_rebalance_max_swap_ratio": 0.1,
+        "learnability_rebalance_min_gain": 0.04,
+        "learnability_rebalance_min_quality": 0.82,
+        "learnability_rebalance_preserve_buckets": [
+          "domain",
+          "style",
+          "length"
+        ]
+      },
+      "stage_c_validation": {
+        "evaluation_mode": "development",
+        "utility_metric": "small_lm_probe_gain_score",
+        "min_subset_coverage_retention_score": 0.55,
+        "min_rare_cluster_retention": 0.5,
+        "min_rare_cluster_retained_count": 1,
+        "enforce_domain_coverage_support": true,
+        "min_domain_coverage_distribution_similarity": 0.9,
+        "min_domain_coverage_retained_bucket_ratio": 0.95,
+        "enforce_style_coverage_support": true,
+        "min_style_coverage_distribution_similarity": 0.9,
+        "min_style_coverage_retained_bucket_ratio": 0.95,
+        "min_small_lm_probe_gain_score": 0,
+        "min_small_lm_probe_relative_gain": 0,
+        "utility_pass_statistic": "mean",
+        "require_utility_ci_gain_positive": false,
+        "require_utility_delta_nll_positive": true,
+        "enforce_ood_utility_pass": false,
+        "compute_ood_utility_report": true,
+        "certification_overrides": {
+          "min_small_lm_probe_gain_score": 0,
+          "min_small_lm_probe_relative_gain": 2e-05,
+          "utility_pass_statistic": "min",
+          "require_utility_ci_gain_positive": true,
+          "require_utility_delta_nll_positive": true,
+          "enforce_ood_utility_pass": true,
+          "compute_ood_utility_report": true,
+          "enforce_coverage_backbone_pass": true,
+          "delta_nll_numerical_tolerance": 1e-05
+        },
+        "certification_scope": "domain_specific"
+      },
+      "utility_probe": {
+        "mode": "full",
+        "model_name": "sshleifer/tiny-gpt2",
+        "dual_eval_required": true,
+        "train_token_budget": 96000,
+        "eval_token_budget": 24000,
+        "ood_eval_token_budget": 24000,
+        "bootstrap_samples": 120,
+        "seeds": [
+          17,
+          29
+        ],
+        "holdout_modulo": 17,
+        "holdout_buckets": [
+          0,
+          1
+        ],
+        "ood_holdout_buckets": [
+          0,
+          1
+        ],
+        "min_probe_bucket_count": 2,
+        "baseline_sampling_ratio": 1,
+        "max_length": 128,
+        "train_batch_size": 4,
+        "eval_batch_size": 4,
+        "train_audit_token_budget": 4096,
+        "learning_rate": 5e-05,
+        "max_train_steps": 448,
+        "train_epochs": 2,
+        "sampling_hash_seed": 42,
+        "certification_overrides": {
+          "mode": "full",
+          "model_name": "sshleifer/tiny-gpt2",
+          "train_token_budget": 192000,
+          "eval_token_budget": 48000,
+          "ood_eval_token_budget": 48000,
+          "bootstrap_samples": 200,
+          "seeds": [
+            17,
+            29,
+            41,
+            53
+          ],
+          "holdout_buckets": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "ood_holdout_buckets": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "min_probe_bucket_count": 4,
+          "max_train_steps": 1536,
+          "train_epochs": 3
+        }
+      },
+      "coverage_strategy": {
+        "ensure_rare_cluster_exemplars": true,
+        "rare_cluster_quantile": 0.25,
+        "rare_exemplar_min_validity": 0.85,
+        "rare_exemplar_min_reference_quality": 0.6,
+        "rare_exemplar_max_exact_duplicate_indicator": 0,
+        "rare_exemplar_relaxed_near_dup_ceiling": 1
+      },
+      "metric_floors": {
+        "structural_validity_gate": 1
+      },
+      "metric_ceilings": {
+        "exact_duplicate_indicator": 0,
+        "shingle_near_duplicate_indicator": 0,
+        "shingle_near_duplicate_risk_score": 0.52
+      },
+      "selection_threshold": 0.66,
+      "weights": {
+        "quality": 0.8,
+        "redundancy": 0.2
+      },
+      "candidate_notes": {
+        "purpose": "Candidate profile from S4/S5 ablation. Tests whether disabling top-quality anti-collapse and strengthening same-bucket learnability rescue improves Utility without collapsing Coverage.",
+        "decision_rule": "Promote only if Coverage remains comparable to canonical and Utility evidence improves, especially TinyTextbooks probe/curation benefit.",
+        "source_audit": "outputs/validation/policy_ablation_audit.json"
+      }
+    }
+  }
+}

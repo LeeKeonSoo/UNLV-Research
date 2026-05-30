@@ -1,0 +1,32 @@
+[
+  {
+    "id": "doc_1",
+    "title": "Photosynthesis overview",
+    "text": "Photosynthesis is the process by which plants convert light into chemical energy. It occurs mainly in the chloroplast. In simple terms, light, water, and carbon dioxide are used to produce glucose and oxygen. This explanation introduces the basic concept and gives a concise definition."
+  },
+  {
+    "id": "doc_2",
+    "title": "Duplicated boilerplate",
+    "text": "Subscribe now for updates. Click here to join. Subscribe now for updates. Click here to join. Subscribe now for updates. Click here to join. Subscribe now for updates. Click here to join. Subscribe now for updates. Click here to join."
+  },
+  {
+    "id": "doc_3",
+    "title": "Reasoning example",
+    "text": "Question: Why does ice float on water? Answer: Ice is less dense than liquid water because hydrogen bonds keep water molecules farther apart in the solid state. Therefore, the same mass occupies more volume, which lowers density and causes floating."
+  },
+  {
+    "id": "doc_4",
+    "title": "Near duplicate A",
+    "text": "A healthy study routine often begins with short focused sessions. For example, a student may review one chapter, take notes, and summarize the lesson in their own words before moving to the next topic."
+  },
+  {
+    "id": "doc_5",
+    "title": "Near duplicate B",
+    "text": "A strong study routine often starts with short focused sessions. For example, a learner may review one chapter, take notes, and summarize the material in their own words before moving to the next lesson."
+  },
+  {
+    "id": "doc_6",
+    "title": "Rare niche topic",
+    "text": "Braille music notation is a tactile system that allows blind musicians to read music through patterns of raised dots. Although it appears in a much smaller set of texts than standard notation, it represents an important rare pattern in educational and accessibility-related material."
+  }
+]

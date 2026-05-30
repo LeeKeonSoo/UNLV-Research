@@ -1,0 +1,593 @@
+{
+  "schema_version": "metric-spec-v2",
+  "paper_registry": {
+    "gpt3_2020": {
+      "title": "Language Models are Few-Shot Learners",
+      "venue": "NeurIPS",
+      "year": 2020
+    },
+    "c4_2020": {
+      "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+      "venue": "JMLR",
+      "year": 2020
+    },
+    "fineweb_2024": {
+      "title": "FineWeb: decanting the web for the finest text data at scale",
+      "venue": "Hugging Face",
+      "year": 2024
+    },
+    "dolma_2024": {
+      "title": "Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research",
+      "venue": "Allen AI",
+      "year": 2024
+    },
+    "paloma_2023": {
+      "title": "PALOMA: A Benchmark for Evaluating Language Model Utility",
+      "venue": "arXiv",
+      "year": 2023
+    },
+    "datacomp_lm_2024": {
+      "title": "DataComp-LM: In search of the next generation of training sets for language models",
+      "venue": "arXiv",
+      "year": 2024
+    },
+    "refinedweb_2023": {
+      "title": "The RefinedWeb Dataset for Falcon LLM",
+      "venue": "TII",
+      "year": 2023
+    }
+  },
+  "core_axes": [
+    "Validity",
+    "Quality",
+    "Redundancy",
+    "Coverage",
+    "Utility"
+  ],
+  "metrics": {
+    "structural_validity_gate": {
+      "role": "gate",
+      "status": "paper_aligned",
+      "claim": "Binary hard-usability gate for text units that are decodable, non-corrupted, and structurally usable for language-model training.",
+      "paper_ids": [
+        "gpt3_2020",
+        "c4_2020",
+        "refinedweb_2023",
+        "dolma_2024"
+      ],
+      "formal_definition": "Pass/fail gate over hard structural invalidity only: empty or too-short units, encoding/control-character corruption, non-language fragments, excessive symbol noise, markup/extraction residue, and broken repetition runs. The gate records decision_scope=structural_usability_only and explicitly excludes semantic quality, duplicate status, coverage balance, and Utility outcomes.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.structural_validity_gate"
+      },
+      "expected_behavior": [
+        "Passes readable prose, structured lists, instructional text, and technical-reference text when they are decodable and structurally usable.",
+        "Rejects corrupted, markup-residue-heavy, symbol-noisy, empty, or broken-repetition text units."
+      ],
+      "failure_modes": [
+        "May still reject very short snippets that are readable but below the minimum learnable-unit threshold.",
+        "Does not protect against low information value; that is handled by Quality."
+      ],
+      "acceptance_tests": [
+        "structural_validity_gate(clean_structured) > structural_validity_gate(noisy_corrupted)",
+        "style-repetitive but readable educational/reference text remains valid and is reported through warning_rules, not violated_rules",
+        "structural_validity_gate records decision_scope=structural_usability_only",
+        "warning_rules may be present on valid chunks and do not fail the gate"
+      ],
+      "orthogonality_contract": {
+        "axis": "Validity",
+        "allowed_signals": [
+          "decodability and encoding hygiene",
+          "control-character and symbol hygiene",
+          "minimum learnable-unit length",
+          "markup/extraction residue",
+          "hard broken repetition runs"
+        ],
+        "prohibited_signals": [
+          "quality classifier output",
+          "duplicate indicators",
+          "coverage signals",
+          "utility outcomes",
+          "semantic informativeness judgments"
+        ]
+      }
+    },
+    "structural_validity_score": {
+      "role": "diagnostic",
+      "status": "diagnostic",
+      "claim": "Soft support score and audit surface for the hard Validity gate; it is not a standalone quality or selection objective.",
+      "paper_ids": [
+        "gpt3_2020",
+        "c4_2020",
+        "refinedweb_2023",
+        "dolma_2024"
+      ],
+      "formal_definition": "Continuous diagnostic score based only on structural usability features. Hard failures are listed in violated_rules; style or borderline concerns are listed in warning_rules and do not invalidate a chunk by themselves. This score is an audit surface for the binary gate, not a ranking objective.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.structural_validity_score"
+      },
+      "expected_behavior": [
+        "Higher on clean structured prose than malformed/noisy fragments.",
+        "Readable repetitive educational/reference text may receive warnings without failing the gate."
+      ],
+      "failure_modes": [
+        "Can under-score short but valid snippets.",
+        "Should not be interpreted as information quality."
+      ],
+      "acceptance_tests": [
+        "structural_validity_score(clean_structured) > structural_validity_score(noisy_corrupted)",
+        "warning_rules are diagnostic and do not directly determine pass/fail",
+        "structural_validity_score exposes hard_rule_count and warning_rule_count",
+        "structural_validity_score excludes reference_quality_score and duplicate indicators from its decision"
+      ],
+      "orthogonality_contract": {
+        "axis": "Validity",
+        "allowed_signals": [
+          "form/structure ratios",
+          "character and sentence hygiene",
+          "hard invalidity rules",
+          "diagnostic warning rules"
+        ],
+        "prohibited_signals": [
+          "quality classifier output",
+          "duplication indicators",
+          "coverage signals",
+          "utility outcomes"
+        ]
+      }
+    },
+    "reference_quality_score": {
+      "role": "selection_signal",
+      "status": "paper_aligned",
+      "claim": "Reference-trained estimate of information quality and coherence.",
+      "paper_ids": [
+        "fineweb_2024",
+        "dolma_2024",
+        "datacomp_lm_2024"
+      ],
+      "formal_definition": "Reference-trained estimate of information quality, coherence, and useful content density for chunks that already pass Validity. It is a Stage-B selection signal, not a hard gate and not a Utility outcome. The canonical score is style_length_normalized_quality_v2: raw reference-model evidence is calibrated by validity hygiene, information support, lexical diversity, style bucket, and length bucket so short informative, instructional, structured-list, and technical-reference chunks are not penalized solely by prose/length bias, while boilerplate and low-information text remain low quality. The selector applies a soft top-quality anti-collapse policy: it measures fine-grained high-quality bands and caps excessive q>=0.99 concentration with a bounded swap ratio, rather than forcing exact quality-band distribution matching.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.reference_quality_score"
+      },
+      "expected_behavior": [
+        "Higher on informative coherent chunks than shallow procedural, boilerplate, or corrupted-readable text.",
+        "Does not replace Validity; clean but low-information chunks may remain valid while receiving low Quality.",
+        "Short informative or technical-reference chunks can remain competitive when structural hygiene, information support, and lexical diversity are present."
+      ],
+      "failure_modes": [
+        "Reference-model domain shift can still affect calibration.",
+        "Style/length calibration reduces systematic bias but does not certify learning utility."
+      ],
+      "acceptance_tests": [
+        "reference_quality_score(explanatory) > reference_quality_score(shallow_procedural)",
+        "reference_quality_score(coherent_prose) > reference_quality_score(corrupted_readable)",
+        "reference_quality_score(informative_dense) > reference_quality_score(template_boilerplate)",
+        "reference_quality_score(clean_structured) > reference_quality_score(template_boilerplate)",
+        "quality audit reports by_style_bucket, by_domain_bucket_top, by_length_bucket, and valid_but_low_quality",
+        "reference_quality_score is used in Stage-B selection and not as a Stage-A hard gate",
+        "reference_quality_score details include quality_calibration_policy=style_length_normalized_quality_v2",
+        "reference_quality_score details include style_length_normalized_quality, quality_evidence_score, and style_length_quality_correction",
+        "short informative non-boilerplate chunks may receive a conservative calibration floor, while boilerplate remains low quality",
+        "selector diagnostics report quality_band_distribution_balance with soft_top_quality_anti_collapse when enabled",
+        "quality bands split the high-quality region into 0.90-0.95, 0.95-0.99, and >=0.99 so top-tail concentration is measurable"
+      ],
+      "orthogonality_contract": {
+        "axis": "Quality",
+        "allowed_signals": [
+          "reference quality classifier features",
+          "coherence and useful content-density features",
+          "style bucket, length bucket, lexical diversity, and structural hygiene as calibration context only"
+        ],
+        "prohibited_signals": [
+          "duplicate flags",
+          "coverage retention",
+          "utility probe outcome",
+          "validity hard-gate decision as a substitute for quality"
+        ]
+      }
+    },
+    "exact_duplicate_indicator": {
+      "role": "gate",
+      "status": "paper_backed",
+      "claim": "Detect exact duplicates from text hash collisions.",
+      "paper_ids": [
+        "fineweb_2024",
+        "dolma_2024"
+      ],
+      "formal_definition": "Binary duplicate indicator from corpus hash counts.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.exact_duplicate_indicator"
+      },
+      "expected_behavior": [
+        "1 for exact duplicates and 0 otherwise."
+      ],
+      "failure_modes": [
+        "Cannot detect paraphrased near duplicates."
+      ],
+      "acceptance_tests": [
+        "exact_duplicate_indicator(exact_duplicate) > exact_duplicate_indicator(clean_structured)"
+      ],
+      "orthogonality_contract": {
+        "axis": "Redundancy",
+        "allowed_signals": [
+          "exact hash counts"
+        ],
+        "prohibited_signals": [
+          "quality scores",
+          "coverage signals",
+          "utility outcomes"
+        ]
+      }
+    },
+    "shingle_near_duplicate_indicator": {
+      "role": "gate",
+      "status": "paper_aligned",
+      "claim": "Binary near-duplicate verdict from locality-sensitive shortlist plus overlap verification.",
+      "paper_ids": [
+        "dolma_2024",
+        "datacomp_lm_2024"
+      ],
+      "formal_definition": "Binary near-duplicate flag using local simhash buckets and verified shingle overlap thresholds.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.shingle_near_duplicate_indicator"
+      },
+      "expected_behavior": [
+        "Higher on repeated template variants than unique prose."
+      ],
+      "failure_modes": [
+        "Low lexical-overlap paraphrases may pass."
+      ],
+      "acceptance_tests": [
+        "shingle_near_duplicate_indicator(near_duplicate) > shingle_near_duplicate_indicator(clean_structured)"
+      ],
+      "orthogonality_contract": {
+        "axis": "Redundancy",
+        "allowed_signals": [
+          "simhash locality",
+          "shingle overlap"
+        ],
+        "prohibited_signals": [
+          "quality scores",
+          "coverage signals",
+          "utility outcomes"
+        ]
+      }
+    },
+    "shingle_near_duplicate_risk_score": {
+      "role": "selection_signal",
+      "status": "paper_aligned",
+      "claim": "Continuous harmful-redundancy risk used as a Stage B redundancy penalty while preserving useful recurrence.",
+      "paper_ids": [
+        "dolma_2024",
+        "datacomp_lm_2024"
+      ],
+      "formal_definition": "Continuous risk from verified overlap, SimHash prefix pressure, and intra-chunk repetition pressure. The canonical risk is harmful_redundancy_minus_useful_recurrence_v1: exact/near duplicate burden remains penalized, but definitional, example-driven, exercise-like, and technical-reference recurrence receives limited relief when verified overlap is low. This keeps Redundancy focused on wasteful repetition rather than all repeated pedagogical or reference structure.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.shingle_near_duplicate_risk_score"
+      },
+      "expected_behavior": [
+        "Higher on near-duplicate or copied chunks than clean unique chunks.",
+        "Higher on wasteful repeated fragments than on structured definitions, examples, exercises, or technical-reference recurrence with low verified overlap."
+      ],
+      "failure_modes": [
+        "Can still under-detect semantic paraphrase duplicates.",
+        "Useful-recurrence relief is conservative and requires broader benchmark calibration."
+      ],
+      "acceptance_tests": [
+        "near_dup(near_duplicate) > near_dup(clean_structured)",
+        "shingle_near_duplicate_risk_score(intra_chunk_repetitive) > shingle_near_duplicate_risk_score(clean_structured)",
+        "shingle_near_duplicate_risk_score details include redundancy_policy=harmful_redundancy_minus_useful_recurrence_v1",
+        "shingle_near_duplicate_risk_score details include harmful_redundancy_risk and useful_recurrence_score"
+      ],
+      "orthogonality_contract": {
+        "axis": "Redundancy",
+        "allowed_signals": [
+          "overlap/hash/repetition",
+          "local text-structure markers only to distinguish useful recurrence from harmful redundancy"
+        ],
+        "prohibited_signals": [
+          "quality classifier output",
+          "coverage retention",
+          "utility outcomes"
+        ]
+      }
+    },
+    "subset_coverage_retention_score": {
+      "role": "subset_validator",
+      "status": "paper_aligned",
+      "claim": "Evaluate subset coverage preservation, especially tail-cluster retention.",
+      "paper_ids": [
+        "paloma_2023",
+        "datacomp_lm_2024",
+        "dolma_2024"
+      ],
+      "formal_definition": "Subset-level composite of distribution similarity, rare-cluster retention ratio, and retained rare-cluster count. Coverage is reported as three explicit supports: source coverage, style coverage, and semantic cluster-backbone coverage. Domain coverage is only claimed when explicit domain metadata exists; otherwise source buckets are reported as source/domain fallback support and must not be over-claimed as semantic web-domain coverage. A diagnostic learning-signal coverage report compares the selected subset against the canonical multi-matched Stage-A baseline for token novelty, phrase novelty, concept density, moderate difficulty share, and template density. This report is diagnostic only and does not replace Utility outcome validation.",
+      "implementation": {
+        "path": "policy/subsets.py",
+        "entrypoint": "_coverage_retention"
+      },
+      "expected_behavior": [
+        "Selected subsets retain head/tail semantic clusters rather than only high-quality head clusters.",
+        "Selected subsets preserve source/style bucket distributions when those supports are enforced.",
+        "Certification distinguishes source fallback from explicit domain metadata and reports semantic backbone readiness separately.",
+        "Reports selected-vs-baseline learning-signal gaps without using them as Utility pass/fail evidence."
+      ],
+      "failure_modes": [
+        "Depends on upstream cluster quality.",
+        "Domain retention is only as explicit as the available metadata or source fallback buckets."
+      ],
+      "acceptance_tests": [
+        "subset_coverage_retention_score(selected_subset) is reported together with distribution_similarity, tail_cluster_retention, tail_cluster_retained_count, source_coverage_support, domain_coverage_support, style_coverage_support, and semantic_coverage_support",
+        "subset_coverage_retention_score is only treated as passing when cluster_backbone_audit.passed == true in certification mode",
+        "domain_coverage_support records support_scope so fallback source buckets are not over-claimed as explicit domain metadata",
+        "style_coverage_support, source/domain bucket support, and semantic_coverage_support are validated separately from the scalar coverage score",
+        "coverage_axis_components reports source, style, and semantic support payloads",
+        "coverage_details include learning_signal_coverage_diagnostic with selected, baseline, gaps_selected_minus_baseline, and risk_flags",
+        "learning_signal_coverage_diagnostic policy is diagnostic_only_not_selector_objective"
+      ],
+      "orthogonality_contract": {
+        "axis": "Coverage",
+        "allowed_signals": [
+          "cluster distribution",
+          "tail-cluster presence/count",
+          "source bucket distribution support",
+          "explicit domain metadata distribution support when available",
+          "style/format bucket distribution support",
+          "semantic cluster-backbone audit"
+        ],
+        "prohibited_signals": [
+          "quality score",
+          "duplicate indicators",
+          "utility outcomes"
+        ]
+      }
+    },
+    "small_lm_probe_gain_score": {
+      "role": "subset_validator",
+      "status": "paper_aligned",
+      "claim": "Measure Utility as a control-validated small-LM evidence protocol that separates probe sensitivity, selected-over-random curation benefit, and selected-over-multi-matched strict counterfactual benefit.",
+      "paper_ids": [
+        "paloma_2023",
+        "datacomp_lm_2024",
+        "fineweb_2024"
+      ],
+      "formal_definition": "Utility is a Stage-C subset-level validation protocol rather than a selector objective. The protocol first runs a small-LM sensitivity audit and requires the expected control ordering positive_control > baseline_stageA_random > corrupted_negative_control before treating Utility as selector evidence. The corrupted negative control destroys next-token structure while preserving rough token inventory; same-dataset low-quality controls are retained as diagnostics because they can still improve NLL through vocabulary and domain-token exposure. It then reports curation benefit as selected versus baseline_stageA_random under equal token budgets, and reports strict counterfactual benefit as selected versus baseline_multi_matched_stageA_random, where the multi-matched baseline is sampled from Stage-A records matched by quality band, length bucket, style bucket, and domain bucket with hierarchical fallback. In-domain and all-pairwise OOD cells are evaluated with paired held-out documents, delta-NLL, paired-bootstrap CI lower bound, minimum detectable effect, seed/bucket stability, and train-exposure audit fields. The canonical Stage-C strict pass remains tied to baseline_multi_matched_stageA_random, but reporting no longer collapses all Utility failures into one negative score: aggregate evidence reports probe_sensitivity_status, curation_benefit_status, strict_counterfactual_status, utility_probe_valid, utility_strict_pass, failure_reason, and evidence_tier. Evidence tiers are invalid_probe_evidence, random_baseline_gain, matched_baseline_inconclusive, matched_baseline_gain, and strict_certification_ready. baseline_stageA_random is the curation-benefit baseline; baseline_multi_matched_stageA_random is the strict counterfactual certification baseline; quality-, length-, style-, and full-random baselines remain diagnostic stress tests.",
+      "implementation": {
+        "path": "utility/lm_probe.py",
+        "entrypoint": "score_selected_records"
+      },
+      "expected_behavior": "A valid Utility result first shows probe sensitivity on controls, then indicates whether selected beats Stage-A random, and only claims strict certification when selected beats the multi-matched Stage-A baseline under the configured CI/MDE/strict-min policy.",
+      "failure_modes": [
+        "Probe sensitivity can be invalid for a dataset if positive/random/negative controls are not ordered; this is reported as invalid_probe_evidence rather than selector failure.",
+        "Selected subsets may beat Stage-A random while remaining inconclusive or negative against the multi-matched counterfactual; this is curation evidence but not strict certification.",
+        "Small eval slices, weak probe capacity, or small effect sizes can make CI/MDE evidence inconclusive even when mean deltas are positive.",
+        "Strict all-pairwise OOD certification can fail even when in-domain Utility is positive, indicating transfer limitation rather than upstream metric failure."
+      ],
+      "acceptance_tests": [
+        "small_lm_probe_gain_score(selected_subset) > 0 against baseline_multi_matched_stageA_random on required eval cells",
+        "baseline_quality_band_matched_stageA_random, baseline_length_matched_stageA_random, baseline_style_matched_stageA_random, baseline_stageA_random, and baseline_full_random are recorded as diagnostic stress outputs but excluded from canonical Utility pass/fail",
+        "utility protocol records canonical_baseline as baseline_multi_matched_stageA_random and diagnostic_baselines includes quality-band, length, style, Stage-A random, and full-random baselines",
+        "utility protocol records utility_pass_statistic as mean in development and min in certification",
+        "development reports include certification_shadow with separate protocol_readiness, in_domain_signal, and ood_signal sections",
+        "certification_shadow includes blocker_categories, scope_snapshots, strict_values, and worst_cells for in-domain and all-pairwise OOD Utility evidence",
+        "utility details include delta_nll, delta_nll_ci_low, relative_nll_gain, train token counts, per-baseline in_domain results, and out_of_domain results keyed by eval_dataset",
+        "utility details include selected/baseline effective_train_steps and estimated_seen_train_tokens for probe exposure auditing",
+        "selected and baseline probes use the same configured train_epochs within each eval cell",
+        "utility details include selected/baseline target_train_exposure_ratio and one_epoch_train_steps for exposure auditing",
+        "utility protocol records train_epochs and max_train_steps separately, with train_epochs >= 1.0",
+        "with three datasets, each train dataset reports two OOD eval datasets, producing six total OOD pairs per profile",
+        "small_lm_probe_gain_score aggregate reports stability_diagnostics with positive_run_fraction, ci_positive_fraction, and mean_delta_nll_to_std_ratio",
+        "certification_shadow reports stability_analysis for in_domain, ood, and combined_effective scopes",
+        "certification readiness fails protocol_readiness when selected or baseline training hits max_train_steps before reaching target train_epochs",
+        "small_lm_probe_gain_score aggregate reports signal_interpretation with strict_positive, inconclusive_numerical_drift, inconclusive_below_detectable_effect, inconclusive_ci_crosses_zero, or strict_negative status",
+        "numerical drift inside delta_nll_numerical_tolerance is reported as inconclusive rather than optimized away or treated as confirmed negative evidence",
+        "utility probe runs report paired_bootstrap=true and eval_pairing_policy=paired_same_eval_documents for each baseline/eval cell",
+        "small_lm_probe_gain_score aggregate reports minimum_detectable_delta_nll_95, effect_to_mde_ratio, and detectable_effect_fraction fields for Utility signal power analysis",
+        "certification protocol readiness checks actual holdout_bucket_count and ood_holdout_bucket_count against min_probe_bucket_count, not only configured seed count",
+        "certification dry-run profiles use certification mode, min pass statistic, positive CI, enforced all-pairwise OOD, at least four seeds, and at least four in-domain/OOD holdout buckets",
+        "utility evidence summary reports final_certification_scope, final_scope_certification_ready, domain_specific_certification_ready, and general_purpose_certification_ready",
+        "stage_c_core_validation reports separate in_domain_utility_axis_pass, cross_domain_utility_axis_pass, domain_specific_utility_axis_pass, general_purpose_utility_axis_pass, and final_utility_axis_pass fields",
+        "utility sensitivity audit writes outputs/validation/utility_sensitivity_audit.json with schema_version utility-sensitivity-audit-v1",
+        "utility sensitivity audit records probe_valid/order_pass for positive_control > baseline_stageA_random > corrupted_negative_control",
+        "utility aggregate reports probe_sensitivity_status, curation_benefit_status, and strict_counterfactual_status",
+        "utility aggregate reports utility_probe_valid and utility_strict_pass as separate fields",
+        "utility aggregate evidence_tier is one of invalid_probe_evidence, random_baseline_gain, matched_baseline_inconclusive, matched_baseline_gain, or strict_certification_ready",
+        "utility failure_reason is one of probe_invalid, random_gain_only, matched_inconclusive, strict_negative, or pass",
+        "baseline_stageA_random is used as the curation benefit baseline, not as the strict certification baseline",
+        "baseline_multi_matched_stageA_random remains the strict counterfactual certification baseline",
+        "datasets with probe_valid=false are not reported as selector failures and selector_tuning_allowed=false is recorded"
+      ],
+      "orthogonality_contract": {
+        "axis": "Utility",
+        "allowed_signals": [
+          "fixed-budget train/eval outcomes",
+          "held-out NLL/perplexity deltas",
+          "Stage-A feasible random baseline comparison",
+          "held-out NLL delta under equal train-token budget",
+          "probe stability diagnostics",
+          "equal target train exposure",
+          "multi-epoch small-LM adaptation protocol"
+        ],
+        "prohibited_signals": [
+          "quality metrics",
+          "redundancy metrics",
+          "coverage metrics",
+          "utility surrogate feature vectors",
+          "raw full random baseline as canonical pass/fail baseline"
+        ]
+      }
+    },
+    "fixed_token_probe_gain_score": {
+      "role": "subset_validator",
+      "status": "deprecated_diagnostic",
+      "claim": "Deprecated compatibility alias for the old hybrid n-gram utility probe.",
+      "paper_ids": [
+        "paloma_2023"
+      ],
+      "formal_definition": "Legacy utility output retained for compatibility only; not canonical for Stage C utility decisions.",
+      "implementation": {
+        "path": "utility/fixed_token_probe.py",
+        "entrypoint": "score_selected_records"
+      },
+      "expected_behavior": [
+        "Matches the corresponding small LM score only as a compatibility alias."
+      ],
+      "failure_modes": [
+        "Must not be treated as the canonical utility validator."
+      ],
+      "acceptance_tests": [
+        "fixed_token_probe_gain_score is retained only as a deprecated compatibility diagnostic and is not used for canonical utility pass/fail"
+      ],
+      "orthogonality_contract": {
+        "axis": "Diagnostic",
+        "allowed_signals": [
+          "compatibility outputs"
+        ],
+        "prohibited_signals": [
+          "used as canonical utility pass/fail"
+        ]
+      }
+    },
+    "explanatory_quality_proxy": {
+      "role": "selection_signal",
+      "status": "diagnostic",
+      "claim": "Diagnostic proxy for explanatory style.",
+      "paper_ids": [
+        "gpt3_2020"
+      ],
+      "formal_definition": "Heuristic/prototype similarity based explanatory-style estimate for diagnostics.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.explanatory_quality_proxy"
+      },
+      "expected_behavior": [
+        "Higher on explanation-heavy text than shallow procedural text."
+      ],
+      "failure_modes": [
+        "Heuristic penalties can overfit style artifacts."
+      ],
+      "acceptance_tests": [
+        "explanatory_quality_proxy(explanatory) > explanatory_quality_proxy(shallow_procedural)"
+      ],
+      "orthogonality_contract": {
+        "axis": "Diagnostic",
+        "allowed_signals": [
+          "heuristics"
+        ],
+        "prohibited_signals": []
+      }
+    },
+    "tail_cluster_rarity_proxy": {
+      "role": "selection_signal",
+      "status": "diagnostic",
+      "claim": "Diagnostic proxy for chunk rarity in cluster space.",
+      "paper_ids": [
+        "datacomp_lm_2024"
+      ],
+      "formal_definition": "Cluster-size-based rarity estimate at chunk level.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.tail_cluster_rarity_proxy"
+      },
+      "expected_behavior": [
+        "Higher for smaller/rarer clusters."
+      ],
+      "failure_modes": [
+        "Can overrate rare but low-value clusters."
+      ],
+      "acceptance_tests": [
+        "tail_cluster_rarity_proxy(tail_rare) > tail_cluster_rarity_proxy(head_common)"
+      ],
+      "orthogonality_contract": {
+        "axis": "Diagnostic",
+        "allowed_signals": [
+          "cluster size"
+        ],
+        "prohibited_signals": []
+      }
+    },
+    "predictive_utility_proxy": {
+      "role": "diagnostic",
+      "status": "diagnostic",
+      "claim": "Diagnostic utility surrogate for comparison only.",
+      "paper_ids": [
+        "paloma_2023"
+      ],
+      "formal_definition": "Diagnostic utility surrogate for development inspection only. It is explicitly excluded from canonical selector objectives, Stage-C Utility pass/fail, and certification readiness.",
+      "implementation": {
+        "path": "signals/core.py",
+        "entrypoint": "CoreMetricScorer.predictive_utility_proxy"
+      },
+      "expected_behavior": [
+        "May correlate with utility outcome but must not drive canonical selection or validation."
+      ],
+      "failure_modes": [
+        "Can remain heuristic-only and diverge from actual LM utility."
+      ],
+      "acceptance_tests": [
+        "predictive_utility_proxy(explanatory) > predictive_utility_proxy(shallow_procedural)",
+        "predictive_utility_proxy is diagnostic and absent from selector objective weights",
+        "predictive_utility_proxy is not used for Stage-C Utility pass/fail"
+      ],
+      "orthogonality_contract": {
+        "axis": "Diagnostic",
+        "allowed_signals": [
+          "surrogate features"
+        ],
+        "prohibited_signals": [
+          "used as final utility pass/fail",
+          "used in canonical selector objective",
+          "used as certification readiness evidence"
+        ]
+      }
+    }
+  },
+  "property_benchmark_suite": {
+    "buckets": {
+      "clean_structured": "Well-formed coherent prose.",
+      "noisy_corrupted": "Malformed or low-signal noisy text.",
+      "exact_duplicate": "Verbatim repeated chunks.",
+      "near_duplicate": "Near-duplicate chunks with small edits.",
+      "head_common": "Frequent large-cluster chunks.",
+      "tail_rare": "Infrequent small-cluster chunks.",
+      "explanatory": "Concept-rich explanatory text.",
+      "shallow_procedural": "Low-concept procedural/list-heavy text.",
+      "coherent_prose": "Natural coherent prose with low procedural noise.",
+      "corrupted_readable": "Readable but degraded text with corruption or high repetition artifacts.",
+      "informative_dense": "Information-dense content with strong concept or explanatory support.",
+      "template_boilerplate": "Template-heavy, boilerplate, or procedural filler text.",
+      "non_prose_structured": "Structured instructional, technical-reference, or list-like text.",
+      "intra_chunk_repetitive": "Non-duplicate chunks with excessive internal repetition."
+    },
+    "assertions": [
+      "structural_validity_gate(clean_structured) > structural_validity_gate(noisy_corrupted)",
+      "structural_validity_score(clean_structured) > structural_validity_score(noisy_corrupted)",
+      "reference_quality_score(explanatory) > reference_quality_score(shallow_procedural)",
+      "exact_duplicate_indicator(exact_duplicate) > exact_duplicate_indicator(clean_structured)",
+      "shingle_near_duplicate_indicator(near_duplicate) > shingle_near_duplicate_indicator(clean_structured)",
+      "shingle_near_duplicate_risk_score(near_duplicate) > shingle_near_duplicate_risk_score(clean_structured)",
+      "tail_cluster_rarity_proxy(tail_rare) > tail_cluster_rarity_proxy(head_common)",
+      "reference_quality_score(coherent_prose) > reference_quality_score(corrupted_readable)",
+      "reference_quality_score(informative_dense) > reference_quality_score(template_boilerplate)",
+      "reference_quality_score(clean_structured) > reference_quality_score(template_boilerplate)",
+      "shingle_near_duplicate_risk_score(intra_chunk_repetitive) > shingle_near_duplicate_risk_score(clean_structured)"
+    ]
+  },
+  "acceptance_test_suite": {
+    "core_metric_contracts": [
+      "reference_quality_score details include quality_calibration_policy=style_length_normalized_quality_v2",
+      "reference_quality_score details include style_length_normalized_quality, quality_evidence_score, and style_length_quality_correction",
+      "shingle_near_duplicate_risk_score details include redundancy_policy=harmful_redundancy_minus_useful_recurrence_v1",
+      "shingle_near_duplicate_risk_score details include harmful_redundancy_risk and useful_recurrence_score",
+      "coverage_details include source_coverage_support, style_coverage_support, semantic_coverage_support, and coverage_axis_components",
+      "selector diagnostics report quality_band_distribution_balance with soft_top_quality_anti_collapse when enabled",
+      "quality bands split the high-quality region into 0.90-0.95, 0.95-0.99, and >=0.99 so top-tail concentration is measurable",
+      "coverage_details include learning_signal_coverage_diagnostic with selected, baseline, gaps_selected_minus_baseline, and risk_flags"
+    ]
+  }
+}

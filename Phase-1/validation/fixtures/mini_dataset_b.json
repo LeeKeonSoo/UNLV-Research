@@ -1,0 +1,32 @@
+[
+  {
+    "id": "doc_b1",
+    "title": "Gravity overview",
+    "text": "Gravity is an attractive force between objects with mass. It explains why dropped objects fall toward Earth and why planets orbit the Sun. A simple explanation connects the concept to everyday examples and basic physical reasoning."
+  },
+  {
+    "id": "doc_b2",
+    "title": "Low information boilerplate",
+    "text": "Click here for more information. Click here for more information. Click here for more information. This page may contain links and repeated navigation text without meaningful educational content."
+  },
+  {
+    "id": "doc_b3",
+    "title": "Math reasoning example",
+    "text": "Question: Why is the sum of two even numbers even? Answer: Each even number can be written as two times an integer. Adding them gives two times the sum of those integers, so the result is also even."
+  },
+  {
+    "id": "doc_b4",
+    "title": "Learning habit A",
+    "text": "Effective practice often uses short review sessions, retrieval questions, and summaries written after reading. This helps learners notice gaps in understanding and return to difficult material."
+  },
+  {
+    "id": "doc_b5",
+    "title": "Learning habit B",
+    "text": "Productive practice often combines brief review sessions, recall questions, and written summaries after reading. This helps students find gaps in understanding and revisit difficult topics."
+  },
+  {
+    "id": "doc_b6",
+    "title": "Specialized topic",
+    "text": "Morse code encodes letters and numbers as sequences of short and long signals. It is a specialized communication system that appears less often than ordinary prose but remains useful for historical and accessibility examples."
+  }
+]

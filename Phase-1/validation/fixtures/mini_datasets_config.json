@@ -1,0 +1,22 @@
+{
+  "datasets": [
+    {
+      "name": "mini_fixture_a",
+      "format": "json_list",
+      "source": "validation/fixtures/mini_dataset.json",
+      "text_field": "text",
+      "id_fields": ["id"],
+      "metadata_fields": ["title"],
+      "min_text_chars": 40
+    },
+    {
+      "name": "mini_fixture_b",
+      "format": "json_list",
+      "source": "validation/fixtures/mini_dataset_b.json",
+      "text_field": "text",
+      "id_fields": ["id"],
+      "metadata_fields": ["title"],
+      "min_text_chars": 40
+    }
+  ]
+}
