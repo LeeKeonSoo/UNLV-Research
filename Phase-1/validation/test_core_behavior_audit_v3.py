@@ -51,7 +51,7 @@ def main() -> int:
         "false_positive_boundary",
     ]
     assert report["cores"]["coverage"]["required_dimensions"] == [
-        "audit_only_authority",
+        "materialization_invariant_authority",
         "representative_linkage_detection",
         "zero_survivor_detection",
     ]

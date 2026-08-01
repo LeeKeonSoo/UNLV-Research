@@ -17,7 +17,7 @@ CORE_DIMENSIONS = {
         "false_positive_boundary",
     ],
     "coverage": [
-        "audit_only_authority",
+        "materialization_invariant_authority",
         "representative_linkage_detection",
         "zero_survivor_detection",
     ],
@@ -48,7 +48,7 @@ def behavior_invariants(core: str, expected: bool, event: JsonMap) -> JsonMap:
     elif core == "coverage":
         coverage = event.get("coverage") or {}
         checks = {
-            "audit_only_authority": coverage.get("authority") == "audit_only"
+            "materialization_invariant_authority": coverage.get("authority") == "materialization_invariant"
             and coverage.get("selector_consumes_this_audit") is False,
             "representative_linkage_detection": coverage.get(
                 "representative_linkage_passed"

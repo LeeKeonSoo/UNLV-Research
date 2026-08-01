@@ -135,7 +135,7 @@ Details are in `docs/r2_static_literal_boundary_decision_v1.md`.
 | Item | Disposition | Reason |
 | --- | --- | --- |
 | Structural scaffold family compaction | Reclassify to **Redundancy** | It retains one member of an identical normalized family. Its authority is representative compression, not a claim that scaffold text is intrinsically low Quality. |
-| Symmetric near-duplicate compaction | Redundancy candidate only | The frozen Normal and Hard protocols set `candidate_enabled: false`; overlap alone does not prove non-payload. |
+| Symmetric near-duplicate compaction | Active Redundancy policy | Normal and Hard enable the frozen conservative boundary: 5-token shingles, at least 40 lexical tokens, and symmetric overlap at or above 0.95, with one stable representative retained. |
 | Model-relative representative selector | Archive | Familiarity, novelty, gradient, or semantic proxy evidence is not a stable text-structural Quality authority. |
 | Mid Quality estimator / reference-quality score / weighted priority formula | Archive | These are model-relative or weighted proxy mechanisms and violate the no-intrinsic-score runtime contract. |
 | Declared dependency-copy policy | Archive | It depends on source metadata, whereas the active curation policy is text-only and source-agnostic. |
@@ -146,9 +146,8 @@ Details are in `docs/r2_static_literal_boundary_decision_v1.md`.
 1. **Resolved:** `structural_scaffold` is labeled Redundancy in the registry
    and policy card. Its executable stable-family representative behavior did
    not change.
-2. **Resolved:** the README, handoff, active framework document, and a machine
-   check state that symmetric near-duplicate compaction is disabled in the
-   frozen Normal and Hard protocols.
+2. **Superseded on 2026-08-02:** Normal and Hard now enable the frozen symmetric
+   near-duplicate rule; profile and registry contract tests require that state.
 3. **Resolved:** `general_web_span_compaction.py` has a candidate-only fixture
    and a matching registry entry and policy card; it remains non-runnable.
 4. **Resolved:** `archive/historical_contracts/metric_spec_with_citations.md`

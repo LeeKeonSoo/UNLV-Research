@@ -6,7 +6,7 @@
   "purpose": "Evaluate the pretraining-eligible v3 Raw and Curated Code arms after their natural-budget continued-pretraining runs complete.",
   "curation_input": {
     "curation_contract": "protocols/code_7m_pretraining_eligible_curation_v3_contract.json",
-    "curation_contract_sha256": "ef8ef12d81ad3ca0edc4abca99461c347907a2f96ea38f095597e6fa98943083",
+    "curation_contract_sha256": "60fcc76318bd5b2fdc16d1a1525f8fdfbd9966287561bfe7b37d8f2869938c50",
     "curation_report": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/abc_curation_pretraining_eligible_v3/curation_report.json",
     "curation_report_sha256": "57a1f43d10e8a860edc2d3e9020967b630b0d797c2f2554e4067884bd2631dce",
     "benchmark_exclusion_audit": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",

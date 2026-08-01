@@ -268,6 +268,7 @@
         "id": "b",
         "text": "\ufeffprint('fixture')",
         "pii_context": "repository_code",
+        "normalization_context": "repository_code",
         "source_name": "fixture",
         "source_uri": "https://example.invalid",
         "collected_at": "2026-07-26T00:00:00Z",
@@ -511,7 +512,11 @@
       "executor": "stage_c_removal",
       "expected_code": "structural_scaffold_representative_retained",
       "expected_trigger": true,
-      "config": {},
+      "config": {
+        "structural_scaffold_compaction": {
+          "enabled": true
+        }
+      },
       "chunks": [
         {
           "chunk_uid": "s1",
@@ -519,7 +524,7 @@
         },
         {
           "chunk_uid": "s2",
-          "text": "# equivalent package exports\nfrom a import A\nfrom b import B\nfrom c import C\nfrom d import D"
+          "text": "# package exports   \nfrom a import A\nfrom b import B\nfrom c import C\nfrom d import D   "
         }
       ]
     },

@@ -24,7 +24,6 @@ def main() -> int:
     assert report["total_chunks"] == 5
     assert report["candidate_counts"] == {
         "generated_marker": 1,
-        "strong_generated_marker_candidate": 1,
         "one_or_two_line_minified_candidate": 1,
         "pathological_line_repetition_candidate": 1,
         "license_or_comment_only_candidate": 2,

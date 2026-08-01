@@ -32,7 +32,7 @@ def main() -> int:
                 "symmetric_overlap_threshold": 0.95,
             }
         },
-        minimum_chunk_chars=30,
+        minimum_residual_chars=30,
         token_counter=lambda text: len(text.split()),
     )
 

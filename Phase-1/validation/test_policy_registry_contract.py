@@ -17,9 +17,10 @@ def test_active_policy_registry_declares_activation_and_safety_evidence() -> Non
     assert registry["authoritative_policy_definition"] == "configs/policy_cards.json"
     assert registry["activation_states"] == [
         "candidate",
-        "active_structural",
+        "runtime_executable",
         "development_validated",
         "confirmatory_validated",
+        "production_validated",
         "retired",
     ]
     normal = registry["runtime_profile_authorization"]["normal_structural_v1"]
@@ -27,14 +28,27 @@ def test_active_policy_registry_declares_activation_and_safety_evidence() -> Non
     assert set(normal["excluded_policy_ids"]) >= {
         "stage_a_provenance_contract",
         "stage_a_risk_quarantine",
-        "stage_c_coverage_guard",
         "stage_c_declared_dependency_copy_candidate",
     }
+    assert set(normal["enabled_policy_ids"]) == {
+        "stage_a_normalized_text_integrity",
+        "stage_a_bom_normalization",
+        "stage_b_invalid_chunk",
+        "stage_b_exact_duplicate",
+        "stage_c_symmetric_near_duplicate",
+        "stage_c_explicit_generated_artifact",
+        "stage_c_license_comment_only",
+        "stage_c_structural_scaffold",
+        "stage_c_empty_html_shell",
+        "stage_c_web_chrome_only_chunk",
+        "stage_c_coverage_guard",
+    }
+    assert normal["authorized_but_disabled_policy_ids"] == []
 
     for policy in registry["policies"]:
         if policy["status"] != "active":
             continue
-        assert policy["activation_state"] == "active_structural"
+        assert policy["activation_state"] == "runtime_executable"
         assert policy["policy_card_id"] == policy["id"]
         assert (ROOT / policy["false_positive_fixture"]).is_file()
         assert policy["case_matrix_scenario"] in matrix_ids

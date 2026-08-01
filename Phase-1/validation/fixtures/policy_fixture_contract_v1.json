@@ -135,6 +135,16 @@
         "web-chrome-negative"
       ],
       "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_c_coverage_guard",
+      "positive_case_ids": [
+        "coverage-representative-linkage-positive"
+      ],
+      "false_positive_case_ids": [
+        "coverage-missing-representative-adversarial"
+      ],
+      "adversarial_case_ids": []
     }
   ]
 }

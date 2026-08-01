@@ -30,6 +30,19 @@
       "user_facing_mode": "normal",
       "description": "Default source-agnostic A-B-C profile. It uses high-precision reason-coded text-structural rules only; source, rights, hazard, language, and path fields are audit-only when supplied.",
       "stage_a_policy": "text_only_v2",
+      "enabled_policy_ids": [
+        "stage_a_normalized_text_integrity",
+        "stage_a_bom_normalization",
+        "stage_b_invalid_chunk",
+        "stage_b_exact_duplicate",
+        "stage_c_symmetric_near_duplicate",
+        "stage_c_explicit_generated_artifact",
+        "stage_c_license_comment_only",
+        "stage_c_structural_scaffold",
+        "stage_c_empty_html_shell",
+        "stage_c_web_chrome_only_chunk",
+        "stage_c_coverage_guard"
+      ],
       "stage_c_policy_ids": [
         "stage_c_symmetric_near_duplicate",
         "stage_c_explicit_generated_artifact",
@@ -38,6 +51,39 @@
         "stage_c_empty_html_shell",
         "stage_c_web_chrome_only_chunk"
       ],
+      "runtime_policy": {
+        "stage_a": {
+          "policy": "text_only_v2",
+          "normalization_context_default": "preserve"
+        },
+        "stage_b": {
+          "deduplicate_stage_a_text_exactly": true
+        },
+        "stage_c_selection": {
+          "near_duplicate_compaction": {
+            "candidate_enabled": true,
+            "shingle_size": 5,
+            "minimum_lexical_tokens": 40,
+            "symmetric_overlap_threshold": 0.95
+          },
+          "structural_scaffold_compaction": {
+            "enabled": true
+          },
+          "structural_artifact_rules": {
+            "explicit_generated_artifact": true,
+            "license_comment_only_chunk": true,
+            "empty_html_shell": true,
+            "web_chrome_only_chunk": true
+          },
+          "quality_span_candidate_rules": {
+            "web_control_and_url_directory": false
+          }
+        },
+        "coverage": {
+          "enforce_materialization_invariants": true,
+          "selection_authority": false
+        }
+      },
       "selector": {
         "kind": "reason_coded_text_structural_only",
         "reads_utility": false,
@@ -58,6 +104,22 @@
       "description": "Development-only stronger structural profile. It contains Normal plus three frozen deterministic span rules; it remains unavailable for production curation until N4 development ablation closes.",
       "stage_a_policy": "text_only_v2",
       "inherits_profile": "normal_structural_v1",
+      "enabled_policy_ids": [
+        "stage_a_normalized_text_integrity",
+        "stage_a_bom_normalization",
+        "stage_b_invalid_chunk",
+        "stage_b_exact_duplicate",
+        "stage_c_symmetric_near_duplicate",
+        "stage_c_explicit_generated_artifact",
+        "stage_c_license_comment_only",
+        "stage_c_structural_scaffold",
+        "stage_c_empty_html_shell",
+        "stage_c_web_chrome_only_chunk",
+        "stage_c_inline_license_header_candidate",
+        "stage_c_inline_license_comment_block_candidate",
+        "stage_c_repeated_span_template_candidate",
+        "stage_c_coverage_guard"
+      ],
       "stage_c_policy_ids": [
         "stage_c_inline_license_header_candidate",
         "stage_c_inline_license_comment_block_candidate",
@@ -68,6 +130,44 @@
         "stage_c_inline_license_comment_block_candidate",
         "stage_c_repeated_span_template_candidate"
       ],
+      "runtime_policy": {
+        "stage_a": {
+          "policy": "text_only_v2",
+          "normalization_context_default": "preserve"
+        },
+        "stage_b": {
+          "deduplicate_stage_a_text_exactly": true
+        },
+        "stage_c_selection": {
+          "near_duplicate_compaction": {
+            "candidate_enabled": true,
+            "shingle_size": 5,
+            "minimum_lexical_tokens": 40,
+            "symmetric_overlap_threshold": 0.95
+          },
+          "structural_scaffold_compaction": {
+            "enabled": true
+          },
+          "structural_artifact_rules": {
+            "explicit_generated_artifact": true,
+            "license_comment_only_chunk": true,
+            "empty_html_shell": true,
+            "web_chrome_only_chunk": true
+          },
+          "quality_span_candidate_rules": {
+            "web_control_and_url_directory": false
+          },
+          "hard_span_compaction": {
+            "inline_license_header": true,
+            "inline_license_comment_block": true,
+            "repeated_span_template": true
+          }
+        },
+        "coverage": {
+          "enforce_materialization_invariants": true,
+          "selection_authority": false
+        }
+      },
       "selector": {
         "kind": "development_only_reason_coded_structural_span_compaction",
         "reads_utility": false,

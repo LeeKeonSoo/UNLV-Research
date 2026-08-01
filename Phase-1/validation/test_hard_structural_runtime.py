@@ -27,11 +27,11 @@ def test_hard_mode_is_development_only_until_ablation_promotion() -> None:
     else:
         raise AssertionError("Hard mode must remain fail-closed for a production run.")
 
-    assert resolve_curation_mode("hard", execution_scope="development") == {
-        "mode": "hard",
-        "profile_id": "hard_structural_v1",
-        "authorization": "development_only_pending_n4_ablation",
-    }
+    mode = resolve_curation_mode("hard", execution_scope="development")
+    assert mode["mode"] == "hard"
+    assert mode["profile_id"] == "hard_structural_v1"
+    assert mode["authorization"] == "development_only_pending_n4_ablation"
+    assert mode["effective_policy_sha256"]
 
 
 def test_hard_runtime_compacts_only_declared_spans_and_emits_audit_traces() -> None:
@@ -68,10 +68,11 @@ def test_hard_runtime_compacts_only_declared_spans_and_emits_audit_traces() -> N
                     "execution_scope": "development",
                     "input": {"candidate_files": [str(input_path)], "text_fields": ["text"], "defaults": {}},
                     "output_dir": str(output_dir),
-                    "stage_a": {"policy": "text_only_v2"},
-                    "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
-                    "stage_c_selection": {},
-                    "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
+                    "stage_b": {"max_chunk_chars": 6000},
+                    "stage_c": {
+                        "minimum_residual_chars": 40,
+                        "no_binding_budget_action": "selection_without_binding_budget",
+                    },
                     "claim_boundary": "fixture-only",
                 }
             ),

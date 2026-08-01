@@ -2,10 +2,17 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from run_curation import resolve_curation_mode, validate_run_policy_overrides
+
+
 CONTRACT = ROOT / "protocols" / "git_attribute_wgpu_stress_curation_contract.json"
 
 
@@ -22,6 +29,15 @@ def test_git_attribute_stress_contract_preserves_source_declarations_without_aut
     }
     assert contract["stage_c_selection"]["structural_artifact_rules"]["explicit_generated_artifact"] is True
     assert "artifact_context.generation alone is not a removal reason" in contract["claim_boundary"]
+    try:
+        validate_run_policy_overrides(
+            contract,
+            resolve_curation_mode("normal")["effective_policy"],
+        )
+    except RuntimeError as error:
+        assert "stage_c_selection" in str(error)
+    else:
+        raise AssertionError("Historical run-local policy switches must fail under the immutable runtime.")
 
 
 if __name__ == "__main__":

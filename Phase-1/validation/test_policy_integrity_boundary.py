@@ -27,7 +27,12 @@ def test_every_active_registry_policy_has_a_versioned_integrity_card() -> None:
         assert card["deployment_scope"]
         assert card["negative_conditions"]
         assert set(cards["runtime_forbidden_inputs"]).issubset(card["forbidden_inputs"])
-        assert card["empirical_status"] == "unvalidated_structural_policy"
+        expected_status = (
+            "runtime_materialization_invariant_not_selector"
+            if policy_id == "stage_c_coverage_guard"
+            else "unvalidated_structural_policy"
+        )
+        assert card["empirical_status"] == expected_status
 
 
 def test_boundary_contract_forbids_quality_and_runtime_evaluation_feedback() -> None:

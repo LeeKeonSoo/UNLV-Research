@@ -54,16 +54,16 @@ The only production entry point is `run_curation.py`.
 raw JSONL
   -> adapter
   -> Stage A: normalization and narrow text-integrity quarantine
-  -> Stage B: chunking, invalid-result gate, normalized exact deduplication
+  -> Stage B: chunking, invalid-result gate, exact post-Stage-A text deduplication
   -> Stage C: optional structural-family compaction and explicit artifact rules
   -> Coverage and composition audits
   -> curated JSONL
 ```
 
-The observed Normal runtime is a conservative structural cleaner. It is not an
-aggressive SLM data selector. Positive-retention Quality evidence is not active,
-near-duplicate compaction is disabled in the current frozen experiment
-contracts, and Coverage is audit-only.
+The Normal runtime is a reason-coded structural cleaner. Symmetric 0.95
+near-duplicate compaction and four closed-set Quality rejection rules are
+active. Positive-retention Quality evidence is not active, and Coverage has
+veto-only materialization authority without ranking or deletion authority.
 
 ### Runtime Dependency Surface
 
@@ -109,24 +109,24 @@ These results show that the current Normal policy has low opportunity on the
 tested corpora. They do not prove that removed text is unnecessary or that the
 retained corpus improves downstream training.
 
-## Confirmed Inconsistencies
+## Consistency Resolution Ledger
 
-| ID | Inconsistency | Required resolution before redesign |
-| --- | --- | --- |
-| C-01 | `curation_mode: normal` resolves only a profile ID; run-contract booleans still determine the active rules | A profile must materialize one immutable complete policy configuration, and incompatible overrides must fail |
-| C-02 | Missing `pii_context` defaults to `general`; code identified only through nested metadata can undergo whitespace-destructive normalization | Preserve input by default and make normalization context explicit, parsed, and meaning-preserving |
-| C-03 | Multiple configured text fields are concatenated when more than one is populated | Select exactly one declared field or reject ambiguous input |
-| C-04 | `minimum_chunk_chars` is reported in the Stage-B non-trigger boundary but is not a Stage-B rejection condition | Rename it to its residual-transform role or implement the declared gate; do not claim both |
-| C-05 | Normal profile and Registry list policies that run contracts can disable; near-duplicate is declared active but frozen experiments disable it | Separate authorized policies from enabled policies and expose one effective-policy manifest per run |
-| C-06 | Policies marked `active_structural` still carry `unvalidated_structural_policy` empirical status | Introduce distinct executable, development-validated, confirmatory-validated, and production states and enforce promotion atomically |
-| C-07 | Quality output labels explicit artifact rejection as Quality while all retained chunks are abstentions | Report artifact rejection and positive Quality evidence separately |
-| C-08 | Coverage passes as an audit but has no record-selection authority | Describe it as a materialization veto/audit, never as a fourth active selector |
-| C-09 | Exact-duplicate representative choice depends on input order | Choose representatives by a deterministic corpus-order-independent key |
-| C-10 | Runtime reports whitespace token proxy while training uses a model tokenizer | Report transformation-preservation counts separately and require a declared tokenizer for training-budget evidence |
-| C-11 | Current tests pass despite C-01 through C-05 | Add end-to-end negative tests for effective profiles, ambiguous input, metadata-light code, and no-trigger byte preservation |
-| C-12 | The working tree had no clean frozen implementation baseline | This cleanup checkpoint records the observed mismatch without changing behavior; all subsequent implementation must start from this snapshot |
-| C-13 | `test_core_rule_inventory.py` expects `strong_generated_marker_candidate`, but the current inventory builder no longer emits that candidate | Freeze the intended inventory schema, then align the builder, registry, and test together; do not restore a rule merely to satisfy the old count |
-| C-14 | The seven-benchmark execution manifest pins an outdated SHA-256 for `code_7m_pretraining_eligible_curation_v3_contract.json` | Decide which frozen artifact is authoritative and rebuild the manifest through its freeze procedure; never edit the digest alone |
+| ID | Original inconsistency | Implemented resolution | Status |
+| --- | --- | --- | --- |
+| C-01 | Profile ID did not determine runtime policy | Normal/Hard contain complete policies; run-local selector overrides fail closed; every report carries the effective policy and hash | Resolved |
+| C-02 | Missing context could select destructive normalization | Missing normalization context now means exact preservation; explicit context is separate from PII context | Resolved |
+| C-03 | Multiple populated text fields were concatenated | Exactly one populated declared field is accepted; ambiguous input raises an error | Resolved |
+| C-04 | Residual threshold was described as a Stage-B gate | Renamed and moved to `stage_c.minimum_residual_chars` throughout current contracts | Resolved |
+| C-05 | Authorized and enabled policies were conflated | Registry/profile distinguish authorization from enablement; the current Normal authorized set is fully enabled and the report emits the effective manifest | Resolved |
+| C-06 | Executability and empirical validation were conflated | Lifecycle dimensions separately represent execution, profile enablement, and empirical evidence | Resolved |
+| C-07 | Quality rejection and retained abstentions were conflated | Report separately counts explicit non-payload rejection, positive Quality keep, and abstain-retain | Resolved |
+| C-08 | Coverage authority was described only as an audit | Coverage is a veto-only materialization invariant and cannot rank, delete, or quota-restore | Resolved |
+| C-09 | Exact-duplicate representative depended on input order | Exact families use a stable digest and chunk-UID ordering with reversed-input fixture coverage | Resolved |
+| C-10 | Whitespace proxies looked like training-token counts | Runtime labels them `whitespace_proxy_non_training`; exact tokenizer counts are external and require a declared tokenizer | Resolved |
+| C-11 | Tests did not cover the contract gaps | Added negative tests for policy overrides, ambiguous fields, context preservation, deterministic representatives, and Coverage authority | Resolved |
+| C-12 | No clean frozen baseline existed | Commit `2fd53ea` records the pre-implementation consistency baseline | Resolved |
+| C-13 | Core inventory expected a removed candidate | Inventory contract now follows the frozen intended schema without restoring the unsupported rule | Resolved |
+| C-14 | Frozen execution manifests pinned stale contract hashes | Affected manifests were re-fingerprinted against the preserved historical contract bytes | Resolved |
 
 ## Baseline Verification
 
@@ -146,6 +146,16 @@ The cleanup checkpoint was checked without network or GPU access:
 Secret-pattern matches in detector fixtures are intentional fake credentials.
 Matches inside `task-artifact` and `risk-*` identifiers are regular-expression
 false positives, not credentials.
+
+## Post-Alignment Verification
+
+The authorized implementation pass on 2026-08-01 completed C-01 through C-14.
+With GPU access disabled and the repository on `PYTHONPATH`, all 120 directly
+runnable validation files passed. Python `compileall` passed, all 131 JSON
+contracts under `configs/` and `protocols/` parsed, and both frozen external
+evaluation preflights passed their updated SHA-256 checks. This establishes
+contract and fixture consistency only; it does not validate a universal Quality
+estimator or domain-general downstream effectiveness.
 
 ## Artifact Classification
 

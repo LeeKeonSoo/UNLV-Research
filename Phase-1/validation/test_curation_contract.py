@@ -80,8 +80,9 @@ def test_each_core_has_a_bounded_operational_authority() -> None:
     assert authority["redundancy"]["stage"] == "Stage B/C"
     assert authority["quality"]["authority"].startswith("evaluate_retention_eligibility")
     assert authority["coverage"]["authority"].startswith("verify_representative_linkage")
-    assert authority["coverage"]["stage"] == "Stage B/C materialization audit"
+    assert authority["coverage"]["stage"] == "Stage C materialization"
     assert "record_selection" in authority["coverage"]["forbids"]
+    assert "quota_based_restoration" in authority["coverage"]["forbids"]
     assert "metadata_strata" in authority["coverage"]["forbids"]
     assert "intrinsic_quality_score" in authority["quality"]["forbids"]
     assert "weighted_priority_score" in authority["quality"]["forbids"]

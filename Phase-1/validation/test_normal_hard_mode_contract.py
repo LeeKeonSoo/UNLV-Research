@@ -22,7 +22,10 @@ def test_normal_mode_is_the_only_currently_runnable_user_facing_mode() -> None:
     mode = resolve_curation_mode("normal")
 
     # Then: it resolves to the active structural profile without selector inputs.
-    assert mode == {"mode": "normal", "profile_id": "normal_structural_v1"}
+    assert mode["mode"] == "normal"
+    assert mode["profile_id"] == "normal_structural_v1"
+    assert mode["authorization"] == "production_runtime"
+    assert mode["effective_policy_sha256"]
     assert by_id[mode["profile_id"]]["status"] == "active"
     assert by_id[mode["profile_id"]]["selector"]["kind"] == "reason_coded_text_structural_only"
 

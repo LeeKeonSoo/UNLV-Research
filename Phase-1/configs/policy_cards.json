@@ -453,12 +453,12 @@
     },
     {
       "id": "stage_c_structural_scaffold",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "core": "redundancy",
       "stage": "Stage C",
-      "hypothesis": "Only an identical normalized import/export-only scaffold family can retain one stable representative.",
-      "decision_unit": "normalized structural family",
-      "deployment_scope": "text-only chunks satisfying the scaffold syntax condition and sharing the same normalized signature",
+      "hypothesis": "Only an import/export-only scaffold family identical after trailing-whitespace normalization can retain one stable representative.",
+      "decision_unit": "trailing-whitespace-normalized structural family",
+      "deployment_scope": "text-only chunks satisfying the scaffold syntax condition and sharing a signature that preserves comments, indentation, and case",
       "allowed_inputs": [
         "chunk text"
       ],
@@ -478,9 +478,10 @@
       ],
       "negative_conditions": [
         "chunk contains substantive implementation",
+        "comment text, indentation, or case differs",
         "normalized scaffold signature differs"
       ],
-      "coverage_impact": "one stable representative per identical normalized scaffold family is retained",
+      "coverage_impact": "one stable representative per trailing-whitespace-equivalent scaffold family is retained",
       "rollback_behavior": "retain all scaffold family members by disabling this rule",
       "runtime_implementation": [
         "stage_c_selection.py"
@@ -489,12 +490,12 @@
     },
     {
       "id": "stage_c_coverage_guard",
-      "version": "2.0.0",
+      "version": "3.0.0",
       "core": "coverage",
       "stage": "Stage C",
-      "hypothesis": "Every redundancy removal must retain a linked representative in the curated pool; Coverage audits this invariant without selecting records.",
+      "hypothesis": "Every redundancy removal must retain a linked representative in the curated pool; unexplained loss makes materialization invalid even though Coverage never ranks or deletes records.",
       "decision_unit": "reason-coded removal trace",
-      "deployment_scope": "materialization audit only",
+      "deployment_scope": "runtime materialization invariant with veto-only authority",
       "allowed_inputs": [
         "reason code",
         "chunk identifier",
@@ -516,12 +517,12 @@
       "negative_conditions": [
         "metadata strata, source identity, language, content type, or composition would alter selection"
       ],
-      "coverage_impact": "reports missing representative links and zero-survivor violations; never restores or targets a composition",
-      "rollback_behavior": "fail the audit report when a required representative link is absent or not curated",
+      "coverage_impact": "reports missing representative links and zero-survivor violations and fails materialization; never ranks, deletes, restores by quota, or targets a composition",
+      "rollback_behavior": "abort materialization when a required representative link is absent or not curated",
       "runtime_implementation": [
         "run_curation.py"
       ],
-      "empirical_status": "audit_invariant_not_selector"
+      "empirical_status": "runtime_materialization_invariant_not_selector"
     },
     {
       "id": "stage_c_empty_html_shell",
@@ -566,7 +567,7 @@
       "hypothesis": "An explicit prefix license header is separable non-payload when the residual independently satisfies the Stage-B payload boundary.",
       "decision_unit": "prefix comment span",
       "deployment_scope": "Hard development profile only; text-only chunks with an explicit license marker",
-      "allowed_inputs": ["chunk text", "declared Stage-B minimum_chunk_chars"],
+      "allowed_inputs": ["chunk text", "declared Stage-B minimum_residual_chars"],
       "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_pool_role", "source_tier", "composition"],
       "reason_codes": ["inline_license_header_removed"],
       "negative_conditions": ["ordinary documentation, a non-prefix header, or copyright attribution without an explicit license marker remains", "a license-only residual remains unmodified"],
@@ -583,7 +584,7 @@
       "hypothesis": "A self-contained explicit license comment block is separable non-payload when the residual independently satisfies the Stage-B payload boundary.",
       "decision_unit": "contiguous comment-block span",
       "deployment_scope": "Hard development profile only; text-only chunks with an explicit license marker",
-      "allowed_inputs": ["chunk text", "declared Stage-B minimum_chunk_chars"],
+      "allowed_inputs": ["chunk text", "declared Stage-B minimum_residual_chars"],
       "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_pool_role", "source_tier", "composition"],
       "reason_codes": ["inline_license_comment_block_removed"],
       "negative_conditions": ["ordinary comments, API documentation, and code-bearing comment blocks remain", "a residual below the Stage-B boundary remains unmodified"],
@@ -600,7 +601,7 @@
       "hypothesis": "A long exact normalized repeated paragraph is separable non-payload only from nonrepresentative chunks with an independently valid residual.",
       "decision_unit": "exact normalized paragraph span",
       "deployment_scope": "Hard development profile only; Stage-B pass chunks",
-      "allowed_inputs": ["chunk text", "stable chunk identifier", "declared Stage-B minimum_chunk_chars"],
+      "allowed_inputs": ["chunk text", "stable chunk identifier", "declared Stage-B minimum_residual_chars"],
       "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_pool_role", "source_tier", "composition"],
       "reason_codes": ["repeated_exact_template_span_removed"],
       "negative_conditions": ["short shared phrases, near matches, independent test matrices, and chunks without residual payload remain"],
@@ -617,7 +618,7 @@
       "hypothesis": "A contiguous run of closed-set web controls or URL-only directory lines is separable non-payload when a substantive residual independently passes the Stage-B boundary.",
       "decision_unit": "contiguous text span",
       "deployment_scope": "candidate-only text-structural development materialization",
-      "allowed_inputs": ["chunk text", "declared Stage-B minimum_chunk_chars"],
+      "allowed_inputs": ["chunk text", "declared Stage-B minimum_residual_chars"],
       "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_identity", "source_tier", "rights", "path", "composition"],
       "reason_codes": ["web_control_span_removed", "url_directory_span_removed"],
       "negative_conditions": ["privacy or cookie terms inside explanatory prose remain", "reference lists with titles or explanations remain", "dialogue-like speaker turns remain", "a chunk without a Validity-compliant residual remains unchanged"],
@@ -670,7 +671,7 @@
       "deployment_scope": "candidate-only text-structural development materialization",
       "allowed_inputs": [
         "chunk text",
-        "declared Stage-B minimum_chunk_chars"
+        "declared Stage-B minimum_residual_chars"
       ],
       "forbidden_inputs": [
         "intrinsic_quality_score",

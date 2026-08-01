@@ -35,8 +35,9 @@ def main() -> int:
         "technical_documentation", "conversation", "instruction", "table_structured_data",
     }
     active = [policy for policy in policies if policy["status"] == "active"]
-    assert all(policy["reason_codes"] or policy["id"] == "stage_a_bom_normalization" for policy in active)
-    assert all(policy["activation_state"] == "active_structural" for policy in active)
+    reasonless_invariants = {"stage_a_bom_normalization", "stage_c_coverage_guard"}
+    assert all(policy["reason_codes"] or policy["id"] in reasonless_invariants for policy in active)
+    assert all(policy["activation_state"] == "runtime_executable" for policy in active)
     assert all((ROOT / policy["false_positive_fixture"]).is_file() for policy in active)
     assert all(policy["case_matrix_scenario"] for policy in active)
     assert all(policy["coverage_impact_validation"] for policy in active)

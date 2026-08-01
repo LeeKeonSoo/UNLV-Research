@@ -98,11 +98,12 @@ def main() -> int:
                         "defaults": {},
                     },
                     "output_dir": str(output_dir),
-                    "stage_a": {"policy": "text_only_v2"},
                     "pretraining_audit_path": str(audit_path),
-                    "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
-                    "stage_c_selection": {},
-                    "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
+                    "stage_b": {"max_chunk_chars": 6000},
+                    "stage_c": {
+                        "minimum_residual_chars": 40,
+                        "no_binding_budget_action": "selection_without_binding_budget",
+                    },
                     "claim_boundary": "fixture-only",
                 }
             ),
@@ -133,9 +134,14 @@ def main() -> int:
         assert report["stage_contract"]["stage_a"] == "source_agnostic_text_normalization_and_integrity_handling"
         assert report["stage_contract"]["stage_b"] == "chunk_level_hard_gate"
         assert report["stage_contract"]["stage_c"] == "reason_coded_redundancy_and_quality_retention_without_implicit_budget"
-        assert report["summary"]["stage_c_quality_rejected_chunks"] == 0
+        assert report["summary"]["stage_c_explicit_non_payload_rejected_chunks"] == 0
+        assert report["summary"]["stage_c_positive_quality_kept_chunks"] == 0
         assert report["summary"]["stage_c_quality_abstain_retained_chunks"] == 3
-        assert report["curation_mode"] == {"mode": "normal", "profile_id": "normal_structural_v1"}
+        assert report["curation_mode"]["mode"] == "normal"
+        assert report["curation_mode"]["profile_id"] == "normal_structural_v1"
+        assert len(report["curation_mode"]["effective_policy_sha256"]) == 64
+        assert report["effective_policy_manifest"]["profile_id"] == "normal_structural_v1"
+        assert report["effective_policy_manifest"]["policy"] == report["curation_mode"]["effective_policy"]
         composition = report["composition_audit"]
         assert composition["authority"] == "audit_only"
         assert composition["stages"]["raw_input"]["content_domain"]["records"]["code"] == 1
@@ -146,12 +152,17 @@ def main() -> int:
         assert reason_impact["authority"] == "audit_only"
         assert reason_impact["selector_consumes_this_audit"] is False
         assert set(reason_impact["stages"]) == {"stage_a_quarantine", "stage_b_rejection", "stage_c_compaction"}
-        assert report["coverage_impact_audit"]["authority"] == "audit_only"
         assert report["coverage_impact_audit"]["selector_consumes_this_audit"] is False
+        assert report["coverage_impact_audit"]["authority"] == "materialization_invariant"
+        assert report["measurement_contract"]["runtime_token_measurement"] == "whitespace_proxy_non_training"
+        assert report["measurement_contract"]["exact_tokenizer_count"] is None
+        assert "stage_c_curated_whitespace_token_proxy" in report["summary"]
+        assert "stage_c_curated_token_proxy" not in report["summary"]
         assert report["pretraining_audit"]["status"] == "benchmark_exclusion_complete"
         assert set(report["policy_fingerprint"]["runtime_modules"]) == {
             "hard_structural_runtime.py",
             "general_web_span_compaction.py",
+            "ingestion/input_adapter.py",
             "ingestion/candidate_processing.py",
             "inline_license_comment_block_compaction.py",
             "inline_license_header_compaction.py",
@@ -174,6 +185,38 @@ def main() -> int:
         assert code_chunk["stage_c_policy_metadata"] == {}
         assert code_chunk["stage_c_selector_visible"]["source_name"] is False
         assert code_chunk["stage_c_selector_visible"]["declared_artifact_context"] is False
+        assert code_chunk["token_proxy_kind"] == "whitespace_proxy_non_training"
+
+        duplicate_rows = [
+            {
+                "record_id": "z-record",
+                "text": "same payload\n",
+                "provenance": {"source_name": "fixture"},
+                "rights": {"license": "fixture"},
+                "composition": {},
+                "language": {"code": "und"},
+            },
+            {
+                "record_id": "a-record",
+                "text": "same payload\n",
+                "provenance": {"source_name": "fixture"},
+                "rights": {"license": "fixture"},
+                "composition": {},
+                "language": {"code": "und"},
+            },
+        ]
+        stage_b_policy = {
+            "max_chunk_chars": 6000,
+            "deduplicate_stage_a_text_exactly": True,
+        }
+        first_passed, first_rejected = module._stage_b_chunks(duplicate_rows, stage_b_policy, text_only=True)
+        second_passed, second_rejected = module._stage_b_chunks(
+            list(reversed(duplicate_rows)), stage_b_policy, text_only=True
+        )
+        assert [row["chunk_uid"] for row in first_passed] == ["a-record::0000"]
+        assert [row["chunk_uid"] for row in second_passed] == ["a-record::0000"]
+        assert first_rejected[0]["stage_b_decision"]["representative_chunk_uid"] == "a-record::0000"
+        assert second_rejected[0]["stage_b_decision"]["representative_chunk_uid"] == "a-record::0000"
 
     print("[curation-runtime] generic cross-domain materialization: pass")
     return 0

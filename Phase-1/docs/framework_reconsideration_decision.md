@@ -29,9 +29,10 @@ Frozen output
   -> External Evaluation Protocol
 ```
 
-This is a historical design-decision record. The active runtime contract is
-`docs/current_curation_framework.md`; the frozen Normal and Hard protocols
-disable candidate near-duplicate compaction.
+This is a historical design-decision record. Its disabled near-duplicate state
+was superseded on 2026-08-02. The active runtime contract is
+`docs/current_curation_framework.md`; Normal and Hard now enable the frozen
+symmetric 0.95 near-duplicate rule.
 
 Stage A owns provenance, rights status, PII/secrets including embedded session
 headers, contamination risk, and other unresolved hazards. Stage B owns minimum

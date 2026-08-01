@@ -14,9 +14,10 @@ The runtime contract surface is anchored by:
 - `policy_cards.json`
 - `policy_profiles.json`
 
-Even these files must be checked against the observed call path documented in
-`../docs/framework_consistency_baseline.md`; profile identity does not yet
-fully determine all run-time rule switches.
+These files are checked against the observed call path documented in
+`../docs/framework_consistency_baseline.md`. Normal/Hard profile identity now
+determines all policy switches; a run contract may provide operational paths
+and sizes but cannot override Stage-A/B/C policy decisions.
 
 ## Candidate and Evidence Artifacts
 

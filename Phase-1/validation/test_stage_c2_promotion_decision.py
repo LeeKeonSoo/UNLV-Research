@@ -19,7 +19,8 @@ def test_stage_c2_is_archived_not_promoted_to_the_frozen_runtime_profile() -> No
     # Then: the candidate has no runtime authorization or promotion claim.
     assert decision["decision"] == "not_promoted_candidate_archive"
     assert candidate["runtime_authorization"] == "none_candidate_cannot_select_or_remove"
-    assert candidate["id"] not in active["policy_ids"]
+    assert candidate["id"] not in active["authorized_policy_ids"]
+    assert candidate["id"] not in active["enabled_policy_ids"]
     assert "known_high_quality_reference_false_positive_risk" in decision["blocking_evidence"]
 
 

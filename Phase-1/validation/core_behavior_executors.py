@@ -55,8 +55,12 @@ def execute_case(case: JsonMap) -> JsonMap:
         triggered = expected_code in record["transformations"]
         return _simple_event(triggered, "normalize", expected_code)
     if executor == "stage_b_reason":
+        stage_b_policy = {
+            "deduplicate_stage_a_text_exactly": True,
+            **case["config"],
+        }
         selected, rejected = _stage_b_chunks(
-            _stage_b_records(case["records"]), {"stage_b": case["config"]}
+            _stage_b_records(case["records"]), stage_b_policy
         )
         matches = [
             row for row in rejected if expected_code in row["stage_b_hard_gate_reasons"]
@@ -118,7 +122,7 @@ def _coverage_event(case: JsonMap) -> JsonMap:
         rejected=case["rejected"],
         not_selected=case["not_selected"],
         span_transformations=[],
-        minimum_chunk_chars=40,
+        minimum_residual_chars=40,
         composition_audit=_composition_audit_stub(),
     )
     return {

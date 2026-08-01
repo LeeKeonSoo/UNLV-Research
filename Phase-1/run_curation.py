@@ -42,6 +42,7 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "inline_license_comment_block_compaction.py",
     "span_level_template_compaction.py",
     "general_web_span_compaction.py",
+    "ingestion/input_adapter.py",
     "ingestion/candidate_processing.py",
     "quality_decision_contract.py",
     "quality_rule_evidence.py",
@@ -57,28 +58,79 @@ def load_config(path: Path) -> JsonMap:
     return config
 
 
+def _policy_profile(profile_id: str) -> JsonMap:
+    root = Path(__file__).resolve().parent
+    payload = load_json(root / "configs" / "policy_profiles.json")
+    profiles = payload.get("profiles")
+    if not isinstance(profiles, list):
+        raise RuntimeError("Policy profile registry requires a profiles list.")
+    for profile in profiles:
+        if isinstance(profile, dict) and profile.get("id") == profile_id:
+            return profile
+    raise RuntimeError(f"Unknown policy profile: {profile_id}")
+
+
+def _effective_policy_digest(policy: JsonMap) -> str:
+    encoded = json.dumps(policy, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def resolve_curation_mode(mode: str, *, execution_scope: str = "production") -> JsonMap:
-    """Resolve a user-facing curation mode without silently weakening its contract."""
+    """Resolve a user-facing mode to one immutable complete runtime policy."""
     normalized_mode = mode.strip().lower()
-    if normalized_mode == "normal":
-        return {"mode": "normal", "profile_id": USER_FACING_MODE_PROFILES[normalized_mode]}
+    if normalized_mode not in USER_FACING_MODE_PROFILES:
+        raise RuntimeError("Curation mode must be normal or hard")
+    profile_id = USER_FACING_MODE_PROFILES[normalized_mode]
+    profile = _policy_profile(profile_id)
+    runtime_policy = profile.get("runtime_policy")
+    if not isinstance(runtime_policy, dict):
+        raise RuntimeError(f"Policy profile {profile_id} has no complete runtime_policy.")
     if normalized_mode == "hard":
         if execution_scope == "development":
-            return {
-                "mode": "hard",
-                "profile_id": USER_FACING_MODE_PROFILES[normalized_mode],
-                "authorization": "development_only_pending_n4_ablation",
-            }
-        if execution_scope == "confirmatory":
-            return {
-                "mode": "hard",
-                "profile_id": USER_FACING_MODE_PROFILES[normalized_mode],
-                "authorization": "confirmatory_only_pending_external_decision",
-            }
+            authorization = "development_only_pending_n4_ablation"
+        elif execution_scope == "confirmatory":
+            authorization = "confirmatory_only_pending_external_decision"
+        else:
+            raise RuntimeError(
+                "Hard curation mode is limited to development or confirmatory evaluation; production use remains blocked."
+            )
+    else:
+        authorization = "production_runtime"
+    effective_policy = json.loads(json.dumps(runtime_policy))
+    return {
+        "mode": normalized_mode,
+        "profile_id": profile_id,
+        "profile_status": profile.get("status"),
+        "authorization": authorization,
+        "enabled_policy_ids": list(profile.get("enabled_policy_ids") or []),
+        "effective_policy": effective_policy,
+        "effective_policy_sha256": _effective_policy_digest(effective_policy),
+    }
+
+
+def validate_run_policy_overrides(config: JsonMap, effective_policy: JsonMap) -> None:
+    """Reject run-local switches that would mutate an immutable mode profile."""
+    forbidden_sections = [name for name in ("stage_a", "stage_c_selection") if name in config]
+    stage_b = config.get("stage_b") if isinstance(config.get("stage_b"), dict) else {}
+    forbidden_stage_b = sorted(
+        key
+        for key in ("deduplicate_normalized_exact_text", "deduplicate_stage_a_text_exactly")
+        if key in stage_b
+    )
+    if forbidden_sections or forbidden_stage_b:
+        fields = forbidden_sections + [f"stage_b.{key}" for key in forbidden_stage_b]
         raise RuntimeError(
-            "Hard curation mode is limited to development or confirmatory evaluation; production use remains blocked."
+            "Run contract cannot override immutable profile policy fields: " + ", ".join(fields)
         )
-    raise RuntimeError("Curation mode must be normal or hard")
+    if not isinstance(effective_policy.get("stage_a"), dict):
+        raise RuntimeError("Immutable profile is missing Stage-A policy.")
+    if not isinstance(effective_policy.get("stage_b"), dict):
+        raise RuntimeError("Immutable profile is missing Stage-B policy.")
+    if not isinstance(effective_policy.get("stage_c_selection"), dict):
+        raise RuntimeError("Immutable profile is missing Stage-C policy.")
+    coverage = effective_policy.get("coverage")
+    if not isinstance(coverage, dict) or coverage.get("enforce_materialization_invariants") is not True:
+        raise RuntimeError("Immutable profile must enforce Coverage materialization invariants.")
 
 
 def validate_quality_candidate_scope(stage_c_selection: JsonMap, execution_scope: str) -> list[str]:
@@ -220,65 +272,76 @@ def _policy_metadata(record: JsonMap) -> JsonMap:
 
 
 def _stage_b_chunks(
-    released: Iterable[JsonMap], config: JsonMap, *, text_only: bool = False
+    released: Iterable[JsonMap], stage_b_policy: JsonMap, *, text_only: bool = False
 ) -> tuple[list[JsonMap], list[JsonMap]]:
-    hard_gate = config["stage_b"]
-    maximum = int(hard_gate["max_chunk_chars"])
+    maximum = int(stage_b_policy["max_chunk_chars"])
+    exact_deduplication = stage_b_policy.get("deduplicate_stage_a_text_exactly") is True
     seen: dict[str, str] = {}
     passed: list[JsonMap] = []
     rejected: list[JsonMap] = []
+    pending: list[tuple[str, str, JsonMap, str]] = []
     for record in released:
         for index, text in enumerate(chunk_text(str(record["text"]), maximum)):
-            normalized = " ".join(text.split())
-            digest = hashlib.sha256(normalized.encode("utf-8")).hexdigest()
-            reasons: list[str] = []
-            is_invalid = not normalized or all(character.isspace() or ord(character) < 32 for character in text)
-            if is_invalid:
-                reasons.append(STAGE_B_INVALID_CHUNK_REASON)
-            representative_chunk_uid = seen.get(digest) if not is_invalid else None
-            if representative_chunk_uid is not None:
-                reasons.append(STAGE_B_EXACT_DUPLICATE_REASON)
-            policy_metadata = {} if text_only else _policy_metadata(record)
+            digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
             chunk_uid = f"{record['record_id']}::{index:04d}"
-            chunk = {
-                "chunk_uid": chunk_uid,
-                "text": text,
-                "token_proxy": _token_proxy(text),
-                "stage_a_record_id": record["record_id"],
-                "stage_b_hard_gate_reasons": reasons,
-                "stage_b_decision": {
-                    "accepted": not reasons,
-                    "trigger": "stage_b_hard_gate_reason_present" if reasons else "no_stage_b_hard_gate_reason",
-                    "non_trigger_boundary": "minimum_chunk_length_and_normalized_digest_are_distinct" if not reasons else "declared_hard_gate_rejection",
-                    "reason_codes": reasons,
-                    "token_delta_proxy": -_token_proxy(text) if reasons else 0,
-                    "utility_read": False,
-                    "benchmark_outcomes_read": False,
-                },
-                "audit_only_metadata": _audit_metadata(record),
-                "stage_c_policy_metadata": policy_metadata,
-                "composition": annotate_record({"text": text}),
-                "stage_c_selector_visible": {
-                    "declared_language": not text_only,
-                    "declared_language_version": "language_version" in policy_metadata,
-                    "declared_content_type": not text_only,
-                    "declared_path": "path" in policy_metadata,
-                    "declared_artifact_context": bool(policy_metadata.get("declared_generation") or "declared_dependency_copy" in policy_metadata),
-                    "source_name": False,
-                    "source_pool_role": False,
-                    "composition": False,
-                    "utility": False,
-                    "benchmark_outcomes": False,
-                },
-            }
-            if representative_chunk_uid is not None:
-                chunk["stage_b_decision"]["representative_chunk_uid"] = representative_chunk_uid
-            if not is_invalid and digest not in seen:
-                seen[digest] = chunk_uid
-            if reasons:
-                rejected.append(chunk)
-            else:
-                passed.append(chunk)
+            pending.append((digest, chunk_uid, record, text))
+    for digest, chunk_uid, record, text in sorted(
+        pending, key=lambda item: (item[0], item[1])
+    ):
+        visible = text.strip()
+        reasons: list[str] = []
+        is_invalid = not visible or all(character.isspace() or ord(character) < 32 for character in text)
+        if is_invalid:
+            reasons.append(STAGE_B_INVALID_CHUNK_REASON)
+        representative_chunk_uid = seen.get(digest) if exact_deduplication and not is_invalid else None
+        if representative_chunk_uid is not None:
+            reasons.append(STAGE_B_EXACT_DUPLICATE_REASON)
+        policy_metadata = {} if text_only else _policy_metadata(record)
+        token_proxy = _token_proxy(text)
+        chunk = {
+            "chunk_uid": chunk_uid,
+            "text": text,
+            "token_proxy": token_proxy,
+            "token_proxy_kind": "whitespace_proxy_non_training",
+            "stage_a_record_id": record["record_id"],
+            "stage_b_hard_gate_reasons": reasons,
+            "stage_b_decision": {
+                "accepted": not reasons,
+                "trigger": "stage_b_hard_gate_reason_present" if reasons else "no_stage_b_hard_gate_reason",
+                "non_trigger_boundary": "stage_a_text_digest_is_distinct" if not reasons else "declared_hard_gate_rejection",
+                "reason_codes": reasons,
+                "token_delta_proxy": -token_proxy if reasons else 0,
+                "token_delta_proxy_kind": "whitespace_proxy_non_training",
+                "utility_read": False,
+                "benchmark_outcomes_read": False,
+            },
+            "audit_only_metadata": _audit_metadata(record),
+            "stage_c_policy_metadata": policy_metadata,
+            "composition": annotate_record({"text": text}),
+            "stage_c_selector_visible": {
+                "declared_language": not text_only,
+                "declared_language_version": "language_version" in policy_metadata,
+                "declared_content_type": not text_only,
+                "declared_path": "path" in policy_metadata,
+                "declared_artifact_context": bool(
+                    policy_metadata.get("declared_generation")
+                    or "declared_dependency_copy" in policy_metadata
+                ),
+                "source_name": False,
+                "source_pool_role": False,
+                "composition": False,
+                "utility": False,
+                "benchmark_outcomes": False,
+            },
+        }
+        if representative_chunk_uid is not None:
+            chunk["stage_b_decision"]["representative_chunk_uid"] = representative_chunk_uid
+        if exact_deduplication and not is_invalid and digest not in seen:
+            seen[digest] = chunk_uid
+        if reasons:
+            rejected.append(chunk)
+        else:
+            passed.append(chunk)
     return passed, rejected
 
 
@@ -289,7 +352,7 @@ def _coverage_impact_audit(
     rejected: list[JsonMap],
     not_selected: list[JsonMap],
     span_transformations: list[JsonMap],
-    minimum_chunk_chars: int,
+    minimum_residual_chars: int,
     composition_audit: JsonMap,
 ) -> JsonMap:
     """Audit representative preservation without granting Coverage selection authority."""
@@ -315,6 +378,7 @@ def _coverage_impact_audit(
         str(row["chunk_uid"]): str(row["stage_c_selection"].get("removed_reason"))
         for row in not_selected
     }
+    removed_row_by_chunk_uid = {str(row["chunk_uid"]): row for row in not_selected}
     explicit_non_payload_reasons = {
         "explicit_generated_artifact",
         "license_comment_only_chunk",
@@ -323,24 +387,67 @@ def _coverage_impact_audit(
         "explicit_error_navigation_only_chunk",
         "url_directory_only_chunk",
     }
+
+    def resolve_representative_chain(representative: str) -> tuple[str, list[str], str | None]:
+        chain: list[str] = []
+        visited: set[str] = set()
+        current = representative
+        while True:
+            if current in visited:
+                return "cycle", [*chain, current], None
+            visited.add(current)
+            chain.append(current)
+            if current in selected_ids:
+                return "selected", chain, current
+            removed_row = removed_row_by_chunk_uid.get(current)
+            if removed_row is None:
+                return "missing", chain, None
+            selection = removed_row.get("stage_c_selection")
+            if not isinstance(selection, dict):
+                return "missing", chain, None
+            reason = str(selection.get("removed_reason"))
+            if reason in explicit_non_payload_reasons:
+                return "non_payload", chain, current
+            next_representative = selection.get("representative_chunk_uid")
+            if not isinstance(next_representative, str) or not next_representative:
+                return "missing", chain, None
+            current = next_representative
+
+    representative_resolutions = [
+        (chunk_uid, representative, reason, *resolve_representative_chain(str(representative)))
+        for chunk_uid, representative, reason in required_links
+        if representative
+    ]
     resolved_by_non_payload_removal = [
         {
             "chunk_uid": chunk_uid,
             "representative_chunk_uid": representative,
             "reason_code": reason,
-            "representative_removed_reason": removal_reason_by_chunk_uid[str(representative)],
+            "representative_removed_reason": removal_reason_by_chunk_uid[str(terminal)],
         }
-        for chunk_uid, representative, reason in required_links
-        if representative
-        and representative not in selected_ids
-        and removal_reason_by_chunk_uid.get(str(representative)) in explicit_non_payload_reasons
+        for chunk_uid, representative, reason, status, _, terminal in representative_resolutions
+        if status == "non_payload" and terminal is not None
+    ]
+    resolved_by_representative_chain = [
+        {
+            "chunk_uid": chunk_uid,
+            "reason_code": reason,
+            "representative_chain": chain,
+            "terminal_chunk_uid": terminal,
+        }
+        for chunk_uid, _, reason, status, chain, terminal in representative_resolutions
+        if status == "selected" and len(chain) > 1 and terminal is not None
     ]
     non_surviving_links = [
-        {"chunk_uid": chunk_uid, "representative_chunk_uid": representative, "reason_code": reason}
-        for chunk_uid, representative, reason in required_links
-        if representative
-        and representative not in selected_ids
-        and removal_reason_by_chunk_uid.get(str(representative)) not in explicit_non_payload_reasons
+        {
+            "chunk_uid": chunk_uid,
+            "representative_chunk_uid": representative,
+            "reason_code": reason,
+            "resolution_status": status,
+            "representative_chain": chain,
+        }
+        for chunk_uid, representative, reason, status, chain, _ in representative_resolutions
+        if status not in {"selected", "non_payload"}
     ]
     removed_by_record: dict[str, list[JsonMap]] = {}
     for row in not_selected:
@@ -353,8 +460,14 @@ def _coverage_impact_audit(
         has_curated_chunk = record_id in selected_by_record
         all_rows_explained = all(
             (
-                row["stage_c_selection"].get("representative_chunk_uid") in selected_ids
-                or row["stage_c_selection"].get("removed_reason") in explicit_non_payload_reasons
+                row["stage_c_selection"].get("removed_reason") in explicit_non_payload_reasons
+                or (
+                    isinstance(row["stage_c_selection"].get("representative_chunk_uid"), str)
+                    and resolve_representative_chain(
+                        str(row["stage_c_selection"]["representative_chunk_uid"])
+                    )[0]
+                    in {"selected", "non_payload"}
+                )
             )
             for row in rows
         )
@@ -383,7 +496,7 @@ def _coverage_impact_audit(
     passed_ids = {str(row["chunk_uid"]) for row in passed}
     assert selected_ids.issubset(passed_ids)
     residual_payload_passed = all(
-        len(str(row.get("text") or "").strip()) >= minimum_chunk_chars
+        len(str(row.get("text") or "").strip()) >= minimum_residual_chars
         for row in passed
         if row.get("stage_c_hard_transformations") or row.get("stage_c_quality_candidate_transformations")
     )
@@ -395,7 +508,7 @@ def _coverage_impact_audit(
         or not residual_payload_passed
     )
     return {
-        "authority": "audit_only",
+        "authority": "materialization_invariant",
         "selector_consumes_this_audit": False,
         "metadata_strata_or_target_mix_used": False,
         "representative_linkage": {
@@ -403,12 +516,13 @@ def _coverage_impact_audit(
             "missing_representative_chunk_uids": missing_links,
             "representative_not_in_curated_pool": non_surviving_links,
             "resolved_by_non_payload_removal": resolved_by_non_payload_removal,
+            "resolved_by_representative_chain": resolved_by_representative_chain,
             "passed": not missing_links and not non_surviving_links,
         },
         "residual_payload": {
             "span_rewrite_active": bool(span_transformations),
             "rewritten_chunks_checked": len({str(item["chunk_uid"]) for item in span_transformations}),
-            "minimum_chunk_chars": minimum_chunk_chars,
+            "minimum_residual_chars": minimum_residual_chars,
             "invalid_residual_chunk_uids": [
                 str(row["chunk_uid"])
                 for row in passed
@@ -416,7 +530,7 @@ def _coverage_impact_audit(
                     row.get("stage_c_hard_transformations")
                     or row.get("stage_c_quality_candidate_transformations")
                 )
-                and len(str(row.get("text") or "").strip()) < minimum_chunk_chars
+                and len(str(row.get("text") or "").strip()) < minimum_residual_chars
             ],
             "passed": residual_payload_passed,
             "zero_survivor_exception_allowed": False,
@@ -445,6 +559,8 @@ def materialize(config_path: Path) -> JsonMap:
         str(config.get("curation_mode") or "normal"),
         execution_scope=execution_scope,
     )
+    effective_policy = mode["effective_policy"]
+    validate_run_policy_overrides(config, effective_policy)
     output_dir = Path(str(config["output_dir"]))
     source_specs = _source_specs(config["input"])
     source_paths = [_source_path(source) for source in source_specs]
@@ -456,23 +572,32 @@ def materialize(config_path: Path) -> JsonMap:
         for records, source in zip(raw_records_by_source, source_specs, strict=True)
         for candidate in adapt_raw_records(records, source)
     )
-    stage_a_settings = config.get("stage_a") if isinstance(config.get("stage_a"), dict) else {}
-    stage_a_policy = str(stage_a_settings.get("policy") or "provenance_safety_v1")
+    stage_a_settings = effective_policy["stage_a"]
+    stage_a_policy = str(stage_a_settings["policy"])
     processed = annotate_records(
         process_candidate(candidate, index=index, stage_a_policy=stage_a_policy)
         for index, candidate in enumerate(candidates)
     )
     released = [row for row in processed if row["release_eligibility"]["eligible"]]
     quarantined = [row for row in processed if not row["release_eligibility"]["eligible"]]
-    passed, rejected = _stage_b_chunks(released, config, text_only=stage_a_policy == "text_only_v2")
-    minimum_chunk_chars = int(config["stage_b"]["minimum_chunk_chars"])
+    stage_b_policy = {
+        **effective_policy["stage_b"],
+        "max_chunk_chars": int(config["stage_b"]["max_chunk_chars"]),
+    }
+    passed, rejected = _stage_b_chunks(
+        released,
+        stage_b_policy,
+        text_only=stage_a_policy == "text_only_v2",
+    )
+    stage_c_settings = config.get("stage_c") if isinstance(config.get("stage_c"), dict) else {}
+    minimum_residual_chars = int(stage_c_settings["minimum_residual_chars"])
     span_transformations: list[JsonMap] = []
     hard_transformations: list[JsonMap] = []
     quality_candidate_transformations: list[JsonMap] = []
     hard_runtime_audit: JsonMap | None = None
     if mode["mode"] == "hard":
         hard_runtime_audit = apply_development_hard_policies(
-            passed, minimum_chunk_chars=minimum_chunk_chars
+            passed, minimum_residual_chars=minimum_residual_chars
         )
         transformation_by_chunk: dict[str, list[JsonMap]] = {}
         for transformation in hard_runtime_audit["transformations"]:
@@ -484,13 +609,13 @@ def materialize(config_path: Path) -> JsonMap:
                 row["stage_c_hard_transformations"] = traces
         hard_transformations = hard_runtime_audit["transformations"]
         span_transformations.extend(hard_transformations)
-    stage_c_selection = config.get("stage_c_selection") or {}
+    stage_c_selection = effective_policy["stage_c_selection"]
     candidate_quality_rules = validate_quality_candidate_scope(stage_c_selection, execution_scope)
     quality_candidate_runtime_audit: JsonMap | None = None
     if "web_control_and_url_directory_span_candidate" in candidate_quality_rules:
         plan = build_web_span_plan(
             passed,
-            minimum_residual_chars=minimum_chunk_chars,
+            minimum_residual_chars=minimum_residual_chars,
             token_counter=_token_proxy,
         )
         quality_candidate_runtime_audit = materialize_web_span_plan(
@@ -508,8 +633,6 @@ def materialize(config_path: Path) -> JsonMap:
             if traces:
                 row["stage_c_quality_candidate_transformations"] = traces
         span_transformations.extend(quality_candidate_transformations)
-    if "coverage_guard" in stage_c_selection:
-        raise RuntimeError("Coverage is audit-only; metadata-stratum selection is not part of the curation runtime.")
     selected, not_selected, selection_audit = select_chunks(passed, stage_c_selection)
     paths = {
         "stage_a_release": output_dir / "stage_a_release_candidates.jsonl",
@@ -548,7 +671,7 @@ def materialize(config_path: Path) -> JsonMap:
         rejected=rejected,
         not_selected=not_selected,
         span_transformations=span_transformations,
-        minimum_chunk_chars=minimum_chunk_chars,
+        minimum_residual_chars=minimum_residual_chars,
         composition_audit=composition_audit,
     )
     if not coverage_impact_audit["passed"]:
@@ -563,6 +686,13 @@ def materialize(config_path: Path) -> JsonMap:
             "external_evaluation": "not_started",
         },
         "curation_mode": mode,
+        "effective_policy_manifest": {
+            "profile_id": mode["profile_id"],
+            "profile_status": mode["profile_status"],
+            "enabled_policy_ids": mode["enabled_policy_ids"],
+            "policy_sha256": mode["effective_policy_sha256"],
+            "policy": effective_policy,
+        },
         "development_candidate_profile": {
             "id": config.get("development_candidate_profile"),
             "enabled_quality_policy_keys": candidate_quality_rules,
@@ -582,8 +712,11 @@ def materialize(config_path: Path) -> JsonMap:
             "stage_c_license_comment_only_removed_chunks": int(selection_audit["license_comment_only_removed_chunks"]),
             "stage_c_empty_html_shell_removed_chunks": int(selection_audit["empty_html_shell_removed_chunks"]),
             "stage_c_web_chrome_only_removed_chunks": int(selection_audit["web_chrome_only_removed_chunks"]),
-            "stage_c_quality_rejected_chunks": int(
+            "stage_c_explicit_non_payload_rejected_chunks": int(
                 selection_audit["quality_retention"]["decision_counts"]["reject"]
+            ),
+            "stage_c_positive_quality_kept_chunks": int(
+                selection_audit["quality_retention"]["decision_counts"]["keep"]
             ),
             "stage_c_quality_abstain_retained_chunks": int(
                 selection_audit["quality_retention"]["decision_counts"]["abstain_retain"]
@@ -592,7 +725,7 @@ def materialize(config_path: Path) -> JsonMap:
             "stage_c_quality_candidate_span_transformations": len(quality_candidate_transformations),
             "stage_c_total_span_transformations": len(span_transformations),
             "stage_c_curated_chunks": len(selected),
-            "stage_c_curated_token_proxy": sum(int(row["token_proxy"]) for row in selected),
+            "stage_c_curated_whitespace_token_proxy": sum(int(row["token_proxy"]) for row in selected),
             "stage_a_quarantine_reasons": dict(Counter(reason for row in quarantined for reason in row["quarantine"]["reasons"])),
             "stage_b_hard_gate_rejection_reasons": dict(Counter(reason for row in rejected for reason in row["stage_b_hard_gate_reasons"])),
         },
@@ -601,6 +734,11 @@ def materialize(config_path: Path) -> JsonMap:
             quarantined, rejected, not_selected, span_transformations or None
         ),
         "coverage_impact_audit": coverage_impact_audit,
+        "measurement_contract": {
+            "runtime_token_measurement": "whitespace_proxy_non_training",
+            "exact_tokenizer_count": None,
+            "exact_tokenizer_count_role": "external_evaluation_only_with_declared_tokenizer",
+        },
         "selector_boundary": {
             "utility_read": False,
             "benchmark_outcomes_read": False,

@@ -67,7 +67,7 @@ def run_candidate_matrix(rows: Iterable[JsonMap], *, minimum_residual_chars: int
         "status": "development_candidate_complete_not_runtime_active",
         "runtime_active": False,
         "candidate_policy_id": "stage_c_repeated_label_block_candidate",
-        "allowed_inputs": ["chunk text", "declared Stage-B minimum_chunk_chars"],
+        "allowed_inputs": ["chunk text", "declared Stage-B minimum_residual_chars"],
         "forbidden_selector_inputs": ["intrinsic_quality_score", "Utility", "NLL", "benchmark_outcomes", "source_identity", "composition", "target_retention_fraction"],
         "summary": {
             "input_chunks": len(source_rows),

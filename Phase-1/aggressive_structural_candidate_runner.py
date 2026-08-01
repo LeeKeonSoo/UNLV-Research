@@ -65,17 +65,17 @@ def _text_only_rows(rows: Iterable[JsonMap]) -> list[JsonMap]:
     return prepared
 
 
-def _run_license_compaction(rows: list[JsonMap], minimum_chunk_chars: int) -> tuple[list[JsonMap], list[JsonMap]]:
-    header_plan = build_license_header_plan(rows, minimum_residual_chars=minimum_chunk_chars)
+def _run_license_compaction(rows: list[JsonMap], minimum_residual_chars: int) -> tuple[list[JsonMap], list[JsonMap]]:
+    header_plan = build_license_header_plan(rows, minimum_residual_chars=minimum_residual_chars)
     header_result = materialize_license_headers(rows, header_plan)
-    block_plan = build_license_block_plan(header_result["records"], minimum_residual_chars=minimum_chunk_chars)
+    block_plan = build_license_block_plan(header_result["records"], minimum_residual_chars=minimum_residual_chars)
     block_result = materialize_license_blocks(header_result["records"], block_plan)
     transformations = [*header_result["transformations"], *block_result["transformations"]]
     return block_result["records"], transformations
 
 
-def _run_repeated_span_compaction(rows: list[JsonMap], minimum_chunk_chars: int) -> tuple[list[JsonMap], list[JsonMap]]:
-    plan = build_repeated_span_plan(rows, minimum_span_tokens=12, minimum_residual_chars=minimum_chunk_chars)
+def _run_repeated_span_compaction(rows: list[JsonMap], minimum_residual_chars: int) -> tuple[list[JsonMap], list[JsonMap]]:
+    plan = build_repeated_span_plan(rows, minimum_span_tokens=12, minimum_residual_chars=minimum_residual_chars)
     result = materialize_repeated_spans(rows, plan)
     return result["records"], result["transformations"]
 
@@ -144,19 +144,19 @@ def _build_arm(
 
 
 def run_candidate_arms(
-    rows: Iterable[JsonMap], *, stage_c_selection: JsonMap, minimum_chunk_chars: int, token_counter: TokenCounter
+    rows: Iterable[JsonMap], *, stage_c_selection: JsonMap, minimum_residual_chars: int, token_counter: TokenCounter
 ) -> JsonMap:
     """Build isolated text-only development arms without changing the active runtime."""
-    if minimum_chunk_chars < 1:
-        raise ValueError("minimum_chunk_chars must be positive")
+    if minimum_residual_chars < 1:
+        raise ValueError("minimum_residual_chars must be positive")
     source_rows = _text_only_rows(rows)
-    license_rows, license_transformations = _run_license_compaction(_copy_rows(source_rows), minimum_chunk_chars)
-    repeated_rows, repeated_transformations = _run_repeated_span_compaction(_copy_rows(source_rows), minimum_chunk_chars)
+    license_rows, license_transformations = _run_license_compaction(_copy_rows(source_rows), minimum_residual_chars)
+    repeated_rows, repeated_transformations = _run_repeated_span_compaction(_copy_rows(source_rows), minimum_residual_chars)
     cumulative_license_rows, cumulative_license_transformations = _run_license_compaction(
-        _copy_rows(source_rows), minimum_chunk_chars
+        _copy_rows(source_rows), minimum_residual_chars
     )
     cumulative_rows, cumulative_repeated_transformations = _run_repeated_span_compaction(
-        cumulative_license_rows, minimum_chunk_chars
+        cumulative_license_rows, minimum_residual_chars
     )
     arms = {
         "active_profile_baseline": _build_arm(
@@ -234,7 +234,7 @@ def materialize_candidate_run(config_path: Path) -> JsonMap:
     result = run_candidate_arms(
         _read_jsonl(input_path),
         stage_c_selection=dict(config["stage_c_selection"]),
-        minimum_chunk_chars=int(config["stage_b_minimum_chunk_chars"]),
+        minimum_residual_chars=int(config["stage_b_minimum_residual_chars"]),
         token_counter=_token_counter(tokenizer_path),
     )
     output_dir.mkdir(parents=True, exist_ok=True)

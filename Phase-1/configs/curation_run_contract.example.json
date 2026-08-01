@@ -12,6 +12,7 @@
           "source_uri": "https://example.invalid/source-a-manifest",
           "collected_at": "2026-07-22T00:00:00Z",
           "pii_context": "general",
+          "normalization_context": "preserve",
           "rights": {
             "status": "allowed",
             "license": "declared-license"
@@ -30,35 +31,19 @@
       }
     ]
   },
-  "stage_a": {
-    "policy": "text_only_v2"
-  },
   "output_dir": "C:/path/to/curation-output",
   "stage_b": {
     "name": "chunk_level_hard_gate",
     "max_chunk_chars": 6000,
-    "minimum_chunk_chars": 120,
-    "deduplicate_normalized_exact_text": true,
     "forbidden_inputs": ["Utility", "NLL", "benchmark outcomes", "source pool role"]
-  },
-  "stage_c_selection": {
-    "near_duplicate_compaction": {
-      "candidate_enabled": false,
-      "shingle_size": 5,
-      "minimum_lexical_tokens": 40,
-      "symmetric_overlap_threshold": 0.95
-    },
-    "structural_artifact_rules": {
-      "explicit_generated_artifact": false,
-      "empty_html_shell": false,
-      "web_chrome_only_chunk": false
-    }
   },
   "stage_c": {
     "name": "reason_coded_duplicate_artifact_and_scaffold_compaction_and_materialization",
+    "minimum_residual_chars": 120,
     "no_binding_budget_action": "selection_without_binding_budget",
     "forbidden_inputs": ["Utility", "NLL", "benchmark outcomes", "source pool role"]
   },
+  "policy_note": "Stage-A, Stage-B policy switches, and Stage-C selection rules are supplied only by the immutable curation_mode profile.",
   "external_evaluation": {
     "forbidden_feedback": "External metrics may not mutate this frozen Stage-C output."
   },

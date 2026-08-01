@@ -97,8 +97,8 @@ def main() -> int:
                         ]
                     },
                     "output_dir": str(output_dir),
-                    "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
-                    "stage_c": {"training_budget_token_proxy": None, "no_binding_budget_action": "retain_all"},
+                    "stage_b": {"max_chunk_chars": 6000},
+                    "stage_c": {"minimum_residual_chars": 40, "no_binding_budget_action": "retain_all"},
                     "claim_boundary": "fixture-only",
                 }
             ),
@@ -112,14 +112,16 @@ def main() -> int:
         ]
 
         assert report["summary"]["input_records"] == 4
-        assert report["summary"]["stage_a_release_records"] == 2
-        assert report["summary"]["stage_a_quarantined_records"] == 2
-        assert report["summary"]["stage_a_quarantine_reasons"]["pii_detected"] == 1
-        assert report["summary"]["stage_a_quarantine_reasons"]["rights_restricted"] == 1
-        assert release[0]["provenance"]["source_name"] == "declared-code-source"
-        assert release[1]["provenance"]["source_name"] == "raw-allowed-source"
+        assert report["summary"]["stage_a_release_records"] == 4
+        assert report["summary"]["stage_a_quarantined_records"] == 0
+        by_id = {row["record_id"]: row for row in release}
+        assert by_id["valid"]["provenance"]["source_name"] == "declared-code-source"
+        assert by_id["raw-allowed"]["provenance"]["source_name"] == "raw-allowed-source"
+        assert by_id["pii"]["hazards"]["pii_detected"] is True
+        assert by_id["pii"]["hazards"]["diagnostics"]["audit_only"] is True
+        assert by_id["restricted"]["rights"]["status"] == "restricted"
 
-    print("[source-contract] source policy and restrictive raw rights: pass")
+    print("[source-contract] source and rights metadata remain audit-only in Normal: pass")
     return 0
 
 

@@ -82,9 +82,17 @@ STAGE_A_POLICY_REASON_CODES = {
 }
 
 
-def normalize_text(text: str, *, context: str = "general") -> Dict[str, Any]:
+def normalize_text(text: str, *, context: str = "preserve") -> Dict[str, Any]:
     original = str(text or "")
     transformations: List[str] = []
+    if context == "preserve":
+        digest = hashlib.sha256(original.encode("utf-8", errors="replace")).hexdigest()
+        return {
+            "text": original,
+            "transformations": transformations,
+            "original_sha256": digest,
+            "normalized_sha256": digest,
+        }
     if context == "repository_code":
         normalized = original.replace("\r\n", "\n").replace("\r", "\n")
         if normalized != original:
@@ -193,8 +201,12 @@ def process_candidate(
         raise ValueError(f"Unsupported Stage A policy: {stage_a_policy}")
     text_only = stage_a_policy == "text_only_v2"
     pii_context = str(raw.get("pii_context") or "general")
+    normalization_context = str(raw.get("normalization_context") or "preserve")
     raw_text = raw.get("text")
-    normalized = normalize_text(raw_text if isinstance(raw_text, str) else "", context=pii_context)
+    normalized = normalize_text(
+        raw_text if isinstance(raw_text, str) else "",
+        context=normalization_context,
+    )
     hazards = detect_hazards(normalized["text"], pii_context=pii_context)
     hazards["diagnostics"]["audit_only"] = text_only
     rights = raw.get("rights") if isinstance(raw.get("rights"), dict) else {}
@@ -245,6 +257,7 @@ def process_candidate(
             "benchmark_outcomes_read": False,
         },
         "transformations": normalized["transformations"],
+        "normalization_context": normalization_context,
         "partition": raw.get("partition") if isinstance(raw.get("partition"), dict) else None,
     }
     record["release_eligibility"] = release_eligibility(record)

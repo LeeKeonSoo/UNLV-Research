@@ -41,10 +41,10 @@ def main() -> int:
         rejected=rejected,
         not_selected=not_selected,
         span_transformations=[],
-        minimum_chunk_chars=40,
+        minimum_residual_chars=40,
         composition_audit=_composition_audit(),
     )
-    assert audit["authority"] == "audit_only"
+    assert audit["authority"] == "materialization_invariant"
     assert audit["selector_consumes_this_audit"] is False
     assert audit["metadata_strata_or_target_mix_used"] is False
     assert audit["representative_linkage"]["required_removed_chunks"] == 2
@@ -60,7 +60,7 @@ def main() -> int:
         rejected=rejected,
         not_selected=not_selected,
         span_transformations=[],
-        minimum_chunk_chars=40,
+        minimum_residual_chars=40,
         composition_audit=_composition_audit(),
     )
     assert failed["representative_linkage"]["passed"] is False
@@ -85,7 +85,7 @@ def main() -> int:
         ],
         not_selected=license_only,
         span_transformations=[],
-        minimum_chunk_chars=40,
+        minimum_residual_chars=40,
         composition_audit=_composition_audit(),
     )
     assert resolved["passed"] is True
@@ -97,7 +97,44 @@ def main() -> int:
             "representative_removed_reason": "license_comment_only_chunk",
         }
     ]
-    print("[coverage-invariants] audit-only representative linkage: pass")
+
+    chained = _coverage_impact_audit(
+        passed=[
+            {"chunk_uid": "final-representative", "stage_a_record_id": "final-record"},
+            {"chunk_uid": "intermediate-representative", "stage_a_record_id": "intermediate-record"},
+        ],
+        selected=[{"chunk_uid": "final-representative", "stage_a_record_id": "final-record"}],
+        rejected=[
+            {
+                "chunk_uid": "exact-copy-with-intermediate-link",
+                "stage_b_hard_gate_reasons": ["normalized_exact_duplicate"],
+                "stage_b_decision": {"representative_chunk_uid": "intermediate-representative"},
+            }
+        ],
+        not_selected=[
+            {
+                "chunk_uid": "intermediate-representative",
+                "stage_a_record_id": "intermediate-record",
+                "stage_c_selection": {
+                    "removed_reason": "near_duplicate_representative_retained",
+                    "representative_chunk_uid": "final-representative",
+                },
+            }
+        ],
+        span_transformations=[],
+        minimum_residual_chars=40,
+        composition_audit=_composition_audit(),
+    )
+    assert chained["passed"] is True
+    assert chained["representative_linkage"]["resolved_by_representative_chain"] == [
+        {
+            "chunk_uid": "exact-copy-with-intermediate-link",
+            "reason_code": "normalized_exact_duplicate",
+            "representative_chain": ["intermediate-representative", "final-representative"],
+            "terminal_chunk_uid": "final-representative",
+        }
+    ]
+    print("[coverage-invariants] materialization representative linkage: pass")
     return 0
 
 

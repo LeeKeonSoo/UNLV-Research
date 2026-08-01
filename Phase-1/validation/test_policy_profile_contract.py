@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 CARD_CONTRACT = ROOT / "configs" / "policy_card_contract.json"
 PROFILES = ROOT / "configs" / "policy_profiles.json"
 
@@ -48,6 +51,20 @@ def test_policy_profile_contract() -> None:
     assert normal["selector"]["reads_source_tier"] is False
     assert normal["selector"]["reads_rights"] is False
     assert normal["selector"]["reads_path"] is False
+    assert normal["runtime_policy"]["stage_a"] == {
+        "policy": "text_only_v2",
+        "normalization_context_default": "preserve",
+    }
+    assert normal["runtime_policy"]["stage_b"]["deduplicate_stage_a_text_exactly"] is True
+    assert normal["runtime_policy"]["stage_c_selection"]["near_duplicate_compaction"]["candidate_enabled"] is True
+    assert normal["runtime_policy"]["stage_c_selection"]["structural_scaffold_compaction"]["enabled"] is True
+    assert normal["runtime_policy"]["stage_c_selection"]["structural_artifact_rules"] == {
+        "explicit_generated_artifact": True,
+        "license_comment_only_chunk": True,
+        "empty_html_shell": True,
+        "web_chrome_only_chunk": True,
+    }
+    assert normal["runtime_policy"]["coverage"]["enforce_materialization_invariants"] is True
 
     hard = by_id["hard_structural_v1"]
     assert hard["status"] == "development_only_pending_n4_ablation"
@@ -81,6 +98,23 @@ def test_policy_profile_contract() -> None:
     assert quality_candidate["inherits_profile"] == "normal_structural_v1"
     assert quality_candidate["selector"]["kind"] == "development_only_quality_retention_evidence"
     assert quality_candidate["selector"]["reads_benchmark_outcomes"] is False
+
+    from run_curation import resolve_curation_mode, validate_run_policy_overrides
+
+    resolved = resolve_curation_mode("normal")
+    assert resolved["profile_id"] == "normal_structural_v1"
+    assert len(resolved["effective_policy_sha256"]) == 64
+    assert resolved["effective_policy"] == normal["runtime_policy"]
+    validate_run_policy_overrides({}, resolved["effective_policy"])
+    try:
+        validate_run_policy_overrides(
+            {"stage_c_selection": {"near_duplicate_compaction": {"candidate_enabled": True}}},
+            resolved["effective_policy"],
+        )
+    except RuntimeError as error:
+        assert "immutable profile" in str(error)
+    else:
+        raise AssertionError("A run contract must not override an immutable user-facing profile.")
 
 
 if __name__ == "__main__":

@@ -44,7 +44,7 @@
     {
       "id": "chunk_integrity_hard_gate",
       "core": "validity",
-      "expected": "reject_too_short_chunks",
+      "expected": "reject_only_empty_or_corrupted_chunk_results_and_retain_short_nonempty_chunks",
       "policy_ids": [
         "stage_b_invalid_chunk"
       ]

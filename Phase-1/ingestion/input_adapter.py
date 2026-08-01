@@ -12,9 +12,18 @@ def _mapping(value: Any) -> JsonMap:
     return value if isinstance(value, dict) else {}
 
 
-def _text(raw: JsonMap, text_fields: Iterable[str]) -> str:
-    values = [str(raw[field]).strip() for field in text_fields if raw.get(field)]
-    return "\n\n".join(values)
+def _text(raw: JsonMap, text_fields: Iterable[str]) -> tuple[Any, str | None]:
+    populated = [
+        (field, raw[field])
+        for field in text_fields
+        if field in raw and raw[field] is not None and raw[field] != ""
+    ]
+    if len(populated) > 1:
+        names = ", ".join(field for field, _ in populated)
+        raise RuntimeError(f"Input record must populate exactly one declared text field; found: {names}")
+    if not populated:
+        return "", None
+    return populated[0][1], populated[0][0]
 
 
 def _value(raw: JsonMap, nested: JsonMap, defaults: JsonMap, field: str) -> Any:
@@ -63,9 +72,16 @@ def adapt_raw_record(raw: JsonMap, defaults: JsonMap, text_fields: Iterable[str]
     default_partition = _mapping(defaults.get("partition"))
     language = {**_mapping(defaults.get("language")), **_mapping(raw.get("language"))}
     artifact_context = _artifact_context(raw, defaults)
+    text, selected_text_field = _text(raw, text_fields)
+    pii_context = raw.get("pii_context") or defaults.get("pii_context") or "general"
+    normalization_context = (
+        raw.get("normalization_context")
+        or defaults.get("normalization_context")
+        or "preserve"
+    )
     return {
         "record_id": str(raw.get("record_id") or raw.get("id") or raw.get("uid") or f"candidate-{index:06d}"),
-        "text": _text(raw, text_fields),
+        "text": text,
         "provenance": {
             "source_name": _value(raw, provenance, provenance_defaults, "source_name"),
             "source_uri": _value(raw, provenance, provenance_defaults, "source_uri"),
@@ -74,7 +90,9 @@ def adapt_raw_record(raw: JsonMap, defaults: JsonMap, text_fields: Iterable[str]
         "language": language or {"code": "und", "confidence": None},
         "artifact_context": artifact_context or None,
         "rights": _rights(raw_rights, default_rights),
-        "pii_context": defaults.get("pii_context") or raw.get("pii_context") or "general",
+        "pii_context": pii_context,
+        "normalization_context": normalization_context,
+        "input_adapter": {"selected_text_field": selected_text_field},
         "min_text_chars": raw.get("min_text_chars") or defaults.get("min_text_chars"),
         "partition": {**default_partition, **raw_partition} or None,
     }

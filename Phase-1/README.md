@@ -10,13 +10,17 @@ external evaluation protocol, not selector inputs.
 Read these files in order:
 
 1. `docs/framework_consistency_baseline.md` records observed behavior, known
-   inconsistencies, and the frozen redesign order.
-2. `HANDOFF.md` gives the current repository state and verification commands.
-3. `docs/current_curation_framework.md` preserves detailed design context.
+   inconsistencies, and their implementation-resolution status.
+2. `docs/quality_coverage_formal_definition.md` defines the scientific target
+   and runtime authority of Quality and Coverage.
+3. `HANDOFF.md` gives the current repository state and verification commands.
+4. `docs/current_curation_framework.md` preserves detailed design context.
 
-When these documents disagree, the consistency baseline wins. Candidate
-designs, development reports, and historical experiments do not become active
-runtime policy merely because their files exist.
+When status documents disagree, the consistency baseline wins. Quality and
+Coverage semantics are governed by their formal definition together with the
+executable curation contract. Candidate designs, development reports, and
+historical experiments do not become active runtime policy merely because
+their files exist.
 
 ## Research Boundary
 
@@ -49,12 +53,13 @@ unpromoted candidate modules together. This is a known organization debt, not
 evidence that every module is active. Physical relocation is deferred because
 it changes imports and the active-surface test contract.
 
-## Current Freeze
+## Current Policy State
 
-As of this baseline, repository organization and documentation may change, but
-runtime policy, thresholds, scoring formulas, and selection behavior are frozen
-until the user explicitly requests implementation. Do not run new training or
-claim-producing experiments from this cleanup commit.
+Normal now resolves to one immutable complete policy. Run contracts may supply
+input paths, chunk size, residual-transform constraints, and output paths, but
+cannot override Stage-A/B/C policy switches. Hard remains development or
+confirmatory only. Historical contracts with run-local switches are marked
+incompatible with the current runtime rather than silently replayed.
 
 ## Verification
 
@@ -71,5 +76,5 @@ conda run -n research python validation\test_core_behavior_audit_v3.py
 conda run -n research python validation\test_source_contract.py
 ```
 
-Passing these checks confirms the repository's existing contracts. It does not
-close the semantic and lifecycle gaps listed in the consistency baseline.
+Passing these checks confirms executable contracts and fixtures. It does not
+establish universal Quality measurement or downstream effectiveness.

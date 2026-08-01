@@ -21,7 +21,7 @@ def test_quality_matrix_isolates_active_rules_and_keeps_web_candidate_inert() ->
         {"chunk_uid": "urls", "stage_a_record_id": "urls", "text": "https://a.example\nhttps://b.example\nhttps://c.example\nhttps://d.example\nhttps://e.example"},
     ]
 
-    report = run_quality_matrix(rows, minimum_chunk_chars=40, token_counter=lambda text: len(text.split()))
+    report = run_quality_matrix(rows, minimum_residual_chars=40, token_counter=lambda text: len(text.split()))
 
     assert set(report["arms"]) == {
         "baseline",

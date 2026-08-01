@@ -4,11 +4,17 @@
   "authoritative_policy_definition": "configs/policy_cards.json",
   "activation_states": [
     "candidate",
-    "active_structural",
+    "runtime_executable",
     "development_validated",
     "confirmatory_validated",
+    "production_validated",
     "retired"
   ],
+  "lifecycle_dimensions": {
+    "execution_state": "activation_state records whether code can execute the declared policy",
+    "profile_enablement": "runtime_profile_authorization.enabled_policy_ids records whether a profile invokes it",
+    "evidence_state": "the linked policy card empirical_status records validation evidence independently from execution"
+  },
   "default_promotion_requirements": [
     "structural_fixture_passed",
     "reason_code_audit_complete",
@@ -18,7 +24,7 @@
   "runtime_profile_authorization": {
     "normal_structural_v1": {
       "stage_a_policy": "text_only_v2",
-      "policy_ids": [
+      "authorized_policy_ids": [
         "stage_a_normalized_text_integrity",
         "stage_a_bom_normalization",
         "stage_b_invalid_chunk",
@@ -30,16 +36,29 @@
         "stage_c_empty_html_shell",
         "stage_c_web_chrome_only_chunk"
       ],
+      "enabled_policy_ids": [
+        "stage_a_normalized_text_integrity",
+        "stage_a_bom_normalization",
+        "stage_b_invalid_chunk",
+        "stage_b_exact_duplicate",
+        "stage_c_symmetric_near_duplicate",
+        "stage_c_explicit_generated_artifact",
+        "stage_c_license_comment_only",
+        "stage_c_structural_scaffold",
+        "stage_c_empty_html_shell",
+        "stage_c_web_chrome_only_chunk",
+        "stage_c_coverage_guard"
+      ],
       "excluded_policy_ids": [
         "stage_a_provenance_contract",
         "stage_a_risk_quarantine",
         "stage_a_b_validity_recovery_candidate",
         "stage_c_route_conditioned_quality_candidate",
-        "stage_c_coverage_guard",
         "stage_c_declared_dependency_copy_candidate",
         "stage_c_explicit_error_navigation_only_candidate",
         "stage_c_url_directory_only_candidate"
-      ]
+      ],
+      "authorized_but_disabled_policy_ids": []
     }
   },
   "core_decision_contracts": {
@@ -345,7 +364,7 @@
       "core": "validity",
       "stage": "Stage A",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "missing_provenance_source_name",
         "missing_provenance_source_uri",
@@ -377,7 +396,7 @@
       "core": "validity",
       "stage": "Stage A",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "pii_detected",
         "secret_detected",
@@ -409,7 +428,7 @@
       "core": "validity",
       "stage": "Stage A",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "payload_absence",
         "text_contract_violation",
@@ -419,7 +438,7 @@
       "required_metadata": [],
       "fixture": "validation/test_candidate_processing.py",
       "false_positive_fixture": "validation/fixtures/policy_fixture_contract_v1.json",
-      "case_matrix_scenario": "closed_validity_failures",
+      "case_matrix_scenario": "normalized_text_integrity_quarantine",
       "coverage_impact_validation": "not_applicable_quarantine_only",
       "runtime_implementation": [
         "ingestion/candidate_processing.py"
@@ -438,7 +457,7 @@
       "core": "validity",
       "stage": "Stage A",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [],
       "required_metadata": [
         "pii_context=repository_code"
@@ -464,14 +483,14 @@
       "core": "validity",
       "stage": "Stage B",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "invalid_chunk_result"
       ],
       "required_metadata": [],
       "fixture": "validation/test_curation_runtime.py",
       "false_positive_fixture": "validation/fixtures/policy_fixture_contract_v1.json",
-      "case_matrix_scenario": "invalid_chunk_result",
+      "case_matrix_scenario": "chunk_integrity_hard_gate",
       "coverage_impact_validation": "not_applicable_invalid_chunk_rejection",
       "runtime_implementation": [
         "run_curation.py"
@@ -490,7 +509,7 @@
       "core": "redundancy",
       "stage": "Stage B",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "normalized_exact_duplicate"
       ],
@@ -516,7 +535,7 @@
       "core": "redundancy",
       "stage": "Stage C",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "near_duplicate_representative_retained"
       ],
@@ -542,7 +561,7 @@
       "core": "quality",
       "stage": "Stage C",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "explicit_generated_artifact"
       ],
@@ -568,7 +587,7 @@
       "core": "quality",
       "stage": "Stage C",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "license_comment_only_chunk"
       ],
@@ -591,12 +610,12 @@
     },
     {
       "id": "stage_c_structural_scaffold",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "policy_card_id": "stage_c_structural_scaffold",
       "core": "redundancy",
       "stage": "Stage C",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "structural_scaffold_representative_retained"
       ],
@@ -604,7 +623,7 @@
       "fixture": "validation/test_stage_c_selection.py",
       "false_positive_fixture": "validation/fixtures/policy_fixture_contract_v1.json",
       "case_matrix_scenario": "structural_scaffold_family",
-      "coverage_impact_validation": "one_stable_representative_and_substantive_implementation_negative_fixture",
+      "coverage_impact_validation": "one_stable_representative_with_comment_case_indentation_and_substantive_implementation_negative_fixtures",
       "runtime_implementation": [
         "stage_c_selection.py"
       ],
@@ -617,17 +636,20 @@
     },
     {
       "id": "stage_c_coverage_guard",
-      "version": "2.0.0",
+      "version": "3.0.0",
       "policy_card_id": "stage_c_coverage_guard",
       "core": "coverage",
       "stage": "Stage C",
-      "status": "diagnostic",
+      "status": "active",
+      "activation_state": "runtime_executable",
       "reason_codes": [],
       "required_metadata": [],
       "fixture": "validation/test_coverage_invariants.py",
+      "false_positive_fixture": "validation/fixtures/policy_fixture_contract_v1.json",
+      "case_matrix_scenario": "clean_corpus_retains",
       "coverage_impact_validation": "materialization_coverage_impact_audit",
       "runtime_implementation": [
-        "stage_c_selection.py"
+        "run_curation.py"
       ],
       "promotion_requirements": [
         "structural_fixture_passed",
@@ -635,8 +657,8 @@
         "development_ablation_pre_registered",
         "confirmatory_evaluation_without_runtime_feedback"
       ],
-      "scope": "audit-only representative-linkage and zero-survivor invariant; cannot retain metadata strata or modify selection",
-      "runtime_authorization": "audit_only_cannot_select_or_remove"
+      "scope": "materialization representative-linkage and zero-survivor invariant; may abort invalid output but cannot rank, select, remove, restore by quota, or target metadata strata",
+      "runtime_authorization": "veto_invalid_materialization_only_cannot_select_or_remove"
     },
     {
       "id": "python_source_syntax",
@@ -720,7 +742,7 @@
       "core": "quality",
       "stage": "Stage C",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "empty_html_shell"
       ],
@@ -850,7 +872,7 @@
       "core": "quality",
       "stage": "Stage C",
       "status": "active",
-      "activation_state": "active_structural",
+      "activation_state": "runtime_executable",
       "reason_codes": [
         "explicit_web_chrome_only_chunk"
       ],

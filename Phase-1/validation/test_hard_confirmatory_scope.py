@@ -13,11 +13,11 @@ from run_curation import resolve_curation_mode
 
 
 def main() -> int:
-    assert resolve_curation_mode("hard", execution_scope="confirmatory") == {
-        "mode": "hard",
-        "profile_id": "hard_structural_v1",
-        "authorization": "confirmatory_only_pending_external_decision",
-    }
+    mode = resolve_curation_mode("hard", execution_scope="confirmatory")
+    assert mode["mode"] == "hard"
+    assert mode["profile_id"] == "hard_structural_v1"
+    assert mode["authorization"] == "confirmatory_only_pending_external_decision"
+    assert mode["effective_policy_sha256"]
     try:
         resolve_curation_mode("hard", execution_scope="production")
     except RuntimeError:

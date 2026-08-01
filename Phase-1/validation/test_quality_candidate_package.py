@@ -25,7 +25,7 @@ def test_web_control_candidate_has_complete_non_runtime_package() -> None:
     assert registry_policy["fixture"] == "validation/test_general_web_span_compaction.py"
     assert registry_policy["coverage_impact_validation"] == "residual_payload_required_before_promotion"
     assert card["reason_codes"] == ["web_control_span_removed", "url_directory_span_removed"]
-    assert card["allowed_inputs"] == ["chunk text", "declared Stage-B minimum_chunk_chars"]
+    assert card["allowed_inputs"] == ["chunk text", "declared Stage-B minimum_residual_chars"]
     assert "dialogue-like speaker turns remain" in card["negative_conditions"]
     assert "benchmark_outcomes" in card["forbidden_inputs"]
 

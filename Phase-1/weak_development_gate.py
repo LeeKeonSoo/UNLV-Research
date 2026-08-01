@@ -5,7 +5,10 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any
 
-from run_curation import materialize
+from composition_audit import build_composition_audit
+from reason_code_audit import build_reason_code_impact_audit
+from run_curation import _coverage_impact_audit, materialize, resolve_curation_mode
+from stage_c_selection import select_chunks
 
 
 JsonMap = dict[str, Any]
@@ -25,6 +28,12 @@ def _write_json(path: Path, value: JsonMap) -> None:
 
 def _write_jsonl(path: Path, records: list[JsonMap]) -> None:
     path.write_text("".join(json.dumps(record, ensure_ascii=True) + "\n" for record in records), encoding="utf-8")
+
+
+def _read_jsonl(path: Path) -> list[JsonMap]:
+    if not path.exists():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
 def _reason_codes(report: JsonMap) -> list[str]:
@@ -49,17 +58,63 @@ def _run_arm(work_dir: Path, scenario_id: str, records: list[JsonMap], artifact_
             "status": "frozen_before_stage_a_b_c_materialization",
             "input": {"candidate_files": [str(input_path)], "text_fields": ["text"], "defaults": {}},
             "output_dir": str(output_dir),
-            "stage_a": {"policy": "text_only_v2"},
-            "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
-            "stage_c_selection": {
-                "near_duplicate_compaction": {"candidate_enabled": False},
-                "structural_artifact_rules": artifact_rules,
+            "curation_mode": "normal",
+            "stage_b": {"max_chunk_chars": 6000},
+            "stage_c": {
+                "minimum_residual_chars": 40,
+                "no_binding_budget_action": "selection_without_binding_budget",
             },
-            "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
             "claim_boundary": "development structural fixture only",
         },
     )
-    return materialize(config_path)
+    baseline = materialize(config_path)
+    if not artifact_rules:
+        return baseline
+
+    # Candidate rules operate only on the immutable Normal Stage-B output. They
+    # never become run-contract overrides or mutate the public runtime profile.
+    passed = _read_jsonl(output_dir / "stage_b_pass_chunks.jsonl")
+    rejected = _read_jsonl(output_dir / "stage_b_rejected_chunks.jsonl")
+    quarantined = _read_jsonl(output_dir / "stage_a_quarantined_candidates.jsonl")
+    selection = json.loads(json.dumps(resolve_curation_mode("normal")["effective_policy"]["stage_c_selection"]))
+    selection["structural_artifact_rules"] = dict(artifact_rules)
+    selected, not_selected, _ = select_chunks(passed, selection)
+    composition = build_composition_audit(
+        {
+            "raw_input": passed,
+            "stage_b_pass": passed,
+            "stage_c_curated": selected,
+        }
+    )
+    coverage = _coverage_impact_audit(
+        passed=passed,
+        selected=selected,
+        rejected=rejected,
+        not_selected=not_selected,
+        span_transformations=[],
+        minimum_residual_chars=40,
+        composition_audit=composition,
+    )
+    if not coverage["passed"]:
+        raise RuntimeError("Development candidate violated a Coverage materialization invariant.")
+    return {
+        "summary": {
+            "stage_c_curated_chunks": len(selected),
+            "stage_c_curated_whitespace_token_proxy": sum(
+                int(row.get("token_proxy") or len(str(row.get("text") or "").split()))
+                for row in selected
+            ),
+        },
+        "coverage_impact_audit": coverage,
+        "reason_code_impact_audit": build_reason_code_impact_audit(
+            quarantined, rejected, not_selected
+        ),
+        "candidate_boundary": {
+            "execution_scope": "development_only",
+            "public_profile_mutated": False,
+            "external_evaluation_read": False,
+        },
+    }
 
 
 def _scenario_result(work_dir: Path, scenario: JsonMap) -> JsonMap:
@@ -71,8 +126,8 @@ def _scenario_result(work_dir: Path, scenario: JsonMap) -> JsonMap:
     all_rule_reasons = _reason_codes(all_rules)
     expected_reasons = {str(reason) for reason in scenario.get("expected_all_rule_reason_codes", [])}
     clean_retention_required = bool(scenario.get("clean_retention_required", False))
-    baseline_tokens = int(baseline["summary"]["stage_c_curated_token_proxy"])
-    all_rules_tokens = int(all_rules["summary"]["stage_c_curated_token_proxy"])
+    baseline_tokens = int(baseline["summary"]["stage_c_curated_whitespace_token_proxy"])
+    all_rules_tokens = int(all_rules["summary"]["stage_c_curated_whitespace_token_proxy"])
     return {
         "id": scenario_id,
         "domain": str(scenario["domain"]),

@@ -47,6 +47,7 @@ def main() -> int:
             "language": {"code": "python", "confidence": 1.0},
             "rights": {"status": "allowed", "license": "fixture-only"},
             "pii_context": "repository_code",
+            "normalization_context": "repository_code",
         }
     )
     assert repository_code["text"] == "print('legacy-compatible source')\n", repository_code
@@ -98,7 +99,64 @@ def main() -> int:
     )
     preserved_repository_context = process_candidate(raw_repository_context, stage_a_policy="text_only_v2")
     assert raw_repository_context["pii_context"] == "repository_code", raw_repository_context
-    assert preserved_repository_context["text"] == "def stable_value():\n    return 1", preserved_repository_context
+    assert raw_repository_context["normalization_context"] == "preserve", raw_repository_context
+    assert preserved_repository_context["text"] == "def stable_value():\n    return 1\n", preserved_repository_context
+
+    raw_overrides_default_context = adapt_raw_record(
+        {
+            "id": "raw-context-wins",
+            "text": "def stable_value():\n\treturn 1\n",
+            "pii_context": "repository_code",
+        },
+        {"pii_context": "general"},
+        ["text"],
+        0,
+    )
+    assert raw_overrides_default_context["pii_context"] == "repository_code"
+    assert raw_overrides_default_context["normalization_context"] == "preserve"
+
+    pii_context_does_not_select_normalization = adapt_raw_record(
+        {
+            "id": "separate-contexts",
+            "text": "①\tvalue\n\n",
+            "pii_context": "general",
+        },
+        {},
+        ["text"],
+        0,
+    )
+    context_separated = process_candidate(
+        pii_context_does_not_select_normalization,
+        stage_a_policy="text_only_v2",
+    )
+    assert context_separated["text"] == "①\tvalue\n\n"
+    assert context_separated["normalization_context"] == "preserve"
+
+    undeclared_context = adapt_raw_record(
+        {
+            "id": "preserve-by-default",
+            "text": "def stable_value():\n\treturn ①\n\n\n",
+        },
+        {},
+        ["text"],
+        0,
+    )
+    preserved_by_default = process_candidate(undeclared_context, stage_a_policy="text_only_v2")
+    assert undeclared_context["normalization_context"] == "preserve"
+    assert preserved_by_default["text"] == "def stable_value():\n\treturn ①\n\n\n"
+    assert preserved_by_default["transformations"] == []
+
+    try:
+        adapt_raw_record(
+            {"id": "ambiguous", "text": "first", "body": "second"},
+            {},
+            ["text", "body"],
+            0,
+        )
+    except RuntimeError as error:
+        assert "exactly one" in str(error)
+    else:
+        raise AssertionError("Multiple populated text fields must be rejected, not concatenated.")
 
     pii = _candidate("pii", "Contact the account owner at person@example.com before release.")
     assert pii["release_eligibility"]["eligible"] is False, pii

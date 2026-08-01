@@ -70,15 +70,17 @@ def _is_structural_scaffold(text: str) -> bool:
 
 
 def _structural_scaffold_signature(text: str) -> str | None:
-    """Return an exact normalized scaffold-family signature, never a broad category label."""
+    """Return a narrow scaffold signature without discarding payload-bearing text."""
     if not _is_structural_scaffold(text):
         return None
-    code_lines = [
-        " ".join(line.strip().split())
-        for line in text.splitlines()
-        if line.strip() and not line.lstrip().startswith(("#", "//", "/*", "*"))
-    ]
-    normalized = "\n".join(code_lines).casefold()
+    # Comments, indentation, and case may carry meaning. Only trailing
+    # whitespace and blank edge lines are ignored for this family signature.
+    lines = [line.rstrip() for line in text.splitlines()]
+    while lines and not lines[0]:
+        lines.pop(0)
+    while lines and not lines[-1]:
+        lines.pop()
+    normalized = "\n".join(lines)
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
@@ -181,6 +183,7 @@ def select_chunks(chunks: Iterable[JsonMap], config: JsonMap) -> tuple[list[Json
             "Stage C supports only declared reason-coded duplicate and scaffold rules."
         )
     duplicate_settings = dict(selection_settings.get("near_duplicate_compaction") or {})
+    scaffold_settings = dict(selection_settings.get("structural_scaffold_compaction") or {})
     artifact_settings = dict(selection_settings.get("structural_artifact_rules") or {})
     if "coverage_guard" in selection_settings:
         raise RuntimeError(
@@ -195,6 +198,7 @@ def select_chunks(chunks: Iterable[JsonMap], config: JsonMap) -> tuple[list[Json
     min_tokens = int(duplicate_settings.get("minimum_lexical_tokens", 40))
     threshold = float(duplicate_settings.get("symmetric_overlap_threshold", 0.95))
     near_duplicate_enabled = bool(duplicate_settings.get("candidate_enabled", False))
+    structural_scaffold_enabled = bool(scaffold_settings.get("enabled", False))
     if shingle_size < 2 or min_tokens < shingle_size or not 0.0 < threshold <= 1.0:
         raise RuntimeError("Invalid near-duplicate compaction contract")
     selected: list[JsonMap] = []
@@ -237,7 +241,9 @@ def select_chunks(chunks: Iterable[JsonMap], config: JsonMap) -> tuple[list[Json
         )
         row["stage_c_selection"]["duplicate_representative_chunk_uid"] = representative_ids[representative_index]
         removed.append(row)
-    selected, coverage_representatives = _compact_structural_scaffolds(selected, removed)
+    coverage_representatives = 0
+    if structural_scaffold_enabled:
+        selected, coverage_representatives = _compact_structural_scaffolds(selected, removed)
     selected, quality_retention_audit = _apply_quality_retention(selected, removed, artifact_settings)
     quality_reason_counts = quality_retention_audit["reason_code_counts"]
     near_duplicate_removed = sum(
@@ -264,6 +270,7 @@ def select_chunks(chunks: Iterable[JsonMap], config: JsonMap) -> tuple[list[Json
             "symmetric_overlap_threshold": threshold,
         },
         "near_duplicate_removed_chunks": near_duplicate_removed,
+        "structural_scaffold_compaction": {"enabled": structural_scaffold_enabled},
         "structural_scaffold_removed_chunks": scaffold_removed,
         "explicit_generated_artifact_removed_chunks": quality_reason_counts.get(STAGE_C_GENERATED_ARTIFACT_REASON, 0),
         "license_comment_only_removed_chunks": quality_reason_counts.get(STAGE_C_LICENSE_COMMENT_ONLY_REASON, 0),

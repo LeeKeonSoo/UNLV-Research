@@ -5,13 +5,14 @@
 The sole current-status authority is
 `docs/framework_consistency_baseline.md`. Read it before changing policy or
 running new experiments. `README.md` is the repository overview and
-`docs/current_curation_framework.md` is detailed design context.
+`docs/current_curation_framework.md` is detailed design context. Quality and
+Coverage semantics are fixed in `docs/quality_coverage_formal_definition.md`.
 
-## Cleanup Baseline
+## Current Alignment
 
-This checkpoint is an organization and consistency freeze. It does not alter
-runtime selection behavior. The user explicitly requested that no policy or
-implementation work continue until separately authorized.
+The cleanup baseline was followed by an authorized contract-alignment pass.
+`normal` now resolves to a complete immutable policy; incompatible run-local
+policy overrides fail closed.
 
 Current repository facts:
 
@@ -21,28 +22,30 @@ Current repository facts:
 - Runtime must not read Utility, benchmark results, source reputation, domain
   quotas, or a forced token budget.
 - The public Cores remain Validity, Quality, Redundancy, and Coverage.
-- Current observed selection is narrower than the intended four-Core design.
-  Quality has no promoted positive provider and Coverage is audit-only.
+- Quality has no promoted positive provider. Normal now enables the four
+  closed-set non-payload rejection rules for explicit generated-and-do-not-edit
+  artifacts, license-comment-only chunks, empty HTML shells, and cookie-control
+  chrome-only chunks; all other cases abstain and retain.
+- Coverage is a veto-only materialization invariant. It cannot rank, delete,
+  restore by quota, or target a composition, but unexplained representative or
+  residual-payload loss aborts output.
 - Candidate and historical files must not be described as active policy.
 
-## Known Blocking Inconsistencies
+## Resolved Consistency Defects
 
-The baseline tracks the full list as `C-01` through `C-12`. The highest-impact
-items are:
+The baseline tracks `C-01` through `C-14`. The implementation pass resolved:
 
-1. The Normal profile ID does not completely determine runtime behavior; run
-   configuration booleans still control rules.
-2. Missing `pii_context` can select general normalization for code-like text,
-   risking whitespace-sensitive corruption.
-3. Lifecycle labels can say `active` even when runtime authority is absent.
-4. The four-Core public model is not fully represented by active behavior.
-5. Exact-duplicate representative choice depends on input order.
-6. Audit token proxies and exact tokenizer counts are not consistently
-   separated in reports.
-7. The Core rule inventory test and the frozen seven-benchmark contract hash
-   are stale relative to their current artifacts (`C-13` and `C-14`).
+1. immutable Normal/Hard policy manifests and override rejection;
+2. byte-preserving default ingestion and ambiguous text-field rejection;
+3. explicit executable/profile/empirical lifecycle dimensions;
+4. deterministic exact-duplicate representative selection;
+5. separate whitespace-proxy and exact-tokenizer measurement contracts;
+6. distinct Quality rejection, positive keep, and abstain reporting;
+7. Coverage materialization authority and executable fixtures;
+8. stale inventory and frozen-manifest hashes.
 
-These are recorded defects, not tasks completed by this cleanup.
+The unresolved scientific work is Quality estimator validation and broader
+Coverage taxonomy/threshold validation, not a hidden runtime inconsistency.
 
 ## File Authority
 
@@ -77,10 +80,10 @@ Also run `git diff --check`, a secret scan, and a staged large-file scan before
 committing. Generated datasets, model caches, benchmark outputs, rendered
 papers, and local work directories must remain ignored.
 
-At this checkpoint, the eight commands above pass. A broader direct-run sweep
-passes 116 of 118 validation files; the two failures are deliberately left
-unfixed and documented as `C-13` and `C-14`. `pytest` is not installed in the
-`research` environment.
+`pytest` is not installed in the `research` environment, so validation files
+are run directly with the repository on `PYTHONPATH`. The 2026-08-01 alignment
+pass completed 120/120 direct validation files, Python compileall, and 131/131
+current config/protocol JSON parses with GPU and network use disabled.
 
 ## Next Authorized Work
 

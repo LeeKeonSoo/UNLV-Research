@@ -35,10 +35,11 @@ def _run_arm(work_dir: Path, scenario: JsonMap, mode: str) -> JsonMap:
         "curation_mode": mode,
         "input": {"candidate_files": [str(input_path)], "text_fields": ["text"], "defaults": {}},
         "output_dir": str(output_dir),
-        "stage_a": {"policy": "text_only_v2"},
-        "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
-        "stage_c_selection": {"near_duplicate_compaction": {"candidate_enabled": False}},
-        "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
+        "stage_b": {"max_chunk_chars": 6000},
+        "stage_c": {
+            "minimum_residual_chars": 40,
+            "no_binding_budget_action": "selection_without_binding_budget",
+        },
         "claim_boundary": "development structural fixture only",
     }
     if mode == "hard":
@@ -59,8 +60,8 @@ def _scenario_result(work_dir: Path, scenario: JsonMap) -> JsonMap:
     hard = _run_arm(work_dir, scenario, "hard")
     expected_reasons = sorted(str(reason) for reason in scenario["expected_hard_reason_codes"])
     hard_reasons = _span_reasons(hard)
-    normal_tokens = int(normal["summary"]["stage_c_curated_token_proxy"])
-    hard_tokens = int(hard["summary"]["stage_c_curated_token_proxy"])
+    normal_tokens = int(normal["summary"]["stage_c_curated_whitespace_token_proxy"])
+    hard_tokens = int(hard["summary"]["stage_c_curated_whitespace_token_proxy"])
     clean_retention_required = bool(scenario["clean_retention_required"])
     clean_retention_passed = (
         normal["summary"]["stage_c_curated_chunks"] == hard["summary"]["stage_c_curated_chunks"]

@@ -5,7 +5,7 @@
   "input": {"stage_b_pass_path": "D:/UNLV-Research/hf_validation_corpora_v1/curated/github_code_normal/stage_b_pass_chunks.jsonl"},
   "output_dir": "D:/UNLV-Research/hf_validation_corpora_v1/candidates_baseline_fixed_v2/github_code",
   "tokenizer": {"pretrained_model_name_or_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539"},
-  "stage_b_minimum_chunk_chars": 40,
+  "stage_b_minimum_residual_chars": 40,
   "stage_c_selection": {"near_duplicate_compaction": {"candidate_enabled": false, "shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95}, "structural_artifact_rules": {"explicit_generated_artifact": true, "license_comment_only_chunk": true, "empty_html_shell": true, "web_chrome_only_chunk": true}},
   "forbidden_selector_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "source_identity", "source_tier", "domain", "composition", "target_retention_fraction"],
   "claim_boundary": "Development-only candidate evidence; cannot mutate the active runtime."

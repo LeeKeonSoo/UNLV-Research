@@ -9,7 +9,7 @@
   "tokenizer": {
     "pretrained_model_name_or_path": "D:/path/to/frozen/tokenizer"
   },
-  "stage_b_minimum_chunk_chars": 120,
+  "stage_b_minimum_residual_chars": 120,
   "stage_c_selection": {
     "near_duplicate_compaction": {
       "candidate_enabled": false,

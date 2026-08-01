@@ -24,7 +24,7 @@ def test_repeated_label_block_candidate_has_complete_non_runtime_package() -> No
     assert registry_policy["fixture"] == "validation/test_repeated_line_block_compaction.py"
     assert registry_policy["coverage_impact_validation"] == "first_occurrence_and_residual_payload_required"
     assert card["reason_codes"] == ["repeated_label_block_removed"]
-    assert card["allowed_inputs"] == ["chunk text", "declared Stage-B minimum_chunk_chars"]
+    assert card["allowed_inputs"] == ["chunk text", "declared Stage-B minimum_residual_chars"]
     assert card["empirical_status"] == "retired_zero_observed_spans_in_development"
     assert "benchmark_outcomes" in card["forbidden_inputs"]
 

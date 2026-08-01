@@ -27,19 +27,36 @@ def main() -> int:
         },
         {
             "chunk_uid": "z-scaffold",
-            "text": "# equivalent package export scaffold\nfrom package.alpha import Alpha\nfrom package.beta import Beta\nfrom package.gamma import Gamma\nfrom package.delta import Delta\nfrom package.epsilon import Epsilon\n__all__ = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon']",
+            "text": "# package exports   \nfrom package.alpha import Alpha\nfrom package.beta import Beta\nfrom package.gamma import Gamma\nfrom package.delta import Delta\nfrom package.epsilon import Epsilon\n__all__ = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon']   ",
+        },
+        {
+            "chunk_uid": "comment-distinct-scaffold",
+            "text": "# this comment documents a distinct compatibility contract\nfrom package.alpha import Alpha\nfrom package.beta import Beta\nfrom package.gamma import Gamma\nfrom package.delta import Delta\nfrom package.epsilon import Epsilon\n__all__ = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon']",
         },
         {
             "chunk_uid": "distinct-scaffold",
             "text": "# different module exports\nfrom module.orange import Orange\nfrom module.purple import Purple\nfrom module.silver import Silver\nfrom module.green import Green\nfrom module.yellow import Yellow\n__all__ = ['Orange', 'Purple', 'Silver', 'Green', 'Yellow']",
         },
     ]
-    selected, not_selected, audit = select_chunks(chunks, {})
+    selected, not_selected, audit = select_chunks(
+        chunks,
+        {
+            "near_duplicate_compaction": {
+                "candidate_enabled": False,
+                "shingle_size": 5,
+                "minimum_lexical_tokens": 40,
+                "symmetric_overlap_threshold": 0.95,
+            },
+            "structural_scaffold_compaction": {"enabled": True},
+            "structural_artifact_rules": {},
+        },
+    )
     assert {chunk["chunk_uid"] for chunk in selected} == {
         "a-representative",
         "z-near-copy",
         "shared-phrase-only",
         "a-scaffold",
+        "comment-distinct-scaffold",
         "distinct-scaffold",
     }
     assert {chunk["chunk_uid"] for chunk in not_selected} == {"z-scaffold"}
@@ -59,6 +76,11 @@ def main() -> int:
     assert next(chunk for chunk in selected if chunk["chunk_uid"] == "z-near-copy")["stage_c_selection"][
         "accepted_by"
     ] == "no_symmetric_near_duplicate_match"
+
+    implicit_selected, implicit_removed, implicit_audit = select_chunks(chunks, {})
+    assert len(implicit_selected) == len(chunks)
+    assert implicit_removed == []
+    assert implicit_audit["structural_scaffold_compaction"]["enabled"] is False
 
     generated_chunks = [
         {

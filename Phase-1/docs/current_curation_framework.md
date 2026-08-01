@@ -16,7 +16,7 @@ downstream model evaluation.
 collect candidate pool
   -> Stage A: source-agnostic text normalization and integrity handling
   -> Stage B: chunk-level hard gate
-  -> Stage C: text-only reason-coded duplicate, generated-artifact, license-comment-only, and structural-scaffold compaction, then materialization
+  -> Stage C: enabled reason-coded compaction, then Coverage-guarded materialization
 ```
 
 External training, NLL, and benchmark measurements are not part of this
@@ -40,9 +40,9 @@ score-selector template is retired and cannot run. The required fields for a ver
 in `configs/policy_card_contract.json` and instantiated in
 `configs/policy_cards.json`. `configs/core_policy_registry.json` is the
 authoritative lifecycle registry: every active rule is currently
-`active_structural`, linked to its required metadata, reason codes,
+`runtime_executable`, linked to its required metadata, reason codes,
 false-positive fixture, case-matrix scenario, coverage-impact validation, and
-promotion requirements. `active_structural` means the executable boundary is
+promotion requirements. `runtime_executable` means the executable boundary is
 tested; it does not mean the rule has downstream performance validation. The
 four canonical Core names are **Validity, Redundancy, Coverage, and Quality**.
 Historical artifact identifiers may retain older labels only in the explicit
@@ -51,9 +51,9 @@ Historical artifact identifiers may retain older labels only in the explicit
 | Core | Observable metric | Policy authority in the active implementation |
 | --- | --- | --- |
 | Validity | closed text-contract evidence | Stage A quarantines only payload absence, declared text-contract violation, unrecoverable corruption, or acquisition failure; Stage B rejects only invalid chunk results |
-| Redundancy | lossless exact digest, exact scaffold-family signature, and candidate-only near-duplicate evidence | Stage B exact-duplicate gate and Stage C stable representative retention for identical scaffold families; near-duplicate compaction is disabled in the frozen Normal/Hard protocols |
-| Quality | explicit non-payload artifact evidence and payload-preserving structural compaction | Stage C removes only declared generated-and-non-editable artifacts, self-contained license/comment chunks, complete HTML shells with no visible lexical payload, or explicit cookie-control panels with no explanatory prose; never an intrinsic score, weighted priority score, source identity, or target fraction |
-| Coverage | representative linkage, residual-payload preservation, and composition audit | Audits that a redundancy removal retains its linked representative and reports drift; it has no selection or removal authority and never enforces a target mix |
+| Redundancy | exact post-Stage-A text digest, trailing-whitespace-only scaffold-family signature, and symmetric near-duplicate evidence | Stage B removes exact duplicates. Stage C retains one stable representative for identical scaffold families and for 5-shingle families with at least 40 lexical tokens and symmetric overlap at or above 0.95 |
+| Quality | explicit non-payload evidence and separately validated positive retention evidence | Normal enables four closed-set rejection rules: explicit generated-and-do-not-edit artifacts, license-comment-only chunks, empty HTML shells, and cookie-control chrome-only chunks. It has no positive-retention provider, so all other cases abstain and retain. Quality never means an intrinsic score, weighted priority score, source identity, or target fraction |
+| Coverage | representative linkage, residual-payload preservation, and composition audit | Applies a veto-only materialization invariant: unexplained representative or residual-payload loss aborts output. It cannot rank, delete, restore by quota, or enforce a target mix |
 
 Content domain and language/script are separate audit axes. For example,
 `Math 10%` and `Code 10%` belong to content-domain composition, while a
@@ -73,8 +73,13 @@ additive. `coverage_impact_audit` verifies that each exact-duplicate or
 representative-family removal has a linked survivor in the curated pool,
 checks that a record with no Stage-C survivor has an explicit non-payload or
 representative explanation, and reports multi-rule interactions plus the
-raw-to-curated composition delta. It has no metadata-stratum selection logic:
-it can fail materialization only when one of these invariants is violated.
+raw-to-curated composition delta. It has no metadata-stratum selection logic
+or deletion authority; it can veto materialization only when one of these
+invariants is violated.
+
+The formal scientific and mathematical definitions of Quality and Coverage are
+in `docs/quality_coverage_formal_definition.md`. In particular, a mathematical
+Quality target is not treated as a currently observable runtime score.
 
 Stage C has no weighted operational threshold. It does not access Utility or
 benchmarks, and every active policy has executable negative conditions that
@@ -145,9 +150,9 @@ The frozen Hard v1 inventory is deliberately small: prefix-license header
 spans, self-contained license comment-block spans, and long exact repeated
 template spans. Each requires an explicit trigger, a useful non-trigger
 fixture, a Stage-B-valid residual, a reason code/token delta, and a
-representative or span trace. Near-duplicate threshold changes, model-relative
-proxies, source metadata rules, and parser adapters are not in the initial Hard
-surface.
+representative or span trace. Hard inherits Normal's frozen 0.95 symmetric
+near-duplicate rule; threshold sweeps, model-relative proxies, source metadata
+rules, and parser adapters are not in the runtime surface.
 
 The earlier Stage C2 proxy, Mid estimator, token-budget planner, and three-arm
 materializer remain archived candidate research. They have no user-facing mode

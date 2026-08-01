@@ -5,8 +5,10 @@ presence does not make its design runtime-active.
 
 ## Current Authority
 
-- `framework_consistency_baseline.md`: sole source of current observed status,
-  known inconsistencies, and redesign order.
+- `framework_consistency_baseline.md`: source of current observed status,
+  consistency resolutions, and verification evidence.
+- `quality_coverage_formal_definition.md`: authoritative scientific target and
+  runtime-authority definition for Quality and Coverage.
 - `current_curation_framework.md`: detailed framework description subordinate
   to the baseline.
 
@@ -18,8 +20,9 @@ presence does not make its design runtime-active.
 - `quality_rule_development_matrix_v1.md`
 - `lm_training_quality_definition.md`
 
-These describe candidate contracts, inventories, or definitions. They are not
-proof of runtime activation or downstream validity.
+These describe candidate contracts, inventories, or superseded definitions.
+They are not proof of runtime activation or downstream validity and cannot
+override `quality_coverage_formal_definition.md`.
 
 ## Development Decisions
 
