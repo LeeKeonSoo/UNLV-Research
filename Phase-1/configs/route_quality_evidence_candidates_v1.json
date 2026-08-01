@@ -1,0 +1,168 @@
+{
+  "schema_version": "route-quality-evidence-candidates-v1",
+  "profile_id": "route_quality_evidence_candidates_v1",
+  "status": "candidate_all_routes_fail_closed",
+  "runtime_activation": false,
+  "selector_inputs": ["chunk_text", "frozen_candidate_registry"],
+  "forbidden_inputs": [
+    "source_identity",
+    "source_reputation",
+    "dataset_identity",
+    "path",
+    "human_quality_label",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction",
+    "domain_quota",
+    "weighted_quality_score"
+  ],
+  "state_contract": {
+    "evidence_ready": "May declare pass or a separately calibrated named negative boundary.",
+    "blocked": "Must emit indeterminate and cannot authorize retention or removal.",
+    "unsupported": "Must emit missing and cannot authorize retention or removal."
+  },
+  "routes": {
+    "general_prose": {
+      "substantive_payload": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_general_substantive_payload",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "No provider independently validates substantive payload across source families."
+      },
+      "route_specific_evidence": {
+        "evidence_state": "blocked",
+        "outcome": "indeterminate",
+        "provider_id": "general_provider_candidates_v2",
+        "provider_version": "blocked-source-transfer-v2",
+        "artifact": "configs/general_prose_evidence_bundle_v2.json",
+        "artifact_sha256": "3fc75b0e83e223cce1a62ebe9df4319d2d45765b76cff1208c99981f1be914e4",
+        "blocking_reason": "QuRater, DCLM, and FineWeb-Edu candidates failed strict source-transfer or semantic-stress gates."
+      }
+    },
+    "code_artifact": {
+      "substantive_payload": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_code_substantive_payload",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "Parser success and semantic statements belong to Validity and cannot substitute for positive Quality evidence."
+      },
+      "route_specific_evidence": {
+        "evidence_state": "blocked",
+        "outcome": "indeterminate",
+        "provider_id": "HuggingFaceTB/stack-edu-classifier-python",
+        "provider_version": "2b36efbd7a00b5db416d7550c5ad42b561355517",
+        "artifact": "configs/stack_edu_python_development_bundle_v1.json",
+        "artifact_sha256": "a9916ed60fc41170411ea2e828ab4154783559adfd552e5d6364ec79902b2608",
+        "blocking_reason": "Python-only evidence failed pooled, per-source, and leave-one-repository-out calibration."
+      }
+    },
+    "mathematical_content": {
+      "substantive_payload": {
+        "evidence_state": "blocked",
+        "outcome": "indeterminate",
+        "provider_id": "math_substantive_payload_candidate_v3",
+        "provider_version": "blocked-source-transfer-v3",
+        "artifact": "configs/math_quality_evidence_decision_v3.json",
+        "artifact_sha256": "4c5ce3767f9b068932623363b595d02f02339e655e3f6a767d3e3fb9d9038f75",
+        "blocking_reason": "Held-out linear-algebra controls contain substantive-payload failures."
+      },
+      "route_specific_evidence": {
+        "evidence_state": "blocked",
+        "outcome": "indeterminate",
+        "provider_id": "HuggingFaceTB/finemath-classifier",
+        "provider_version": "blocked-source-transfer-v3",
+        "artifact": "configs/math_quality_evidence_decision_v3.json",
+        "artifact_sha256": "4c5ce3767f9b068932623363b595d02f02339e655e3f6a767d3e3fb9d9038f75",
+        "blocking_reason": "Held-out algorithm-solution controls contain route-specific evidence failures."
+      }
+    },
+    "technical_documentation": {
+      "substantive_payload": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_technical_documentation",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "No continued-pretraining provider bundle is registered."
+      },
+      "route_specific_evidence": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_technical_documentation",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "No continued-pretraining provider bundle is registered."
+      }
+    },
+    "conversation": {
+      "substantive_payload": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_conversation_cpt",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "Instruction-tuning pair scorers are objective-mismatched for continued pretraining."
+      },
+      "route_specific_evidence": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_conversation_cpt",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "Instruction-tuning pair scorers are objective-mismatched for continued pretraining."
+      }
+    },
+    "instruction": {
+      "substantive_payload": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_instruction_cpt",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "Available pair scorers target instruction tuning rather than continued pretraining."
+      },
+      "route_specific_evidence": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_instruction_cpt",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "Available pair scorers target instruction tuning rather than continued pretraining."
+      }
+    },
+    "table_structured_data": {
+      "substantive_payload": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_table_payload",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "No table-specific continued-pretraining payload provider is registered."
+      },
+      "route_specific_evidence": {
+        "evidence_state": "unsupported",
+        "outcome": "missing",
+        "provider_id": "none_validated_table_payload",
+        "provider_version": "unavailable-v1",
+        "artifact": "configs/positive_quality_provider_registry_v1.json",
+        "artifact_sha256": "ad2cb295d98ee393b83187822a4bee457b90ad3c6493a38ddc8ba9eba3b308ce",
+        "blocking_reason": "No table-specific continued-pretraining payload provider is registered."
+      }
+    }
+  },
+  "claim_boundary": "This manifest records candidate evidence availability and blockers. It supplies no runtime retention or removal authority."
+}

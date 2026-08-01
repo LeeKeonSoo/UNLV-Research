@@ -1,0 +1,29 @@
+{
+  "schema_version": "positive-quality-provider-manifest-v1",
+  "provider_id": "princeton-nlp/QuRater-1.3B",
+  "model_revision": "bd61c778c2f42c6e406b7bac8064290ffc183ae1",
+  "model_artifact": "https://huggingface.co/princeton-nlp/QuRater-1.3B",
+  "training_dataset": "princeton-nlp/QuRating-GPT3.5-Judgments",
+  "training_dataset_revision": "b553523cf6e15b7af6744166ef144e9dc54695f0",
+  "training_dataset_artifact": "https://huggingface.co/datasets/princeton-nlp/QuRating-GPT3.5-Judgments",
+  "primary_evidence": "https://arxiv.org/abs/2402.09739",
+  "training_objective": "four_criterion_pairwise_pretraining_data_rating",
+  "output_order": [
+    "writing_style",
+    "required_expertise",
+    "facts_trivia",
+    "educational_value"
+  ],
+  "output_scale": "provider_native_unnormalized_logits",
+  "maximum_scoring_window_tokens": 512,
+  "long_document_aggregation": "token_count_weighted_window_mean",
+  "documented_biases": [
+    "domain",
+    "topic",
+    "social_role",
+    "region",
+    "language"
+  ],
+  "claim_boundary": "The provider exposes four research ratings. It does not establish universal intrinsic Quality, document completeness, or runtime removal authority.",
+  "runtime_activation": false
+}

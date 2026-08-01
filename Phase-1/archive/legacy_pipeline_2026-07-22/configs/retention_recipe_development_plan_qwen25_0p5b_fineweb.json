@@ -1,0 +1,33 @@
+{
+  "schema_version": "retention-recipe-development-plan-v1",
+  "plan_name": "fineweb_retention_recipe_matrix_v1",
+  "scope": "post_replay_ratio_training_recipe_development_not_selector_objective",
+  "arms": [
+    "stageA_random_equal_budget",
+    "retention_replay_target100",
+    "retention_replay_target099"
+  ],
+  "recipes": [
+    {
+      "recipe_id": "lr5e6_s128",
+      "learning_rate": 0.000005,
+      "optimizer_steps": 128
+    },
+    {
+      "recipe_id": "lr1e5_s64",
+      "learning_rate": 0.00001,
+      "optimizer_steps": 64
+    }
+  ],
+  "shared_training_contract": {
+    "sequence_length": 1024,
+    "train_sequences": 1024,
+    "gradient_accumulation_steps": 4,
+    "seed": 20260611,
+    "gpu_constraint": "physical CUDA device 1, NVIDIA GeForce RTX 3070 Ti only"
+  },
+  "joint_development_success_rule": "Candidate target NLL must be lower than recipe-matched Stage-A random and external WikiText NLL must not exceed base no-update.",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "selection_rule": "A joint-pass recipe may become a fresh confirmatory candidate only; development results cannot certify it.",
+  "claim_boundary": "Development recipe evidence only; no deployment, certification, task-capability, or universal-recipe claim."
+}

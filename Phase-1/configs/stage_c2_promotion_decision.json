@@ -1,0 +1,29 @@
+{
+  "schema_version": "stage-c2-promotion-decision-v1",
+  "candidate_policy_id": "stage_c2_model_relative_representative_candidate",
+  "decision": "not_promoted_candidate_archive",
+  "active_runtime_profile": "normal_structural_v1",
+  "decision_scope": "frozen_before_7m_external_experiment",
+  "development_protocol": {
+    "corpora": ["code_raw_like", "math_raw_like", "general_text_raw_like"],
+    "frozen_proxy_model": "Qwen/Qwen3-4B-Base",
+    "sample_records_per_corpus": 512,
+    "candidate_runtime_authorization": "none_candidate_cannot_select_or_remove"
+  },
+  "blocking_evidence": [
+    "semantic_only_overdeletion_risk",
+    "proxy_only_has_no_semantic_family_evidence",
+    "known_high_quality_reference_false_positive_risk",
+    "joint_rule_insufficient_cross_domain_activation"
+  ],
+  "must_not_claim": [
+    "stage_c2_is_runtime_ready",
+    "stage_c2_is_domain_general",
+    "stage_c2_improves_external_benchmarks"
+  ],
+  "reconsideration_requirements": [
+    "new_rule_with_false_positive_fixture",
+    "preregistered_cross_domain_ablation",
+    "confirmatory_evaluation_without_runtime_feedback"
+  ]
+}

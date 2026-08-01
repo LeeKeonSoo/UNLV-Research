@@ -1,0 +1,25 @@
+{
+  "schema_version": "span-level-template-compaction-fixture-v1",
+  "minimum_span_tokens": 12,
+  "minimum_residual_tokens": 8,
+  "rows": [
+    {
+      "chunk_uid": "a::0000",
+      "text": "This repeated boilerplate explains the stable transport contract shared by every generated client implementation.\n\nRecord A payload explains retry behavior and timeout recovery in detail."
+    },
+    {
+      "chunk_uid": "b::0000",
+      "text": "This repeated boilerplate explains the stable transport contract shared by every generated client implementation.\n\nRecord B payload explains authentication behavior and token refresh in detail."
+    },
+    {
+      "chunk_uid": "c::0000",
+      "text": "This repeated boilerplate explains the stable transport contract shared by every generated client implementation version two.\n\nRecord C payload explains a distinct migration procedure in detail."
+    },
+    {
+      "chunk_uid": "d::0000",
+      "text": "This repeated boilerplate explains the stable transport contract shared by every generated client implementation."
+    }
+  ],
+  "expected_transformed_chunk_uids": ["b::0000"],
+  "expected_retained_chunk_uids": ["a::0000", "c::0000", "d::0000"]
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "stage-c2-model-relative-candidate-ablation-preregistration-v1",
+  "status": "preregistered_not_executed",
+  "candidate_policy_id": "stage_c2_model_relative_representative_candidate",
+  "purpose": "Development-only evaluation of a frozen corpus-level candidate using frozen proxy evidence; it cannot tune or alter the active runtime.",
+  "frozen_input_snapshot": {
+    "required_fields": ["stage_b_pass_sha256", "frozen_proxy_evidence_sha256", "proxy_manifest_sha256", "policy_fingerprint"],
+    "selection_unit": "Stage-B pass chunks",
+    "candidate_visible_inputs": ["chunk_text", "frozen_semantic_bucket", "frozen_proxy_embedding", "frozen_proxy_familiarity", "frozen_proxy_novelty", "frozen_proxy_gradient_alignment"],
+    "forbidden_inputs": ["quality", "human_quality_label", "utility", "NLL", "benchmark_outcomes", "source_identity", "domain", "target_retention_fraction", "budget"]
+  },
+  "arms": [
+    {"id": "active_profile_baseline", "candidate_enabled": false, "materialization": "current frozen active Stage-C policy only"},
+    {"id": "stage_c2_model_relative_development", "candidate_enabled": true, "materialization": "apply frozen Stage-C-2 candidate output as a separate development artifact"}
+  ],
+  "development_matrix": ["code_raw_like", "math_raw_like", "general_text_raw_like"],
+  "external_evaluation": {
+    "primary_comparison": "natural_budget_external_benchmark",
+    "equal_token_comparison": "not_primary_not_required",
+    "feedback_into_policy": false,
+    "allowed_role": "post_hoc_development_evidence_only",
+    "required_reporting": ["raw_and_curated_token_counts", "reason_code_impact_audit", "benchmark_scores_by_seed", "failure_cases"]
+  },
+  "promotion_rule": {
+    "required_before_runtime_activation": ["false_positive_fixture_passed", "reason_code_impact_audit_complete", "all_three_development_corpora_reported", "confirmatory_evaluation_without_runtime_feedback"],
+    "forbidden_conclusion_before_confirmatory_evidence": "model_relative_candidate_is_generally_beneficial_or_runtime_ready"
+  }
+}

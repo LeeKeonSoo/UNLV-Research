@@ -1,0 +1,21 @@
+{
+  "source_name": "codeparrot/github-code",
+  "source_uri": "https://huggingface.co/datasets/codeparrot/github-code",
+  "source_revision": "b5661e6b17396364b2bcf8e68977b0d28e1ebd19",
+  "collected_at": "2026-07-31T00:00:00Z",
+  "text_field": "code",
+  "language_field": "language",
+  "record_shape": "complete_source",
+  "repository_identity_field": "repo_name",
+  "path_field": "path",
+  "source_license_field": "license",
+  "allowed_source_licenses": ["mit", "apache-2.0", "bsd-2-clause", "bsd-3-clause", "isc", "unlicense", "cc0-1.0"],
+  "rights": {"status": "allowed", "license": "per-record permissive allowlist"},
+  "pii_context": "repository_code",
+  "language": {"code": "und", "confidence": null},
+  "partition": {
+    "source_dataset": "codeparrot/github-code",
+    "source_pool_role": "raw_like_code",
+    "content_type": "code"
+  }
+}

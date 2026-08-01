@@ -4,6 +4,11 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+.agents/
+.codegraph/
+.omo/
+.ignore
+tmp/
 .vscode/
 .claude/
 .idea/
@@ -12,12 +17,15 @@ build/
 .DS_Store
 Thumbs.db
 *.zip
+*.pdf
 outputs/
 legacy/phase1_educational_pipeline/outputs_snapshot/
 tiny_textbooks_raw/
 validation/fixtures/openwebtext2_subset/
 validation/fixtures/wikitext103_subset/
+validation/fixtures/fineweb_edu_sample/
 validation/calibration_samples/
 validation/utility/
 validation/token_budget_cache.json
+validation/canonical_scope_report.json
 models/

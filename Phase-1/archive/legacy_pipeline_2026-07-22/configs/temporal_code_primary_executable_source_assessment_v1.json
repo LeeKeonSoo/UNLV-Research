@@ -1,0 +1,57 @@
+{
+  "schema_version": "temporal-code-primary-executable-source-assessment-v1",
+  "status": "frozen_after_source_metadata_before_model_outcomes",
+  "purpose": "Decide whether currently frozen public and project-created sources can support the primary temporal executable aggregate without weakening the preregistered precision or temporal-disjointness contract.",
+  "required_primary_contract": {
+    "required_task_count": 1083,
+    "practical_effect_margin_absolute": 0.05,
+    "desired_task_distribution_half_width": 0.05,
+    "one_sided_confidence": 0.95,
+    "requires_development_and_untouched_confirmatory_e2_pools": true,
+    "requires_post_base_release_temporal_relevance": true
+  },
+  "source_snapshots": {
+    "project_created_recent_repository_tasks": {
+      "role": "primary temporal candidate",
+      "current_development_e2_tasks": 1,
+      "current_confirmatory_e2_tasks": 1
+    },
+    "swebench_verified": {
+      "role": "secondary repository-level guardrail candidate",
+      "frozen_repository_time_disjoint_candidates": 87,
+      "locally_e2_prevalidated_tasks": 0
+    },
+    "livecodebench_code_generation_lite": {
+      "role": "temporal function-level source candidate and external guardrail",
+      "official_dataset_id": "livecodebench/code_generation_lite",
+      "official_dataset_revision": "0fe84c3912ea0c4d4a78037083943e8f0c4dd505",
+      "official_dataset_last_modified": "2025-06-05T17:18:27Z",
+      "official_size_category": "n<1K",
+      "official_release_v5_task_count": 880,
+      "official_release_v5_end": "2025-01",
+      "post_training_window_untouched_confirmatory_tasks_demonstrated": false,
+      "locally_e2_prevalidated_tasks": 0
+    },
+    "evalplus": {
+      "role": "E2 external code retention and transfer guardrail only",
+      "frozen_task_count": 542,
+      "may_replace_primary_temporal_aggregate": false
+    }
+  },
+  "forbidden_reactions": [
+    "lower the frozen task-count requirement because current sources are insufficient",
+    "change the practical margin after observing source availability or model outcomes",
+    "treat non-temporal external guardrails as the primary temporal aggregate",
+    "inspect confirmatory model outcomes",
+    "use Utility or executable outcomes in Stage B"
+  ],
+  "allowed_next_actions": [
+    "continue forward acquisition of post-training-window temporal tasks under a frozen rule",
+    "prevalidate E2 execution support at task acquisition time",
+    "abstain until the frozen primary task-distribution contract is met",
+    "preregister a separate lower-power or narrower-claim study without altering this study retroactively"
+  ],
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Primary-source feasibility decision only; no Utility, curation-benefit, or release claim."
+}

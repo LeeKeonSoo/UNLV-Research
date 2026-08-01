@@ -1,0 +1,48 @@
+{
+  "schema_version": "temporal-code-path-stratified-tranche-v1",
+  "status": "frozen_before_path_metadata_collection",
+  "purpose": "Create a fresh temporal-code tranche whose sampling frame can test a code-curation claim without documentation-only or single-repository dominance.",
+  "one_pull_request_per_repository": true,
+  "representative_pull_request_priority": [
+    "code_and_test",
+    "code_only",
+    "test_only"
+  ],
+  "required_repositories_by_split_and_stratum": {
+    "train": {
+      "code_and_test": 12,
+      "code_only": 10,
+      "test_only": 2
+    },
+    "development": {
+      "code_and_test": 4,
+      "code_only": 3,
+      "test_only": 1
+    },
+    "confirmatory": {
+      "code_and_test": 4,
+      "code_only": 3,
+      "test_only": 1
+    }
+  },
+  "selection_uses": [
+    "assigned split",
+    "path-only changed-file metadata",
+    "tree path count",
+    "normalized repository identity",
+    "pull request number"
+  ],
+  "selection_forbids": [
+    "file content",
+    "pull request title or body",
+    "Stage-0 outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "failure_decision": "insufficient_sampling_frame",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Fresh path-stratified collection frame only; no Stage-B, Stage-C, Utility, or training-benefit claim."
+}

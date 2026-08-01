@@ -1,0 +1,60 @@
+{
+  "schema_version": "operational-selection-evaluation-v1",
+  "status": "superseded_historical_policy_do_not_execute",
+  "purpose": "Historical evaluation design for the retired weighted operational-selection rule; not an active framework protocol.",
+  "selector_boundary": {
+    "forbidden_inputs": ["Utility", "NLL", "benchmark outcomes", "source pool role", "target retention fraction"],
+    "policy": "minimum_priority_score=0.8",
+    "policy_status": "development_candidate_not_confirmatory"
+  },
+  "required_artifacts": [
+    "audited_raw_safe_pool",
+    "stage_a_pass_pool",
+    "policy_selected_pool",
+    "policy_discarded_pool",
+    "benchmark_exclusion_complete_audit"
+  ],
+  "arms": [
+    {
+      "name": "policy_selected_equal_token",
+      "pool": "policy_selected_pool",
+      "token_budget": "matched_to_random_and_discarded_arms",
+      "purpose": "Measure selected-pool signal under matched exposure."
+    },
+    {
+      "name": "stage_a_random_equal_token",
+      "pool": "stage_a_pass_pool",
+      "token_budget": "matched_to_policy_selected_equal_token",
+      "purpose": "Control for exposure without policy selection."
+    },
+    {
+      "name": "policy_discarded_only_equal_token",
+      "pool": "policy_discarded_pool",
+      "token_budget": "matched_to_policy_selected_equal_token",
+      "purpose": "Test whether removed chunks contain the policy signal that was excluded."
+    },
+    {
+      "name": "raw_safe_natural",
+      "pool": "audited_raw_safe_pool",
+      "token_budget": "full_pool_one_declared_pass",
+      "purpose": "Measure uncurated deployment exposure."
+    },
+    {
+      "name": "policy_selected_natural",
+      "pool": "policy_selected_pool",
+      "token_budget": "full_pool_one_declared_pass",
+      "purpose": "Measure whether the policy can train on fewer natural tokens without loss."
+    }
+  ],
+  "controls": {
+    "base_model": "identical_for_all_arms",
+    "training_recipe": "identical_except_declared_pool_and_token_budget",
+    "seeds": [101, 202, 303],
+    "benchmark_snapshot": "frozen_before_training",
+    "report": ["raw_and_curated_tokens", "retention_fraction", "reason_code_counts", "per_seed_benchmark_scores", "mean_and_dispersion"]
+  },
+  "decision_boundary": {
+    "allowed_confirmatory_claim": "Under the frozen corpus, model, recipe, and benchmark snapshot, the declared operational-selection policy showed or did not show training-efficiency signal.",
+    "forbidden_claims": ["intrinsic_quality_measured", "every_discarded_chunk_is_unnecessary", "universal_domain_general_improvement"]
+  }
+}

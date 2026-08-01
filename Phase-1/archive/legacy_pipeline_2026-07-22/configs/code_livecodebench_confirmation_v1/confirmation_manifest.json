@@ -1,0 +1,33 @@
+{
+  "schema_version": "code-livecodebench-confirmation-manifest-v1",
+  "status": "frozen_before_outcomes",
+  "source_freeze_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\code_livecodebench_pilot_v1.json",
+  "source_freeze_sha256": "9e72b9f9f73520b230090eadb36f4e6fc39c94cd1e22b9353721e8ff0f99bc76",
+  "task_bundle_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\code_livecodebench_pilot_qwen3_4b\\frozen_tasks.json",
+  "scheduled_seeds": [
+    131,
+    163,
+    197,
+    239
+  ],
+  "assignments": [
+    {
+      "seed": 131,
+      "required_gpu": "NVIDIA GeForce RTX 4060 Ti"
+    },
+    {
+      "seed": 163,
+      "required_gpu": "NVIDIA GeForce RTX 3070 Ti"
+    },
+    {
+      "seed": 197,
+      "required_gpu": "NVIDIA GeForce RTX 4060 Ti"
+    },
+    {
+      "seed": 239,
+      "required_gpu": "NVIDIA GeForce RTX 3070 Ti"
+    }
+  ],
+  "selector_tuning_permission": false,
+  "utility_stage": "Stage C only"
+}

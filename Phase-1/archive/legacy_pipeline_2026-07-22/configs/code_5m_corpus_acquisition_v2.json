@@ -1,0 +1,45 @@
+{
+  "schema_version": "code-5m-corpus-acquisition-v2",
+  "status": "frozen_before_collection",
+  "supersedes": "configs/code_5m_corpus_acquisition_v1.json",
+  "source_change_reason": "The Stack v2 publishes provenance IDs only and requires a separate Software Heritage bulk-content agreement; The Stack Dedup directly provides near-deduplicated Python content after gated access approval.",
+  "target_model": {"model_id": "Qwen/Qwen3-4B-Base", "tokenizer_id": "Qwen/Qwen3-4B-Base", "sequence_length": 2048},
+  "target": {
+    "raw_packed_tokens": 5242880,
+    "raw_complete_gradient_accumulation_tokens": 5242880,
+    "gradient_accumulation_steps": 8,
+    "oversample_source_tokens": 7864320,
+    "raw_like_fraction": 0.7,
+    "reference_fraction": 0.3,
+    "raw_like_source_target_tokens": 5505024,
+    "reference_source_target_tokens": 2359296
+  },
+  "primary_source": {
+    "dataset": "bigcode/the-stack-dedup",
+    "revision": "17cad72c886a2858e08d4c349a00d6466f54df63",
+    "data_dir": "data/python",
+    "split": "train",
+    "seed": 20260719,
+    "admission_rule": {
+      "allowed_spdx_licenses": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "PSF-2.0", "Unlicense"],
+      "exclude_path_fragments": ["/test/", "/tests/", "/benchmark/", "/benchmarks/", "/eval/", "/evaluation/", "/vendor/", "/vendored/", "/node_modules/", "/third_party/", "/generated/", "/dist/", "/build/", "/examples/"],
+      "max_file_bytes": 262144,
+      "min_file_bytes": 256,
+      "repository_concentration_cap_fraction": 0.01,
+      "exact_duplicate_action": "retain_one_by_content_sha256",
+      "near_duplicate_action": "source_dataset_pre_deduplicated_then_audit_again_before_stage_a",
+      "pii_or_secret_action": "quarantine_in_stage_0",
+      "benchmark_contamination_or_uncertainty_action": "quarantine_in_stage_0"
+    }
+  },
+  "reference_source": {
+    "role": "audit-only known-high-quality context; never a selector label",
+    "required_before_mixing": true,
+    "target_tokens": 2359296,
+    "immutable_commit_required": true,
+    "allowed_spdx_licenses": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "PSF-2.0"]
+  },
+  "output": {"root": "D:/UNLV-Research/code_5m_corpus_v2"},
+  "stage_b_isolation": {"source_tier_available_to_stage_b": false, "source_dataset_available_to_stage_b": false, "license_available_to_stage_b": false, "github_stars_available_to_stage_b": false, "utility_available_to_stage_b": false, "benchmark_outcomes_available_to_stage_b": false},
+  "claim_boundary": "Collection input only. No source metadata is an intrinsic quality score, selector input, or Stage-C outcome."
+}

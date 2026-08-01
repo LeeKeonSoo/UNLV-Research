@@ -1,0 +1,80 @@
+{
+  "schema_version": "code-record-disjoint-confirmatory-evaluation-protocol-v1",
+  "status": "frozen_pending_external_training",
+  "evaluation_role": "external_offline_validation",
+  "may_mutate_curation_output": false,
+  "purpose": "Evaluate only the record/text-disjoint confirmatory A-B-C output after frozen natural-budget continued-pretraining runs complete.",
+  "curation_input": {
+    "role": "confirmatory_only",
+    "curation_contract": "protocols/code_confirmatory_the_stack_dedup_curation_contract.json",
+    "curation_contract_sha256": "f9ce2a9ac843a81d7910bff38f8d6485ebb7fa227d46ba70aa724993eaa54f7f",
+    "curation_report": "D:/UNLV-Research/code_confirmatory_v1/abc_curation_v1/curation_report.json",
+    "curation_report_sha256": "2f3a14897f7511029a32e9951995a90e1215c104570e55a2ecf239ca490a4ff2",
+    "benchmark_exclusion_audit": "D:/UNLV-Research/code_confirmatory_v1/benchmark_exclusion_audit.json",
+    "benchmark_exclusion_audit_sha256": "f99c8f65e8ae45508464d8d2d23d5b16a95aaa9c9a9607474520333110b6b7bd",
+    "integrity_report": "D:/UNLV-Research/code_confirmatory_v1/external_validation_integrity_report.json",
+    "integrity_report_sha256": "fccde94655acd01ba1def1d036387dbba2bbd7c7e7e8341acd02b8b3d911c8e1",
+    "integrity_gate_required": true,
+    "eligibility_requirement": "benchmark_exclusion_complete, pretraining_eligible, and confirmatory_ready must all be true before training"
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base"
+  },
+  "training": {
+    "arms": ["base_no_update", "stage_a_release_natural", "curated_natural"],
+    "seeds": [101, 202, 303],
+    "comparison": "natural_dataset_budget_per_arm",
+    "natural_budget_rule": "Use each tokenizer-materialized arm in full. Do not equal-token resample, set a target retention fraction, or use benchmark outcomes to alter the corpus.",
+    "materialization_contract": "protocols/code_record_disjoint_confirmatory_training_materialization.json",
+    "materialized_inputs": {
+      "report": "D:/UNLV-Research/code_confirmatory_v1/external_training_v1/training_inputs_report.json",
+      "report_sha256": "8a0543763894a47403887200a421d0487bf28517362f767ad7c532aa07d5075b",
+      "stage_a_release_natural": {"materialized_tokens": 14581760, "optimizer_steps": 890},
+      "curated_natural": {"materialized_tokens": 14417920, "optimizer_steps": 880},
+      "comparison_note": "Curated retains 98.88% of the Stage-A-release natural token count on this confirmatory corpus. This is measured from the frozen no-budget policy, not selected as a target."
+    },
+    "adapter_directory_template": "D:/UNLV-Research/code_confirmatory_v1/external_training_v1/runs/{arm}_seed{seed}",
+    "base_arm_has_no_adapter": true
+  },
+  "global_generation": {
+    "decoding": "greedy",
+    "do_sample": false,
+    "temperature": 0.0,
+    "num_return_sequences": 1,
+    "prompt_change_rule": "Freeze each suite prompt template and source revision before first generation.",
+    "evaluator_change_rule": "Record evaluator source revision and runtime or container digest before scoring."
+  },
+  "primary_benchmarks": [
+    {"id": "humanevalplus", "suite": "EvalPlus", "metric": "pass_at_1", "generation": {"max_new_tokens": 512}, "scoring": "official EvalPlus evaluator pinned in the run manifest"},
+    {"id": "mbppplus", "suite": "EvalPlus", "metric": "pass_at_1", "generation": {"max_new_tokens": 512}, "scoring": "official EvalPlus evaluator pinned in the run manifest"},
+    {"id": "bigcodebench_complete", "suite": "BigCodeBench", "metric": "pass_at_1", "generation": {"max_new_tokens": 1024}, "scoring": "official BigCodeBench evaluator"},
+    {"id": "cruxeval_input_prediction", "suite": "CRUXEval", "metric": "exact_match", "generation": {"max_new_tokens": 512}, "scoring": "official CRUXEval evaluator in input mode"},
+    {"id": "cruxeval_output_prediction", "suite": "CRUXEval", "metric": "exact_match", "generation": {"max_new_tokens": 512}, "scoring": "official CRUXEval evaluator in output mode"},
+    {"id": "ds1000", "suite": "DS-1000", "metric": "pass_at_1", "generation": {"max_new_tokens": 1024}, "scoring": "isolated official DS-1000 evaluator"}
+  ],
+  "blocked_benchmarks": [
+    {"id": "livecodebench_code_generation_lite", "reason": "Blocked until auditable base-model pretraining cutoff and raw-corpus snapshot end are declared and a post-cutoff task subset is materialized."}
+  ],
+  "frozen_benchmark_snapshots": {
+    "humanevalplus": {"path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots/humanevalplus.json", "sha256": "0253db8ef88bac8d0a5c2cf0aeacfd6b7fbcb70e6a970f964d15f6ef6a671ab7", "revision": "evalplus-local-installed-data", "tasks": 164},
+    "mbppplus": {"path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots/mbppplus.json", "sha256": "a974c2a2dead676280944907358c6c503501e5e297a34adf850927020ecd4612", "revision": "evalplus-local-installed-data", "tasks": 378},
+    "livecodebench_code_generation_lite": {"path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/livecodebench_code_generation_lite.json", "sha256": "1aab81d420bc00b8013fa937cdc9131bfa14d6c9cb4574547d10e9946b6dfac8", "revision": "0fe84c3912ea0c4d4a78037083943e8f0c4dd505", "tasks": 1055},
+    "bigcodebench_complete": {"path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/bigcodebench_complete.json", "sha256": "bf81252e1dc9dd68a2e9388df6eb7d601bb53bc9c8d7057e32024a804586ac6c", "revision": "b74c0d0bf70d2c0bc459be537895cca163007f1a", "tasks": 1140},
+    "cruxeval_input_prediction": {"path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/cruxeval_input_prediction.json", "sha256": "c2ac026dce30e8e0e049a297f990cfd1f0276bc8929da81171c5a9894112b1d2", "revision": "190faf16d175b5847b0af05d937872b1fb395942", "tasks": 800},
+    "cruxeval_output_prediction": {"path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/cruxeval_output_prediction.json", "sha256": "f935a53abc5f2a3588ac0fa0b39dd4178addc9ad99ec2ce3e12acb03f9c9a0b7", "revision": "190faf16d175b5847b0af05d937872b1fb395942", "tasks": 800},
+    "ds1000": {"path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/ds1000.json", "sha256": "e2a1a1d7a4ac5f1bb2c9b9179162eff54d95a98d17a085190dbc5079ad60a78a", "revision": "b39aab71da6d23ef8d3cac59a7c5f834516ab334", "tasks": 1000}
+  },
+  "reporting": {
+    "aggregate_rule": "Report each benchmark and family separately; never calculate a single cross-metric score.",
+    "uncertainty": "Report all three seeds and paired Raw-versus-Curated task-level differences where evaluator outputs permit.",
+    "required_context": ["Stage-A-release and Curated materialized token totals", "benchmark exclusion audit", "external validation integrity report", "curation report", "per-suite evaluator version"]
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false
+  },
+  "claim_boundary": "This external protocol evaluates a frozen confirmatory output. It cannot establish intrinsic Quality, universal downstream utility, or a production release claim."
+}

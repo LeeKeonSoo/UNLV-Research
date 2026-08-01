@@ -1,0 +1,30 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "purpose": "Materialize the record/text-disjoint Code confirmatory corpus under the active no-budget A-B-C policy.",
+  "input": {
+    "sources": [
+      {
+        "path": "D:/UNLV-Research/code_confirmatory_v1/audited_candidates.jsonl",
+        "text_fields": ["text"],
+        "defaults": {"pii_context": "repository_code"},
+        "metadata_capabilities": {
+          "partition.path": {"availability": "provided"},
+          "partition.repository_identity": {"availability": "provided"},
+          "artifact_context.generation": {"availability": "not_provided_by_upstream", "inference": "forbidden"},
+          "artifact_context.dependency_copy": {"availability": "not_provided_by_upstream", "inference": "forbidden"}
+        }
+      }
+    ]
+  },
+  "pretraining_audit_path": "D:/UNLV-Research/code_confirmatory_v1/benchmark_exclusion_audit.json",
+  "output_dir": "D:/UNLV-Research/code_confirmatory_v1/abc_curation_v1",
+  "stage_b": {"minimum_chunk_chars": 40, "max_chunk_chars": 6000},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true},
+    "coverage_guard": {"strata": ["language_code", "content_type"]}
+  },
+  "stage_c": {"no_binding_budget_action": "materialize_reason_coded_survivors"},
+  "claim_boundary": "This output is eligible only for the declared external confirmatory protocol after the source-disjoint integrity gate passes. It does not claim intrinsic Quality, semantic necessity, or downstream performance."
+}

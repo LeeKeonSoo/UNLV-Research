@@ -1,0 +1,58 @@
+{
+  "schema_version": "math-quality-evidence-decision-v2",
+  "status": "coherence_development_passed_bundle_blocked_payload_and_provider_transfer",
+  "supersedes": "configs/math_quality_evidence_decision_v1.json",
+  "decision": "keep_math_positive_quality_runtime_inactive",
+  "explicit_coherence_v2": {
+    "contract": "configs/math_explicit_coherence_guard_v2.json",
+    "contract_sha256": "65618a012578d297c5af29c513617f4354c68254e3d3f576059b21d4fddffe94",
+    "development_clean_controls": {
+      "records": 2574,
+      "tokens": 2440993,
+      "explicit_defect_records": 3,
+      "explicit_defect_tokens": 3157,
+      "maximum_source_false_reject_wilson_upper_bound": 0.04384603558524924,
+      "fixture_families_passed": 6,
+      "fixture_families_total": 6,
+      "report": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_explicit_coherence_report_v2.json",
+      "report_sha256": "f9ad851147876bd9a585617904284a67e0557b2da55ba02007c6fedc52419a83",
+      "control_status": "previously_observed_development_only_not_confirmatory"
+    },
+    "candidate_diagnostic": {
+      "records": 3936,
+      "tokens": 5000169,
+      "explicit_defect_records": 117,
+      "explicit_defect_tokens": 470003,
+      "explicit_defect_token_fraction": 0.0939974228871064,
+      "report": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_explicit_coherence_report_v2.json",
+      "report_sha256": "31dc044c055871c09c87cd5ffa17aaa46ac9ef8bfc9894ade496f40d461699bc",
+      "claim_boundary": "diagnostic opportunity only; not a curated output or paper result"
+    }
+  },
+  "four_head_v5": {
+    "result": "blocked_no_strictly_feasible_profile",
+    "q0_loso_blockers": {
+      "jim_hefferon_linear_algebra": {
+        "failures": 8,
+        "trials": 59,
+        "substantive_payload_failures": 7,
+        "route_confidence_failures": 1,
+        "coherence_failures": 0
+      },
+      "wojtask_clrs4e_solutions": {
+        "failures": 1,
+        "trials": 328,
+        "route_specific_evidence_failures": 1,
+        "coherence_failures": 0
+      }
+    },
+    "report": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_complete_bundle_calibration_report_v5.json",
+    "report_sha256": "fe0f4b5e711556ad84b6ae22ce9460703797f393736d506bddd402956c553520"
+  },
+  "runtime_effect": "none",
+  "quality_decision_for_math": "abstain_retain_unless_an_independent_explicit_reject_rule_fires",
+  "next_valid_path": "replace_or_redefine_substantive_payload evidence, audit provider format transfer, obtain fresh source-disjoint controls, and repeat strict calibration before external evaluation",
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

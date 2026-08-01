@@ -1,0 +1,70 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "input": {
+    "sources": [
+      {
+        "path": "C:/path/to/source-a.jsonl",
+        "text_fields": ["text", "content", "document", "body"],
+        "defaults": {
+          "source_name": "declared-upstream-source-a",
+          "source_uri": "https://example.invalid/source-a-manifest",
+          "collected_at": "2026-07-22T00:00:00Z",
+          "pii_context": "general",
+          "rights": {
+            "status": "allowed",
+            "license": "declared-license"
+          },
+          "language": {"code": "und", "confidence": null},
+          "artifact_context": {"generation": "unknown"},
+          "artifact_context_fields": {
+            "generation": "source_declared_generation",
+            "dependency_copy": "source_declared_dependency_copy"
+          },
+          "metadata_capabilities": {
+            "artifact_context.generation": {"availability": "provided_by_source_field", "source_field": "source_declared_generation"},
+            "artifact_context.dependency_copy": {"availability": "provided_by_source_field", "source_field": "source_declared_dependency_copy"}
+          }
+        }
+      }
+    ]
+  },
+  "stage_a": {
+    "policy": "text_only_v2"
+  },
+  "output_dir": "C:/path/to/curation-output",
+  "stage_b": {
+    "name": "chunk_level_hard_gate",
+    "max_chunk_chars": 6000,
+    "minimum_chunk_chars": 120,
+    "deduplicate_normalized_exact_text": true,
+    "forbidden_inputs": ["Utility", "NLL", "benchmark outcomes", "source pool role"]
+  },
+  "stage_c_selection": {
+    "near_duplicate_compaction": {
+      "candidate_enabled": false,
+      "shingle_size": 5,
+      "minimum_lexical_tokens": 40,
+      "symmetric_overlap_threshold": 0.95
+    },
+    "structural_artifact_rules": {
+      "explicit_generated_artifact": false,
+      "empty_html_shell": false,
+      "web_chrome_only_chunk": false
+    }
+  },
+  "stage_c": {
+    "name": "reason_coded_duplicate_artifact_and_scaffold_compaction_and_materialization",
+    "no_binding_budget_action": "selection_without_binding_budget",
+    "forbidden_inputs": ["Utility", "NLL", "benchmark outcomes", "source pool role"]
+  },
+  "external_evaluation": {
+    "forbidden_feedback": "External metrics may not mutate this frozen Stage-C output."
+  },
+  "composition_audit": {
+    "role": "audit_only",
+    "note": "Content-domain and language/script distributions are reported but cannot remove or select records."
+  },
+  "claim_boundary": "Auditable curation materialization only; no intrinsic quality, semantic necessity, benchmark-cleanliness, or downstream-performance claim."
+}

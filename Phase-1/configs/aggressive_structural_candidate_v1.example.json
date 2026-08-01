@@ -1,0 +1,40 @@
+{
+  "schema_version": "aggressive-structural-candidate-contract-v1",
+  "status": "frozen_candidate_development",
+  "purpose": "Build text-only aggressive structural development arms from a frozen Stage-B snapshot. This is not an active runtime profile.",
+  "input": {
+    "stage_b_pass_path": "D:/path/to/stage_b_pass_chunks.jsonl"
+  },
+  "output_dir": "D:/path/to/aggressive_structural_candidate_v1",
+  "tokenizer": {
+    "pretrained_model_name_or_path": "D:/path/to/frozen/tokenizer"
+  },
+  "stage_b_minimum_chunk_chars": 120,
+  "stage_c_selection": {
+    "near_duplicate_compaction": {
+      "candidate_enabled": false,
+      "shingle_size": 5,
+      "minimum_lexical_tokens": 40,
+      "symmetric_overlap_threshold": 0.95
+    },
+    "structural_artifact_rules": {
+      "explicit_generated_artifact": true,
+      "license_comment_only_chunk": true,
+      "empty_html_shell": true,
+      "web_chrome_only_chunk": true
+    }
+  },
+  "forbidden_selector_inputs": [
+    "intrinsic_quality_score",
+    "human_quality_label",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "source_identity",
+    "source_tier",
+    "domain",
+    "composition",
+    "target_retention_fraction"
+  ],
+  "claim_boundary": "Candidate development only. Promotion requires fixtures, case-matrix audit, preregistered ablation, and benchmark-disjoint three-seed natural-budget evaluation."
+}

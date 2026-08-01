@@ -1,0 +1,24 @@
+{
+  "schema_version": "code-rawsafe-7m-livecodebench-diagnostic-v1",
+  "status": "frozen_before_outcomes",
+  "scope": "external_code_transfer_diagnostic",
+  "selector_tuning_permission": false,
+  "dataset": {
+    "id": "livecodebench/code_generation_lite",
+    "frozen_task_bundle": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\code_livecodebench_pilot_qwen3_4b\\frozen_tasks.json"
+    }
+  },
+  "execution": {
+    "allowed": true,
+    "arms": ["raw_safe_natural"],
+    "seed": 11,
+    "metric": "pass@1",
+    "samples_per_task": 1,
+    "temperature": 0.0,
+    "max_new_tokens": 1024,
+    "stop_strings": ["###"],
+    "required_gpu": "NVIDIA GeForce RTX 4060 Ti"
+  },
+  "claim_boundary": "Development-only external diagnostic for the Raw-safe 7M adapter. It does not establish a release claim, selector objective, or absence of task-hash contamination."
+}

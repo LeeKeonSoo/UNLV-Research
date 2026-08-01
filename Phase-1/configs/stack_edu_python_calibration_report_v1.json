@@ -1,0 +1,458 @@
+{
+  "schema_version": "stack-edu-python-calibration-report-v1",
+  "status": "blocked_no_strictly_feasible_profile",
+  "runtime_activation": false,
+  "provider_id": "HuggingFaceTB/stack-edu-classifier-python",
+  "provider_revision": "2b36efbd7a00b5db416d7550c5ad42b561355517",
+  "clean_records": 1299,
+  "clean_source_groups": [
+    "browser-use/browser-use",
+    "huggingface/smolagents",
+    "microsoft/markitdown",
+    "openai/openai-agents-python"
+  ],
+  "candidate_scored_records": 279,
+  "candidate_scored_tokens": 501400,
+  "profiles": [
+    {
+      "profile_id": "source_balanced_q0",
+      "threshold": 0.701171875,
+      "pooled_failures": 0,
+      "pooled_trials": 1299,
+      "pooled_wilson_upper_bound": 0.002078460422712966,
+      "max_source_wilson_upper_bound": 0.039960442174572876,
+      "max_leave_one_source_out_wilson_upper_bound": 0.06606041659684196,
+      "per_source": {
+        "browser-use/browser-use": {
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "failures": 0,
+          "trials": 65,
+          "wilson_upper_bound": 0.039960442174572876
+        },
+        "openai/openai-agents-python": {
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "leave_one_source_out": {
+        "browser-use/browser-use": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "threshold": 0.740234375,
+          "failures": 1,
+          "trials": 65,
+          "wilson_upper_bound": 0.06606041659684196
+        },
+        "openai/openai-agents-python": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "excluded_candidate_records": 1,
+      "excluded_candidate_tokens": 21484
+    },
+    {
+      "profile_id": "source_balanced_q0.0025",
+      "threshold": 0.701171875,
+      "pooled_failures": 0,
+      "pooled_trials": 1299,
+      "pooled_wilson_upper_bound": 0.002078460422712966,
+      "max_source_wilson_upper_bound": 0.039960442174572876,
+      "max_leave_one_source_out_wilson_upper_bound": 0.06606041659684196,
+      "per_source": {
+        "browser-use/browser-use": {
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "failures": 0,
+          "trials": 65,
+          "wilson_upper_bound": 0.039960442174572876
+        },
+        "openai/openai-agents-python": {
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "leave_one_source_out": {
+        "browser-use/browser-use": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "threshold": 0.8603515625,
+          "failures": 1,
+          "trials": 65,
+          "wilson_upper_bound": 0.06606041659684196
+        },
+        "openai/openai-agents-python": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "excluded_candidate_records": 1,
+      "excluded_candidate_tokens": 21484
+    },
+    {
+      "profile_id": "source_balanced_q0.005",
+      "threshold": 0.701171875,
+      "pooled_failures": 0,
+      "pooled_trials": 1299,
+      "pooled_wilson_upper_bound": 0.002078460422712966,
+      "max_source_wilson_upper_bound": 0.039960442174572876,
+      "max_leave_one_source_out_wilson_upper_bound": 0.06606041659684196,
+      "per_source": {
+        "browser-use/browser-use": {
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "failures": 0,
+          "trials": 65,
+          "wilson_upper_bound": 0.039960442174572876
+        },
+        "openai/openai-agents-python": {
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "leave_one_source_out": {
+        "browser-use/browser-use": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "threshold": 0.90283203125,
+          "failures": 1,
+          "trials": 65,
+          "wilson_upper_bound": 0.06606041659684196
+        },
+        "openai/openai-agents-python": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "excluded_candidate_records": 1,
+      "excluded_candidate_tokens": 21484
+    },
+    {
+      "profile_id": "source_balanced_q0.01",
+      "threshold": 0.701171875,
+      "pooled_failures": 0,
+      "pooled_trials": 1299,
+      "pooled_wilson_upper_bound": 0.002078460422712966,
+      "max_source_wilson_upper_bound": 0.039960442174572876,
+      "max_leave_one_source_out_wilson_upper_bound": 0.13019434345627287,
+      "per_source": {
+        "browser-use/browser-use": {
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "failures": 0,
+          "trials": 65,
+          "wilson_upper_bound": 0.039960442174572876
+        },
+        "openai/openai-agents-python": {
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "leave_one_source_out": {
+        "browser-use/browser-use": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 363,
+          "wilson_upper_bound": 0.0073981472321734704
+        },
+        "huggingface/smolagents": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "threshold": 0.958984375,
+          "failures": 4,
+          "trials": 65,
+          "wilson_upper_bound": 0.13019434345627287
+        },
+        "openai/openai-agents-python": {
+          "threshold": 0.701171875,
+          "failures": 0,
+          "trials": 801,
+          "wilson_upper_bound": 0.003366336684039484
+        }
+      },
+      "excluded_candidate_records": 1,
+      "excluded_candidate_tokens": 21484
+    },
+    {
+      "profile_id": "source_balanced_q0.02",
+      "threshold": 0.92041015625,
+      "pooled_failures": 9,
+      "pooled_trials": 1299,
+      "pooled_wilson_upper_bound": 0.011871261627146606,
+      "max_source_wilson_upper_bound": 0.06606041659684196,
+      "max_leave_one_source_out_wilson_upper_bound": 0.1497154823853239,
+      "per_source": {
+        "browser-use/browser-use": {
+          "failures": 3,
+          "trials": 363,
+          "wilson_upper_bound": 0.020497216281361818
+        },
+        "huggingface/smolagents": {
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "failures": 1,
+          "trials": 65,
+          "wilson_upper_bound": 0.06606041659684196
+        },
+        "openai/openai-agents-python": {
+          "failures": 5,
+          "trials": 801,
+          "wilson_upper_bound": 0.01276695726583433
+        }
+      },
+      "leave_one_source_out": {
+        "browser-use/browser-use": {
+          "threshold": 0.92041015625,
+          "failures": 3,
+          "trials": 363,
+          "wilson_upper_bound": 0.020497216281361818
+        },
+        "huggingface/smolagents": {
+          "threshold": 0.92041015625,
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "threshold": 1.091796875,
+          "failures": 5,
+          "trials": 65,
+          "wilson_upper_bound": 0.1497154823853239
+        },
+        "openai/openai-agents-python": {
+          "threshold": 0.92041015625,
+          "failures": 5,
+          "trials": 801,
+          "wilson_upper_bound": 0.01276695726583433
+        }
+      },
+      "excluded_candidate_records": 4,
+      "excluded_candidate_tokens": 21794
+    },
+    {
+      "profile_id": "source_balanced_q0.05",
+      "threshold": 0.95068359375,
+      "pooled_failures": 13,
+      "pooled_trials": 1299,
+      "pooled_wilson_upper_bound": 0.015676895233099408,
+      "max_source_wilson_upper_bound": 0.10998564573420902,
+      "max_leave_one_source_out_wilson_upper_bound": 0.18728894787997274,
+      "per_source": {
+        "browser-use/browser-use": {
+          "failures": 3,
+          "trials": 363,
+          "wilson_upper_bound": 0.020497216281361818
+        },
+        "huggingface/smolagents": {
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "failures": 3,
+          "trials": 65,
+          "wilson_upper_bound": 0.10998564573420902
+        },
+        "openai/openai-agents-python": {
+          "failures": 7,
+          "trials": 801,
+          "wilson_upper_bound": 0.016040521690009146
+        }
+      },
+      "leave_one_source_out": {
+        "browser-use/browser-use": {
+          "threshold": 0.95068359375,
+          "failures": 3,
+          "trials": 363,
+          "wilson_upper_bound": 0.020497216281361818
+        },
+        "huggingface/smolagents": {
+          "threshold": 0.95068359375,
+          "failures": 0,
+          "trials": 70,
+          "wilson_upper_bound": 0.03721234070416691
+        },
+        "microsoft/markitdown": {
+          "threshold": 1.3779296875,
+          "failures": 7,
+          "trials": 65,
+          "wilson_upper_bound": 0.18728894787997274
+        },
+        "openai/openai-agents-python": {
+          "threshold": 0.95068359375,
+          "failures": 7,
+          "trials": 801,
+          "wilson_upper_bound": 0.016040521690009146
+        }
+      },
+      "excluded_candidate_records": 4,
+      "excluded_candidate_tokens": 21794
+    }
+  ],
+  "pooled_only_selected_profiles": {
+    "normal": "source_balanced_q0.01",
+    "hard": "source_balanced_q0.05"
+  },
+  "strict_selected_profiles": {
+    "normal": null,
+    "hard": null
+  },
+  "strict_gate": "pooled_and_each_source_and_leave_one_source_out_wilson_upper_bounds_must_pass",
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "conclusion": "Provider thresholds are not runtime-authorized unless a strict profile is selected.",
+  "threshold_profiles": [
+    {
+      "profile_id": "source_balanced_q0",
+      "routes": [
+        {
+          "route": "code",
+          "route_confidence": 1.0,
+          "substantive_payload": 1.0,
+          "coherence_completeness": 1.0,
+          "route_specific_evidence": 0.701171875
+        }
+      ]
+    },
+    {
+      "profile_id": "source_balanced_q0.0025",
+      "routes": [
+        {
+          "route": "code",
+          "route_confidence": 1.0,
+          "substantive_payload": 1.0,
+          "coherence_completeness": 1.0,
+          "route_specific_evidence": 0.701171875
+        }
+      ]
+    },
+    {
+      "profile_id": "source_balanced_q0.005",
+      "routes": [
+        {
+          "route": "code",
+          "route_confidence": 1.0,
+          "substantive_payload": 1.0,
+          "coherence_completeness": 1.0,
+          "route_specific_evidence": 0.701171875
+        }
+      ]
+    },
+    {
+      "profile_id": "source_balanced_q0.01",
+      "routes": [
+        {
+          "route": "code",
+          "route_confidence": 1.0,
+          "substantive_payload": 1.0,
+          "coherence_completeness": 1.0,
+          "route_specific_evidence": 0.701171875
+        }
+      ]
+    },
+    {
+      "profile_id": "source_balanced_q0.02",
+      "routes": [
+        {
+          "route": "code",
+          "route_confidence": 1.0,
+          "substantive_payload": 1.0,
+          "coherence_completeness": 1.0,
+          "route_specific_evidence": 0.92041015625
+        }
+      ]
+    },
+    {
+      "profile_id": "source_balanced_q0.05",
+      "routes": [
+        {
+          "route": "code",
+          "route_confidence": 1.0,
+          "substantive_payload": 1.0,
+          "coherence_completeness": 1.0,
+          "route_specific_evidence": 0.95068359375
+        }
+      ]
+    }
+  ]
+}

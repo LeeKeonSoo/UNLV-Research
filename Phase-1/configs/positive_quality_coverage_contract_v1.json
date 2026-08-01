@@ -1,0 +1,205 @@
+{
+  "schema_version": "positive-quality-coverage-contract-v1",
+  "status": "design_frozen_not_runtime_active",
+  "runtime_activation": false,
+  "current_runtime_contract": "configs/curation_contract.json",
+  "purpose": "Freeze the next Quality and Coverage contract before changing the active A-B-C runtime.",
+  "core_definitions": {
+    "validity": "Reject only candidates or chunks that cannot be interpreted as declared text payload under closed integrity rules.",
+    "redundancy": "Reduce repeated learning payload while retaining a deterministic representative of every removed family.",
+    "quality": "Decide whether a distinct valid unit has positive, reproducible evidence that makes it eligible for LM training; this is not a universal or intrinsic goodness claim.",
+    "coverage": "Classify and audit representation across declared axes, and prevent silent representation loss without assigning cross-stratum importance or enforcing a target mixture."
+  },
+  "stage_contract": {
+    "stage_a": {
+      "unit": "source_record",
+      "cores": ["validity"],
+      "role": "text_normalization_and_record_integrity_hard_gate"
+    },
+    "stage_b": {
+      "unit": "chunk",
+      "cores": ["validity", "redundancy"],
+      "role": "chunk_validity_and_exact_duplicate_hard_gate"
+    },
+    "stage_c": {
+      "unit": "stage_b_pass_corpus",
+      "cores": ["coverage", "quality", "redundancy"],
+      "role": "positive_retention_selection_representative_resolution_and_loss_audit"
+    },
+    "stage_c_order": [
+      "coverage_pre_tagging",
+      "positive_quality_gate",
+      "near_duplicate_and_scaffold_family_resolution",
+      "coverage_post_audit",
+      "reason_coded_materialization"
+    ],
+    "external_evaluation": "outside_the_curation_runtime_and_never_selector_visible"
+  },
+  "quality": {
+    "definition": "positive_retention_eligibility_not_intrinsic_quality",
+    "evidence_artifact": {
+      "config": "configs/positive_quality_evidence_v1.json",
+      "implementation": "positive_quality_evidence.py",
+      "provider_registry": "configs/positive_quality_provider_registry_v1.json",
+      "status": "candidate_only_not_stage_c_active",
+      "provider_scores_are_frozen_before_selection": true,
+      "missing_or_invalid_evidence_action": "abstain",
+      "global_weighted_score_allowed": false
+    },
+    "routes": [
+      "general_prose",
+      "code",
+      "math",
+      "technical_documentation",
+      "conversation_instruction",
+      "unknown"
+    ],
+    "routing": "multi_label_with_unknown_and_out_of_distribution_abstention",
+    "decisions": ["eligible_keep", "reject", "abstain"],
+    "required_evidence": [
+      "route_confidence",
+      "substantive_payload",
+      "coherence_completeness",
+      "route_specific_evidence"
+    ],
+    "combination": "conjunctive_per_route_without_weighted_sum",
+    "eligible_keep_rule": "At least one non-unknown route passes its frozen route threshold and every mandatory evidence head passes its own frozen threshold.",
+    "reject_rule": "A named active negative policy establishes explicit non-payload evidence, or a calibrated in-scope route establishes a low-evidence rejection boundary validated for that route.",
+    "abstain_rule": "Evidence is incomplete, conflicting, out of distribution, or between the frozen keep and reject boundaries.",
+    "unknown_route_action": "abstain",
+    "quality_score_claim": "No scalar output may be described as universal or intrinsic Quality.",
+    "calibration": {
+      "unit": "route_specific_evidence_head",
+      "selection_rule": "most_compressive_feasible_threshold_per_route",
+      "uses_target_retention_fraction": false,
+      "uses_weighted_global_score": false,
+      "confidence_level": 0.95,
+      "false_reject_bound_method": "one_sided_binomial_upper_confidence_bound",
+      "normal_clean_control_false_reject_upper_bound": 0.01,
+      "hard_clean_control_false_reject_upper_bound": 0.05,
+      "source_and_dataset_holdout_required": true,
+      "leave_route_out_stress_test_required": true,
+      "confirmatory_results_may_retune_thresholds": false,
+      "no_feasible_threshold_action": "route_abstains_and_cannot_authorize_removal"
+    }
+  },
+  "mode_actions": {
+    "normal": {
+      "eligible_keep": "retain",
+      "reject": "not_select",
+      "abstain": "retain"
+    },
+    "hard": {
+      "eligible_keep": "retain",
+      "reject": "not_select",
+      "abstain": "not_select"
+    }
+  },
+  "not_selected_artifact_required": true,
+  "coverage": {
+    "definition": "multi_axis_representation_classification_and_loss_audit",
+    "taxonomy_artifact": {
+      "config": "configs/coverage_taxonomy_v1.json",
+      "implementation": "coverage_taxonomy.py",
+      "status": "deterministic_fixture_validated_audit_active_selection_forbidden",
+      "unknown_boundary": "Unknown means no closed evidence fired; it is not a low-quality decision and does not distinguish novel content from unsupported out-of-taxonomy content."
+    },
+    "axes": [
+      "semantic_domain",
+      "language_script",
+      "format_genre",
+      "content_morphology"
+    ],
+    "classification": "multi_label_with_unknown",
+    "semantic_domain_examples": ["code", "math", "science", "medicine", "law", "general_knowledge", "unknown"],
+    "format_genre_examples": ["prose", "code", "dialogue", "question_answer", "table", "list", "formula", "unknown"],
+    "content_morphology_examples": ["explanation", "procedure", "reference", "implementation", "argument", "unknown"],
+    "may_assign_cross_stratum_importance": false,
+    "may_enforce_target_mix_or_quota": false,
+    "may_remove_only_for_domain_membership": false,
+    "may_rescue_quality_reject": false,
+    "representative_pool": "quality_eligible_records_only",
+    "representative_priority": [
+      "eligible_keep",
+      "higher_completeness_evidence",
+      "closer_to_cluster_medoid",
+      "stable_record_id"
+    ],
+    "required_audits": [
+      "raw_and_curated_document_share_by_axis",
+      "raw_and_curated_token_share_by_axis",
+      "stratum_retention_rate",
+      "semantic_cluster_survival",
+      "tail_cluster_loss",
+      "raw_to_curated_jensen_shannon_divergence",
+      "quality_eligible_representative_presence",
+      "unknown_and_out_of_distribution_rate"
+    ],
+    "release_abstain_conditions": [
+      "supported_high_confidence_stratum_has_zero_survivors",
+      "redundancy_family_removal_has_no_retained_representative",
+      "coverage_classifier_or_taxonomy_version_is_missing",
+      "unknown_or_out_of_distribution_rate_is_not_reported"
+    ]
+  },
+  "runtime_allowed_inputs": [
+    "chunk_text",
+    "runtime_local_normalized_structure",
+    "frozen_route_evidence",
+    "frozen_coverage_tags",
+    "stable_record_and_chunk_ids"
+  ],
+  "runtime_forbidden_inputs": [
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction",
+    "source_identity",
+    "source_tier",
+    "rights",
+    "path",
+    "declared_domain_quota",
+    "dataset_identity",
+    "project_local_human_quality_label"
+  ],
+  "required_decision_trace": [
+    "chunk_uid",
+    "quality_decision",
+    "route_labels_and_confidence",
+    "evidence_head_results",
+    "policy_ids",
+    "reason_codes",
+    "model_and_threshold_artifact_hashes",
+    "representative_linkage_when_applicable",
+    "token_delta",
+    "coverage_tags"
+  ],
+  "activation_gates": [
+    "coverage_taxonomy_and_unknown_contract_validated",
+    "route_evidence_heads_calibrated_on_source_disjoint_controls",
+    "positive_negative_adversarial_and_clean_control_fixtures_passed",
+    "normal_and_hard_development_ablations_complete",
+    "one_profile_frozen_before_confirmatory_evaluation",
+    "three_seed_natural_budget_external_evaluation_complete",
+    "runtime_contract_and_documentation_switched_atomically"
+  ],
+  "completed_design_gates": [
+    "coverage_taxonomy_and_unknown_contract_validated",
+    "positive_quality_decision_and_calibration_contract_implemented",
+    "public_provider_candidates_and_missing_evidence_heads_audited",
+    "general_informational_prose_provider_calibrated_as_inactive_development_candidate"
+  ],
+  "claim_boundary": {
+    "allowed_after_activation": [
+      "The framework applies calibrated positive-retention evidence under declared routes and reports abstentions.",
+      "Coverage reports representation change and representative survival without imposing a target domain mix."
+    ],
+    "forbidden": [
+      "The framework measures universal intrinsic data quality.",
+      "A Coverage stratum is more important solely because of its label or rarity.",
+      "A fixed retained fraction proves curation quality.",
+      "Benchmark outcomes are runtime selection inputs.",
+      "A confirmatory result may be used to retune the frozen profile."
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": "math-raw-mixed-collection-v1",
+  "status": "frozen_before_collection",
+  "purpose": "Build a provenance-rich raw-mixed Math candidate pool for curation evaluation, not a benchmark-targeted training set.",
+  "output_dir": "outputs/math_raw_mixed_5m_v1",
+  "raw_pool": {
+    "dataset_id": "brando/small-open-web-math-dataset-v2",
+    "split": "train",
+    "text_fields": ["text"],
+    "target_token_proxy": 5000000,
+    "max_records": 20000,
+    "role": "raw_like_math_web"
+  },
+  "reference_pool": {
+    "dataset_id": "AI-MO/NuminaMath-CoT",
+    "split": "train",
+    "text_fields": ["problem", "solution"],
+    "target_token_proxy": 1000000,
+    "max_records": 10000,
+    "role": "known_high_quality_reference_context"
+  },
+  "normalization_contract": {
+    "minimum_token_proxy": 20,
+    "blocked_benchmark_terms": ["gsm8k", "grade school math 8k", "hendrycks", "competition_math", "math-500"],
+    "required_provenance_fields": ["source_dataset_id", "source_split", "source_row_index", "pool_role"]
+  },
+  "benchmark_quarantine": [
+    {"name": "GSM8K", "dataset_id": "openai/gsm8k", "split": "test"},
+    {"name": "MATH", "dataset_id": "hendrycks/competition_math", "split": "test"}
+  ],
+  "forbidden_uses": [
+    "using GSM8K or MATH benchmark content as training candidates",
+    "using benchmark, NLL, or downstream outcomes as Stage-B selector inputs",
+    "treating reference-pool membership as a selector feature or label"
+  ],
+  "claim_boundary": "Collection evidence only. Candidate-pool provenance and lexical exclusions do not certify benchmark-clean or production-ready data."
+}

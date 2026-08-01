@@ -1,0 +1,89 @@
+{
+  "schema_version": "raw-corpus-matrix-development-execution-qwen3-4b-v1",
+  "status": "frozen_before_raw_matrix_development_outcomes",
+  "purpose": "Bind the frozen raw_mixed equal-token blocks to a five-seed Qwen3-4B QLoRA development run before any development outcome is read.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "source_study_contract": {
+    "path": "configs/raw_corpus_matrix_stage_c_study_v1.json",
+    "sha256": "efa1a92fa4d34cb3dab5650444d0d5a4ab650ba17618eef1eedfffcdbaf40100"
+  },
+  "source_input_report": {
+    "path": "outputs/raw_corpus_matrix_stage_c_v1/raw_corpus_matrix_stage_c_inputs_report.json",
+    "sha256": "ace15df0f380f1b29f27ae2c8dc0f3d6762a58079e5ef24b44a4f168f233e74f"
+  },
+  "training_arms": [
+    "raw_mixed_random_equal_token",
+    "stage_a_random_equal_token",
+    "curated_equal_token"
+  ],
+  "primary_comparison": {
+    "treatment": "curated_equal_token",
+    "primary_baseline": "stage_a_random_equal_token",
+    "supporting_baseline": "raw_mixed_random_equal_token",
+    "metric": "development_code_heldout_mean_nll",
+    "practical_margin": 0.003,
+    "decision_rule": "paired bootstrap percentile interval from configs/benchmark_sensitivity_protocol_v1.json; abstain when evidence is missing or the interval does not clear the practical margin"
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 27,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {"rank": 32, "alpha": 64, "dropout": 0.05, "target_modules": "all-linear"},
+    "development_training_seeds": [11, 23, 37, 53, 71],
+    "same_seed_set_for_every_arm": true,
+    "common_packed_token_budget": 452608,
+    "effective_training_tokens_per_arm": 442368,
+    "complete_accumulation_rule": "floor(common_packed_token_budget / (sequence_length * micro_batch_size * gradient_accumulation_steps)) optimizer steps; the residual blocks are intentionally not trained so every arm consumes the same complete optimizer updates."
+  },
+  "training_blocks": {
+    "path": "outputs/raw_corpus_matrix_stage_c_v1/token_blocks",
+    "blocks": {
+      "raw_mixed_random_equal_token": {"path": "outputs/raw_corpus_matrix_stage_c_v1/token_blocks/raw_mixed_random_equal_token.pt", "sha256": "2b11890378ddd5fa40973545ba9f0ab5200eec93dcb7e46717af9f00893052da"},
+      "stage_a_random_equal_token": {"path": "outputs/raw_corpus_matrix_stage_c_v1/token_blocks/stage_a_random_equal_token.pt", "sha256": "297db5bc96678f95ea237dc669205ee064015becb73e3953c50133c5b94c6ead"},
+      "curated_equal_token": {"path": "outputs/raw_corpus_matrix_stage_c_v1/token_blocks/curated_equal_token.pt", "sha256": "3b3ee284c8a96cdf1dc2ea9d7e4b1ff72bf920f17b1479fba8bff9dc9720b56a"}
+    }
+  },
+  "heldout_nll": {
+    "source_split": "development",
+    "frozen_heldout": {
+      "path": "outputs/raw_corpus_matrix_stage_c_v1/holdouts/development/stage_a_pass.jsonl",
+      "sha256": "f0c620c4dc837a366217328b3c8a33a6f009bb9211f24b827e76a0d5c8f51f34"
+    },
+    "metric": "mean_nll",
+    "direction": "lower_is_better"
+  },
+  "execution": {
+    "physical_gpu_index": 1,
+    "visible_cuda_device": 0,
+    "device_preference": "idle_RTX_3070_Ti",
+    "offline_model_loading": true
+  },
+  "stage_b_isolation": {
+    "utility_available_to_stage_b": false,
+    "benchmark_outcomes_available_to_stage_b": false,
+    "development_outcomes_available_to_stage_b": false,
+    "confirmatory_outcomes_available_to_stage_b": false,
+    "source_tier_available_to_stage_b": false,
+    "known_reference_label_available_to_stage_b": false
+  },
+  "guardrails": {
+    "retention_contract": "configs/temporal_code_stage_c_retention_guardrails_v1.json",
+    "development_outcome_role": "recipe selection only; no confirmatory or release claim",
+    "missing_evidence_action": "abstain"
+  },
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Development QLoRA execution freeze only. It cannot support a confirmatory, release, universal-curation, or production-readiness claim."
+}

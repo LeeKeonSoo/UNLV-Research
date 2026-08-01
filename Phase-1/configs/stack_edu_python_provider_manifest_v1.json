@@ -1,0 +1,45 @@
+{
+  "schema_version": "positive-quality-provider-manifest-v1",
+  "provider_id": "HuggingFaceTB/stack-edu-classifier-python",
+  "model_revision": "2b36efbd7a00b5db416d7550c5ad42b561355517",
+  "model_artifact": "https://huggingface.co/HuggingFaceTB/stack-edu-classifier-python",
+  "model_safetensors_sha256": "0d0857699faea5493ed8b0062f3dd649034467fb89887a7c7c9ebb02f7e42646",
+  "primary_evidence": "https://arxiv.org/abs/2502.02737",
+  "training_source_group": "the_stack_v2_python_synthetic_llama31_70b_annotations",
+  "training_objective": "single_regression_head_for_python_educational_value",
+  "annotation_scale": "0_to_5",
+  "output_scale": "provider_native_raw_regression_score",
+  "maximum_context_tokens": 1024,
+  "long_source_action": "truncate_to_first_1024_provider_tokens_as_documented_model_context",
+  "route_scope": {
+    "language": "python",
+    "language_declarations": ["source_row", "user_declared"],
+    "record_shape": "complete_source",
+    "out_of_scope_action": "abstain"
+  },
+  "head_mapping": {
+    "route_confidence": "authoritative_python_declaration_and_complete_source_binary",
+    "substantive_payload": "python_ast_contains_top_level_semantic_statement_binary",
+    "coherence_completeness": "python_ast_parse_success_binary",
+    "route_specific_evidence": "stack_edu_python_native_regression_score"
+  },
+  "candidate_thresholds_from_primary_evidence": [2.0, 3.0],
+  "candidate_threshold_authority": false,
+  "documented_metrics": {
+    "f1_binary_minimum_2": 0.9438,
+    "f1_binary_minimum_3": 0.8018,
+    "accuracy_1_to_5": 0.5749,
+    "f1_macro_1_to_5": 0.4652
+  },
+  "documented_limitations": [
+    "python_only",
+    "out_of_distribution_performance_may_change",
+    "1024_token_context",
+    "synthetic_annotation_bias",
+    "comment_density_bias",
+    "file_scored_without_repository_context"
+  ],
+  "local_calibration_status": "blocked_missing_provider_training_disjoint_clean_python_controls",
+  "claim_boundary": "The provider supplies one Python educational-code evidence head. It does not supply route, parser, payload, universal Quality, or runtime removal authority.",
+  "runtime_activation": false
+}

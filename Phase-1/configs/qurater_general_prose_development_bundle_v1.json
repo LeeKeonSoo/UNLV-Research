@@ -1,0 +1,67 @@
+{
+  "schema_version": "qurater-general-prose-development-bundle-v1",
+  "status": "calibrated_development_candidate_not_runtime_active",
+  "route_scope": "english_informational_prose_only",
+  "provider_id": "princeton-nlp/QuRater-1.3B",
+  "provider_revision": "bd61c778c2f42c6e406b7bac8064290ffc183ae1",
+  "provider_manifest_sha256": "b236bac15b92792c0fb62271bc27a896796a51a14359d49bbe75d4b83556b9f8",
+  "protocol_sha256": "b9ac3c1a6346415fd110b2173de35002b19234f6342554e27db4ecb947f6aa8e",
+  "artifacts": {
+    "clean_control_text_sha256": "18b751351219419833f027edbef3fa9c2db79556c6d8672ede69119dc383cacd",
+    "clean_control_scores_sha256": "d8c38c86901225bea4022ad3b20243a1ca733c10c33d5211b3d27c0cf8ce10a7",
+    "candidate_text_sha256": "351eba4f67606e03b0a86bccda48a9cd7741f748a09b613805a4b4ac664bf027",
+    "candidate_scores_sha256": "13fd2e428b8bcf58e9e86e68694a916575c25376259cc18341cc23380aba97da",
+    "calibration_report_sha256": "c16aa318764660c0c90202e87dca4961a27039bb472ff61c4b10f86fc0d36d4d"
+  },
+  "population": {
+    "clean_controls_total": 1000,
+    "clean_controls_in_route": 642,
+    "candidate_records_total": 1685,
+    "candidate_records_in_route": 1285,
+    "candidate_tokens_total": 1172443,
+    "candidate_tokens_in_route": 783876
+  },
+  "normal": {
+    "selected_profile_id": "clean_q0",
+    "false_reject_wilson_upper_bound": 0.0042,
+    "excluded_candidate_tokens_in_route": 83063,
+    "excluded_candidate_token_fraction_in_route": 0.105964,
+    "thresholds": {
+      "route_confidence": 1.0,
+      "substantive_payload": -3.70703125,
+      "coherence_completeness": -5.7734375,
+      "route_specific_evidence": -1.915958095544919
+    }
+  },
+  "hard": {
+    "selected_profile_id": "clean_q0.01",
+    "false_reject_wilson_upper_bound": 0.03906,
+    "excluded_candidate_tokens_in_route": 198962,
+    "excluded_candidate_token_fraction_in_route": 0.253817,
+    "thresholds": {
+      "route_confidence": 1.0,
+      "substantive_payload": -2.431640625,
+      "coherence_completeness": -3.949640012254902,
+      "route_specific_evidence": -0.326416015625
+    }
+  },
+  "passed_gates": [
+    "provider_revision_frozen",
+    "provider_native_scale_preserved",
+    "stable_id_and_normalized_text_hash_disjoint",
+    "normal_clean_control_false_reject_bound",
+    "hard_clean_control_false_reject_bound",
+    "target_retention_fraction_unused",
+    "external_results_hidden"
+  ],
+  "open_gates": [
+    "positive_negative_adversarial_and_format_fixtures",
+    "provider_bias_stress_audit",
+    "leave_route_out_stress_test",
+    "candidate_stage_c_integration",
+    "development_ablation",
+    "frozen_confirmatory_external_evaluation"
+  ],
+  "external_results_visible": false,
+  "runtime_activation": false
+}

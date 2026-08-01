@@ -1,0 +1,29 @@
+{
+  "schema_version": "deployment-contract-v1",
+  "contract_name": "broad_refresh_v1",
+  "objective_type": "broad_refresh",
+  "description": "Refresh the model on the broad usable candidate-data distribution.",
+  "primary_outcome": {
+    "evaluation": "confirmatory_broad_stageA_eval",
+    "direction": "lower_is_better",
+    "comparison_reference": "stageA_broad",
+    "minimum_improvement": 0.0,
+    "reference_requires_base_gain": true,
+    "minimum_reference_gain_over_base": 0.0
+  },
+  "guardrails": [],
+  "eligible_release_actions": [
+    "selected_only",
+    "coverage_backfilled",
+    "stageA_broad",
+    "reject",
+    "insufficient_usable_data"
+  ],
+  "preference_order": [
+    "selected_only",
+    "coverage_backfilled",
+    "stageA_broad"
+  ],
+  "claim_scope": "Broad same-corpus usable-data refresh only; external capability, safety, forgetting, and contamination claims are excluded.",
+  "utility_scope": "Stage C validation only; never selector objective"
+}

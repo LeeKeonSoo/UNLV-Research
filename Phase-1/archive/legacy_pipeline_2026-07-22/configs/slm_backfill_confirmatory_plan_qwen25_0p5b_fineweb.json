@@ -1,0 +1,140 @@
+{
+  "schema_version": "slm-backfill-confirmatory-plan-v1",
+  "plan_name": "confirm_qwen25_0p5b_fineweb_coverage_backfill_interleaved50_v1",
+  "status": "frozen_before_confirmatory_training_outcomes",
+  "frozen_date": "2026-06-10",
+  "experiment_dir": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1",
+  "research_question": "Does the frozen 50/50 selected-core plus Stage-A coverage-backfill arm improve broad untouched heldout NLL over equal-budget Stage-A random?",
+  "framework_scope": {
+    "stage_a": "chunk-level hard gate",
+    "stage_b": "chunk-level selected core; no Utility objective",
+    "release_training_construction": "frozen selected-core plus Stage-A coverage support mixture",
+    "stage_c": "subset-level target-SLM outcome validation",
+    "utility_scope": "Stage C only; never selector objective"
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen2.5-0.5B",
+    "tokenizer_id": "Qwen/Qwen2.5-0.5B",
+    "model_family": "Qwen2.5",
+    "parameter_count": 490000000,
+    "checkpoint_role": "base causal language model",
+    "release_window": "2024-era",
+    "license": "apache-2.0",
+    "selection_status": "frozen_for_experiment",
+    "selection_reason": "Small permissive base model with public Transformers support; model card describes it as a pretraining-stage causal LM suitable for continued pretraining.",
+    "source_url": "https://huggingface.co/Qwen/Qwen2.5-0.5B"
+  },
+  "frozen_candidate": {
+    "arm": "coverage_backfilled_interleaved50_equal_budget",
+    "selected_core_fraction": 0.5,
+    "ordering_policy": "interleave_components_to_preserve_selected_core_fraction_through_prefixes",
+    "target_tokens": 22199800,
+    "file": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\coverage_backfilled_interleaved50_equal_budget.jsonl",
+      "sha256": "c4faf8616e164145ac9c1b5ba592ca51aa6948bbc3330eb3513d2f1df1e10c54",
+      "bytes": 142025238
+    },
+    "manifest": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\coverage_backfilled_interleaved50_equal_budget_manifest.json",
+      "sha256": "18c728ef9adbc4551407bdaee15456cef56562aed0f138ace729de9f7f7eb3ba",
+      "bytes": 1565
+    }
+  },
+  "comparators": {
+    "primary": {
+      "arm": "stageA_random_equal_budget",
+      "file": {
+        "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\stageA_random_equal_budget.jsonl",
+        "sha256": "4852913af4a6840bbad91400ba95bf36d748e53a3ce65267d228e489b4e5bda3",
+        "bytes": 135079984
+      }
+    },
+    "mechanism_diagnostic": {
+      "arm": "curated_equal_budget",
+      "file": {
+        "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\curated_equal_budget.jsonl",
+        "sha256": "5c470201f1f237d2cb304a4b96bea3d25f704b6040e330daaf1cf9004c2a3a3e",
+        "bytes": 147124508
+      },
+      "required_new_training_runs": false
+    },
+    "base_no_update": {
+      "required_training_run": false
+    }
+  },
+  "confirmatory_seeds": [
+    20260609,
+    20260610
+  ],
+  "excluded_from_confirmatory_success_count": {
+    "seed": 20260608,
+    "reason": "The 50/50 candidate was created after observing the seed-20260608 selected-only full-budget reversal."
+  },
+  "training": {
+    "sequence_length": 1024,
+    "matched_target_tokens": 22199800,
+    "learning_rate": 1e-05,
+    "weight_decay": 0.1,
+    "batch_size": 2,
+    "gradient_accumulation_steps": 4,
+    "dtype": "fp16",
+    "train_mode": "full",
+    "max_steps": null,
+    "required_new_runs": [
+      "coverage_backfilled_interleaved50_equal_budget_seed20260609",
+      "stageA_random_equal_budget_seed20260609",
+      "coverage_backfilled_interleaved50_equal_budget_seed20260610",
+      "stageA_random_equal_budget_seed20260610"
+    ]
+  },
+  "evaluation": {
+    "primary": {
+      "name": "confirmatory_broad_stageA_eval",
+      "metric": "mean_nll",
+      "direction": "lower_is_better",
+      "file": {
+        "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\confirmatory_broad_stageA_eval.jsonl",
+        "sha256": "0b3dd8200daf9d7ef49d6bf8b00dd9ff479999da489cd3eecc3d5363826c6317",
+        "bytes": 6980142
+      },
+      "role": "Only this evaluation determines primary success."
+    },
+    "secondary": {
+      "name": "confirmatory_coverage_stratified_stageA_eval",
+      "metric": "mean_nll",
+      "direction": "lower_is_better",
+      "file": {
+        "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\confirmatory_coverage_stratified_stageA_eval.jsonl",
+        "sha256": "3d7bec136d9920a171e319bffde3eb00c5cecf2895841e6a6edcc5783890c858",
+        "bytes": 7048861
+      },
+      "role": "Mechanism diagnostic; cannot rescue primary failure."
+    },
+    "holdout_manifest": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\confirmatory_holdouts_manifest.json",
+      "sha256": "1e1ec2a9d7c9108da71ed108481acaec3d5c2fb8e6602ad850f4a434bc74558c",
+      "bytes": 4918
+    }
+  },
+  "primary_success_rule": {
+    "required": [
+      "backfilled mean NLL is lower than Stage-A random mean NLL on the primary holdout across the two fresh confirmatory seeds",
+      "backfilled NLL is lower than Stage-A random NLL on both fresh confirmatory seeds",
+      "no missing or NaN primary outcomes",
+      "training recipe and frozen files match this plan"
+    ],
+    "failure_rule": "Any required condition failure means the frozen 50/50 confirmatory direction is not supported.",
+    "secondary_evaluation_rule": "Secondary outcomes are reported but cannot change primary pass/fail.",
+    "statistical_boundary": "Two fresh seeds provide directional replication, not a final high-power confidence-interval claim."
+  },
+  "claim_boundary": {
+    "allowed_if_successful": "Scoped confirmatory evidence that the frozen 50/50 coverage-backfilled release arm improves internal broad heldout NLL over equal-budget Stage-A random for this FineWeb-Edu/Qwen setup.",
+    "not_allowed": [
+      "Claiming that 50/50 is optimal or universal",
+      "Universal raw-corpus curation claim",
+      "Dataset-independent or target-model-independent Utility improvement",
+      "Deployment-ready claim without external benchmark, forgetting, safety, and contamination checks",
+      "Using target-SLM outcomes as a Stage-B selector objective"
+    ]
+  }
+}

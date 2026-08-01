@@ -1,0 +1,42 @@
+{
+  "schema_version": "temporal-code-redundancy-saturation-ablation-v1",
+  "status": "frozen_before_target_model_outcomes",
+  "purpose": "Compare count-sensitive Stage-B structural saturation hypotheses without changing the canonical selector.",
+  "claim_boundary": "All arms are project hypotheses. No arm may be promoted from proxy metrics or the development silver benchmark alone.",
+  "common_contract": {
+    "stage": "Stage B",
+    "utility_consumed": false,
+    "benchmark_outcomes_consumed": false,
+    "human_or_llm_labels_consumed": false,
+    "lexical_risk": "existing maximum shingle Jaccard",
+    "combined_risk": "max(lexical_risk, structural_saturation_risk)",
+    "full_curated_pool_retained": true,
+    "budget_not_selected_is_rejection": false
+  },
+  "arms": {
+    "binary_current": {
+      "formula": "0.85 if structural_match_count > 0 else 0.0",
+      "role": "frozen current control"
+    },
+    "exp_tau_1": {
+      "formula": "1 - exp(-structural_match_count / 1.0)",
+      "role": "strong count-sensitive development hypothesis"
+    },
+    "exp_tau_2": {
+      "formula": "1 - exp(-structural_match_count / 2.0)",
+      "role": "moderate count-sensitive development hypothesis"
+    },
+    "log_count": {
+      "formula": "min(1.0, 0.55 + 0.20 * log2(1 + structural_match_count)) when count > 0 else 0.0",
+      "role": "bounded monotonic development hypothesis"
+    }
+  },
+  "required_development_evidence": [
+    "real-corpus silver precision recall and useful-data dropout",
+    "cluster-level representative retention",
+    "Stage-B selected-vs-budget-not-selected shift",
+    "equal-token proxy-model ablation",
+    "coverage retention and concise-useful preservation"
+  ],
+  "promotion_gate": "Freeze one development candidate before Qwen3-4B outcomes, then require equal-token downstream benefit and untouched confirmation."
+}

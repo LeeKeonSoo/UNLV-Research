@@ -1,0 +1,19 @@
+{
+  "schema_version": "math-known-head-calibration-v1",
+  "status": "frozen_before_calibration",
+  "clean_control_protocol": "configs/math_open_educational_clean_control_protocol_v2.json",
+  "clean_text": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v2/math_clean_controls_v2.jsonl",
+  "clean_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v2/math_clean_control_provider_scores_v2.jsonl",
+  "candidate_text": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+  "candidate_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_positive_scores_v1.jsonl",
+  "lower_quantiles": [0.0, 0.0025, 0.005, 0.01, 0.025, 0.05],
+  "confidence_level": 0.95,
+  "normal_false_reject_wilson_upper_bound": 0.01,
+  "hard_false_reject_wilson_upper_bound": 0.05,
+  "required_gate": "pooled_and_each_source_and_leave_one_source_out",
+  "known_heads_only": ["route_confidence", "route_specific_evidence"],
+  "missing_heads": ["substantive_payload", "coherence_completeness"],
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

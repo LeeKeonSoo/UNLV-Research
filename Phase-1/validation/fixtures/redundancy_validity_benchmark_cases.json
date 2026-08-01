@@ -1,0 +1,76 @@
+{
+  "schema_version": "redundancy-validity-benchmark-fixtures-v1",
+  "claim_boundary": "Labeled development benchmark for operational Redundancy calibration. Labels are project fixtures, not universal semantic-duplicate ground truth.",
+  "pairs": [
+    {
+      "id": "exact_python_copy",
+      "label": "hard_duplicate",
+      "left": "def normalize(value):\n    cleaned = value.strip().lower()\n    return cleaned.replace(' ', '-')\n",
+      "right": "def normalize(value):\n    cleaned = value.strip().lower()\n    return cleaned.replace(' ', '-')\n"
+    },
+    {
+      "id": "format_only_copy",
+      "label": "hard_duplicate",
+      "left": "def parse(value):\n    if value is None:\n        return []\n    return value.split(',')\n",
+      "right": "def parse( value ):\n\n    if value is None:\n        return [ ]\n\n    return value.split( ',' )\n"
+    },
+    {
+      "id": "literal_varied_generated_test",
+      "label": "hard_duplicate",
+      "left": "def test_case_alpha():\n    payload = {'name': 'alpha', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['name'] == 'alpha'\n    assert result['enabled'] is True\n",
+      "right": "def test_case_beta():\n    payload = {'name': 'beta', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['name'] == 'beta'\n    assert result['enabled'] is True\n"
+    },
+    {
+      "id": "contained_boilerplate_copy",
+      "label": "hard_duplicate",
+      "left": "The client retries failed requests with exponential backoff and stops after the configured attempt budget.",
+      "right": "The client retries failed requests with exponential backoff and stops after the configured attempt budget. The final error is returned to the caller."
+    },
+    {
+      "id": "related_retry_examples",
+      "label": "related_useful",
+      "left": "def retry_http(client, url):\n    for attempt in range(3):\n        try:\n            return client.get(url, timeout=5)\n        except TimeoutError:\n            sleep(2 ** attempt)\n    raise RuntimeError('request failed')\n",
+      "right": "def retry_database(connect):\n    for attempt in range(3):\n        try:\n            return connect()\n        except ConnectionError:\n            sleep(2 ** attempt)\n    raise RuntimeError('database unavailable')\n"
+    },
+    {
+      "id": "related_edge_case_tests",
+      "label": "related_useful",
+      "left": "def test_expiry_allows_missing_deadline():\n    assert is_expired(None, now=100) is False\n",
+      "right": "def test_expiry_rejects_past_deadline():\n    assert is_expired(99, now=100) is True\n"
+    },
+    {
+      "id": "same_control_shape_different_api",
+      "label": "related_useful",
+      "left": "def first_valid(values):\n    for value in values:\n        if value is not None:\n            return value\n    return None\n",
+      "right": "def first_positive(values):\n    for value in values:\n        if value > 0:\n            return value\n    return None\n"
+    },
+    {
+      "id": "documentation_parameter_recurrence",
+      "label": "related_useful",
+      "left": "Parameter timeout controls how long the client waits for a response. Example: use a short timeout for health checks.",
+      "right": "Parameter retries controls how many failed requests are repeated. Example: use a small retry budget for overloaded services."
+    },
+    {
+      "id": "independent_parser_and_window",
+      "label": "independent",
+      "left": "def parse_record(line):\n    key, separator, value = line.partition('=')\n    if not separator:\n        raise ValueError('missing separator')\n    return key.strip(), value.strip()\n",
+      "right": "def rolling_average(values, width):\n    totals = []\n    for index in range(len(values) - width + 1):\n        totals.append(sum(values[index:index + width]) / width)\n    return totals\n"
+    },
+    {
+      "id": "independent_docs",
+      "label": "independent",
+      "left": "A circuit breaker opens after repeated failures and prevents requests until a recovery timeout expires.",
+      "right": "A stable sort preserves the original order of records that compare as equal."
+    }
+  ],
+  "saturation_template": {
+    "sizes": [1, 2, 5],
+    "records": [
+      "def test_payload_001():\n    payload = {'name': 'alpha', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['enabled'] is True\n",
+      "def test_payload_002():\n    payload = {'name': 'beta', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['enabled'] is True\n",
+      "def test_payload_003():\n    payload = {'name': 'gamma', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['enabled'] is True\n",
+      "def test_payload_004():\n    payload = {'name': 'delta', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['enabled'] is True\n",
+      "def test_payload_005():\n    payload = {'name': 'epsilon', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['enabled'] is True\n"
+    ]
+  }
+}

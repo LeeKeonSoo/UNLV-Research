@@ -1,0 +1,88 @@
+{
+  "schema_version": "coverage-domain-fixtures-v1",
+  "claim_boundary": "Labeled fixture benchmark for observable domain/source-bucket coverage. True domain coverage requires explicit metadata or labeled domain fixtures.",
+  "cases": [
+    {
+      "id": "explicit_domain_balanced",
+      "original": [
+        {"metadata": {"domain": "python"}, "source": "src/python_1.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "python"}, "source": "src/python_2.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "testing"}, "source": "src/testing_1.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "docs"}, "source": "src/docs_1.json", "input_source": "batch_a"}
+      ],
+      "selected": [
+        {"metadata": {"domain": "python"}, "source": "src/python_1.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "testing"}, "source": "src/testing_1.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "docs"}, "source": "src/docs_1.json", "input_source": "batch_a"}
+      ],
+      "expected_scope": "explicit_domain_metadata",
+      "min_distribution_similarity": 0.75,
+      "min_retained_bucket_ratio": 1.0,
+      "expected_pass": true
+    },
+    {
+      "id": "explicit_domain_collapsed",
+      "original": [
+        {"metadata": {"domain": "python"}, "source": "src/python_1.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "python"}, "source": "src/python_2.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "testing"}, "source": "src/testing_1.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "docs"}, "source": "src/docs_1.json", "input_source": "batch_a"}
+      ],
+      "selected": [
+        {"metadata": {"domain": "python"}, "source": "src/python_1.json", "input_source": "batch_a"},
+        {"metadata": {"domain": "python"}, "source": "src/python_2.json", "input_source": "batch_a"}
+      ],
+      "expected_scope": "explicit_domain_metadata",
+      "min_distribution_similarity": 0.75,
+      "min_retained_bucket_ratio": 1.0,
+      "expected_pass": false
+    },
+    {
+      "id": "url_domain_metadata",
+      "original": [
+        {"metadata": {"url": "https://docs.python.org/3/library/asyncio.html"}, "source": "", "input_source": "crawl"},
+        {"metadata": {"url": "https://pypi.org/project/pytest/"}, "source": "", "input_source": "crawl"}
+      ],
+      "selected": [
+        {"metadata": {"url": "https://docs.python.org/3/library/asyncio.html"}, "source": "", "input_source": "crawl"},
+        {"metadata": {"url": "https://pypi.org/project/pytest/"}, "source": "", "input_source": "crawl"}
+      ],
+      "expected_scope": "explicit_domain_metadata",
+      "expected_original_buckets": ["docs.python.org", "pypi.org"],
+      "min_distribution_similarity": 1.0,
+      "min_retained_bucket_ratio": 1.0,
+      "expected_pass": true
+    },
+    {
+      "id": "source_bucket_fallback_only",
+      "original": [
+        {"metadata": {}, "source": "D:/raw/batch_001.json", "input_source": "collector"},
+        {"metadata": {}, "source": "D:/raw/batch_002.json", "input_source": "collector"}
+      ],
+      "selected": [
+        {"metadata": {}, "source": "D:/raw/batch_001.json", "input_source": "collector"}
+      ],
+      "expected_scope": "source_bucket_fallback",
+      "must_not_claim_true_domain": true,
+      "min_distribution_similarity": 0.5,
+      "min_retained_bucket_ratio": 0.5,
+      "expected_pass": true
+    },
+    {
+      "id": "mixed_domain_and_source_bucket",
+      "original": [
+        {"metadata": {"domain": "python"}, "source": "src/python.json", "input_source": "collector"},
+        {"metadata": {}, "source": "D:/raw/batch_001.json", "input_source": "collector"}
+      ],
+      "selected": [
+        {"metadata": {"domain": "python"}, "source": "src/python.json", "input_source": "collector"},
+        {"metadata": {}, "source": "D:/raw/batch_001.json", "input_source": "collector"}
+      ],
+      "expected_scope": "mixed_domain_and_source_bucket",
+      "must_not_claim_true_domain": true,
+      "min_distribution_similarity": 1.0,
+      "min_retained_bucket_ratio": 1.0,
+      "expected_pass": true
+    }
+  ]
+}

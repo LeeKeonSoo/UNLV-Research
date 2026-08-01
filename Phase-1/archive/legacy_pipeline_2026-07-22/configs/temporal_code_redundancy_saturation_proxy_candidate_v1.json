@@ -1,0 +1,48 @@
+{
+  "schema_version": "temporal-code-redundancy-saturation-proxy-candidate-v1",
+  "status": "frozen_before_proxy_model_outcomes",
+  "candidate": "log_count",
+  "canonical_control": "binary_current",
+  "source_report": "outputs/validation/redundancy_saturation_ablation_report.json",
+  "selection_rationale": {
+    "outcome_free": true,
+    "repository_count_preserved": 47,
+    "test_selected_count_control": 610,
+    "test_selected_count_candidate": 610,
+    "concise_selected_count_control": 384,
+    "concise_selected_count_candidate": 386,
+    "jaccard_with_control": 0.986072,
+    "added_records": 12,
+    "removed_records": 8,
+    "reason": "Highest-overlap count-sensitive arm with unchanged repository and test representation and no Utility or target-model outcomes."
+  },
+  "formula": "min(1.0, 0.55 + 0.20 * log2(1 + structural_match_count)) when count > 0 else 0.0",
+  "proxy_training_arms": [
+    "binary_current",
+    "log_count",
+    "stageA_random_equal_budget"
+  ],
+  "matched_conditions": [
+    "base checkpoint",
+    "tokenizer",
+    "training tokens",
+    "optimizer steps",
+    "sequence packing",
+    "learning rate",
+    "seed set",
+    "evaluation holdout"
+  ],
+  "promotion_requirements": [
+    "log_count does not regress target heldout NLL versus binary_current beyond the frozen detectable-effect rule",
+    "log_count improves or preserves template-saturation diagnostics",
+    "general retention guardrails remain non-inferior",
+    "results replicate across the frozen proxy seeds",
+    "Qwen3-4B remains untouched until the proxy decision is frozen"
+  ],
+  "forbidden_inputs": [
+    "Utility in Stage B",
+    "benchmark outcomes in selector scoring",
+    "confirmatory outcomes",
+    "human or LLM labels as gates"
+  ]
+}

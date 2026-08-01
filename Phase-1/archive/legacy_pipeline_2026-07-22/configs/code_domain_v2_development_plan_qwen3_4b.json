@@ -1,0 +1,223 @@
+{
+  "schema_version": "code-domain-v2-development-plan-qwen3-4b",
+  "status": "frozen_before_v2_development_training_outcomes",
+  "purpose": "Freeze the v2 Qwen3-4B QLoRA raw-vs-curated comparison after corpus expansion, balanced Stage-A readiness, and Stage-B v2 arm freeze.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "inputs": {
+    "design": "configs\\code_domain_next_development_cycle_v2_design.json",
+    "stage_b_v2_report": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\stage_b_code_domain_v2\\stage_b_v2_arms_report.json",
+    "stage_a_balanced_dir": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\stage_a_code_domain_v2_balanced",
+    "evalplus_guardrail_split": "configs\\temporal_code_evalplus_guardrail_split_v1.json",
+    "retention_guardrail_plan": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\temporal_code_retention_guardrail_plan.json"
+  },
+  "training_arms": [
+    "base_no_update",
+    "raw_random_equal_budget",
+    "stageA_random_equal_budget",
+    "curated_v2_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "primary_comparison": {
+    "treatment": "curated_v2_equal_budget",
+    "primary_baseline": "stageA_random_equal_budget",
+    "supporting_baselines": [
+      "raw_random_equal_budget",
+      "base_no_update"
+    ],
+    "reference_arm": "known_high_quality_equal_budget"
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 20,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "development_training_seeds": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "same_seed_set_for_every_arm": true,
+    "training_token_budget_cap": 327222,
+    "common_packed_token_budget": 325632
+  },
+  "heldout_nll": {
+    "development_slice_name": "development_code_nll_heldout",
+    "source_split": "development",
+    "source_file": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\stage_a_code_domain_v2_balanced\\development\\stage_a_pass.jsonl",
+    "allowed_content_types": [
+      "code",
+      "test"
+    ],
+    "selection_rule": "Sort by sha256(seed + ':' + slice_name + ':' + chunk_uid), then take chunks until the token-proxy budget is reached.",
+    "seed": 20260622,
+    "token_proxy_budget": 131072,
+    "confirmatory_read_forbidden": true,
+    "frozen_heldout": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\code_domain_v2_development_qwen3_4b\\heldouts\\development_code_nll_heldout.jsonl",
+      "sha256": "95aa8973a26e469708faf5d1c053cdee023fef1c2c8891547cffe77ba475bdd8",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\stage_a_code_domain_v2_balanced\\development\\stage_a_pass.jsonl",
+      "source_sha256": "00ad1db10db1c78ddd9e920d365847ac75f474970e3681006edbe616e3da4a28",
+      "source_split": "development",
+      "selection_rule": "Sort by sha256(seed + ':' + slice_name + ':' + chunk_uid), then take chunks until the token-proxy budget is reached.",
+      "seed": 20260622,
+      "candidate_records": 342,
+      "selected_records": 342,
+      "selected_token_proxy": 126482,
+      "token_proxy_budget": 131072,
+      "allowed_content_types": [
+        "code",
+        "test"
+      ],
+      "content_type_counts": {
+        "code": 225,
+        "test": 117
+      },
+      "repository_count": 17
+    }
+  },
+  "external_code_guardrails": {
+    "development": [
+      "EvalPlus HumanEval+ development split, pass_at_1_temperature_0",
+      "EvalPlus MBPP+ development split, pass_at_1_temperature_0"
+    ],
+    "role": "code capability and retention guardrail; not a selector signal",
+    "maximum_allowed_absolute_regression_macro_vs_base": 0.02
+  },
+  "general_retention_guardrails": {
+    "schema_version": "temporal-code-stage-c-retention-guardrails-v1",
+    "status": "frozen_before_temporal_code_development_model_outcomes",
+    "purpose": "Reject a temporal-code update that gains target utility by causing unacceptable code or general-capability forgetting.",
+    "reference_arm": "base_no_update",
+    "applies_to_arms": [
+      "raw_random_equal_token",
+      "common_disjoint_stage_a_random_equal_token",
+      "curated_equal_token"
+    ],
+    "code_guardrail": {
+      "source": "frozen EvalPlus E2 development and untouched confirmatory splits",
+      "metrics": [
+        "HumanEval+ pass_at_1",
+        "MBPP+ pass_at_1",
+        "unweighted macro pass_at_1"
+      ],
+      "maximum_allowed_absolute_regression_per_suite": 0.02,
+      "maximum_allowed_absolute_regression_macro": 0.02
+    },
+    "general_task_guardrail": {
+      "suites": [
+        "HellaSwag",
+        "ARC-Challenge",
+        "PIQA",
+        "WinoGrande"
+      ],
+      "metric": "accuracy",
+      "maximum_allowed_absolute_regression_per_suite": 0.02,
+      "maximum_allowed_absolute_regression_macro": 0.01
+    },
+    "general_text_guardrail": {
+      "metric": "external general-text mean NLL",
+      "maximum_allowed_mean_nll_increase": 0.01,
+      "confidence_rule": "one-sided 95% training-seed-level upper confidence bound must not exceed 0.01"
+    },
+    "seed_contract": {
+      "development_training_seeds": [
+        11,
+        23,
+        37,
+        53,
+        71
+      ],
+      "confirmatory_training_seeds": [
+        101,
+        131,
+        163,
+        197,
+        239
+      ],
+      "all_arms_use_identical_seeds": true
+    },
+    "decision_rule": {
+      "all_guardrails_mandatory": true,
+      "missing_evidence_action": "abstain",
+      "failed_guardrail_action": "reject_release",
+      "development_may_select_recipe": true,
+      "confirmatory_may_not_select_recipe": true
+    },
+    "evidence_class": "frozen_project_hypothesis_requiring_development_and_untouched_confirmatory_validation",
+    "forbidden_uses": [
+      "using retention outcomes in Stage B",
+      "changing margins after development or confirmatory outcomes",
+      "inspecting confirmatory outcomes before the development decision is frozen",
+      "using different Stage-A baselines for sensitivity arms"
+    ],
+    "confirmatory_outcomes_read": false,
+    "utility_scope": "Stage C validation only; never selector objective",
+    "claim_boundary": "Retention decision contract only; no Utility, release, or curation-benefit claim."
+  },
+  "margin_calibration": {
+    "status": "development_only_calibration_required_before_v2_confirmatory_freeze",
+    "inputs_allowed": [
+      "v2 development heldout",
+      "v2 development training outcomes",
+      "v2 development seed-level variance",
+      "v2 development base-NLL scale",
+      "v2 development and candidate split profiles"
+    ],
+    "inputs_forbidden": [
+      "v2 confirmatory outcomes",
+      "post-freeze confirmatory diagnostics from the same cycle"
+    ],
+    "candidate_margin_forms": [
+      "absolute_nll_reduction",
+      "relative_base_normalized_nll_reduction",
+      "stratified_code_test_nll_reduction"
+    ],
+    "freeze_requirement": "choose exactly one primary success rule before v2 confirmatory outcomes are read"
+  },
+  "development_decision_rule": {
+    "all_conditions_required": true,
+    "conditions": [
+      "curated_v2 beats Stage-A-random on the development primary metric by the frozen development margin or calibrated detectable-effect rule",
+      "curated_v2 is directionally no worse than raw-random",
+      "code guardrails pass",
+      "general retention guardrails pass",
+      "heldout stratification constraints pass",
+      "Stage-A-random hardness diagnostics are recorded",
+      "all required development training seeds complete or the report is explicitly feasibility-only"
+    ],
+    "failure_actions": {
+      "primary_margin_failure": "do_not_promote_recipe",
+      "guardrail_failure": "reject_recipe",
+      "missing_required_evidence": "abstain",
+      "insufficient_candidate_pool": "insufficient_usable_data"
+    }
+  },
+  "forbidden_uses": [
+    "using Utility, benchmark outcomes, retention outcomes, development outcomes, confirmatory outcomes, or human/LLM review labels in Stage B",
+    "changing training seeds, optimizer steps, token budget, heldout slice, benchmark split, guardrail margin, or practical effect rule after development outcomes",
+    "reading confirmatory outcomes before the v2 development decision and confirmatory protocol are frozen",
+    "using different Stage-A baselines for sensitivity arms"
+  ],
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "V2 development-plan freeze only; no model outcome, Utility result, release decision, or paper claim."
+}

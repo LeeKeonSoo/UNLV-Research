@@ -1,0 +1,52 @@
+{
+  "schema_version": "qurater-general-prose-development-v1",
+  "status": "preregistered_candidate_only",
+  "runtime_activation": false,
+  "route": "general_prose",
+  "route_scope": "english_informational_prose_only",
+  "provider_id": "princeton-nlp/QuRater-1.3B",
+  "provider_revision": "bd61c778c2f42c6e406b7bac8064290ffc183ae1",
+  "score_scale": "provider_native_raw_logit",
+  "scoring_method": {
+    "maximum_window_tokens": 512,
+    "document_aggregation": "token_count_weighted_window_mean",
+    "normalization": "none"
+  },
+  "head_mapping": {
+    "route_confidence": "coverage_taxonomy_v1_general_knowledge_and_prose_binary",
+    "substantive_payload": "qurater_facts_trivia_raw_logit",
+    "coherence_completeness": "qurater_writing_style_raw_logit_coherence_only",
+    "route_specific_evidence": "qurater_educational_value_raw_logit"
+  },
+  "audit_only_dimensions": [
+    "qurater_required_expertise_raw_logit"
+  ],
+  "known_limitations": [
+    "writing_style_does_not_establish_document_completeness",
+    "facts_trivia_does_not_cover_fiction_dialogue_or_non_informational_prose",
+    "provider_biases_across_domain_language_region_and_social_roles_require_audit",
+    "hard_top_score_filtering_is_not_supported_by_the_source_paper_without_local_validation"
+  ],
+  "calibration_inputs": {
+    "clean_control_scores": "D:/UNLV-Research/positive_quality_v1/development/fineweb_edu_qurater_1000.jsonl",
+    "clean_control_text": "D:/UNLV-Research/hf_validation_corpora_v1/curated/fineweb_edu_normal/stage_b_pass_chunks.jsonl",
+    "candidate_scores": "D:/UNLV-Research/positive_quality_v1/development/fineweb_broad_qurater.jsonl",
+    "candidate_text": "D:/UNLV-Research/general_raw_like_development_v1/normal_curation/stage_b_pass_chunks.jsonl",
+    "provider_training_source_group": "redpajama_pairwise_judgments_pre_2024",
+    "calibration_source_group": "fineweb_and_fineweb_edu_development_2024_plus",
+    "stable_id_and_normalized_text_hash_disjoint_required": true
+  },
+  "candidate_threshold_profiles": {
+    "construction": "per_head_clean_control_lower_quantiles",
+    "lower_quantiles": [0.0, 0.0025, 0.005, 0.01, 0.02, 0.05],
+    "combination": "all_mapped_heads_must_pass",
+    "normal_false_reject_wilson_upper_bound": 0.01,
+    "hard_false_reject_wilson_upper_bound": 0.05,
+    "confidence_level": 0.95,
+    "selection_rule": "most_compressive_feasible_profile",
+    "no_feasible_profile_action": "abstain"
+  },
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "activation_authority": false
+}

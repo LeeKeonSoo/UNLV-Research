@@ -1,0 +1,71 @@
+{
+  "schema_version": "temporal-code-executable-task-harness-v1",
+  "status": "frozen_before_harness_task_acquisition_or_model_outcomes",
+  "purpose": "Acquire a prevalidated executable Stage-C task distribution independently from candidate training-corpus acquisition.",
+  "task_role": "evaluation_only_never_training",
+  "required_task_fields": [
+    "task_class",
+    "repository_identity",
+    "assigned_split",
+    "execution_support_tier",
+    "frozen_execution_protocol",
+    "task_class_e2_evidence",
+    "task_prompt_source",
+    "task_prompt_training_authorized_false",
+    "provenance_urls",
+    "acquisition_timestamp"
+  ],
+  "eligibility": {
+    "execution_support_tier": "E2",
+    "task_class_specific_e2_verification_required_before_model_training": true,
+    "repository_disjoint_between_train_development_confirmatory": true,
+    "time_disjoint_between_train_development_confirmatory": true,
+    "benchmark_and_training_overlap_quarantine_required": true,
+    "task_prompt_must_never_enter_training": true
+  },
+  "task_class_e2_contracts": {
+    "repository_patch": "the same frozen isolated command passes on both parent and merge commits",
+    "function_generation": "the frozen isolated evaluator, dependency image, public tests, and hidden tests pass on the reference solution and the evaluator rejects at least one frozen negative control",
+    "other": "requires a separately frozen task-class-specific reproducibility contract"
+  },
+  "splits": {
+    "development": "may support candidate selection and stopping rules",
+    "confirmatory": "untouched until the development decision and all margins are frozen"
+  },
+  "sample_size_rule": {
+    "fixed_arbitrary_minimum_forbidden": true,
+    "primary_estimand": "paired per-task curated-minus-common-Stage-A-random executable success difference",
+    "practical_effect_margin_absolute": 0.05,
+    "confidence_rule": "one-sided 95% lower confidence bound",
+    "desired_task_distribution_half_width": 0.05,
+    "conservative_variance_bound_for_paired_difference": 1.0,
+    "training_seed_count": 5,
+    "task_count_formula": "ceil(z_one_sided_95^2 * paired_difference_variance_bound / desired_half_width^2)",
+    "required_before_development_model_outcomes": [
+      "freeze the primary executable aggregate",
+      "freeze the practical effect margin",
+      "freeze the training-seed count",
+      "compute a task-count requirement from the practical margin and desired confidence-interval precision",
+      "document the expected floor-effect and abstention rule"
+    ],
+    "insufficient_task_decision": "insufficient_executable_task_distribution"
+  },
+  "primary_comparison": "curated_equal_token versus the same common disjoint Stage-A-random baseline used by every sensitivity arm",
+  "supporting_comparisons": [
+    "raw_random_equal_token versus the same common disjoint Stage-A-random baseline",
+    "base_no_update",
+    "external code benchmarks",
+    "general and code retention guardrails"
+  ],
+  "forbidden_uses": [
+    "using task outcomes in Stage B",
+    "using execution-support tier in Stage B",
+    "training on task prompts, tests, patches, or solutions",
+    "selecting or tuning the harness from model outcomes",
+    "inspecting confirmatory outcomes before the development decision is frozen",
+    "using different Stage-A baselines for sensitivity arms"
+  ],
+  "human_or_llm_review": "optional diagnostic only; never task ground truth, tuning signal, or entry gate",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Executable-task harness acquisition contract only; no Utility, curation-benefit, or release claim."
+}

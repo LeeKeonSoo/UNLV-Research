@@ -1,0 +1,143 @@
+{
+  "schema_version": "content-router-v2-fixtures",
+  "cases": [
+    {
+      "id": "general_informational_prose",
+      "text": "The experiment measures glacier density because gravity deforms the ice over time. Scientists compare the field instruments with satellite images.",
+      "expected_axes": {
+        "content_format": ["prose"],
+        "structural_state": ["unknown"],
+        "language_script": ["latin"],
+        "semantic_domain": ["science"]
+      },
+      "expected_routes": ["general_prose"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "complete_code_artifact",
+      "text": "#!/usr/bin/env python3\nimport math\n\ndef area(radius):\n    return math.pi * radius * radius\n",
+      "expected_axes": {
+        "content_format": ["source_code"],
+        "structural_state": ["complete_artifact"],
+        "language_script": ["latin"],
+        "semantic_domain": ["code"]
+      },
+      "expected_routes": ["code_artifact"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "mathematical_prose_is_not_ambiguous_mixed",
+      "text": "The theorem follows from the matrix equation. Proof: let $A$ be invertible and use \\frac{1}{2} together with \\sum_i x_i.",
+      "expected_axes": {
+        "content_format": ["mathematical_notation", "prose"],
+        "structural_state": ["unknown"],
+        "language_script": ["latin"],
+        "semantic_domain": ["math"]
+      },
+      "expected_routes": ["mathematical_content"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "dialogue_route",
+      "text": "Ava: Are you coming after class?\nBen: Yes, I will meet you outside.\nAva: Great, I will wait near the library.",
+      "expected_axes": {
+        "content_format": ["dialogue"],
+        "structural_state": ["unknown"],
+        "language_script": ["latin"]
+      },
+      "expected_routes": ["conversation"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "explicit_instruction_route",
+      "text": "Step 1: install the package.\nStep 2: open the configuration file.\nStep 3: run the validation command.",
+      "expected_axes": {
+        "content_format": ["instruction"],
+        "structural_state": ["unknown"],
+        "language_script": ["latin"]
+      },
+      "expected_routes": ["instruction"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "structured_table_route",
+      "text": "| Model | Score |\n| --- | --- |\n| Base | 42.1 |",
+      "expected_axes": {
+        "content_format": ["table"],
+        "structural_state": ["unknown"],
+        "language_script": ["latin"]
+      },
+      "expected_routes": ["table_structured_data"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "technical_documentation_route",
+      "text": "API Reference\nParameters\nvalue: the input integer.\nReturns\nThe transformed integer result.",
+      "expected_axes": {
+        "content_format": ["prose"],
+        "structural_state": ["unknown"],
+        "language_script": ["latin"]
+      },
+      "expected_routes": ["technical_documentation"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "explicit_generated_structure_is_not_quality",
+      "text": "// This file is generated. Do not edit.\nexport const version = 3;\nexport function value() { return version; }",
+      "expected_axes": {
+        "content_format": ["source_code"],
+        "structural_state": ["generated_artifact"],
+        "language_script": ["latin"],
+        "semantic_domain": ["code"]
+      },
+      "expected_routes": ["code_artifact"],
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
+    },
+    {
+      "id": "incompatible_formats_are_mixed",
+      "text": "Ava: Please inspect this function.\nBen: I will run it now.\nAva: Send me the result.\ndef solve(value):\n    return value + 1\nimport math",
+      "expected_axes": {
+        "content_format": ["dialogue", "mixed", "source_code"],
+        "structural_state": ["unknown"],
+        "language_script": ["latin"],
+        "semantic_domain": ["code"]
+      },
+      "expected_routes": ["code_artifact", "conversation", "mixed"],
+      "expected_status": "mixed",
+      "expected_confidence": "ambiguous_evidence"
+    },
+    {
+      "id": "unsupported_script_is_ood",
+      "text": "\u0391\u03c5\u03c4\u03cc \u03b5\u03af\u03bd\u03b1\u03b9 \u03ad\u03bd\u03b1 \u03c0\u03b1\u03c1\u03ac\u03b4\u03b5\u03b9\u03b3\u03bc\u03b1 \u03ba\u03b5\u03b9\u03bc\u03ad\u03bd\u03bf\u03c5 \u03bc\u03b5 \u03c0\u03bf\u03bb\u03bb\u03ad\u03c2 \u03bb\u03ad\u03be\u03b5\u03b9\u03c2. \u03a0\u03b5\u03c1\u03b9\u03ad\u03c7\u03b5\u03b9 \u03ba\u03b1\u03b9 \u03b4\u03b5\u03cd\u03c4\u03b5\u03c1\u03b7 \u03c0\u03c1\u03cc\u03c4\u03b1\u03c3\u03b7 \u03b3\u03b9\u03b1 \u03ad\u03bb\u03b5\u03b3\u03c7\u03bf.",
+      "expected_axes": {
+        "content_format": ["prose"],
+        "structural_state": ["unknown"],
+        "language_script": ["unknown"]
+      },
+      "expected_routes": ["general_prose"],
+      "expected_status": "out_of_distribution",
+      "expected_confidence": "unsupported"
+    },
+    {
+      "id": "no_closed_evidence_is_unknown",
+      "text": "@@@ ### 12345 === ???",
+      "expected_axes": {
+        "content_format": ["unknown"],
+        "structural_state": ["unknown"],
+        "language_script": ["unknown"],
+        "semantic_domain": ["unknown"]
+      },
+      "expected_routes": ["unknown"],
+      "expected_status": "unknown",
+      "expected_confidence": "none"
+    }
+  ]
+}

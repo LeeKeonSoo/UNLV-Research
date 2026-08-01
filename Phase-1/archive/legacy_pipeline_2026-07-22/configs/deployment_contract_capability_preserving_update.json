@@ -1,0 +1,47 @@
+{
+  "schema_version": "deployment-contract-v1",
+  "contract_name": "capability_preserving_update_v1",
+  "objective_type": "capability_preserving_update",
+  "description": "Improve a declared target outcome while preserving external general capabilities within a fixed regression limit.",
+  "primary_outcome": {
+    "evaluation": "target_domain_eval",
+    "direction": "lower_is_better",
+    "comparison_reference": "stageA_broad",
+    "minimum_improvement": 0.0
+  },
+  "guardrails": [
+    {
+      "evaluation": "general_capability_eval",
+      "direction": "lower_is_better",
+      "comparison_reference": "base_no_update",
+      "maximum_regression": 0.01,
+      "required": true
+    },
+    {
+      "evaluation": "forgetting_regression_eval",
+      "direction": "lower_is_better",
+      "comparison_reference": "base_no_update",
+      "maximum_regression": 0.0,
+      "required": true
+    },
+    {
+      "evaluation": "training_eval_exact_overlap_rate",
+      "direction": "lower_is_better",
+      "comparison_reference": "base_no_update",
+      "maximum_regression": 0.0,
+      "required": true
+    }
+  ],
+  "eligible_release_actions": [
+    "selected_only",
+    "coverage_backfilled",
+    "reject",
+    "insufficient_usable_data"
+  ],
+  "preference_order": [
+    "selected_only",
+    "coverage_backfilled"
+  ],
+  "claim_scope": "Provisional capability-preserving targeted update only; task benchmarks, near-duplicate contamination, safety, and multi-seed evidence remain required for deployment.",
+  "utility_scope": "Stage C validation only; never selector objective"
+}

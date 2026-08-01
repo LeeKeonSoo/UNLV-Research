@@ -1,0 +1,90 @@
+{
+  "schema_version": "code-external-evaluation-protocol-v1",
+  "status": "frozen_before_code_replay",
+  "evaluation_role": "external_offline_validation",
+  "may_mutate_curation_output": false,
+  "training_arms": ["base", "raw", "curated"],
+  "training_seeds": [101, 202, 303],
+  "training_budget": "natural_dataset_budget_per_arm",
+  "benchmark_exclusion": {
+    "required_before_training": true,
+    "rule": "Freeze benchmark snapshots, remove known benchmark records from every training candidate source, and record the exclusion audit before curation.",
+    "temporal_rule": "For LiveCodeBench, evaluate only problems released after both the base-model cutoff and the raw-corpus snapshot end."
+  },
+  "inference": {
+    "prompt_template": "freeze_per_benchmark_before_first_generation",
+    "decoding": "freeze_per_benchmark_before_first_generation",
+    "runtime_and_dataset_revision": "record_exact_versions_and_hashes_in_each_run_manifest"
+  },
+  "primary_benchmarks": [
+    {
+      "id": "humanevalplus",
+      "family": "function_correctness",
+      "suite": "EvalPlus",
+      "metric": "pass_at_1",
+      "role": "augmented functional tests"
+    },
+    {
+      "id": "mbppplus",
+      "family": "function_correctness",
+      "suite": "EvalPlus",
+      "metric": "pass_at_1",
+      "role": "broader entry-level function tasks with augmented tests"
+    },
+    {
+      "id": "livecodebench_code_generation_lite",
+      "family": "temporal_contest_generation",
+      "suite": "LiveCodeBench",
+      "metric": "pass_at_1",
+      "role": "post-cutoff code-generation generalization"
+    },
+    {
+      "id": "bigcodebench_complete",
+      "family": "software_api_generation",
+      "suite": "BigCodeBench",
+      "metric": "pass_at_1",
+      "role": "software-engineering-oriented API and library use"
+    },
+    {
+      "id": "cruxeval_input_prediction",
+      "family": "code_reasoning",
+      "suite": "CRUXEval",
+      "metric": "exact_match",
+      "role": "infer function inputs from code and outputs"
+    },
+    {
+      "id": "cruxeval_output_prediction",
+      "family": "code_reasoning",
+      "suite": "CRUXEval",
+      "metric": "exact_match",
+      "role": "infer execution outputs from code and inputs"
+    },
+    {
+      "id": "ds1000",
+      "family": "data_science_generation",
+      "suite": "DS-1000",
+      "metric": "pass_at_1",
+      "role": "Python data-science library use"
+    }
+  ],
+  "secondary_benchmarks": [
+    {
+      "id": "swebench_lite_fixed_agent",
+      "family": "repository_issue_resolution",
+      "suite": "SWE-bench Lite",
+      "metric": "resolved_rate",
+      "role": "agent-mediated repository patching under a separately frozen agent scaffold",
+      "not_a_primary_model_only_measure": true
+    }
+  ],
+  "reporting": {
+    "aggregate_rule": "report_each_benchmark_and_family_without_single_cross_metric_score",
+    "uncertainty": "report_seed_distribution_and_paired_task_level_comparison_when_available",
+    "required_tables": ["base_raw_curated_per_benchmark", "raw_to_curated_token_and_composition_shift", "benchmark_exclusion_audit"]
+  },
+  "forbidden_claims": [
+    "A result on one benchmark proves universal code utility.",
+    "External benchmark results may alter the frozen curation output.",
+    "SWE-bench measures the base model independently of its agent scaffold."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "slm-update-certification-plan-v1",
+  "plan_name": "cert_qwen25_0p5b_fineweb_edu_canonical_lr1e5_fullblocks_v1",
+  "status": "predeclared_before_certification_scale_primary_results",
+  "experiment_dir": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1",
+  "frozen_training_plan": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1/frozen_training_plan.json",
+  "token_blocks_dir": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1/token_blocks_full",
+  "model": "Qwen/Qwen2.5-0.5B",
+  "primary_comparison": "curated_equal_budget_vs_stageA_random_equal_budget",
+  "primary_arms": [
+    "curated_equal_budget",
+    "stageA_random_equal_budget"
+  ],
+  "supporting_arms": [
+    "raw_random_equal_budget"
+  ],
+  "seeds": [
+    20260608,
+    20260609,
+    20260610
+  ],
+  "training": {
+    "sequence_length": 1024,
+    "train_sequences_per_arm": 21679,
+    "eval_sequences": 1289,
+    "learning_rate": 0.00001,
+    "weight_decay": 0.1,
+    "batch_size": 2,
+    "gradient_accumulation_steps": 4,
+    "max_steps": null,
+    "dtype": "fp16",
+    "train_mode": "full"
+  },
+  "evaluation": {
+    "primary_metric": "heldout_mean_nll",
+    "direction": "lower_is_better",
+    "eval_blocks": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1/token_blocks_full/eval.pt",
+    "batch_size": 2
+  },
+  "success_rule": {
+    "required": [
+      "curated_mean_nll_lower_than_stageA_random_mean_nll",
+      "curated_better_on_at_least_two_of_three_primary_seeds",
+      "no_nan_or_missing_primary_eval",
+      "report_as_internal_heldout_certification_candidate_not_final_paper_claim_without_external_checks"
+    ],
+    "preferred": [
+      "curated_better_on_all_three_primary_seeds",
+      "curated_mean_nll_lower_than_raw_random_supporting_arm"
+    ]
+  },
+  "claim_boundary": {
+    "allowed_if_successful": "Internal heldout target-SLM evidence that the curated FineWeb-Edu subset improves over equal-budget Stage-A random usable data.",
+    "not_allowed_without_more_evidence": [
+      "universal raw-corpus curation claim",
+      "deployment-ready framework claim",
+      "external benchmark or forgetting claim",
+      "contamination-safe release claim"
+    ],
+    "utility_scope": "Stage C validation only; never selector objective"
+  }
+}

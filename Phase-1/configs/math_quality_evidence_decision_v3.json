@@ -1,0 +1,61 @@
+{
+  "schema_version": "math-quality-evidence-decision-v3",
+  "status": "explicit_coherence_evidence_closed_bundle_blocked_payload_and_provider_transfer",
+  "supersedes": "configs/math_quality_evidence_decision_v2.json",
+  "decision": "keep_math_positive_quality_runtime_inactive",
+  "explicit_coherence_v2": {
+    "contract": "configs/math_explicit_coherence_guard_v2.json",
+    "contract_sha256": "65618a012578d297c5af29c513617f4354c68254e3d3f576059b21d4fddffe94",
+    "development_result": {
+      "controls": 2574,
+      "control_tokens": 2440993,
+      "explicit_defect_records": 3,
+      "maximum_source_false_reject_wilson_upper_bound": 0.04384603558524924,
+      "fixture_families_passed": "6/6",
+      "report_sha256": "f9ad851147876bd9a585617904284a67e0557b2da55ba02007c6fedc52419a83"
+    },
+    "fresh_retention_control_result": {
+      "source": "winitzki/linear-algebra-book",
+      "source_commit": "d4f178d6b8f61c743d854470138de224136570e2",
+      "records": 131,
+      "tokens": 300894,
+      "explicit_defect_records": 0,
+      "false_reject_wilson_upper_bound": 0.020235088121266225,
+      "fixture_families_passed": "6/6",
+      "materialization_report_sha256": "aa5245af6b2b0fa42f94c9c250668df30a4be3e366aa71f38bf4fc41a915370b",
+      "coherence_report_sha256": "de5cf6f4ec1d142ca897c4f2abf566cd5843ce918a8f6c0021257137b48fd1be"
+    },
+    "diagnostic_source_result": {
+      "source": "openstax/osbooks-physics",
+      "records": 500,
+      "tokens": 57613,
+      "explicit_defect_records": 19,
+      "reason": "objective UTF-8 encoded C1 control characters such as U+0092 and U+0097 in source text",
+      "interpretation": "diagnostic corruption corpus, not a clean false-reject control",
+      "report_sha256": "15282b70b674d2a7d167eb56987abe24a9f311d742ef0542b0b3d764e54ffa6d"
+    },
+    "candidate_diagnostic": {
+      "records": 3936,
+      "tokens": 5000169,
+      "explicit_defect_records": 117,
+      "explicit_defect_tokens": 470003,
+      "explicit_defect_token_fraction": 0.0939974228871064,
+      "claim_boundary": "diagnostic opportunity only; not a curated output or paper result"
+    }
+  },
+  "four_head_v5": {
+    "result": "blocked_no_strictly_feasible_profile",
+    "coherence_q0_loso_failures": 0,
+    "remaining_blockers": [
+      "jim_hefferon_linear_algebra: 7 substantive_payload plus 1 route_confidence failures among 59 controls",
+      "wojtask_clrs4e_solutions: 1 route_specific_evidence failure among 328 controls"
+    ],
+    "report_sha256": "fe0f4b5e711556ad84b6ae22ce9460703797f393736d506bddd402956c553520"
+  },
+  "runtime_effect": "none",
+  "quality_decision_for_math": "abstain_retain_unless_an_independent_active_explicit_reject_rule_fires",
+  "next_valid_path": "replace_or_redefine substantive_payload evidence and audit provider format transfer before repeating strict four-head calibration",
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

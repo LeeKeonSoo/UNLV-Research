@@ -1,0 +1,86 @@
+{
+  "schema_version": "math-domain-selector-v3-redesign-contract-v2",
+  "status": "math_selector_v3_preoutcome_mapping_frozen",
+  "purpose": "Define the evidence and fixture contract required before any Math selector v3 materialization or Stage-C rerun.",
+  "source_failure": {
+    "math_v2_decision": "failed_stage_c_validation",
+    "raw_mean_nll": 1.49565,
+    "curated_mean_nll": 1.527065,
+    "curated_minus_raw_nll": 0.031415,
+    "interpretation": "Current Math selector removes or underweights useful training signal."
+  },
+  "required_fixture_categories": [
+    "long_reasoning_context",
+    "multi_step_worked_solution",
+    "short_answer_low_context",
+    "noisy_extraction_artifact",
+    "template_redundancy",
+    "coverage_tail_topic"
+  ],
+  "required_candidate_arms": [
+    "base_no_update",
+    "raw_full_natural",
+    "stage_a_pass_natural",
+    "retain_all_if_budget_allows",
+    "broader_curated_pool",
+    "curated_math_v3_natural"
+  ],
+  "redesign_requirements": [
+    "separate malformed extraction handling from budget selection",
+    "preserve long reasoning and worked-solution coverage",
+    "cap short-answer dominance instead of banning short examples",
+    "penalize template redundancy without suppressing useful recurrence",
+    "report tail topic retention before Stage-C training"
+  ],
+  "preoutcome_feature_map": {
+    "long_reasoning_context": [
+      "token_proxy_count",
+      "derivation_marker_count",
+      "equation_count",
+      "style_bucket"
+    ],
+    "multi_step_worked_solution": [
+      "solution_marker_count",
+      "step_marker_count",
+      "verification_marker_count",
+      "math_signal_count"
+    ],
+    "short_answer_low_context": [
+      "token_proxy_count",
+      "qa_marker_count",
+      "context_marker_count",
+      "style_bucket"
+    ],
+    "noisy_extraction_artifact": [
+      "malformed_symbol_ratio",
+      "ocr_marker_count",
+      "stage_a_blockers"
+    ],
+    "template_redundancy": [
+      "template_repeat_count",
+      "duplicate_risk",
+      "near_duplicate_risk"
+    ],
+    "coverage_tail_topic": [
+      "topic_bucket",
+      "tail_topic_indicator",
+      "source_bucket",
+      "style_bucket"
+    ]
+  },
+  "selector_v3_policy": {
+    "selection_mode": "broader_curated_pool_not_aggressive_downsampling",
+    "retain_all_fallback": true,
+    "minimum_stage_a_token_retention_fraction": 0.9,
+    "minimum_proof_or_theorem_token_retention_fraction": 0.95,
+    "maximum_bibliographic_review_token_fraction": 0.02,
+    "short_answer_low_context_cap": "cap only low-context short-answer items; do not cap long worked QA derivations",
+    "utility_outcomes_read": false
+  },
+  "forbidden_actions": [
+    "using heldout math NLL, GSM8K, MATH, or Utility outcomes as Stage-B features",
+    "removing failed Math evidence from the paper ledger",
+    "claiming all-domain improvement before a new frozen Stage-C pass"
+  ],
+  "next_allowed_action": "Materialize Math selector v3 from these frozen pre-outcome requirements, then freeze a new Stage-C protocol before training."
+}

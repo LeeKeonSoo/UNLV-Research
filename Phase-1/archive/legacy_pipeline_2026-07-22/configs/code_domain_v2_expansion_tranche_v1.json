@@ -1,0 +1,52 @@
+{
+  "schema_version": "code-domain-v2-expansion-tranche-v1",
+  "status": "frozen_after_v2_candidate_pool_readiness_failure_before_content_fetch",
+  "purpose": "Select additional repository-disjoint raw-like Python code bundles to repair v2 candidate-pool size, repository-share, and heldout-stratification blockers before any new Stage-C training.",
+  "source_readiness_report": "outputs/validation/code_domain_v2_candidate_pool_readiness_report.json",
+  "exclude_repository_plans": [
+    "outputs/temporal_code_collection/temporal_code_path_stratified_tranche_plan_v2.json"
+  ],
+  "one_pull_request_per_repository": true,
+  "representative_pull_request_priority": [
+    "code_and_test",
+    "code_only"
+  ],
+  "required_repositories_by_split_and_stratum": {
+    "train": {
+      "code_and_test": 20,
+      "code_only": 20
+    },
+    "development": {
+      "code_and_test": 8,
+      "code_only": 6
+    },
+    "confirmatory": {
+      "code_and_test": 12,
+      "code_only": 2
+    }
+  },
+  "selection_uses": [
+    "assigned split",
+    "path-only changed-file metadata",
+    "tree path count",
+    "normalized repository identity",
+    "pull request number",
+    "repository exclusion from prior frozen v2 tranche"
+  ],
+  "selection_forbids": [
+    "file content",
+    "pull request title or body",
+    "Stage-0 outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "retention outcomes",
+    "development model outcomes",
+    "confirmatory model outcomes",
+    "human or LLM review labels"
+  ],
+  "failure_decision": "insufficient_expansion_sampling_frame",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "V2 expansion collection frame only; no Stage-B, Stage-C, Utility, or training-benefit claim."
+}

@@ -1,0 +1,188 @@
+{
+  "schema_version": "core-external-validity-benchmark-contract-v1",
+  "status": "frozen_design_no_outcomes",
+  "purpose": "Define pre-outcome external and adversarial evidence required before Core behavior checks can be described as metric-validity evidence.",
+  "scope": {
+    "framework": "stage-separated LM training-data curation decision framework",
+    "target_model_family": "small language models under a declared deployment contract",
+    "threshold_interpretation": "preregistered engineering acceptance thresholds, not universal scientific constants",
+    "forbidden_claim": "Passing this contract proves intrinsic or universal data quality."
+  },
+  "freeze_boundary": {
+    "outcomes_available_at_freeze": false,
+    "stage_c_outcomes_forbidden_as_inputs": true,
+    "selector_changes_after_stage_c": "require a new protocol version and fresh holdouts",
+    "current_training_run_affected": false
+  },
+  "evidence_tiers": [
+    {
+      "tier": "behavior_fixture",
+      "meaning": "Implementation responds correctly to labeled and metamorphic examples.",
+      "claim_limit": "Development behavior only."
+    },
+    {
+      "tier": "heldout_construct_benchmark",
+      "meaning": "Metric behavior is measured on disjoint real, transformed, and adversarial examples.",
+      "claim_limit": "Construct evidence within the benchmark scope."
+    },
+    {
+      "tier": "stage_c_training_validation",
+      "meaning": "A frozen subset is evaluated through model training and downstream guardrails.",
+      "claim_limit": "Deployment- and domain-conditioned Utility only."
+    }
+  ],
+  "partition_contract": {
+    "required_partitions": [
+      "development",
+      "calibration",
+      "confirmatory_holdout"
+    ],
+    "minimum_confirmatory_examples_per_supported_class": 200,
+    "group_disjoint_keys": [
+      "source_origin",
+      "repository_or_document_family",
+      "transformation_parent_id"
+    ],
+    "confirmatory_holdout_single_use": true,
+    "training_data_overlap_audit_required": true
+  },
+  "cores": {
+    "Validity": {
+      "construct": "structural usability of a chunk for LM training",
+      "required_cases": [
+        "well_formed_valid",
+        "encoding_corruption",
+        "truncated_or_extraction_residue",
+        "non_language_fragment",
+        "hard_broken_repetition",
+        "warning_only_style_or_mild_repetition",
+        "adversarial_boundary_cases"
+      ],
+      "metrics": [
+        "hard_invalid_precision",
+        "hard_invalid_recall",
+        "valid_retention_rate",
+        "warning_to_hard_false_escalation_rate"
+      ],
+      "confirmatory_thresholds": {
+        "hard_invalid_precision_min": 0.95,
+        "hard_invalid_recall_min": 0.9,
+        "valid_retention_rate_min": 0.98,
+        "warning_to_hard_false_escalation_rate_max": 0.02
+      },
+      "forbidden_interpretations": [
+        "semantic correctness",
+        "license clearance",
+        "downstream Utility"
+      ]
+    },
+    "Selection Value Evidence": {
+      "construct": "observable pre-outcome evidence for optional budget allocation",
+      "required_cases": [
+        "controlled corruption severity ladder",
+        "blinded reference-tier pair comparisons",
+        "concise versus padded equivalents",
+        "rare but usable examples",
+        "high-quality raw corpus retain-all scenario"
+      ],
+      "metrics": [
+        "controlled_order_pair_accuracy",
+        "corruption_monotonicity_rate",
+        "rare_usable_retention_rate",
+        "hard_reject_authority_count"
+      ],
+      "confirmatory_thresholds": {
+        "controlled_order_pair_accuracy_min": 0.75,
+        "corruption_monotonicity_rate_min": 0.8,
+        "rare_usable_retention_rate_min": 0.95,
+        "hard_reject_authority_count_max": 0
+      },
+      "forbidden_interpretations": [
+        "intrinsic Quality",
+        "human preference ground truth",
+        "Utility surrogate"
+      ]
+    },
+    "Redundancy": {
+      "construct": "duplicate and saturation burden while preserving useful recurrence",
+      "required_cases": [
+        "exact duplicates",
+        "format-preserving near duplicates",
+        "semantic clone transformations",
+        "template saturation",
+        "useful recurrence",
+        "rare-cluster representative dropout"
+      ],
+      "metrics": [
+        "duplicate_precision",
+        "duplicate_recall",
+        "useful_recurrence_false_positive_rate",
+        "cluster_representative_retention_rate"
+      ],
+      "confirmatory_thresholds": {
+        "duplicate_precision_min": 0.9,
+        "duplicate_recall_min": 0.9,
+        "useful_recurrence_false_positive_rate_max": 0.05,
+        "cluster_representative_retention_rate_min": 0.99
+      },
+      "current_known_gap": "The current labeled fixture recall of 0.5 does not satisfy this contract."
+    },
+    "Coverage": {
+      "construct": "observable retention and drift under available metadata and a declared deployment contract",
+      "required_cases": [
+        "source collapse",
+        "style collapse",
+        "path and content-type collapse",
+        "cluster-tail dropout",
+        "declared domain-mix drift",
+        "metadata-missing abstention",
+        "retain-all stability"
+      ],
+      "metrics": [
+        "collapse_detection_recall",
+        "stable_distribution_false_alarm_rate",
+        "tail_group_retention_rate",
+        "metadata_missing_overclaim_count"
+      ],
+      "confirmatory_thresholds": {
+        "collapse_detection_recall_min": 0.95,
+        "stable_distribution_false_alarm_rate_max": 0.05,
+        "tail_group_retention_rate_min": 0.95,
+        "metadata_missing_overclaim_count_max": 0
+      },
+      "forbidden_interpretations": [
+        "true domain coverage without explicit metadata",
+        "target-mix satisfaction without a deployment contract",
+        "downstream Utility"
+      ]
+    },
+    "Utility": {
+      "construct": "downstream training effect under a frozen Stage-C protocol",
+      "required_cases": [
+        "base no-update arm",
+        "raw natural-budget arm",
+        "curated natural-budget arm",
+        "Stage-A random equal-token arm",
+        "curated equal-token arm",
+        "positive control",
+        "destructive negative control",
+        "general-retention guardrail"
+      ],
+      "protocol_requirements": {
+        "minimum_seeds": 5,
+        "common_stage_a_baseline_disjoint_from_every_sensitivity_arm": true,
+        "paired_confidence_intervals_required": true,
+        "practical_margin_frozen_before_outcomes": true,
+        "stage_b_consumption_forbidden": true
+      },
+      "success_interpretation": "Domain- and deployment-conditioned training evidence only."
+    }
+  },
+  "release_rule": {
+    "core_behavior_pass_is_sufficient": false,
+    "all_non_utility_cores_require_heldout_construct_benchmark": true,
+    "utility_requires_stage_c_training_validation": true,
+    "failed_or_missing_core_action": "abstain_or_limit_claim",
+    "production_certification_implied": false
+  }
+}

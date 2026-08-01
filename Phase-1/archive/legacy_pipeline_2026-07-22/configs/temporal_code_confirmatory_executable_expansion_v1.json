@@ -1,0 +1,31 @@
+{
+  "schema_version": "temporal-code-confirmatory-executable-expansion-v1",
+  "status": "frozen_before_expansion_content_fetch_or_execution",
+  "purpose": "Create an untouched repository-disjoint confirmatory executable-evaluation candidate expansion.",
+  "assigned_split": "confirmatory",
+  "required_path_stratum": "code_and_test",
+  "repository_count": 12,
+  "one_pull_request_per_repository": true,
+  "exclude_repositories_from_plan": "outputs/temporal_code_collection/temporal_code_path_stratified_tranche_plan_v2.json",
+  "selection_uses": [
+    "assigned split",
+    "path-only changed-file metadata",
+    "tree path count",
+    "normalized repository identity",
+    "pull request number"
+  ],
+  "selection_forbids": [
+    "file content",
+    "pull request title or body",
+    "test execution outcomes",
+    "Stage-0 outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "failure_decision": "insufficient_sampling_frame",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Confirmatory executable-evaluation candidate expansion only; no Utility or training-benefit claim."
+}

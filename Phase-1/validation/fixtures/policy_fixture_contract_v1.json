@@ -1,0 +1,140 @@
+{
+  "schema_version": "policy-fixture-contract-v1",
+  "purpose": "Bind every active operational policy to executable positive, false-positive, and adversarial boundary cases without introducing human Quality labels.",
+  "behavior_fixture": "validation/fixtures/core_behavior_audit_v3_cases.json",
+  "policies": [
+    {
+      "policy_id": "stage_a_provenance_contract",
+      "positive_case_ids": [
+        "provenance-positive",
+        "provenance-uri-positive",
+        "provenance-time-positive"
+      ],
+      "false_positive_case_ids": [
+        "provenance-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_a_risk_quarantine",
+      "positive_case_ids": [
+        "risk-positive",
+        "risk-secret-positive",
+        "risk-benchmark-positive",
+        "risk-poisoning-positive",
+        "risk-unknown-rights-positive",
+        "risk-restricted-rights-positive",
+        "risk-invalid-rights-positive"
+      ],
+      "false_positive_case_ids": [
+        "risk-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_a_normalized_text_integrity",
+      "positive_case_ids": [
+        "normalized-integrity-positive",
+        "normalized-mojibake-positive",
+        "normalized-contract-positive",
+        "acquisition-failure-positive"
+      ],
+      "false_positive_case_ids": [
+        "normalized-integrity-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_a_bom_normalization",
+      "positive_case_ids": [
+        "bom-positive"
+      ],
+      "false_positive_case_ids": [
+        "bom-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_b_invalid_chunk",
+      "positive_case_ids": [
+        "stage-b-positive"
+      ],
+      "false_positive_case_ids": [
+        "stage-b-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_b_exact_duplicate",
+      "positive_case_ids": [
+        "stage-b-duplicate-positive"
+      ],
+      "false_positive_case_ids": [
+        "stage-b-duplicate-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_c_symmetric_near_duplicate",
+      "positive_case_ids": [
+        "near-duplicate-positive"
+      ],
+      "false_positive_case_ids": [
+        "near-duplicate-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_c_explicit_generated_artifact",
+      "positive_case_ids": [
+        "generated-positive"
+      ],
+      "false_positive_case_ids": [
+        "generated-negative"
+      ],
+      "adversarial_case_ids": [
+        "declared-generated-negative"
+      ]
+    },
+    {
+      "policy_id": "stage_c_license_comment_only",
+      "positive_case_ids": [
+        "license-comment-positive"
+      ],
+      "false_positive_case_ids": [
+        "license-comment-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_c_structural_scaffold",
+      "positive_case_ids": [
+        "scaffold-positive"
+      ],
+      "false_positive_case_ids": [
+        "scaffold-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_c_empty_html_shell",
+      "positive_case_ids": [
+        "empty-html-shell-positive"
+      ],
+      "false_positive_case_ids": [
+        "empty-html-shell-negative"
+      ],
+      "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_c_web_chrome_only_chunk",
+      "positive_case_ids": [
+        "web-chrome-positive"
+      ],
+      "false_positive_case_ids": [
+        "web-chrome-negative"
+      ],
+      "adversarial_case_ids": []
+    }
+  ]
+}

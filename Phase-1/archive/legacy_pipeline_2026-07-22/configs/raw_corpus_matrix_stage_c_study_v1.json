@@ -1,0 +1,94 @@
+{
+  "schema_version": "raw-corpus-matrix-stage-c-study-v1",
+  "status": "frozen_before_stage_c_model_outcomes",
+  "purpose": "Freeze a split-isolated Qwen3-4B continued-pretraining study for the provenance-rich raw corpus matrix without using any Stage-C evidence to alter Stage B.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "condition_roles": {
+    "clean_retain_all": "retain_all_policy_check",
+    "raw_mixed": "primary_curation_effect_study",
+    "risk_heavy": "stress_sensitivity"
+  },
+  "primary_study": {
+    "condition": "raw_mixed",
+    "comparison": "curated_equal_token_vs_stage_a_random_equal_token",
+    "supporting_arms": ["base_no_update", "raw_mixed_random_equal_token"],
+    "primary_metrics": ["development_code_heldout_nll", "frozen_code_task_macro"],
+    "minimum_paired_training_seeds": 5,
+    "practical_margin_source": "configs/benchmark_sensitivity_protocol_v1.json",
+    "failure_action": "abstain_or_report_negative_without_selector_retuning"
+  },
+  "training_sources": {
+    "raw_mixed_release_candidates": "outputs/raw_corpus_matrix_v1/raw_mixed/release_candidates.jsonl",
+    "raw_mixed_stage_a_pass": "outputs/raw_corpus_matrix_v1_stages/raw_mixed/stage_a_pass.jsonl",
+    "raw_mixed_curated": "outputs/raw_corpus_matrix_v1_stages/raw_mixed/stage_b_selected.jsonl",
+    "raw_mixed_common_stage_a_random": "outputs/raw_corpus_matrix_v1_stages/raw_mixed/stage_b_baseline.jsonl",
+    "stage_b_report": "outputs/validation/raw_corpus_matrix_stages_report.json"
+  },
+  "arm_contract": {
+    "equal_token_arms": ["raw_mixed_random_equal_token", "stage_a_random_equal_token", "curated_equal_token"],
+    "equal_token_budget_rule": "Tokenize every eligible arm with the frozen target tokenizer and use the largest common packed-token budget; raw-mixed is sampled deterministically without Stage-B evidence.",
+    "common_stage_a_baseline": "The raw_mixed stage_b_baseline artifact is the same disjoint Stage-A baseline for every primary or sensitivity comparison involving raw_mixed curated output.",
+    "baseline_must_be_disjoint_from_curated": true,
+    "raw_random_stage": "Stage-0 release candidates after syntax-aware chunking but before Stage-A decisions",
+    "base_no_update": "evaluation_only"
+  },
+  "natural_budget": {
+    "role": "supporting_cost_performance_tradeoff",
+    "comparison": "raw_mixed_all_natural_budget_vs_curated_natural_budget",
+    "required_reporting": ["records", "chunks", "packed_training_tokens", "optimizer_steps", "retained_fraction", "target_metrics", "guardrails"],
+    "not_selector_effect_evidence": true
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {"rank": 32, "alpha": 64, "dropout": 0.05, "target_modules": "all-linear"},
+    "equal_token_step_rule": "ceil(common_packed_token_budget / (sequence_length * micro_batch_size * gradient_accumulation_steps))",
+    "natural_budget_step_rule": "ceil(arm_packed_token_budget / (sequence_length * micro_batch_size * gradient_accumulation_steps))"
+  },
+  "seed_contract": {
+    "development_training_seeds": [11, 23, 37, 53, 71],
+    "confirmatory_training_seeds": [101, 131, 163, 197, 239],
+    "all_equal_token_arms_share_identical_seeds": true
+  },
+  "holdout_contract": {
+    "development": {
+      "source": "outputs/temporal_code_collection/stage0_code_domain_v2_combined/development/release_candidates.jsonl",
+      "processing": "Stage A only with the frozen implementation; no Stage-B scoring or selection",
+      "stage_b_read": false,
+      "outcomes_may_select_recipe": true
+    },
+    "confirmatory": {
+      "source": "outputs/temporal_code_collection/stage0_code_domain_v2_combined/confirmatory/release_candidates.jsonl",
+      "processing": "Stage A only with the frozen implementation; no Stage-B scoring or selection",
+      "stage_b_read": false,
+      "outcomes_read_before_development_decision": false,
+      "outcomes_may_select_recipe": false
+    }
+  },
+  "stage_b_isolation": {
+    "utility_available_to_stage_b": false,
+    "benchmark_outcomes_available_to_stage_b": false,
+    "development_outcomes_available_to_stage_b": false,
+    "confirmatory_outcomes_available_to_stage_b": false,
+    "source_tier_available_to_stage_b": false,
+    "known_reference_label_available_to_stage_b": false
+  },
+  "guardrails": {
+    "retention_contract": "configs/temporal_code_stage_c_retention_guardrails_v1.json",
+    "sensitivity_contract": "configs/benchmark_sensitivity_protocol_v1.json",
+    "missing_evidence_action": "abstain"
+  },
+  "claim_boundary": "Study-contract freeze only. It does not establish a model outcome, Utility gain, release decision, universal curation claim, or production readiness."
+}

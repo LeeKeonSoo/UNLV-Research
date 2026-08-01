@@ -1,0 +1,258 @@
+{
+  "schema_version": "redundancy-proxy-qlora-runner-audit-v1",
+  "status": "redundancy_proxy_qlora_runner_ready",
+  "source_sha256": {
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_experiment_qwen25_0p5b_v1.json": "6691597b97b603a745f9232a1b5f06b8a872c9fe12c88cc54297d6a30c818f40",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_proxy_packed_blocks_manifest.json": "de6e1d121ae38da0b0a8cbc99a7e784a3ebdcaec2e06b1d9a70e0790cec4ea13",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_evaluation_inputs_v1.json": "14e35e20c5aae1f3c95dd02758a446385147d6cfad0ead566149ccef0d705dab"
+  },
+  "training_contract": {
+    "arms": [
+      "binary_current_equal_budget",
+      "log_count_equal_budget",
+      "stageA_random_common_disjoint_equal_budget"
+    ],
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 40,
+    "required_micro_steps": 320,
+    "sequence_length": 1024,
+    "tokens_per_arm": 327680,
+    "single_epoch_exact_consumption": true,
+    "same_permutation_for_same_seed_across_arms": true
+  },
+  "seed_shuffle_contract": {
+    "11": {
+      "binary_current_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "7a3c14342287c6c7950742a63a1edf140c16b343c5f4fe3b9ae6ef8e794130a9",
+        "first_16_indices": [
+          281,
+          312,
+          74,
+          261,
+          245,
+          302,
+          27,
+          140,
+          177,
+          88,
+          1,
+          290,
+          185,
+          10,
+          98,
+          50
+        ],
+        "all_indices_consumed_once": true
+      },
+      "log_count_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "7a3c14342287c6c7950742a63a1edf140c16b343c5f4fe3b9ae6ef8e794130a9",
+        "first_16_indices": [
+          281,
+          312,
+          74,
+          261,
+          245,
+          302,
+          27,
+          140,
+          177,
+          88,
+          1,
+          290,
+          185,
+          10,
+          98,
+          50
+        ],
+        "all_indices_consumed_once": true
+      },
+      "stageA_random_common_disjoint_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "7a3c14342287c6c7950742a63a1edf140c16b343c5f4fe3b9ae6ef8e794130a9",
+        "first_16_indices": [
+          281,
+          312,
+          74,
+          261,
+          245,
+          302,
+          27,
+          140,
+          177,
+          88,
+          1,
+          290,
+          185,
+          10,
+          98,
+          50
+        ],
+        "all_indices_consumed_once": true
+      }
+    },
+    "23": {
+      "binary_current_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "bce649dc2c51f2d804119adc517487f9e6af466169cd9c797cd1c7e273c08755",
+        "first_16_indices": [
+          211,
+          148,
+          164,
+          210,
+          134,
+          277,
+          41,
+          180,
+          308,
+          137,
+          295,
+          7,
+          305,
+          195,
+          318,
+          157
+        ],
+        "all_indices_consumed_once": true
+      },
+      "log_count_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "bce649dc2c51f2d804119adc517487f9e6af466169cd9c797cd1c7e273c08755",
+        "first_16_indices": [
+          211,
+          148,
+          164,
+          210,
+          134,
+          277,
+          41,
+          180,
+          308,
+          137,
+          295,
+          7,
+          305,
+          195,
+          318,
+          157
+        ],
+        "all_indices_consumed_once": true
+      },
+      "stageA_random_common_disjoint_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "bce649dc2c51f2d804119adc517487f9e6af466169cd9c797cd1c7e273c08755",
+        "first_16_indices": [
+          211,
+          148,
+          164,
+          210,
+          134,
+          277,
+          41,
+          180,
+          308,
+          137,
+          295,
+          7,
+          305,
+          195,
+          318,
+          157
+        ],
+        "all_indices_consumed_once": true
+      }
+    },
+    "37": {
+      "binary_current_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "4e4607dad2a956ef4f61b0836479c48f55791c0edd4655da4dde206b4685ec72",
+        "first_16_indices": [
+          271,
+          66,
+          150,
+          288,
+          56,
+          20,
+          226,
+          105,
+          27,
+          82,
+          86,
+          21,
+          199,
+          98,
+          77,
+          51
+        ],
+        "all_indices_consumed_once": true
+      },
+      "log_count_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "4e4607dad2a956ef4f61b0836479c48f55791c0edd4655da4dde206b4685ec72",
+        "first_16_indices": [
+          271,
+          66,
+          150,
+          288,
+          56,
+          20,
+          226,
+          105,
+          27,
+          82,
+          86,
+          21,
+          199,
+          98,
+          77,
+          51
+        ],
+        "all_indices_consumed_once": true
+      },
+      "stageA_random_common_disjoint_equal_budget": {
+        "block_count": 320,
+        "order_sha256": "4e4607dad2a956ef4f61b0836479c48f55791c0edd4655da4dde206b4685ec72",
+        "first_16_indices": [
+          271,
+          66,
+          150,
+          288,
+          56,
+          20,
+          226,
+          105,
+          27,
+          82,
+          86,
+          21,
+          199,
+          98,
+          77,
+          51
+        ],
+        "all_indices_consumed_once": true
+      }
+    }
+  },
+  "completion_contract": {
+    "required_files": [
+      "adapter_config.json",
+      "adapter_model.safetensors",
+      "run_result.json",
+      "adapter_manifest.json"
+    ],
+    "partial_run_reusable": false,
+    "completed_run_must_match_plan_block_and_eval_input_hashes": true
+  },
+  "evaluation_inputs_status": "frozen_before_proxy_training_outcomes",
+  "blockers": [],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Runner semantics audit only. No model outcome, Utility, retention, promotion, or release claim."
+}

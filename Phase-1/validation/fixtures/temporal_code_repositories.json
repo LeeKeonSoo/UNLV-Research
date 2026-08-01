@@ -1,0 +1,24 @@
+{
+  "repositories": [
+    {
+      "repository_identity": "fixture/repo0",
+      "repository_url": "https://github.com/fixture/repo0",
+      "license": "MIT"
+    },
+    {
+      "repository_identity": "fixture/repo20",
+      "repository_url": "https://github.com/fixture/repo20",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository_identity": "fixture/repo2",
+      "repository_url": "https://github.com/fixture/repo2",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "repository_identity": "openai/humaneval",
+      "repository_url": "https://github.com/openai/humaneval",
+      "license": "MIT"
+    }
+  ]
+}

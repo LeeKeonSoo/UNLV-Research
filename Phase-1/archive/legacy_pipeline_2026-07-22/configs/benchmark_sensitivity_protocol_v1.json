@@ -1,0 +1,76 @@
+{
+  "schema_version": "benchmark-sensitivity-protocol-v1",
+  "status": "frozen_for_future_studies_after_existing_code_results",
+  "purpose": "Freeze statistical decision rules and benchmark sensitivity diagnostics for future LM curation studies without changing the observed selector or reinterpreting external neutral evidence as gain.",
+  "claim_boundary": "This protocol governs future evidence collection. It does not upgrade the current code-domain claim and does not authorize a Stage-B policy change.",
+  "frozen_outcome_isolation": {
+    "stage_b_policy_change_permitted": false,
+    "existing_outcomes_may_change_selector": false,
+    "new_protocol_requires_new_data_or_holdouts": true,
+    "utility_scope": "Stage C validation only; never selector objective"
+  },
+  "equal_token_primary": {
+    "comparison": "curated_stageB_equal_token versus stageA_random_equal_token",
+    "minimum_paired_training_seeds": 5,
+    "metric_families": [
+      {
+        "name": "target_domain_heldout_nll",
+        "direction": "lower_is_better",
+        "minimum_practical_absolute_improvement": 0.003
+      },
+      {
+        "name": "domain_task_macro_score",
+        "direction": "higher_is_better",
+        "minimum_practical_absolute_improvement": 0.01
+      }
+    ],
+    "paired_ci": {
+      "method": "paired_bootstrap_percentile",
+      "confidence_level": 0.95,
+      "bootstrap_resamples": 10000,
+      "seed": 20260717
+    },
+    "decision_rule": "Predeclare one primary metric family per deployment contract. Report the paired point estimate and interval; a positive point estimate alone is insufficient when the interval crosses the practical margin.",
+    "missing_or_unstable_evidence_action": "abstain"
+  },
+  "natural_budget_supporting": {
+    "comparison": "curated_stageB_natural_budget versus raw_all_natural_budget",
+    "required_reporting": [
+      "records",
+      "chunks",
+      "packed_training_tokens",
+      "optimizer_steps",
+      "retained_fraction",
+      "target_metric_and_guardrails"
+    ],
+    "claim_boundary": "Natural-budget evidence describes training-cost and retained-performance tradeoffs. It does not isolate the Stage-B selection effect."
+  },
+  "external_transfer": {
+    "benchmark_role": "frozen independent guardrail and transfer sensitivity check",
+    "required_strata": ["difficulty", "task_platform"],
+    "sample_size_rule": {
+      "minimum_total_tasks": 300,
+      "minimum_non_easy_tasks": 200,
+      "minimum_tasks_per_reported_stratum": 50
+    },
+    "floor_ceiling_diagnostics": {
+      "base_pass_rate_floor": 0.05,
+      "base_pass_rate_ceiling": 0.8,
+      "action_when_outside_range": "report_limited_sensitivity_and_do_not_claim_transfer_gain"
+    },
+    "current_evidence_role": "The completed 48-task LiveCodeBench confirmation is a limitation report because it is below the powered task-count rule."
+  },
+  "sensitivity_matrix": [
+    "corpus_condition: clean_retain_all, raw_mixed, risk_heavy",
+    "budget_regime: equal_token, natural_budget",
+    "model_capability: target_model and one larger-model sensitivity only when the target model is floor_or_ceiling_limited",
+    "benchmark_difficulty: frozen strata with all task rows retained",
+    "randomness: identical frozen seed set across compared arms"
+  ],
+  "forbidden_uses": [
+    "using any Stage-C metric, CI, benchmark, or sensitivity outcome in Stage B",
+    "selecting a metric family after observing the treatment effect",
+    "claiming external transfer from an underpowered or floor-ceiling-limited benchmark",
+    "using natural-budget results as sole evidence of selector-specific benefit"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": "code-confirmatory-collection-plan-v1",
+  "status": "frozen_before_collection",
+  "role": "record/text-disjoint confirmatory external evaluation input",
+  "source_manifest": "protocols/code_confirmatory_the_stack_dedup_source_manifest.json",
+  "dataset": "bigcode/the-stack-dedup",
+  "dataset_config": null,
+  "dataset_revision": "17cad72c886a2858e08d4c349a00d6466f54df63",
+  "split": "train",
+  "shuffle": {
+    "seed": 20260727,
+    "buffer_size": 10000
+  },
+  "token_limit": 5505024,
+  "development_exclusion": {
+    "record_id_source": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+    "rule": "exclude every exact stable record ID before candidate materialization"
+  },
+  "benchmark_exclusion": {
+    "required_before_curation": true,
+    "required_benchmark_ids": ["humanevalplus", "mbppplus", "livecodebench_code_generation_lite", "bigcodebench_complete", "cruxeval_input_prediction", "cruxeval_output_prediction", "ds1000"]
+  },
+  "claim_boundary": "Collection criteria establish source rights, replayability, and development-record separation only. They do not assign intrinsic Quality or determine A-B-C selection."
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "aggressive-structural-candidate-ablation-preregistration-v1",
+  "status": "preregistered_not_executed",
+  "candidate_profile": "aggressive_structural_candidate_v1",
+  "development_inputs": {
+    "required_split_guards": ["stable_record_id_disjoint", "normalized_text_hash_disjoint", "benchmark_exclusion_audit_complete"],
+    "selector_inputs": ["chunk_text", "runtime_local_normalized_structure"],
+    "forbidden_inputs": ["source_identity", "domain", "composition", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction"]
+  },
+  "arms": [
+    {"id": "active_profile_baseline", "rules": []},
+    {"id": "license_span_compaction", "rules": ["stage_c_inline_license_header_candidate", "stage_c_inline_license_comment_block_candidate"]},
+    {"id": "repeated_span_compaction", "rules": ["stage_c_repeated_span_template_candidate"]},
+    {"id": "strengthened_duplicate_family", "rules": ["stage_c_strengthened_symmetric_near_duplicate_candidate"], "thresholds": [0.9, 0.92, 0.95]},
+    {"id": "cumulative_aggressive_candidate", "rules": ["stage_c_inline_license_header_candidate", "stage_c_inline_license_comment_block_candidate", "stage_c_repeated_span_template_candidate", "stage_c_strengthened_symmetric_near_duplicate_candidate"], "threshold": 0.9}
+  ],
+  "promotion_gate": [
+    "positive_false_positive_adversarial_and_clean_fixture_passed",
+    "reason_code_and_token_impact_audit_complete",
+    "cross_domain_case_matrix_complete",
+    "frozen_benchmark_disjoint_three_seed_natural_budget_noninferiority"
+  ],
+  "external_evaluation": {
+    "feedback_into_policy": false,
+    "primary_comparison": "natural_budget_external_benchmark",
+    "seeds": [101, 202, 303]
+  }
+}

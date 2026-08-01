@@ -1,0 +1,23 @@
+{
+  "schema_version": "math-hard-candidate-fixture-gate-v1",
+  "status": "frozen_before_fixture_scoring",
+  "profile": "configs/math_hard_candidate_profile_v1.json",
+  "confidence_level": 0.95,
+  "minimum_family_wilson_sensitivity_lower_bound": 0.8,
+  "required_corruption_families": {
+    "substantive_payload": [
+      "repeated_title_shell",
+      "matched_length_navigation_shell"
+    ],
+    "coherence_completeness": [
+      "mid_document_truncation",
+      "mid_document_rotation",
+      "closing_delimiter_damage"
+    ]
+  },
+  "threshold_retuning_allowed": false,
+  "failure_action": "keep_candidate_inactive",
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

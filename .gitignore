@@ -1,0 +1,8 @@
+.env
+.agents/
+.codegraph/
+.omo/
+.vscode/
+.ignore
+outputs/
+tmp/

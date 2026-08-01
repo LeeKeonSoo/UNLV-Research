@@ -1,0 +1,61 @@
+{
+  "schema_version": "temporal-code-smoke-test-commands-v1",
+  "status": "refrozen_before_sixth_execution",
+  "revision_reason": "Isolation feasibility required explicit ephemeral paths and a writable Scrapy workspace copy. Scrapy test dependencies now mirror its tox.ini [test-requirements] declaration.",
+  "python_image": "python:3.11-slim",
+  "repository_commands": {
+    "scrapy/scrapy": {
+      "install_arguments": [
+        "-e",
+        ".",
+        "attrs",
+        "coverage>=7.10.6",
+        "pexpect>=4.8.0",
+        "pyftpdlib>=2.0.1",
+        "pygments",
+        "pytest",
+        "pytest-cov>=7.0.0",
+        "pytest-xdist",
+        "sybil>=1.3.0",
+        "testfixtures",
+        "pytest-twisted>=1.14.3"
+      ],
+      "test_arguments": ["-m", "pytest", "-q", "--maxfail=1", "-p", "no:cacheprovider", "tests/test_crawler.py"],
+      "post_install_command": ["python", "-c", "from tests.keys import generate_keys; generate_keys()"],
+      "writable_workspace_copy": true,
+      "writable_tmpfs": []
+    },
+    "pennyw0rth/netexec": {
+      "install_arguments": ["-e", ".", "pytest"],
+      "test_arguments": ["-m", "pytest", "-q", "--maxfail=1", "-p", "no:cacheprovider", "tests/test_smb_database.py"],
+      "writable_tmpfs": []
+    },
+    "skrub-data/skrub": {
+      "install_arguments": ["-e", ".", "pytest"],
+      "test_arguments": [
+        "-m",
+        "pytest",
+        "-q",
+        "--maxfail=1",
+        "-p",
+        "no:cacheprovider",
+        "skrub/tests/test_datetime_encoder.py",
+        "skrub/tests/test_table_vectorizer.py"
+      ],
+      "writable_tmpfs": []
+    }
+  },
+  "isolation_contract": {
+    "host_execution_forbidden": true,
+    "test_network": "none",
+    "root_filesystem": "read_only",
+    "common_writable_tmpfs": ["/root:rw,noexec,nosuid,size=512m", "/tmp:rw,noexec,nosuid,size=1g"],
+    "capabilities": "drop_all",
+    "no_new_privileges": true,
+    "memory": "4g",
+    "cpus": "2",
+    "pids_limit": 512,
+    "timeout_seconds": 600
+  },
+  "claim_boundary": "Bounded smoke command verification only; passing does not establish task-level Utility."
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "case_id": "math-long-reasoning-001",
+    "category": "long_reasoning_context",
+    "text": "To prove the inequality, first rewrite the expression, then bound each term, and only at the final step substitute the constraint.",
+    "failure_risk": "A concise selector can discard long derivations even when the reasoning chain is the learnable signal.",
+    "expected_stage_owner": "stage_b",
+    "expected_policy_response": "retain_or_downweight_only_with_coverage_compensation",
+    "allowed_selector_signals": ["length_bucket", "math_signal_count", "derivation_marker_count", "coverage_bucket"]
+  },
+  {
+    "case_id": "math-worked-solution-001",
+    "category": "multi_step_worked_solution",
+    "text": "Problem: solve for x. Solution: isolate the quadratic term, factor, reject the extraneous root, and verify the remaining root.",
+    "failure_risk": "Worked solutions can look repetitive but provide useful step ordering.",
+    "expected_stage_owner": "stage_b",
+    "expected_policy_response": "prefer_when_redundancy_is_not_template_duplicate",
+    "allowed_selector_signals": ["math_signal_count", "solution_step_count", "soft_duplicate_risk", "style_bucket"]
+  },
+  {
+    "case_id": "math-short-answer-001",
+    "category": "short_answer_low_context",
+    "text": "Q: What is 7 times 8? A: 56.",
+    "failure_risk": "Short QA examples may help format coverage but cannot dominate the curated pool.",
+    "expected_stage_owner": "stage_b",
+    "expected_policy_response": "retain_under_style_cap",
+    "allowed_selector_signals": ["style_bucket", "token_count", "coverage_bucket", "math_signal_count"]
+  },
+  {
+    "case_id": "math-noisy-extraction-001",
+    "category": "noisy_extraction_artifact",
+    "text": "$$$ \\\\frac{ }{ } ;; equation missing OCR OCR OCR navigation footer",
+    "failure_risk": "Malformed extraction should be handled before selection and not rescued by Stage B.",
+    "expected_stage_owner": "stage_a",
+    "expected_policy_response": "hard_gate_or_quarantine",
+    "allowed_selector_signals": ["structural_validity_gate", "malformed_text_checks"]
+  },
+  {
+    "case_id": "math-template-redundancy-001",
+    "category": "template_redundancy",
+    "text": "Solve the following equation. Show your work. Solve the following equation. Show your work.",
+    "failure_risk": "Template recurrence can inflate token volume without adding new reasoning coverage.",
+    "expected_stage_owner": "stage_a",
+    "expected_policy_response": "deduplicate_or_penalize_before_budget_selection",
+    "allowed_selector_signals": ["exact_duplicate_indicator", "near_duplicate_risk", "template_repeat_count"]
+  },
+  {
+    "case_id": "math-tail-topic-001",
+    "category": "coverage_tail_topic",
+    "text": "Use modular arithmetic to show why the residue class has no solution under the stated congruence.",
+    "failure_risk": "Rare topics can be removed by average-case readability or short-context preference.",
+    "expected_stage_owner": "stage_b",
+    "expected_policy_response": "retain_with_tail_coverage_support",
+    "allowed_selector_signals": ["topic_cluster", "tail_cluster_indicator", "math_signal_count", "source_bucket"]
+  }
+]

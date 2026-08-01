@@ -1,0 +1,125 @@
+{
+  "schema_version": "math-domain-stage-c-protocol-qwen3-4b-v1",
+  "status": "frozen_before_math_stage_c_training_or_benchmark_outcomes",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "source_materialization": {
+    "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\validation\\math_domain_equal_token_arms_report.json",
+    "status": "math_equal_token_arms_materialized",
+    "sha256": "6dd03808cbb7dff086b844f8125328fd714e766a46f85ec21cabad0464233ab1"
+  },
+  "training_arms": [
+    "base_no_update",
+    "raw_random_equal_budget",
+    "stageA_random_equal_budget",
+    "curated_math_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "primary_comparison": {
+    "treatment": "curated_math_equal_budget",
+    "primary_baseline": "stageA_random_equal_budget",
+    "supporting_baselines": [
+      "raw_random_equal_budget",
+      "base_no_update"
+    ],
+    "reference_arm": "known_high_quality_equal_budget"
+  },
+  "confirmatory_training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 20,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "training_token_budget_cap": 119163,
+    "confirmatory_training_seeds": [
+      101,
+      131,
+      163
+    ],
+    "same_seed_set_for_every_arm": true
+  },
+  "arm_token_counts": {
+    "raw_random_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\math_domain_stage_materialization\\raw_random_equal_budget.jsonl",
+      "sha256": "c803de6162018a40995a713f2a5b26a447e86b5c6d7646d8162f68b539b35df0"
+    },
+    "stageA_random_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\math_domain_stage_materialization\\stageA_random_equal_budget.jsonl",
+      "sha256": "8d0da41f40c27eecea7bd686051dfe90f9f68edf6d45f106fddf0f3111b4b0f1"
+    },
+    "curated_math_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\math_domain_stage_materialization\\curated_math_equal_budget.jsonl",
+      "sha256": "ca45700f1f57ec4f87d0ea8d979f4564862844c6f98ac9538c16363133f2b9ac"
+    },
+    "known_high_quality_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\math_domain_stage_materialization\\known_high_quality_equal_budget.jsonl",
+      "sha256": "69a62448350a296538c4c0fa7117a447f7eff0982c0c9168068b1e0fad34a766"
+    }
+  },
+  "heldout_nll": {
+    "frozen_heldout": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\math_domain_stage_c_qwen3_4b\\heldouts\\math_nll_heldout.jsonl",
+      "sha256": "073af889043f4f86ab08b0076fa7c97414a5608dd8a2ccce770dda1465653b1d",
+      "selection_rule": "Exclude every equal-token arm chunk, sort by sha256(seed + ':math-heldout:' + chunk_uid), then take until the token budget is reached.",
+      "seed": 20260703,
+      "candidate_records": 196,
+      "selected_records": 37,
+      "selected_token_proxy": 78832,
+      "token_proxy_budget": 65536
+    },
+    "metric": "mean_nll",
+    "direction": "lower_is_better"
+  },
+  "stage_c_benchmarks": [
+    {
+      "name": "GSM8K",
+      "dataset_id": "openai/gsm8k",
+      "config": "main",
+      "split": "test",
+      "metric": "exact_match_accuracy"
+    },
+    {
+      "name": "MATH",
+      "dataset_id": "hendrycks/competition_math",
+      "split": "test",
+      "metric": "exact_match_accuracy"
+    }
+  ],
+  "primary_success_rule": {
+    "primary_metric": "math_nll_heldout mean NLL",
+    "required_absolute_nll_reduction": 0.003,
+    "benchmark_support_rule": "Curated must not underperform Stage-A random on both GSM8K and MATH; benchmark accuracy is supporting evidence until commands are implemented.",
+    "failure_action": "report negative finding or abstain; do not tune Stage B using Stage-C outcomes"
+  },
+  "command_templates": [
+    "python 37_run_slm_update_training.py prepare-blocks --plan configs/math_domain_stage_c_protocol_qwen3_4b_v1.json --blocks-dir outputs/math_domain_stage_c_qwen3_4b/token_blocks --arms raw_random_equal_budget stageA_random_equal_budget curated_math_equal_budget known_high_quality_equal_budget --sequence-length 2048 --token-budget 119163 --allow-download",
+    "python 141_run_code_domain_development_qlora.py train-missing --plan configs/math_domain_stage_c_protocol_qwen3_4b_v1.json --output-dir outputs/math_domain_stage_c_qwen3_4b --blocks-dir outputs/math_domain_stage_c_qwen3_4b/token_blocks --arms raw_random_equal_budget,stageA_random_equal_budget,curated_math_equal_budget,known_high_quality_equal_budget --seeds 101,131,163 --allow-download",
+    "python 141_run_code_domain_development_qlora.py prepare-eval-blocks --plan configs/math_domain_stage_c_protocol_qwen3_4b_v1.json --output-dir outputs/math_domain_stage_c_qwen3_4b --allow-download",
+    "python 141_run_code_domain_development_qlora.py eval-missing --plan configs/math_domain_stage_c_protocol_qwen3_4b_v1.json --output-dir outputs/math_domain_stage_c_qwen3_4b --arms raw_random_equal_budget,stageA_random_equal_budget,curated_math_equal_budget,known_high_quality_equal_budget --seeds 101,131,163 --allow-download",
+    "python 204_run_math_domain_benchmark_eval.py --plan configs/math_domain_stage_c_protocol_qwen3_4b_v1.json --benchmarks GSM8K,MATH --output-dir outputs/math_domain_stage_c_qwen3_4b/math_benchmarks"
+  ],
+  "forbidden_uses": [
+    "using held-out math NLL, GSM8K, MATH, or Utility outcomes in Stage B",
+    "changing training seeds, token budget, heldout slice, benchmark split, or practical margin after Stage-C outcomes",
+    "using GSM8K or MATH benchmark content as training candidates",
+    "claiming math-domain downstream improvement before Stage-C results exist"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Math Stage-C protocol freeze only; no training, benchmark, release, or paper-success claim.",
+  "stage_c_outcomes_read": false
+}

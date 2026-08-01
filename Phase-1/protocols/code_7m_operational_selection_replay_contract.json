@@ -1,0 +1,39 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "superseded_historical_policy_do_not_execute",
+  "purpose": "Historical replay record for the retired weighted operational-selection candidate; not an active curation contract.",
+  "input": {
+    "sources": [
+      {
+        "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates.jsonl",
+        "text_fields": ["text"],
+        "defaults": {
+          "pii_context": "repository_code"
+        }
+      }
+    ]
+  },
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit.json",
+  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/abc_curation_operational_v1",
+  "stage_b": {
+    "minimum_chunk_chars": 40,
+    "max_chunk_chars": 6000
+  },
+  "stage_c_selection": {
+    "near_duplicate_compaction": {
+      "shingle_size": 5,
+      "minimum_lexical_tokens": 40,
+      "symmetric_overlap_threshold": 0.95
+    },
+    "operational_selection": {
+      "minimum_priority_score": 0.8,
+      "policy_identifier": "historical-structural-evidence-reframed-v1",
+      "policy_interpretation": "operational_selection_evidence_not_intrinsic_quality"
+    }
+  },
+  "stage_c": {
+    "training_budget_token_proxy": null,
+    "no_binding_budget_action": "materialize_stage_c_operational_survivors"
+  },
+  "claim_boundary": "This development replay measures only policy behavior. It cannot support a training or confirmatory downstream claim while benchmark-exclusion eligibility remains incomplete."
+}

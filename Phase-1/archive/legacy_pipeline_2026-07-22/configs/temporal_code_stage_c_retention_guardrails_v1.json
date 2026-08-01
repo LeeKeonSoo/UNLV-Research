@@ -1,0 +1,50 @@
+{
+  "schema_version": "temporal-code-stage-c-retention-guardrails-v1",
+  "status": "frozen_before_temporal_code_development_model_outcomes",
+  "purpose": "Reject a temporal-code update that gains target utility by causing unacceptable code or general-capability forgetting.",
+  "reference_arm": "base_no_update",
+  "applies_to_arms": [
+    "raw_random_equal_token",
+    "common_disjoint_stage_a_random_equal_token",
+    "curated_equal_token"
+  ],
+  "code_guardrail": {
+    "source": "frozen EvalPlus E2 development and untouched confirmatory splits",
+    "metrics": ["HumanEval+ pass_at_1", "MBPP+ pass_at_1", "unweighted macro pass_at_1"],
+    "maximum_allowed_absolute_regression_per_suite": 0.02,
+    "maximum_allowed_absolute_regression_macro": 0.02
+  },
+  "general_task_guardrail": {
+    "suites": ["HellaSwag", "ARC-Challenge", "PIQA", "WinoGrande"],
+    "metric": "accuracy",
+    "maximum_allowed_absolute_regression_per_suite": 0.02,
+    "maximum_allowed_absolute_regression_macro": 0.01
+  },
+  "general_text_guardrail": {
+    "metric": "external general-text mean NLL",
+    "maximum_allowed_mean_nll_increase": 0.01,
+    "confidence_rule": "one-sided 95% training-seed-level upper confidence bound must not exceed 0.01"
+  },
+  "seed_contract": {
+    "development_training_seeds": [11, 23, 37, 53, 71],
+    "confirmatory_training_seeds": [101, 131, 163, 197, 239],
+    "all_arms_use_identical_seeds": true
+  },
+  "decision_rule": {
+    "all_guardrails_mandatory": true,
+    "missing_evidence_action": "abstain",
+    "failed_guardrail_action": "reject_release",
+    "development_may_select_recipe": true,
+    "confirmatory_may_not_select_recipe": true
+  },
+  "evidence_class": "frozen_project_hypothesis_requiring_development_and_untouched_confirmatory_validation",
+  "forbidden_uses": [
+    "using retention outcomes in Stage B",
+    "changing margins after development or confirmatory outcomes",
+    "inspecting confirmatory outcomes before the development decision is frozen",
+    "using different Stage-A baselines for sensitivity arms"
+  ],
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Retention decision contract only; no Utility, release, or curation-benefit claim."
+}

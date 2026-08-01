@@ -1,0 +1,87 @@
+{
+  "schema_version": "metric-evidence-audit-v1",
+  "evidence_classes": [
+    "paper_backed_method",
+    "paper_aligned_principle",
+    "project_hypothesis_frozen",
+    "engineering_diagnostic"
+  ],
+  "citation_claim_boundary": "A citation does not validate project-specific implementations, weights, thresholds, or downstream benefit.",
+  "primary_validation": "Frozen policy and ablations are evaluated by equal-budget target-model development and untouched confirmatory evidence.",
+  "human_or_llm_review": {
+    "evidence_class": "engineering_diagnostic",
+    "required_for_stage_b_approval": false,
+    "required_for_stage_c_entry": false,
+    "may_tune_or_promote_selector": false
+  },
+  "components": {
+    "exact_duplicate_rejection": {
+      "evidence_class": "paper_backed_method",
+      "parameter_origin": "deterministic method",
+      "current_local_evidence": "eligible-only deterministic representative regression and three frozen-corpus decision comparison",
+      "required_next_evidence": "large-corpus representative-lineage and useful-dropout audit"
+    },
+    "hard_near_duplicate_rejection": {
+      "evidence_class": "paper_aligned_principle",
+      "parameter_origin": "project implementation",
+      "current_local_evidence": "10-pair labeled development fixture: precision 1.0, recall 0.5 at Hamming 3 / Jaccard 0.75 / containment 0.88",
+      "required_next_evidence": "repository-disjoint threshold sensitivity by content type and chunk length"
+    },
+    "python_ast_chunking_and_parseability": {
+      "evidence_class": "paper_aligned_principle",
+      "parameter_origin": "project implementation",
+      "required_next_evidence": "broader repository and language coverage"
+    },
+    "stage_b_quality_and_redundancy_signals": {
+      "evidence_class": "paper_aligned_principle",
+      "parameter_origin": "project implementation",
+      "required_next_evidence": "frozen ablation and target-model comparison"
+    },
+    "temporal_code_python_quality_formula": {
+      "evidence_class": "project_hypothesis_frozen",
+      "parameter_origin": "project-specific frozen weights",
+      "required_next_evidence": "automated metamorphic tests, ablation, and untouched confirmation"
+    },
+    "temporal_code_documentation_quality_formula": {
+      "evidence_class": "project_hypothesis_frozen",
+      "parameter_origin": "project-specific frozen weights",
+      "required_next_evidence": "automated metamorphic tests, ablation, and untouched confirmation"
+    },
+    "temporal_code_stage_b_objective_weights_0p8_0p2": {
+      "evidence_class": "project_hypothesis_frozen",
+      "parameter_origin": "project-specific frozen weights",
+      "required_next_evidence": "development ablation and untouched confirmation"
+    },
+    "temporal_code_structural_duplicate_risk_0p85": {
+      "evidence_class": "project_hypothesis_frozen",
+      "parameter_origin": "project-specific frozen threshold",
+      "current_local_evidence": "fixture group sizes 2 and 5 both receive mean risk 0.85 while structural match count increases from 1 to 4",
+      "required_next_evidence": "calibrated saturation-response function, sensitivity, and target-model evidence"
+    },
+    "temporal_code_log_count_saturation_candidate": {
+      "evidence_class": "project_hypothesis_frozen",
+      "parameter_origin": "outcome-free development ablation selected before proxy-model outcomes",
+      "current_local_evidence": "preserves 47 repositories and 610 selected tests with 0.986072 selection Jaccard versus binary current",
+      "required_next_evidence": "equal-token proxy-model comparison, retention guardrails, and untouched target-model confirmation"
+    },
+    "temporal_code_coverage_floor_0p5": {
+      "evidence_class": "project_hypothesis_frozen",
+      "parameter_origin": "project-specific frozen threshold",
+      "required_next_evidence": "no-Coverage ablation and target-model evidence"
+    },
+    "indexed_redundancy_search": {
+      "evidence_class": "engineering_diagnostic",
+      "parameter_origin": "project optimization",
+      "required_next_evidence": "larger-scale runtime and exact-equivalence checks"
+    },
+    "stage_c_equal_budget_utility": {
+      "evidence_class": "paper_aligned_principle",
+      "parameter_origin": "project protocol with literature-aligned causal comparison",
+      "required_next_evidence": "temporal-code 4B development and untouched confirmatory results"
+    }
+  },
+  "known_citation_gap": {
+    "status": "incomplete",
+    "description": "The current paper registry lacks exact section, table, or method locators and explicit implementation-difference records."
+  }
+}

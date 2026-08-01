@@ -1,0 +1,125 @@
+{
+  "schema_version": "core-case-matrix-v1",
+  "cases": [
+    {
+      "id": "missing_provenance_quarantine",
+      "core": "validity",
+      "expected": "reason_coded_quarantine_without_source_contract",
+      "policy_ids": [
+        "stage_a_provenance_contract"
+      ]
+    },
+    {
+      "id": "clean_corpus_retains",
+      "core": "coverage",
+      "expected": "retain_without_forced_reduction",
+      "policy_ids": [
+        "stage_c_coverage_guard"
+      ]
+    },
+    {
+      "id": "risk_and_rights_quarantine",
+      "core": "validity",
+      "expected": "reason_coded_quarantine",
+      "policy_ids": [
+        "stage_a_risk_quarantine"
+      ]
+    },
+    {
+      "id": "normalized_text_integrity_quarantine",
+      "core": "validity",
+      "expected": "reason_coded_quarantine_after_normalization",
+      "policy_ids": [
+        "stage_a_normalized_text_integrity"
+      ]
+    },
+    {
+      "id": "repository_encoding_normalization",
+      "core": "validity",
+      "expected": "normalize_not_remove",
+      "policy_ids": [
+        "stage_a_bom_normalization"
+      ]
+    },
+    {
+      "id": "chunk_integrity_hard_gate",
+      "core": "validity",
+      "expected": "reject_too_short_chunks",
+      "policy_ids": [
+        "stage_b_invalid_chunk"
+      ]
+    },
+    {
+      "id": "near_duplicate_family",
+      "core": "redundancy",
+      "expected": "stable_representative_retained",
+      "policy_ids": [
+        "stage_c_symmetric_near_duplicate"
+      ]
+    },
+    {
+      "id": "explicit_generated_source",
+      "core": "quality",
+      "expected": "whole_record_reason_coded_removal",
+      "policy_ids": [
+        "stage_c_explicit_generated_artifact"
+      ]
+    },
+    {
+      "id": "license_comment_only_code_chunk",
+      "core": "quality",
+      "expected": "reason_coded_removal_of_self_contained_license_chunk",
+      "policy_ids": [
+        "stage_c_license_comment_only"
+      ]
+    },
+    {
+      "id": "structural_scaffold_family",
+      "core": "redundancy",
+      "expected": "one_representative_retained",
+      "policy_ids": [
+        "stage_c_structural_scaffold"
+      ]
+    },
+    {
+      "id": "language_version_ambiguous_source",
+      "core": "validity",
+      "expected": "diagnostic_abstain_without_declared_version",
+      "policy_ids": [
+        "python_source_syntax"
+      ]
+    },
+    {
+      "id": "semantic_template_variants",
+      "core": "redundancy",
+      "expected": "diagnostic_abstain_pending_false_positive_audit",
+      "policy_ids": [
+        "python_template_family"
+      ]
+    },
+    {
+      "id": "exact_duplicate_family",
+      "core": "redundancy",
+      "expected": "stable_first_representative_retained",
+      "policy_ids": [
+        "stage_b_exact_duplicate"
+      ]
+    },
+    {
+      "id": "empty_html_shell_only",
+      "core": "quality",
+      "expected": "reason_coded_removal_of_complete_html_shell_without_visible_text",
+      "policy_ids": [
+        "stage_c_empty_html_shell"
+      ]
+    },
+    {
+      "id": "cookie_control_panel_only",
+      "core": "quality",
+      "expected": "reason_coded_removal_when_all_lines_are_explicit_cookie_controls",
+      "policy_ids": [
+        "stage_c_web_chrome_only_chunk"
+      ]
+    }
+  ]
+}

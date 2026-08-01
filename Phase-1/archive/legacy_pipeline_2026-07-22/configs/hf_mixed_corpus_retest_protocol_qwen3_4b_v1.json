@@ -1,0 +1,127 @@
+{
+  "schema_version": "hf-mixed-corpus-retest-protocol-v1",
+  "status": "frozen_design_no_training_outcomes",
+  "purpose": "Freeze a Qwen3-4B mixed-corpus retest using Hugging Face datasets as source pools while preserving provenance and preventing source-tier label leakage into Stage B.",
+  "model": {
+    "name": "Qwen/Qwen3-4B-Base",
+    "training_method": "QLoRA continued pretraining",
+    "claim_boundary": "parameter-efficient continued-pretraining evidence for a mixed Python candidate corpus"
+  },
+  "candidate_mixture": {
+    "primary_mix": {
+      "raw_like_fraction": 0.7,
+      "known_high_quality_reference_fraction": 0.3,
+      "role": "primary retest candidate corpus"
+    },
+    "stress_mix": {
+      "raw_like_fraction": 0.9,
+      "known_high_quality_reference_fraction": 0.1,
+      "role": "raw-heavy stress test after primary mix"
+    },
+    "source_labels_preserved": true,
+    "source_labels_forbidden_as_selector_features": true,
+    "unit": "document_or_file_normalized_to_candidate_record",
+    "required_record_fields": [
+      "record_id",
+      "text_or_code",
+      "source_dataset",
+      "source_config",
+      "source_split",
+      "source_tier",
+      "license_family",
+      "repository_or_origin",
+      "dedup_key",
+      "content_type",
+      "token_proxy"
+    ]
+  },
+  "hf_sources": {
+    "raw_like": [
+      {
+        "dataset": "bigcode/the-stack-v2",
+        "role": "primary raw-like permissive code source when local access and metadata filters are feasible",
+        "sampling_policy": "python-only permissive-license sample with repository concentration caps"
+      },
+      {
+        "dataset": "codeparrot/github-code",
+        "role": "fallback raw-like GitHub code source for smaller controlled pilot",
+        "sampling_policy": "python-only sample with Stage-0 license and generated-file filters"
+      }
+    ],
+    "known_high_quality_reference": [
+      {
+        "dataset": "irds/codesearchnet",
+        "role": "reference pool for documented code/search examples",
+        "sampling_policy": "python subset where available; reference label retained only for audit"
+      },
+      {
+        "dataset": "Nan-Do/code-search-net-python",
+        "role": "fallback Python CodeSearchNet-style reference pool",
+        "sampling_policy": "function-level examples; reference label retained only for audit"
+      }
+    ]
+  },
+  "selector_leakage_controls": {
+    "source_tier_label_available_to_stage_b": false,
+    "hf_dataset_identity_available_to_stage_b": false,
+    "known_high_quality_label_available_to_stage_b": false,
+    "stage_b_allowed_inputs": [
+      "Stage-A pass chunks",
+      "selection value evidence",
+      "redundancy risk",
+      "coverage support metadata after source-tier blinding",
+      "token budget"
+    ],
+    "stage_b_forbidden_inputs": [
+      "source_tier",
+      "source_dataset",
+      "known_high_quality_reference label",
+      "held-out NLL",
+      "EvalPlus",
+      "BigCodeBench",
+      "SWE-bench",
+      "human preference labels",
+      "LLM judge labels"
+    ]
+  },
+  "training_arms": [
+    "base_no_update",
+    "raw_mixed_random_equal_token",
+    "stageA_random_equal_token",
+    "curated_equal_token",
+    "known_high_quality_reference_equal_token"
+  ],
+  "supporting_arms": [
+    "raw_mixed_all_natural_budget",
+    "curated_natural_budget"
+  ],
+  "stage_c_metrics": {
+    "primary": [
+      "heldout_code_nll",
+      "EvalPlus_HumanEval_plus_MBPP_plus_macro_pass_rate"
+    ],
+    "secondary_when_feasible": [
+      "BigCodeBench_or_DS1000",
+      "SWE_bench_Lite_capstone"
+    ],
+    "guardrails": [
+      "general_text_nll_retention",
+      "benchmark_contamination_audit",
+      "source_tier_leakage_audit"
+    ]
+  },
+  "required_audits": {
+    "dataset_composition": true,
+    "license_and_provenance": true,
+    "benchmark_contamination": true,
+    "source_tier_blinding": true,
+    "stage_b_utility_leakage": true,
+    "pre_post_curation_size_tokens": true
+  },
+  "success_rule": {
+    "primary": "curated_equal_token must beat raw_mixed_random_equal_token and stageA_random_equal_token on heldout code NLL or the frozen EvalPlus macro aggregate without guardrail regression.",
+    "reference_interpretation": "known_high_quality_reference_equal_token is context, not an oracle and not a selector label.",
+    "failure_action": "report fail or abstain; do not change Stage B after Stage-C outcomes."
+  },
+  "utility_scope": "Stage C validation only; never selector objective"
+}

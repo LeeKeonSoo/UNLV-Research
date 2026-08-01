@@ -1,0 +1,82 @@
+{
+  "schema_version": "validity-recovery-v1",
+  "status": "candidate_not_runtime_active",
+  "runtime_activation": false,
+  "implementation": "validity_recovery.py",
+  "contract": "configs/content_routing_quality_coverage_contract_v2.json",
+  "core": "validity",
+  "prospective_stage": "Stage A repair and Stage B chunk-boundary recovery",
+  "purpose": "Prefer deterministic recovery over removal and distinguish chunk-boundary damage from source-record corruption.",
+  "input": [
+    "chunk_text",
+    "optional_source_record_text"
+  ],
+  "forbidden_inputs": [
+    "source_identity",
+    "source_tier",
+    "dataset_identity",
+    "path",
+    "domain_label",
+    "human_quality_label",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction"
+  ],
+  "action_order": [
+    "repair",
+    "rechunk",
+    "quarantine",
+    "reject"
+  ],
+  "pass_is_no_intervention": true,
+  "original_text_preservation_required": true,
+  "transformation_trace_required": true,
+  "quality_authority": false,
+  "selection_authority": false,
+  "repair_rules": [
+    {
+      "id": "contextual_cp1252_apostrophe_repair",
+      "input_characters": ["U+0091", "U+0092", "U+0093", "U+0094"],
+      "boundary": "repair only when adjacent alphanumeric and punctuation context identifies opening, closing, or internal quotation use",
+      "reason_code": "validity_cp1252_punctuation_repaired"
+    },
+    {
+      "id": "contextual_cp1252_dash_repair",
+      "input_characters": ["U+0096", "U+0097"],
+      "boundary": "repair only when the control character is surrounded by whitespace",
+      "reason_code": "validity_cp1252_punctuation_repaired"
+    }
+  ],
+  "rechunk_boundary": {
+    "rule": "A registered structural defect is present in the chunk but absent after evaluating the immutable source-record text under the same guard.",
+    "reason_code": "validity_chunk_boundary_structural_split",
+    "source_record_hash_required": true
+  },
+  "quarantine_boundary": {
+    "rule": "Interpretable payload remains, but an unrepaired control, replacement burst, or registered structural defect remains in the whole available source context.",
+    "reason_codes": [
+      "validity_forbidden_control_character",
+      "validity_unicode_replacement_burst",
+      "validity_unclosed_latex_environment",
+      "validity_unclosed_explicit_xml_tag",
+      "validity_dangling_markdown_fence",
+      "validity_trailing_delimiter_damage"
+    ]
+  },
+  "reject_boundary": "no_interpretable_payload_after_declared_recovery",
+  "reject_reason_code": "validity_payload_absence_after_recovery",
+  "structural_guard_source": {
+    "implementation": "explicit_structural_coherence.py",
+    "version": "v2",
+    "migration": "Historical coherence Quality artifacts are immutable; this candidate consumes their closed text evidence under Validity authority only."
+  },
+  "validation_fixture": "validation/fixtures/validity_recovery_v1_cases.json",
+  "activation_gates": [
+    "positive_false_positive_and_adversarial_fixtures_pass",
+    "repair_round_trip_and_original_hash_trace_pass",
+    "rechunk_materializer_preserves_source_payload",
+    "quarantine_and_reject_outputs_are_separate",
+    "active_stage_a_contract_migration_is_atomic"
+  ]
+}

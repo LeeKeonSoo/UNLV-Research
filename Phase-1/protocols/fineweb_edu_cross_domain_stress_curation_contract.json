@@ -1,0 +1,11 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "purpose": "Verify domain-neutral A-B-C materialization on a source-preserving general-text slice without enabling a domain-specific selector.",
+  "input": {"sources": [{"path": "D:/UNLV-Research/cross_domain_stress/fineweb_edu_raw_1000.jsonl", "text_fields": ["text"], "defaults": {"pii_context": "general"}, "metadata_capabilities": {"partition.source_dataset": {"availability": "provided"}, "artifact_context.generation": {"availability": "not_provided_by_upstream", "inference": "forbidden"}}}]},
+  "output_dir": "D:/UNLV-Research/cross_domain_stress/abc_curation_fineweb_edu_v1",
+  "stage_b": {"minimum_chunk_chars": 40, "max_chunk_chars": 6000},
+  "stage_c_selection": {"near_duplicate_compaction": {"shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95}, "structural_artifact_rules": {"explicit_generated_artifact": true}, "coverage_guard": {"strata": ["language_code", "content_type"]}},
+  "stage_c": {"no_binding_budget_action": "materialize_reason_coded_survivors"},
+  "claim_boundary": "Controlled general-text runtime replay only. Composition is audit-only; no intrinsic Quality, Utility, benchmark, or domain-specific selector claim is made."
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": "redundancy-target-size-qwen3-4b-blocks-manifest-v1",
+  "status": "target_size_blocks_materialized",
+  "plan": {
+    "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_target_size_development_qwen3_4b_v1.json",
+    "sha256": "5cf9d1ca49346c394f8dbe233f4f853270a68bf45d3df1db025a2246e7d41bf8"
+  },
+  "tokenizer": {
+    "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "tokenizer_json_sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "base_vocab_size": 151643,
+    "tokenizer_size_with_added_tokens": 151669,
+    "eos_token_id": 151643,
+    "pad_token_id": 151643
+  },
+  "artifacts": {
+    "binary_current_equal_budget": {
+      "role": "training_arm",
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\redundancy_target_size_qwen3_4b_v1\\token_blocks\\binary_current_equal_budget.safetensors",
+      "file_sha256": "8e330c7fcf4f12e7c53caec55f9c23425e7d018a119873c7e2e7abfb26566a3f",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\redundancy_saturation_proxy_arms_v1\\binary_current_equal_budget.jsonl",
+      "source_sha256": "eda6e470433b6c129511ce643239aef8136a74f51c09e41599eb77fe18d74f84",
+      "source_records_read": 1268,
+      "nonempty_records_read": 1268,
+      "complete_records_consumed": 1267,
+      "final_record_uid": "google__weather-tools__pr510::000::weather_mv/loader_pipeline/sinks.py::chunk-0015",
+      "final_record_tokens_available": 811,
+      "final_record_tokens_consumed": 285,
+      "cut_inside_final_record": true,
+      "repository_count_seen_before_budget": 1,
+      "exact_tokens": 327680,
+      "sequence_length": 2048,
+      "blocks": 160,
+      "dtype": "int32",
+      "tensor_content_sha256": "4966334ce46306880d7c3458eb0f498ad7e1489f01c49c71df6e475d4e38c746",
+      "first_block_content_sha256": "fbb34956b667d5252c04844f64faf120ae5ffdae81d98abba108579c887409a6",
+      "last_block_content_sha256": "b853752510da157e837523b26a4e1f6fdcd7144bc2dd0b61647de26f043bd216",
+      "minimum_token_id": 0,
+      "maximum_token_id": 151643
+    },
+    "stageA_random_common_disjoint_equal_budget": {
+      "role": "training_arm",
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\redundancy_target_size_qwen3_4b_v1\\token_blocks\\stageA_random_common_disjoint_equal_budget.safetensors",
+      "file_sha256": "a72dc50bd2bbe932ac651d0bbebc18f247130c39f69845a3e0e055086fcbaf3e",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\redundancy_saturation_proxy_arms_v1\\stageA_random_common_disjoint_equal_budget.jsonl",
+      "source_sha256": "f419fa0404d87fea53e832f16e2007f363a8bb62a7d1fdd384019f30f953af8d",
+      "source_records_read": 273,
+      "nonempty_records_read": 273,
+      "complete_records_consumed": 272,
+      "final_record_uid": "pypa__hatch__pr2127::001::tests/env/plugin/test_interface.py::chunk-0013",
+      "final_record_tokens_available": 2608,
+      "final_record_tokens_consumed": 308,
+      "cut_inside_final_record": true,
+      "repository_count_seen_before_budget": 1,
+      "exact_tokens": 327680,
+      "sequence_length": 2048,
+      "blocks": 160,
+      "dtype": "int32",
+      "tensor_content_sha256": "1b81bf2a7512efba090a7f658fbd315eb08226c25f4471fde6e7da557a9218cb",
+      "first_block_content_sha256": "b67ac52669a6528ffcb699b84c377a3cd9918df7e0f3ccfa8b8ef51fa39f2b59",
+      "last_block_content_sha256": "9ee09857fbe8e2dbb83ddf524876347a62c837eb10afed223048afcf0f367479",
+      "minimum_token_id": 0,
+      "maximum_token_id": 151643
+    },
+    "development_code_nll_heldout": {
+      "role": "heldout_nll",
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\redundancy_target_size_qwen3_4b_v1\\token_blocks\\development_code_nll_heldout.safetensors",
+      "file_sha256": "a14f2913863e29755510130cd59618ce9ba1193a3ada1edff7fd444f5350ce21",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\code_domain_v2_development_qwen3_4b\\heldouts\\development_code_nll_heldout.jsonl",
+      "source_sha256": "95aa8973a26e469708faf5d1c053cdee023fef1c2c8891547cffe77ba475bdd8",
+      "source_records_read": 150,
+      "nonempty_records_read": 150,
+      "complete_records_consumed": 149,
+      "final_record_uid": "pytorch__ignite__pr3599::001::ignite/metrics/nlp/rouge.py::chunk-0008",
+      "final_record_tokens_available": 700,
+      "final_record_tokens_consumed": 450,
+      "cut_inside_final_record": true,
+      "repository_count_seen_before_budget": 16,
+      "exact_tokens": 65536,
+      "sequence_length": 2048,
+      "blocks": 32,
+      "dtype": "int32",
+      "tensor_content_sha256": "cc8093417c08837730560422d32910476af6007939b3f9d9f2197041859f805e",
+      "first_block_content_sha256": "e833e2bab9c7c2153c947b594ac7c38fa05f96b6d2e49dbd8c11747bb067bc99",
+      "last_block_content_sha256": "99079cfeaf5f51b332ad5b2b867c1e9e843932592206ae24a13a82415002a112",
+      "minimum_token_id": 0,
+      "maximum_token_id": 151643
+    }
+  },
+  "training_contract": {
+    "arm_count": 2,
+    "exact_tokens_per_arm": 327680,
+    "exact_blocks_per_arm": 160,
+    "sequence_length": 2048,
+    "seed_set": [
+      11,
+      23,
+      37
+    ],
+    "optimizer_steps": 40
+  },
+  "heldout_contract": {
+    "exact_tokens": 65536,
+    "exact_blocks": 32,
+    "sequence_length": 2048
+  },
+  "blockers": [],
+  "utility_scope": "Stage C validation only; never selector objective.",
+  "confirmatory_outcomes_read": false,
+  "claim_boundary": "Target-size development freeze and block materialization only. This is not a production release, confirmatory result, or paper-level claim."
+}

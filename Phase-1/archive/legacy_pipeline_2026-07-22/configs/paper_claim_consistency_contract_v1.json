@@ -1,0 +1,36 @@
+{
+  "schema_version": "paper-claim-consistency-contract-v1",
+  "status": "claim_consistency_contract_frozen",
+  "canonical_claim": {
+    "paper_claim_tier": "deployment_conditioned_curation_stage_research_framework",
+    "supported": true,
+    "scope": "language-model training-data curation with explicit accept, reject, insufficient-data, and abstain behavior",
+    "not_claimed": [
+      "universal_data_quality_detector",
+      "all_domain_improvement_guarantee",
+      "production_ready_curation_system",
+      "intrinsic_quality_measurement",
+      "utility_as_selector_objective"
+    ]
+  },
+  "domain_claims": {
+    "code": {
+      "status": "rerun_required",
+      "status_when_current_framework_matches": "pass",
+      "required_decision": "curated_better_than_raw_full_on_nll_and_evalplus",
+      "allowed_claim_when_current_framework_matches": "code_domain_curated_natural_budget_improves_nll_and_evalplus_with_fewer_training_tokens",
+      "historical_claim": "historical_code_positive_requires_current_framework_rerun"
+    },
+    "math": {
+      "status": "abstain",
+      "required_decision_label": "math_selector_v3_repairs_v2_but_does_not_beat_raw_full_natural_budget",
+      "allowed_claim": "math_selector_v3_repairs_v2_over_filtering_but_does_not_support_math_domain_success",
+      "required_missing_guardrail": "missing_gsm8k_and_math_accuracy_results"
+    }
+  },
+  "production_claim": {
+    "supported": false,
+    "required_status": "production_deployment_claim_gate_blocked"
+  },
+  "utility_scope": "Stage C validation only; never selector objective"
+}

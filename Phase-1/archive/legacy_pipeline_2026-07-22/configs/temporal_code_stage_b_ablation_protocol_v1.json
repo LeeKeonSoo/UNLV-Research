@@ -1,0 +1,84 @@
+{
+  "schema_version": "temporal-code-stage-b-ablation-protocol-v1",
+  "status": "frozen_before_target_model_development_results",
+  "purpose": "Test whether the full frozen Stage-B policy adds downstream value beyond individual Core signals and random baselines without using human, Utility, benchmark, development, or confirmatory outcomes in selection.",
+  "shared_contract": {
+    "input_split": "train",
+    "primary_input_pool": "Stage-A-pass chunks",
+    "budget_type": "equal target-model tokenizer tokens",
+    "matched_training_conditions": [
+      "model checkpoint",
+      "QLoRA configuration",
+      "training tokens",
+      "optimizer steps",
+      "sequence packing",
+      "learning-rate schedule",
+      "training seeds",
+      "evaluation inputs and decoding"
+    ],
+    "forbidden_selector_signals": [
+      "human or LLM review labels",
+      "Utility",
+      "benchmark outcomes",
+      "development outcomes",
+      "confirmatory outcomes"
+    ]
+  },
+  "arms": {
+    "full_selector": {
+      "input_pool": "Stage-A-pass chunks",
+      "quality_weight": 0.8,
+      "redundancy_support_weight": 0.2,
+      "coverage_support": "frozen full coverage constraints",
+      "role": "primary treatment"
+    },
+    "quality_only": {
+      "input_pool": "Stage-A-pass chunks",
+      "quality_weight": 1.0,
+      "redundancy_support_weight": 0.0,
+      "coverage_support": "frozen full coverage constraints",
+      "role": "Quality contribution ablation"
+    },
+    "redundancy_only": {
+      "input_pool": "Stage-A-pass chunks",
+      "quality_weight": 0.0,
+      "redundancy_support_weight": 1.0,
+      "coverage_support": "frozen full coverage constraints",
+      "role": "soft-Redundancy contribution ablation"
+    },
+    "no_coverage_support": {
+      "input_pool": "Stage-A-pass chunks",
+      "quality_weight": 0.8,
+      "redundancy_support_weight": 0.2,
+      "coverage_support": "disabled",
+      "role": "Coverage-support contribution ablation"
+    },
+    "stageA_random_equal_token": {
+      "input_pool": "Stage-A-pass chunks disjoint from full_selector",
+      "selection": "seeded random",
+      "seed": 42,
+      "role": "primary operational counterfactual"
+    },
+    "raw_random_equal_token": {
+      "input_pool": "authorized raw train payload before Stage A",
+      "selection": "seeded random",
+      "seed": 42,
+      "role": "supporting raw-input counterfactual"
+    }
+  },
+  "development_rule": {
+    "allowed_use": "Estimate effects and select at most one frozen Stage-B policy candidate for confirmation.",
+    "minimum_primary_seeds": 5,
+    "primary_comparison": "full_selector versus stageA_random_equal_token",
+    "ablation_interpretation": "Ablations explain contribution and cannot become dataset-specific selector rules after observing confirmatory results."
+  },
+  "confirmatory_rule": {
+    "policy_weights_thresholds_and_coverage_constraints_frozen": true,
+    "untouched_split_required": true,
+    "minimum_fresh_seeds": 5,
+    "failure_action": "report negative finding or abstain; do not tune on confirmatory evidence"
+  },
+  "human_or_llm_review": "optional diagnostic only; never an arm-selection or promotion signal",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Frozen ablation protocol only; no curation-benefit or target-model claim until development and untouched confirmation complete."
+}

@@ -1,0 +1,92 @@
+{
+  "schema_version": "raw-corpus-matrix-natural-budget-execution-qwen3-4b-v2",
+  "status": "frozen_before_natural_budget_development_outcomes",
+  "purpose": "Evaluate whether Stage-A/Stage-B curation reduces continued-pretraining tokens and compute while retaining or improving fixed Stage-C code outcomes.",
+  "prior_equal_token_outcomes_read": true,
+  "prior_equal_token_role": "supporting selector-content diagnostic only; not a primary operational outcome for this natural-budget study.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "source_study_contract": {
+    "path": "configs/raw_corpus_matrix_stage_c_study_v1.json",
+    "sha256": "efa1a92fa4d34cb3dab5650444d0d5a4ab650ba17618eef1eedfffcdbaf40100"
+  },
+  "source_input_report": {
+    "path": "outputs/raw_corpus_matrix_stage_c_v1/raw_corpus_matrix_stage_c_inputs_report.json",
+    "sha256": "ace15df0f380f1b29f27ae2c8dc0f3d6762a58079e5ef24b44a4f168f233e74f"
+  },
+  "training_arms": ["raw_mixed_all_natural", "curated_natural"],
+  "primary_comparison": {
+    "treatment": "curated_natural",
+    "primary_baseline": "raw_mixed_all_natural",
+    "primary_question": "Does curated natural-budget continued pretraining use fewer tokens and GPU time while retaining or improving fixed heldout code performance?",
+    "nll_noninferiority_margin": 0.003,
+    "evalplus_macro_noninferiority_margin": 0.02,
+    "stronger_success_rule": "Curated uses fewer effective training tokens and elapsed GPU seconds, has lower mean NLL, and has no lower EvalPlus HumanEval+/MBPP+ macro pass rate than raw.",
+    "minimum_efficiency_rule": "Curated uses fewer effective training tokens and elapsed GPU seconds while remaining non-inferior on NLL and EvalPlus under the frozen margins.",
+    "failure_action": "Report the negative or inconclusive result without changing Stage-B policy."
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps_by_arm": {
+      "raw_mixed_all_natural": 42,
+      "curated_natural": 27
+    },
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {"rank": 32, "alpha": 64, "dropout": 0.05, "target_modules": "all-linear"},
+    "development_training_seeds": [11, 23, 37, 53, 71],
+    "natural_budget_rule": "Each arm consumes every complete gradient-accumulation group from its own frozen packed block artifact once. Residual blocks below one complete accumulation group are not trained.",
+    "effective_training_tokens_by_arm": {
+      "raw_mixed_all_natural": 688128,
+      "curated_natural": 442368
+    }
+  },
+  "training_blocks": {
+    "path": "outputs/raw_corpus_matrix_stage_c_v1/token_blocks",
+    "blocks": {
+      "raw_mixed_all_natural": {"path": "outputs/raw_corpus_matrix_stage_c_v1/token_blocks/raw_mixed_all_natural.pt", "sha256": "e60a97914da89069b915360134a9dc06588c6f09700120551496930acf4e2275", "packed_tokens": 692224, "blocks": 338},
+      "curated_natural": {"path": "outputs/raw_corpus_matrix_stage_c_v1/token_blocks/curated_natural.pt", "sha256": "cec66ffea9a5e5d7035cd40862a3e2d9ded4c1d00ee3d9f29dc48f480af1de2d", "packed_tokens": 452608, "blocks": 221}
+    }
+  },
+  "heldout_nll": {
+    "source_split": "development",
+    "frozen_heldout": {"path": "outputs/raw_corpus_matrix_stage_c_v1/holdouts/development/stage_a_pass.jsonl", "sha256": "f0c620c4dc837a366217328b3c8a33a6f009bb9211f24b827e76a0d5c8f51f34"},
+    "metric": "mean_nll",
+    "direction": "lower_is_better"
+  },
+  "evalplus": {
+    "split": {"path": "outputs/temporal_code_collection/evalplus_guardrail_split_plan.json", "sha256": "b17cdd13669f2628d2fb02f05739fe431da641b012c747990c19145acf5af920"},
+    "suites": ["HumanEval+", "MBPP+"],
+    "metric": "unweighted_macro_pass_at_1_temperature_0",
+    "evaluation_role": "Stage C only; never selector input."
+  },
+  "natural_budget_reporting": {
+    "required_metrics": ["packed_training_tokens", "effective_training_tokens", "optimizer_steps", "elapsed_seconds", "development_code_heldout_mean_nll", "evalplus_humaneval_plus_mbpp_macro_pass_rate"],
+    "required_comparisons": ["curated_natural_vs_raw_mixed_all_natural", "base_no_update_reference"]
+  },
+  "stage_b_isolation": {
+    "utility_available_to_stage_b": false,
+    "benchmark_outcomes_available_to_stage_b": false,
+    "development_outcomes_available_to_stage_b": false,
+    "confirmatory_outcomes_available_to_stage_b": false,
+    "source_tier_available_to_stage_b": false,
+    "known_reference_label_available_to_stage_b": false
+  },
+  "execution": {
+    "physical_gpu_indices": [0, 1],
+    "offline_model_loading": true,
+    "output_dir": "outputs/raw_corpus_matrix_natural_budget_development_qwen3_4b_v2"
+  },
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Development natural-budget study only. It may support an efficiency claim for this frozen raw-mixed code corpus if the pre-registered criteria pass; it is not a universal, confirmatory, release, or production-readiness claim."
+}

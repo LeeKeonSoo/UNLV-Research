@@ -1,0 +1,44 @@
+{
+  "schema_version": "math-raw-mixed-abc-curation-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "input": {
+    "raw_candidates": "outputs/math_raw_mixed_5m_v1/raw_mixed_math_candidates.jsonl",
+    "reference_context": "outputs/math_raw_mixed_5m_v1/math_reference_context.jsonl"
+  },
+  "output_dir": "outputs/math_raw_mixed_5m_v1/abc_curation",
+  "stage_a": {
+    "name": "candidate_provenance_normalization_and_risk_quarantine",
+    "source_rights": {
+      "brando/small-open-web-math-dataset-v2": {
+        "status": "allowed",
+        "license": "ODC-By-1.0",
+        "license_evidence_url": "https://huggingface.co/datasets/open-web-math/open-web-math/blob/main/README.md",
+        "obligation": "retain OpenWebMath attribution and comply with Common Crawl terms"
+      },
+      "AI-MO/NuminaMath-CoT": {
+        "status": "allowed",
+        "license": "Apache-2.0",
+        "license_evidence_url": "https://huggingface.co/datasets/AI-MO/NuminaMath-CoT",
+        "obligation": "retain Apache-2.0 attribution and notices"
+      }
+    }
+  },
+  "stage_b": {
+    "name": "chunk_level_hard_gate",
+    "max_chunk_chars": 6000,
+    "minimum_chunk_chars": 120,
+    "deduplicate_normalized_exact_text": true,
+    "forbidden_inputs": ["Utility", "NLL", "benchmark outcomes", "source pool role"]
+  },
+  "stage_c": {
+    "name": "optional_budget_constrained_chunk_selection",
+    "training_budget_token_proxy": null,
+    "no_binding_budget_action": "retain_all",
+    "forbidden_inputs": ["Utility", "NLL", "benchmark outcomes", "source pool role"]
+  },
+  "external_evaluation": {
+    "status": "not_started",
+    "forbidden_feedback": "External metrics may not mutate this frozen Stage-C output."
+  },
+  "claim_boundary": "This is an auditable Math curation materialization, not a benchmark-clean or downstream-performance claim. Lexical contamination checks do not prove semantic benchmark non-overlap."
+}

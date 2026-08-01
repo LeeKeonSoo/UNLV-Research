@@ -1,0 +1,50 @@
+{
+  "schema_version": "math-positive-provider-manifest-v1",
+  "status": "frozen_incomplete_development_candidate",
+  "objective": "continued_pretraining_positive_retention_evidence",
+  "providers": {
+    "route_confidence": {
+      "provider_id": "open-web-math/MathScore",
+      "repository": "open-web-math/filtering-models",
+      "revision": "043a7585a0d6c91fdf1350dc1c022032ffe4c707",
+      "model_sha256": "23d570ab41c90195470e1373b8ccc2f9a7692052b24b10817933092ff0c830f2",
+      "normalizer_sha256": "94e8402a5c813684ad2e95713f8ee3e3ce590655359387bb766958f205e78270",
+      "primary_evidence": "https://arxiv.org/abs/2310.06786",
+      "native_scale": "positive_class_probability_0_to_1",
+      "supported_head": "route_confidence_when_no_closed_explicit_math_notation_fires",
+      "limitation": "Mathematical-content relevance is not payload completeness or learning usefulness."
+    },
+    "route_specific_evidence": {
+      "provider_id": "HuggingFaceTB/finemath-classifier",
+      "revision": "bd0b0e330750ccaafb16c47066f875b3fcb707c3",
+      "model_sha256": "bad3fbea5207a34479f4068e5f44866114033fe6ee4fc86ff4d850885c49f842",
+      "model_card": "https://huggingface.co/HuggingFaceTB/finemath-classifier",
+      "native_scale": "raw_regression_score_with_0_to_5_annotation_target",
+      "maximum_context_tokens": 512,
+      "supported_head": "route_specific_evidence",
+      "limitation": "Synthetic Llama-3 annotations emphasize educational reasoning and may under-score advanced research math, non-English content, image-dependent notation, and mixed-quality long documents."
+    }
+  },
+  "head_mapping": {
+    "route_confidence": "closed_explicit_math_notation_or_open_web_math_mathscore_probability",
+    "substantive_payload": null,
+    "coherence_completeness": null,
+    "route_specific_evidence": "finemath_raw_regression_score"
+  },
+  "candidate_input": {
+    "path": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+    "sha256": "dbeb7a31932290e00c6f2fc24f72ec8044f903be1b825f54551030344123c418",
+    "records": 3936,
+    "qwen3_4b_token_count": 5000169
+  },
+  "activation_blockers": [
+    "substantive_payload_provider_or_closed_structural_evidence_missing",
+    "coherence_completeness_provider_or_closed_structural_evidence_missing",
+    "provider_training_disjoint_clean_controls_missing",
+    "normal_and_hard_threshold_calibration_missing",
+    "fixture_and_external_ablation_gates_missing"
+  ],
+  "target_retention_fraction_used": false,
+  "benchmark_results_visible": false,
+  "runtime_activation": false
+}

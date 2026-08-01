@@ -1,0 +1,56 @@
+{
+  "schema_version": "math-explicit-coherence-guard-v2",
+  "status": "frozen_after_v1_parser_failure_before_v2_scoring",
+  "supersedes": "configs/math_explicit_coherence_guard_v1.json",
+  "supersession_reason": "V1 confused TeX comment tags and mathematical angle-bracket notation with XML, treated excess closing environments as unclosed content, and used corpus-wide delimiter counts instead of an observable trailing damage burst.",
+  "role": "necessary_explicit_structural_coherence_guard_not_semantic_quality_score",
+  "claim_boundary": "The guard detects only observable structural damage. Passing means no registered explicit defect fired; it does not prove semantic coherence, completeness, correctness, or usefulness.",
+  "runtime_inputs": ["chunk_text"],
+  "forbidden_inputs": [
+    "source_identity",
+    "source_path",
+    "dataset_identity",
+    "domain_quota",
+    "provider_score",
+    "benchmark_result",
+    "NLL",
+    "target_retention_fraction"
+  ],
+  "registered_rules": {
+    "unicode_replacement_burst": {"minimum_count": 3, "reason_code": "coherence_unicode_replacement_burst"},
+    "forbidden_control_character": {"allowed": ["tab", "line_feed", "carriage_return"], "reason_code": "coherence_forbidden_control_character"},
+    "unclosed_latex_environment": {"ignore_comments": true, "ignore_excess_closers": true, "reason_code": "coherence_unmatched_latex_environment"},
+    "unclosed_explicit_xml_tag": {"ignore_comments": true, "ignore_excess_closers": true, "require_registered_tag_name": true, "reason_code": "coherence_unmatched_explicit_xml_tag"},
+    "dangling_markdown_fence": {"reason_code": "coherence_dangling_markdown_fence"},
+    "trailing_delimiter_burst": {"minimum_unescaped_opening_delimiters": 3, "reason_code": "coherence_repeated_delimiter_damage"}
+  },
+  "explicit_non_rules": [
+    "document_rotation_without_an_observable_marker",
+    "missing_terminal_punctuation_alone",
+    "lowercase_initial_character_alone",
+    "internal_delimiter_count_difference",
+    "excess_structural_closer_without_an_unclosed_opener",
+    "unregistered_angle_bracket_notation",
+    "document_length",
+    "lexical_diversity",
+    "source_style"
+  ],
+  "development_controls": {
+    "artifact": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_clean_controls_v6.jsonl",
+    "status": "previously_observed_development_only_not_confirmatory"
+  },
+  "fixture_gate": {
+    "confidence_level": 0.95,
+    "minimum_family_wilson_sensitivity_lower_bound": 0.8,
+    "maximum_each_source_false_reject_wilson_upper_bound": 0.05
+  },
+  "activation_requirements": [
+    "development_fixture_gate_passes",
+    "fresh_source_disjoint_controls_pass_after_freeze",
+    "four_head_bundle_calibration_passes",
+    "natural_budget_external_evaluation_passes"
+  ],
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

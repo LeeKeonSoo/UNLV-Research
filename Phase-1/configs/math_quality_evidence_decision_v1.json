@@ -1,0 +1,44 @@
+{
+  "schema_version": "math-quality-evidence-decision-v1",
+  "status": "blocked_math_quality_rejection_abstains",
+  "decision": "do_not_activate_math_positive_quality_thresholds",
+  "candidate_corpus": {
+    "records": 3936,
+    "qwen3_4b_tokens": 5000169
+  },
+  "attempts": [
+    {
+      "id": "four_head_v1",
+      "calibration_result": "hard_profile_found",
+      "candidate_excluded_records": 820,
+      "candidate_excluded_tokens": 2018646,
+      "candidate_excluded_token_fraction": 0.40371554821447034,
+      "fixture_result": "failed",
+      "failed_families": ["repeated_title_shell", "closing_delimiter_damage", "mid_document_rotation", "mid_document_truncation"],
+      "audit_report": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_hard_candidate_audit_v1.json",
+      "audit_report_sha256": "7bc4e82bf4fb0a39c8e67c4501ee43dbea4ecb7ed2c698e01e4e676a827fa4c5"
+    },
+    {
+      "id": "structural_v2_two_source_calibration",
+      "result": "blocked_no_strictly_feasible_profile",
+      "blocking_evidence": "maximum_leave_one_source_out_wilson_upper_bound_0.547269",
+      "report": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_complete_bundle_calibration_report_v3.json",
+      "report_sha256": "82e77d87146ae9ff7f31051570f582c43100053f20eedae60e1d5d0fe1638b00"
+    },
+    {
+      "id": "structural_v3_six_source_calibration",
+      "result": "blocked_no_strictly_feasible_profile",
+      "blocking_evidence": "Hefferon_topic_units_40_of_59_LOSO_failures_39_from_coherence_head",
+      "maximum_leave_one_source_out_wilson_upper_bound": 0.768314451498184,
+      "report": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_complete_bundle_calibration_report_v4.json",
+      "report_sha256": "4ab6d1a30eb20aa2dd4c1d2f43f54b23f67e2fab5c68af3d758cb88050b194ff"
+    }
+  ],
+  "root_cause": "The coherence-completeness structural classifier does not preserve a source-general absolute score scale. Excluding the failing source or relaxing the preregistered bound would be post-hoc and is forbidden.",
+  "runtime_effect": "none",
+  "quality_decision_for_math": "abstain_retain_unless_an_independent_explicit_reject_rule_fires",
+  "next_valid_path": "replace_or_redefine_coherence evidence, preregister new independent controls, and repeat calibration plus corruption fixtures before external evaluation",
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

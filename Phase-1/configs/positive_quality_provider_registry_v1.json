@@ -1,0 +1,175 @@
+{
+  "schema_version": "positive-quality-provider-registry-v1",
+  "status": "routing_precondition_plus_two_head_quality_contract_all_routes_abstain",
+  "runtime_activation": false,
+  "training_objective": "continued_pretraining",
+  "candidate_score_may_bypass_missing_heads": false,
+  "activation_rule": "A route may emit eligible_keep only after the independent routing precondition passes and frozen evidence supplies both current Quality heads, passes source-and-dataset-disjoint local calibration plus stress gates, and is linked by immutable artifact hashes. Structural coherence belongs to Validity.",
+  "routing_precondition": {
+    "name": "route_confidence",
+    "owner": "content_router_v2",
+    "quality_evidence": false,
+    "may_authorize_removal": false
+  },
+  "required_heads": [
+    "substantive_payload",
+    "route_specific_evidence"
+  ],
+  "routes": {
+    "general_prose": {
+      "provider_bundle_complete": false,
+      "runtime_action": "abstain",
+      "missing_heads": [
+        "substantive_payload",
+        "route_specific_evidence"
+      ],
+      "candidates": [
+        {
+          "provider_id": "princeton-nlp/QuRater-1.3B",
+          "artifact_url": "https://huggingface.co/princeton-nlp/QuRater-1.3B",
+          "primary_evidence_url": "https://arxiv.org/abs/2402.09739",
+          "purpose_alignment": "continued_pretraining",
+          "eligible_for_bundle": false,
+          "supported_heads": ["route_specific_evidence"],
+          "raw_dimensions": [
+            "writing_style",
+            "required_expertise",
+            "facts_trivia",
+            "educational_value"
+          ],
+          "candidate_mapping_status": "rejected_strict_source_transfer_no_deletion_authority",
+          "development_bundle": "configs/general_prose_evidence_bundle_v2.json",
+          "development_bundle_status": "blocked_source_transfer",
+          "limitations": "The four unnormalized ratings expose useful development dimensions, but writing style is not document completeness and top-score hard filtering can reduce diversity; the model card also documents domain, language, region, and social-role bias.",
+          "local_source_disjoint_calibration_required": true
+        },
+        {
+          "provider_id": "mlfoundations/dclm-fasttext-filter",
+          "artifact_url": "https://github.com/mlfoundations/dclm",
+          "primary_evidence_url": "https://arxiv.org/abs/2406.11794",
+          "purpose_alignment": "continued_pretraining",
+          "eligible_for_bundle": false,
+          "supported_heads": ["route_specific_evidence"],
+          "candidate_mapping_status": "rejected_source_transfer_and_semantic_stress",
+          "frozen_decision": "configs/general_provider_candidate_decision_v2.json",
+          "limitations": "Web-text quality discrimination is tied to DCLM reference distributions and cannot establish route confidence, payload substance, or coherence by itself.",
+          "local_source_disjoint_calibration_required": true
+        },
+        {
+          "provider_id": "HuggingFaceFW/fineweb-edu-classifier",
+          "artifact_url": "https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier",
+          "primary_evidence_url": "https://arxiv.org/abs/2406.17557",
+          "purpose_alignment": "continued_pretraining",
+          "eligible_for_bundle": false,
+          "supported_heads": ["route_specific_evidence"],
+          "candidate_mapping_status": "rejected_source_transfer_and_semantic_stress",
+          "frozen_decision": "configs/general_provider_candidate_decision_v2.json",
+          "limitations": "The score represents educational web-page preference learned from synthetic annotations; it is not a universal prose-quality or completeness probability.",
+          "local_source_disjoint_calibration_required": true
+        }
+      ]
+    },
+    "code": {
+      "provider_bundle_complete": false,
+      "runtime_action": "abstain",
+      "missing_heads": [
+        "substantive_payload",
+        "route_specific_evidence"
+      ],
+      "candidates": [
+        {
+          "provider_id": "HuggingFaceTB/stack-edu-classifier-python",
+          "provider_version": "2b36efbd7a00b5db416d7550c5ad42b561355517",
+          "provider_manifest": "configs/stack_edu_python_provider_manifest_v1.json",
+          "artifact_url": "https://huggingface.co/HuggingFaceTB/stack-edu-classifier-python",
+          "primary_evidence_url": "https://arxiv.org/abs/2502.02737",
+          "purpose_alignment": "continued_pretraining",
+          "eligible_for_bundle": false,
+          "supported_heads": ["route_specific_evidence"],
+          "candidate_mapping_status": "strict_clean_control_calibration_failed_no_runtime_authority",
+          "development_bundle": "configs/stack_edu_python_development_bundle_v1.json",
+          "limitations": "The frozen candidate is Python-only, limited to complete declared sources and 1024-token contexts, and inherits synthetic-annotation, out-of-distribution, and comment-density bias. Published thresholds 2 and 3 rejected 338/1299 and 1212/1299 post-snapshot production-code controls. No source-balanced profile passed pooled, per-source, and leave-one-repository-out Wilson gates for Normal or Hard.",
+          "local_source_disjoint_calibration_required": true
+        }
+      ]
+    },
+    "math": {
+      "provider_bundle_complete": false,
+      "runtime_action": "abstain",
+      "missing_heads": [
+        "substantive_payload",
+        "route_specific_evidence"
+      ],
+      "candidates": [
+        {
+          "provider_id": "open-web-math/MathScore",
+          "artifact_url": "https://huggingface.co/open-web-math/filtering-models",
+          "primary_evidence_url": "https://arxiv.org/abs/2310.06786",
+          "purpose_alignment": "continued_pretraining",
+          "eligible_for_bundle": true,
+          "supported_heads": [],
+          "supported_routing_preconditions": ["route_confidence"],
+          "limitations": "MathScore establishes mathematical-content relevance in a cascade after explicit notation recall. It does not establish payload completeness or learning usefulness and must not be thresholded as the sole route test for all documents.",
+          "local_source_disjoint_calibration_required": true
+        },
+        {
+          "provider_id": "HuggingFaceTB/finemath-classifier",
+          "artifact_url": "https://huggingface.co/HuggingFaceTB/finemath-classifier",
+          "primary_evidence_url": "https://huggingface.co/datasets/HuggingFaceTB/finemath",
+          "purpose_alignment": "continued_pretraining",
+          "eligible_for_bundle": true,
+          "supported_heads": ["route_specific_evidence"],
+          "candidate_mapping_status": "scored_development_candidate_missing_two_structural_heads",
+          "development_bundle": "configs/math_positive_development_bundle_v1.json",
+          "limitations": "The 0-to-5 regression target is synthetic educational-math usefulness, with documented English, educational-style, advanced-math, notation, and long-document limits. It cannot establish route, payload, or coherence alone.",
+          "local_source_disjoint_calibration_required": true
+        }
+      ]
+    },
+    "technical_documentation": {
+      "provider_bundle_complete": false,
+      "runtime_action": "abstain",
+      "missing_heads": [
+        "substantive_payload",
+        "route_specific_evidence"
+      ],
+      "candidates": []
+    },
+    "conversation_instruction": {
+      "provider_bundle_complete": false,
+      "runtime_action": "abstain",
+      "missing_heads": [
+        "substantive_payload",
+        "route_specific_evidence"
+      ],
+      "candidates": [
+        {
+          "provider_id": "hkust-nlp/deita-quality-scorer",
+          "artifact_url": "https://huggingface.co/hkust-nlp/deita-quality-scorer",
+          "primary_evidence_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/6091f2bb355e960600f62566ac0e2862-Paper-Conference.pdf",
+          "purpose_alignment": "instruction_tuning",
+          "eligible_for_bundle": false,
+          "supported_heads": ["route_specific_evidence"],
+          "limitations": "DEITA scores instruction-response pairs for alignment data selection; its training objective does not validate continued-pretraining retention decisions.",
+          "local_source_disjoint_calibration_required": true
+        }
+      ]
+    },
+    "unknown": {
+      "provider_bundle_complete": false,
+      "runtime_action": "abstain",
+      "missing_heads": [
+        "route_specific_evidence",
+        "substantive_payload"
+      ],
+      "candidates": []
+    }
+  },
+  "forbidden_shortcuts": [
+    "treating_one_candidate_score_as_all_four_heads",
+    "using_a_provider_outside_its_training_objective",
+    "activating_from_paper_results_without_local_disjoint_calibration",
+    "using_benchmark_or_nll_results_as_runtime_features",
+    "selecting_a_threshold_to_hit_a_retention_fraction"
+  ]
+}

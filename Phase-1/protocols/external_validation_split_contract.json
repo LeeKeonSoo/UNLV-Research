@@ -1,0 +1,29 @@
+{
+  "schema_version": "external-validation-split-contract-v1",
+  "status": "confirmatory_input_ready_pending_external_evaluation",
+  "purpose": "Separate policy development evidence from record/text-disjoint confirmatory external evaluation without exposing either split to the A-B-C runtime.",
+  "development": {
+    "role": "policy development and regression evidence only",
+    "required_artifacts": ["curation_report.json", "benchmark_exclusion_audit.json"],
+    "current_curation_report": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/abc_curation_development_current_policy_v1/curation_report.json"
+  },
+  "confirmatory": {
+    "role": "one-time external evaluation after policy freeze",
+    "required_artifacts": ["record/text-disjoint audited candidate corpus", "curation_report.json", "benchmark_exclusion_audit.json"],
+    "current_state": "materialized_and_integrity_checked",
+    "current_curation_report": "D:/UNLV-Research/code_confirmatory_v1/abc_curation_v1/curation_report.json",
+    "integrity_report": "D:/UNLV-Research/code_confirmatory_v1/external_validation_integrity_report.json"
+  },
+  "integrity_requirements": [
+    "both benchmark exclusion audits must be complete and pretraining eligible",
+    "stable record IDs must be present in both audited candidate corpora",
+    "record IDs and normalized text hashes must have zero cross-split overlap",
+    "policy fingerprints from both curation reports must match exactly",
+    "development or confirmatory metadata and outcomes must not be read by the A-B-C runtime"
+  ],
+  "execution": {
+    "command": "python scripts/build_external_validation_integrity_report.py --development-curation-report <development-report> --confirmatory-curation-report <confirmatory-report> --output <integrity-report>",
+    "required_status_before_confirmatory_training": "confirmatory_ready"
+  },
+  "claim_boundary": "A confirmatory-ready report proves source separation and frozen policy identity, not intrinsic text quality or universal downstream improvement."
+}

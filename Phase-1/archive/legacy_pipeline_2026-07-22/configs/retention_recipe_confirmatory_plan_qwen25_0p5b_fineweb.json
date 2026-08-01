@@ -1,0 +1,83 @@
+{
+  "schema_version": "retention-recipe-confirmatory-plan-v1",
+  "plan_name": "fineweb_retention_recipe_joint_confirmatory_v1",
+  "candidate": {
+    "arm": "retention_replay_target099",
+    "target_fraction": 0.99,
+    "general_replay_fraction": 0.01,
+    "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\retention_replay_target099.jsonl",
+    "sha256": "4b07ffd96461f72f4aac9071d8647b0f755700665e77453beea294f0a973cb5d",
+    "training_recipe": {
+      "learning_rate": 5e-06,
+      "optimizer_steps": 128,
+      "sequence_length": 1024,
+      "train_sequences": 1024,
+      "gradient_accumulation_steps": 4,
+      "full_parameter_training": true
+    }
+  },
+  "matched_comparator": {
+    "arm": "stageA_random_equal_budget",
+    "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\stageA_random_equal_budget.jsonl",
+    "sha256": "4852913af4a6840bbad91400ba95bf36d748e53a3ce65267d228e489b4e5bda3",
+    "uses_identical_training_recipe": true
+  },
+  "fresh_training_seeds": [
+    20260612,
+    20260613
+  ],
+  "required_new_evidence_before_training": [
+    "untouched target-distribution holdout not used in replay-ratio or recipe development",
+    "untouched external-retention holdout not used in replay-ratio or recipe development",
+    "exact and near-duplicate train/evaluation overlap audit"
+  ],
+  "per_seed_success_rule": "candidate target NLL must be lower than recipe-matched Stage-A random, and candidate external-retention NLL must not exceed base no-update",
+  "overall_success_rule": "Both fresh seeds must satisfy the per-seed joint rule.",
+  "stop_rule": "Stop after the first fresh seed that fails either required outcome.",
+  "forbidden_changes_after_freeze": [
+    "candidate replay ratio",
+    "learning rate",
+    "optimizer steps",
+    "training sequence budget",
+    "matched comparator",
+    "success rule",
+    "evaluation holdouts after results are observed"
+  ],
+  "development_evidence": {
+    "report": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\retention_recipe_development_report.json",
+    "sha256": "2400fe66ceb8cf5824c9e72f8d9e7ed6806f2d6898677073c21c4826401bb30b",
+    "candidate_target_improvement_vs_matched_stageA": 0.0001529223235077204,
+    "candidate_external_regression_vs_base": -0.00016911544146092083,
+    "role": "candidate-selection evidence only; excluded from confirmatory success count"
+  },
+  "source_plan_hashes": {
+    "configs\\retention_recipe_development_plan_qwen25_0p5b_fineweb.json": "99ca1fc86b9101ea19b6184b52a9481a55c59879cd34136d9279eec30050d496",
+    "configs\\retention_replay_boundary_plan_qwen25_0p5b_fineweb.json": "0bf32c0935b762b2f48c850629ece5b9f58fbf972f24f6920c0ece52a52a95d8"
+  },
+  "framework_scope": {
+    "stage_b": "unchanged; no Utility or target-model objective",
+    "stage_c": "joint target and retention validation",
+    "release_layer": "candidate construction and deployment-contract decision",
+    "utility_scope": "Stage C validation only; never selector objective"
+  },
+  "claim_boundary": "Frozen confirmatory candidate only. No certification or deployment claim until fresh seeds and untouched evaluations satisfy the frozen joint rule.",
+  "confirmatory_holdouts": {
+    "manifest": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\retention_confirmatory_holdouts_manifest.json",
+      "sha256": "3745d295e641a2872a724cd8f60fd0e0a4d4d65fd08996a96dd7d255360d1575"
+    },
+    "target": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\retention_confirmatory_target_eval.jsonl",
+      "sha256": "3f92c490a3db7f021ca1208c32f6edbe608a258506aa57a2c294ee314e603354",
+      "records": 1458,
+      "word_count": 1001612
+    },
+    "external": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\slm_update_experiments\\fineweb_edu_canonical_slm_update_v1\\retention_confirmatory_external_eval.jsonl",
+      "sha256": "0074a66f36d734a4f0de06b04bdc7e338336d9591ce4e408e07af39ff4c9528b",
+      "records": 2113,
+      "word_count": 1000232
+    },
+    "status": "bound_before_confirmatory_training"
+  }
+}

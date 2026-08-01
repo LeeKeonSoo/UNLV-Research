@@ -1,0 +1,36 @@
+{
+  "schema_version": "math-hard-candidate-profile-v1",
+  "status": "frozen_candidate_pending_fixture_and_ablation_gates",
+  "profile_id": "route_confidence_q0__substantive_payload_q0.0025__coherence_completeness_q0.005__route_specific_evidence_q0.01",
+  "thresholds": {
+    "route_confidence": 0.011924738995730877,
+    "substantive_payload": 0.7352966390832248,
+    "coherence_completeness": 0.000018997769886304,
+    "route_specific_evidence": 0.6237110495567322
+  },
+  "calibration_report": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_complete_bundle_calibration_report_v2.json",
+  "calibration_report_sha256": "73bb96832e88367a8a9b59e0027fb1ea537637187cb5b459d8b3286673b1ce7f",
+  "structural_model_dir": "D:/UNLV-Research/positive_quality_v1/providers/math_structural_heads_v1",
+  "structural_model_artifact_sha256": {
+    "substantive_payload": "b8203cebe8baa1fe0ae79a4bdf90a2f1a1e80a3233993215bf3b21469ba24895",
+    "coherence_completeness": "c1e48026c2f0d6829a3480604f7f1103e163327bfec789a7685a68009a4eb728"
+  },
+  "clean_text": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_clean_controls_v3.jsonl",
+  "clean_known_head_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_clean_control_provider_scores_v3.jsonl",
+  "clean_structural_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_structural_calibration_scores_v3.jsonl",
+  "candidate_text": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+  "candidate_known_head_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_positive_scores_v1.jsonl",
+  "candidate_structural_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_structural_scores_v1.jsonl",
+  "calibration_clean_failures": 9,
+  "calibration_clean_trials": 1764,
+  "calibration_pooled_wilson_upper_bound": 0.008749191479823658,
+  "calibration_max_source_wilson_upper_bound": 0.023035117012056558,
+  "calibration_max_leave_one_source_out_wilson_upper_bound": 0.038078326633122085,
+  "calibration_candidate_records": 3936,
+  "calibration_candidate_tokens": 5000169,
+  "calibration_excluded_candidate_records": 820,
+  "calibration_excluded_candidate_tokens": 2018646,
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

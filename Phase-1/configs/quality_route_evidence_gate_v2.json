@@ -1,0 +1,114 @@
+{
+  "schema_version": "quality-route-evidence-gate-v2",
+  "status": "all_registered_routes_blocked_not_runtime_active",
+  "quality_heads": [
+    "substantive_payload",
+    "route_specific_evidence"
+  ],
+  "routing_precondition": {
+    "name": "route_confidence",
+    "owner": "content_router_v2",
+    "quality_evidence": false,
+    "may_authorize_removal": false
+  },
+  "gate_order": [
+    "artifacts_frozen",
+    "source_and_hash_disjoint",
+    "external_results_hidden",
+    "strict_source_transfer",
+    "adversarial_and_format_fixtures",
+    "provider_bias_stress",
+    "route_holdout_stress"
+  ],
+  "forbidden_runtime_inputs": [
+    "benchmark",
+    "nll",
+    "utility",
+    "source_reputation",
+    "domain_quota",
+    "target_retention_fraction"
+  ],
+  "routes": [
+    {
+      "route": "general_prose",
+      "decision": "blocked_source_transfer",
+      "artifacts_frozen": true,
+      "source_and_hash_disjoint": true,
+      "strict_source_transfer": false,
+      "adversarial_and_format_fixtures": true,
+      "provider_bias_stress": false,
+      "route_holdout_stress": true,
+      "external_results_hidden": true,
+      "observed_evidence": {
+        "provider": "princeton-nlp/QuRater-1.3B@bd61c778c2f42c6e406b7bac8064290ffc183ae1",
+        "frozen_bundle": "configs/general_prose_evidence_bundle_v2.json",
+        "frozen_bundle_sha256": "3fc75b0e83e223cce1a62ebe9df4319d2d45765b76cff1208c99981f1be914e4",
+        "provider_candidate_decision": "configs/general_provider_candidate_decision_v2.json",
+        "provider_candidate_decision_sha256": "c0f83cb6136b93255b72df7d774b700c83bc7fffb27b5694654be6c168bd6025",
+        "additional_rejected_providers": [
+          "mlfoundations/fasttext-oh-eli5",
+          "HuggingFaceFW/fineweb-edu-classifier"
+        ],
+        "clean_controls": 1200,
+        "provider_training_hash_overlap": 0,
+        "normal_selected_profile": null,
+        "hard_selected_profile": null,
+        "regulations_leave_one_source_out_failures": 266,
+        "regulations_leave_one_source_out_trials": 400,
+        "regulations_leave_one_source_out_wilson_upper_bound": 0.702594,
+        "blocking_observation": "Paired format and adversarial stress passed, but the held-out Regulations source fails strict transfer and documented provider bias remains incomplete."
+      }
+    },
+    {
+      "route": "code_artifact",
+      "decision": "blocked_source_transfer",
+      "artifacts_frozen": true,
+      "source_and_hash_disjoint": true,
+      "strict_source_transfer": false,
+      "adversarial_and_format_fixtures": false,
+      "provider_bias_stress": false,
+      "route_holdout_stress": true,
+      "external_results_hidden": true,
+      "observed_evidence": {
+        "provider": "HuggingFaceTB/stack-edu-classifier-python@2b36efbd7a00b5db416d7550c5ad42b561355517",
+        "frozen_bundle": "configs/stack_edu_python_development_bundle_v1.json",
+        "frozen_bundle_sha256": "a9916ed60fc41170411ea2e828ab4154783559adfd552e5d6364ec79902b2608",
+        "calibration_report": "configs/stack_edu_python_calibration_report_v1.json",
+        "calibration_report_sha256": "e98a9e716ad534a4bc7fd3c359e3b73c77635e07acb1352fa9687e39e6003323",
+        "least_strict_max_leave_one_repository_out_wilson_upper_bound": 0.066065,
+        "hard_acceptance_bound": 0.05,
+        "blocking_observation": "The least strict source-balanced boundary exceeds the Hard transfer bound and separates only one candidate record."
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "decision": "blocked_source_transfer",
+      "artifacts_frozen": true,
+      "source_and_hash_disjoint": true,
+      "strict_source_transfer": false,
+      "adversarial_and_format_fixtures": false,
+      "provider_bias_stress": false,
+      "route_holdout_stress": true,
+      "external_results_hidden": true,
+      "observed_evidence": {
+        "frozen_decision": "configs/math_quality_evidence_decision_v3.json",
+        "frozen_decision_sha256": "4c5ce3767f9b068932623363b595d02f02339e655e3f6a767d3e3fb9d9038f75",
+        "calibration_contract": "configs/math_complete_bundle_calibration_v5.json",
+        "calibration_contract_sha256": "c6a4317cecd6567606a0095b2f4025fffbfd9eda791a597dffd513078dfb00f3",
+        "calibration_report_sha256": "fe0f4b5e711556ad84b6ae22ce9460703797f393736d506bbdd402956c553520",
+        "held_out_source_failures": {
+          "jim-hefferon/linear-algebra": {
+            "substantive_payload": 7,
+            "route_confidence": 1
+          },
+          "wojtask/clrs4e-solutions": {
+            "route_specific_evidence": 1
+          }
+        },
+        "blocking_observation": "Source-transfer failures remain in v2 heads, so removing the former structural head cannot turn this route into a pass."
+      }
+    }
+  ],
+  "development_ablation_authority": false,
+  "runtime_activation": false
+}

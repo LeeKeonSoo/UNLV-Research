@@ -1,0 +1,14 @@
+{
+  "schema_version": "span-level-template-development-stage-c-selection-v1",
+  "purpose": "Frozen text-only Stage-C selection settings for the preregistered repeated-span candidate arm.",
+  "near_duplicate_compaction": {
+    "shingle_size": 5,
+    "minimum_lexical_tokens": 40,
+    "symmetric_overlap_threshold": 0.95
+  },
+  "structural_artifact_rules": {
+    "explicit_generated_artifact": true,
+    "license_comment_only_chunk": true
+  },
+  "forbidden": ["coverage_guard", "source_metadata", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction"]
+}

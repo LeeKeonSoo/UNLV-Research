@@ -1,0 +1,16 @@
+{
+  "source_name": "togethercomputer/RedPajama-Data-V2",
+  "source_uri": "https://huggingface.co/datasets/togethercomputer/RedPajama-Data-V2",
+  "collected_at": "2026-07-31T00:00:00Z",
+  "text_field": "raw_content",
+  "stable_record_id_field": "digest",
+  "rights": {"status": "unknown", "license": "Common Crawl source-specific rights"},
+  "pii_context": "general",
+  "language": {"code": "en", "confidence": null},
+  "partition": {
+    "source_dataset": "togethercomputer/RedPajama-Data-V2",
+    "source_pool_role": "raw_like_stress",
+    "content_type": "general_text",
+    "upstream_partition": "en_tail"
+  }
+}

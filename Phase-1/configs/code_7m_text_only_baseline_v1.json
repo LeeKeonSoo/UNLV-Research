@@ -1,0 +1,19 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "input": {
+    "candidate_files": ["D:/UNLV-Research/code_5m_corpus_v2/stage0_output/release_candidates.jsonl"],
+    "text_fields": ["text", "content", "document", "body"],
+    "defaults": {}
+  },
+  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/current_framework_7m_v1/baseline",
+  "stage_a": {"policy": "text_only_v2"},
+  "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 120},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true, "license_comment_only_chunk": true}
+  },
+  "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
+  "claim_boundary": "Current text-only A-B-C baseline on the frozen legacy 7M Stage-0 release; external evaluation is not a runtime input."
+}

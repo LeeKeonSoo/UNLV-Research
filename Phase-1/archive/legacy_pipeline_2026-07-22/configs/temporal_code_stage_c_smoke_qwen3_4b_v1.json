@@ -1,0 +1,68 @@
+{
+  "schema_version": "temporal-code-stage-c-smoke-qwen3-4b-v1",
+  "status": "frozen_before_target_tokenization_or_model_execution",
+  "purpose": "Validate Qwen3-4B QLoRA feasibility, target-token arm construction, and Stage-C isolation before development effect estimation.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "input_paths": {
+    "curated": "outputs/temporal_code_collection/stage_b_path_stratified_tranche/train_selected.jsonl",
+    "common_stage_a_random": "outputs/temporal_code_collection/stage_b_path_stratified_tranche/train_stage_a_random_disjoint.jsonl",
+    "raw_stage0_train": "outputs/temporal_code_collection/stage0_path_stratified_tranche/train/release_candidates.jsonl",
+    "development_stage_a": "outputs/temporal_code_collection/stage_a_path_stratified_tranche/development/stage_a_pass.jsonl",
+    "confirmatory_stage_a": "outputs/temporal_code_collection/stage_a_path_stratified_tranche/confirmatory/stage_a_pass.jsonl"
+  },
+  "arm_contract": {
+    "primary_arms": [
+      "curated_equal_token",
+      "stageA_random_equal_token"
+    ],
+    "supporting_arms": [
+      "raw_random_equal_token"
+    ],
+    "matched_budget_rule": "minimum available target-token count across curated, common Stage-A random, and raw-random candidates, capped at smoke_max_tokens",
+    "smoke_max_tokens": 1000000,
+    "raw_random_seed": 20260614,
+    "common_stage_a_baseline": "The frozen selected-disjoint Stage-A-random arm is reused unchanged for every sensitivity comparison.",
+    "all_sensitivity_arms_must_share_common_stage_a_baseline": true,
+    "common_stage_a_baseline_must_be_disjoint_from_every_sensitivity_arm": true
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "smoke_optimizer_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "smoke_seed": 20260614
+  },
+  "smoke_success_criteria": [
+    "target-token arms are constructed and SHA-256 frozen",
+    "curated and common Stage-A-random are disjoint",
+    "the same common Stage-A baseline identity is referenced by every sensitivity arm",
+    "Qwen3-4B loads in 4-bit and completes at least one optimizer step",
+    "all requested arms use matched token and optimizer-step budgets",
+    "development and confirmatory records are never read by Stage B"
+  ],
+  "smoke_non_claims": [
+    "no Utility benefit claim",
+    "no release decision",
+    "no parameter validity claim",
+    "no confirmatory outcome inspection"
+  ],
+  "development_entry_rule": "Freeze practical effect margin, development seeds, evaluation tasks, and retention guardrails after smoke feasibility and before development outcomes.",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "human_or_llm_review": "optional diagnostic only; never ground truth, tuning signal, or entry gate"
+}

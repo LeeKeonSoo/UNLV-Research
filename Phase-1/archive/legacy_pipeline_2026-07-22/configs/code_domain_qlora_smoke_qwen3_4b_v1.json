@@ -1,0 +1,49 @@
+{
+  "schema_version": "code-domain-qlora-smoke-qwen3-4b-v1",
+  "status": "frozen_before_qwen3_4b_smoke_execution",
+  "purpose": "Run a minimal Qwen3-4B QLoRA feasibility smoke on the frozen code-domain equal-token arms.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "input": {
+    "arms_dir": "outputs/temporal_code_training_freeze_v1/equal_token_arms",
+    "arms_report": "outputs/temporal_code_training_freeze_v1/equal_token_arms/equal_token_training_arms_report.json"
+  },
+  "arms": [
+    "curated_equal_budget",
+    "stageA_random_equal_budget",
+    "raw_random_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "training_recipe": {
+    "method": "QLoRA continued pretraining smoke",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "smoke_optimizer_steps": 1,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "seed": 20260619
+  },
+  "success_criteria": [
+    "token blocks are constructed from every frozen arm using the same training_token_budget_cap",
+    "Qwen3-4B-Base tokenizer and model resolve reproducibly",
+    "4-bit QLoRA model loads on the selected CUDA device",
+    "at least one optimizer step completes for a smoke arm",
+    "no Utility, benchmark, development, confirmatory, or review signal is used in training-arm construction"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "QLoRA smoke feasibility only; no Utility, training-benefit, release, or paper-result claim."
+}

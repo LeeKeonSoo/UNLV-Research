@@ -1,0 +1,80 @@
+{
+  "schema_version": "positive-quality-evidence-v1",
+  "status": "candidate_only_not_stage_c_active",
+  "implementation": "positive_quality_evidence.py",
+  "decision_unit": "stage_b_pass_chunk",
+  "routes": [
+    "general_prose",
+    "code",
+    "math",
+    "technical_documentation",
+    "conversation_instruction",
+    "unknown"
+  ],
+  "required_evidence_heads": [
+    "route_confidence",
+    "substantive_payload",
+    "coherence_completeness",
+    "route_specific_evidence"
+  ],
+  "combination": "all_four_heads_meet_route_specific_thresholds",
+  "score_scale_contract": {
+    "representation": "provider_native_finite_score",
+    "probability_normalization_required": false,
+    "cross_provider_arithmetic_forbidden": true,
+    "thresholds_share_exact_provider_version_and_scale": true
+  },
+  "decisions": ["eligible_keep", "reject", "abstain"],
+  "positive_gate": "At least one known route must pass all four frozen thresholds.",
+  "negative_gate": "Evidence scores alone cannot reject in v1. Reject requires a separately named explicit non-payload policy.",
+  "unknown_and_missing_action": "abstain",
+  "provider_contract": {
+    "registry": "configs/positive_quality_provider_registry_v1.json",
+    "registry_status": "evidence_mapped_no_complete_runtime_bundle",
+    "complete_runtime_routes": [],
+    "incomplete_route_action": "abstain",
+    "required_fields": [
+      "provider_id",
+      "provider_version",
+      "provider_manifest_sha256",
+      "training_data_manifest_sha256",
+      "calibration_data_manifest_sha256"
+    ],
+    "scores_must_be_frozen_before_selection": true,
+    "source_and_dataset_disjoint_calibration_required": true,
+    "runtime_source_identity_forbidden": true
+  },
+  "calibration": {
+    "candidate_unit": "complete_threshold_profile",
+    "selection_rule": "most_compressive_feasible_threshold_profile",
+    "false_reject_interval": "one_sided_wilson_binomial_upper_bound",
+    "confidence_level": 0.95,
+    "normal_clean_control_false_reject_upper_bound": 0.01,
+    "hard_clean_control_false_reject_upper_bound": 0.05,
+    "requires_clean_controls_for_every_configured_route": true,
+    "target_retention_fraction_used": false,
+    "confirmatory_results_may_retune": false
+  },
+  "runtime_forbidden_inputs": [
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction",
+    "source_identity",
+    "source_tier",
+    "path",
+    "dataset_identity",
+    "project_local_human_quality_label",
+    "global_weighted_quality_score"
+  ],
+  "required_trace": [
+    "chunk_uid",
+    "decision",
+    "qualifying_routes",
+    "evaluated_routes",
+    "provider_manifest_sha256",
+    "threshold_profile_id",
+    "reason_code"
+  ],
+  "activation_authority": false
+}

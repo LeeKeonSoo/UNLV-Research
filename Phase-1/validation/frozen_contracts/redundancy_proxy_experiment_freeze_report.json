@@ -1,0 +1,27 @@
+{
+  "schema_version": "redundancy-proxy-experiment-freeze-report-v1",
+  "status": "redundancy_proxy_experiment_frozen",
+  "config_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_experiment_qwen25_0p5b_v1.json",
+  "config_sha256": "6691597b97b603a745f9232a1b5f06b8a872c9fe12c88cc54297d6a30c818f40",
+  "model_revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+  "seeds": [
+    11,
+    23,
+    37
+  ],
+  "sequence_length": 1024,
+  "exact_train_tokens_per_arm": 327680,
+  "exact_train_blocks_per_arm": 320,
+  "exact_heldout_tokens": 146432,
+  "exact_heldout_blocks": 143,
+  "heldout_train_repository_overlap_count": 0,
+  "arm_raw_tokenizer_tokens": {
+    "binary_current_equal_budget": 385818,
+    "log_count_equal_budget": 385812,
+    "stageA_random_common_disjoint_equal_budget": 380059
+  },
+  "practical_absolute_nll_floor": 0.002,
+  "one_sided_t_critical_95_df2": 2.919986,
+  "blockers": [],
+  "claim_boundary": "Pre-training proxy contract only. It freezes inputs and decisions but contains no Utility, retention, release, or framework-validity result."
+}

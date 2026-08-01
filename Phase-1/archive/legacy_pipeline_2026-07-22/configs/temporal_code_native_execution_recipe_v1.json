@@ -1,0 +1,54 @@
+{
+  "schema_version": "temporal-code-native-execution-recipe-v1",
+  "status": "refrozen_after_first_native_execution_before_second_native_execution",
+  "revision_reason": "The first exploratory native run showed that a single Python 3.11 image and an immutable workspace confound metadata-derived recipes. The second exploratory freeze derives a supported Python image from project metadata and always runs tests from an ephemeral writable workspace copy.",
+  "purpose": "Test whether deterministic repository metadata can improve executable-task recovery without using execution outcomes as recipe inputs.",
+  "evidence_role": "post-generic-failure exploratory development diagnostic only",
+  "applies_to_plan": "outputs/temporal_code_collection/temporal_code_development_execution_expansion_plan.json",
+  "metadata_commit_role": "merge",
+  "allowed_metadata_files": [
+    "pyproject.toml",
+    "setup.cfg",
+    "setup.py",
+    "tox.ini",
+    "requirements.txt",
+    "requirements-dev.txt",
+    "requirements-test.txt",
+    "test-requirements.txt"
+  ],
+  "project_root_rule": "Choose the project marker directory that is an ancestor of the most frozen changed-test targets; break ties by shallower depth then lexical path.",
+  "dependency_rule": {
+    "structured_optional_dependency_priority": [
+      "test",
+      "tests",
+      "dev",
+      "development"
+    ],
+    "requirement_file_priority": [
+      "requirements-test.txt",
+      "test-requirements.txt",
+      "requirements-dev.txt",
+      "requirements.txt"
+    ],
+    "fallback": "editable project install plus pytest"
+  },
+  "test_target_rule": "Reuse the already frozen changed-test targets; do not select targets from execution outcomes.",
+  "execution_environment_rule": {
+    "python_image": "Derive the lowest supported Python minor among 3.10, 3.11, 3.12, and 3.13 from project.requires-python when available; otherwise use Python 3.11.",
+    "workspace": "Run tests from an ephemeral writable copy while retaining a read-only container root filesystem."
+  },
+  "selection_forbids": [
+    "generic execution outcomes",
+    "native execution outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "success_interpretation": "A recovered executable bundle is exploratory execution-infrastructure evidence only and cannot establish Utility or curation benefit.",
+  "failure_interpretation": "Failure does not establish Stage-B, curation, or Utility failure.",
+  "confirmatory_use": "forbidden until the rule is independently frozen for a fresh confirmatory execution pool",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Post-failure exploratory execution-recipe refinement only; no Utility, curation-benefit, or release claim."
+}

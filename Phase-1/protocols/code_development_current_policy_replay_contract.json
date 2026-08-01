@@ -1,0 +1,30 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "purpose": "Replay the audited Code development input under the current policy fingerprint for source-disjoint confirmatory comparison.",
+  "input": {
+    "sources": [
+      {
+        "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+        "text_fields": ["text"],
+        "defaults": {"pii_context": "repository_code"},
+        "metadata_capabilities": {
+          "partition.path": {"availability": "provided"},
+          "partition.repository_identity": {"availability": "provided"},
+          "artifact_context.generation": {"availability": "not_provided_by_upstream", "inference": "forbidden"},
+          "artifact_context.dependency_copy": {"availability": "not_provided_by_upstream", "inference": "forbidden"}
+        }
+      }
+    ]
+  },
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/abc_curation_development_current_policy_v1",
+  "stage_b": {"minimum_chunk_chars": 40, "max_chunk_chars": 6000},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true},
+    "coverage_guard": {"strata": ["language_code", "content_type"]}
+  },
+  "stage_c": {"no_binding_budget_action": "materialize_reason_coded_survivors"},
+  "claim_boundary": "This is a deterministic policy-identity replay of the existing audited development input. It does not create a new selection policy or downstream-performance claim."
+}

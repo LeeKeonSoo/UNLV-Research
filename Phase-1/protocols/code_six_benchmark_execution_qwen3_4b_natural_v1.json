@@ -1,0 +1,78 @@
+{
+  "schema_version": "code-six-benchmark-execution-qwen3-4b-natural-v1",
+  "status": "queued_after_training_completion",
+  "evaluation_role": "external_offline_validation",
+  "may_mutate_curation_output": false,
+  "training": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "base_model_snapshot": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["base_no_update", "raw_safe_natural", "curated_natural"],
+    "seeds": [11, 23, 37],
+    "budget": "natural_dataset_budget_per_arm",
+    "effective_training_tokens": {
+      "raw_safe_natural": 7028736,
+      "curated_natural": 3637248
+    }
+  },
+  "primary_benchmarks": [
+    "humanevalplus",
+    "mbppplus",
+    "livecodebench_v6_code_generation_lite",
+    "bigcodebench_complete",
+    "ds1000",
+    "ojbench"
+  ],
+  "secondary_benchmarks": ["swebench_lite_fixed_agent"],
+  "benchmark_contracts": {
+    "humanevalplus": {
+      "suite": "EvalPlus",
+      "metric": "pass_at_1",
+      "generation": "current_transformers_peft_generator",
+      "scoring": "evalplus_docker"
+    },
+    "mbppplus": {
+      "suite": "EvalPlus",
+      "metric": "pass_at_1",
+      "generation": "current_transformers_peft_generator",
+      "scoring": "evalplus_docker"
+    },
+    "livecodebench_v6_code_generation_lite": {
+      "suite": "LiveCodeBench",
+      "metric": "pass_at_1",
+      "release": "release_v6",
+      "scenario": "code_generation_lite",
+      "generation": "current_transformers_peft_generator",
+      "scoring": "official_livecodebench_evaluator"
+    },
+    "bigcodebench_complete": {
+      "suite": "BigCodeBench",
+      "metric": "pass_at_1",
+      "split": "complete",
+      "generation": "current_transformers_peft_generator_direct_completion",
+      "scoring": "official_bigcodebench_local_evaluator"
+    },
+    "ds1000": {
+      "suite": "DS-1000",
+      "metric": "pass_at_1",
+      "generation": "current_transformers_peft_generator",
+      "scoring": "isolated_ds1000_container"
+    },
+    "ojbench": {
+      "suite": "OJBench",
+      "metric": "pass_at_1",
+      "generation": "current_transformers_peft_generator",
+      "scoring": "official_ojbench_evaluator"
+    }
+  },
+  "selector_boundary": {
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "target_token_fraction_read": false
+  },
+  "freeze_requirements": [
+    "Record benchmark revision, prompt template, decoding configuration, generator revision, and evaluator container digest before first generation.",
+    "Use only benchmark tasks outside the frozen training sources; LiveCodeBench tasks must be later than both model cutoff and corpus endpoint.",
+    "Report each benchmark separately with paired Raw-versus-Curated seed summaries; do not compute a cross-benchmark aggregate."
+  ],
+  "secondary_boundary": "SWE-bench Lite remains a separately frozen agent-scaffold case study and is not a model-only primary result."
+}

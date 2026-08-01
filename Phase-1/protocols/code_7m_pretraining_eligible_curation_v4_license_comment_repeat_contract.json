@@ -1,0 +1,24 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "purpose": "Independent deterministic replay of the v4 license-comment-only candidate curation contract.",
+  "input": {
+    "sources": [
+      {
+        "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+        "text_fields": ["text"],
+        "defaults": {"pii_context": "repository_code"}
+      }
+    ]
+  },
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/abc_curation_pretraining_eligible_v4_license_comment_repeat",
+  "stage_b": {"minimum_chunk_chars": 40, "max_chunk_chars": 6000},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true, "license_comment_only_chunk": true},
+    "coverage_guard": {"strata": ["language_code", "content_type"]}
+  },
+  "stage_c": {"no_binding_budget_action": "materialize_reason_coded_survivors"},
+  "claim_boundary": "This replay exists only to verify deterministic materialization of the isolated v4 license-comment-only candidate rule."
+}

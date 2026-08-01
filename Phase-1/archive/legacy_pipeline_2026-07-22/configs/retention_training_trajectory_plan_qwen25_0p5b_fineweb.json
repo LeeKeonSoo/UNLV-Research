@@ -1,0 +1,51 @@
+{
+  "schema_version": "retention-training-trajectory-plan-v1",
+  "plan_name": "fineweb_retention_training_trajectory_diagnostic_v1",
+  "scope": "development_only_training_trajectory_diagnostic_not_candidate_selection_or_certification",
+  "arms": [
+    "stageA_random_equal_budget",
+    "retention_replay_target099"
+  ],
+  "development_training_seeds": [
+    20260614,
+    20260615,
+    20260616
+  ],
+  "checkpoint_steps": [
+    32,
+    64,
+    96,
+    128
+  ],
+  "training_recipe": {
+    "learning_rate": 0.000005,
+    "optimizer_steps": 128,
+    "gradient_accumulation_steps": 4,
+    "batch_size": 1,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "dtype": "bf16",
+    "full_parameter_training": true
+  },
+  "blocks": {
+    "train_dir": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1/token_blocks_retention_replay_pilot",
+    "target_eval": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1/token_blocks_full/confirmatory_coverage_stratified_stageA_eval.pt",
+    "external_eval": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1/external_guardrails/token_blocks/wikitext103_guardrail.pt"
+  },
+  "base_external_eval_result": "outputs/slm_update_experiments/fineweb_edu_canonical_slm_update_v1/eval_results/guardrail_base_wikitext103.json",
+  "diagnostic_questions": [
+    "Does the candidate target advantage appear only at a transient stopping interval?",
+    "Is any checkpoint interval target-positive across development training seeds?",
+    "At which checkpoints does the candidate satisfy the external-retention guardrail?"
+  ],
+  "decision_rule": "Use the curves to diagnose training-seed and stopping-step instability only. Do not promote a recipe or alter a frozen confirmatory decision from this diagnostic alone.",
+  "forbidden_uses": [
+    "changing Stage-B selection or selector objective",
+    "using Utility or target-model outcomes as a selector objective",
+    "tuning on frozen retention confirmatory holdouts",
+    "counting development curves as certification evidence"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "gpu_constraint": "physical CUDA device 1, NVIDIA GeForce RTX 3070 Ti only",
+  "claim_boundary": "Development trajectory evidence only; no deployment, certification, or universal stopping-rule claim."
+}

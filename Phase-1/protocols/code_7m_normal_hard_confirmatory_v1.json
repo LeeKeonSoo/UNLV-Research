@@ -1,0 +1,34 @@
+{
+  "schema_version": "code-7m-normal-hard-confirmatory-v1",
+  "status": "frozen_before_curation_and_tokenizer_materialization",
+  "purpose": "Benchmark-disjoint natural-budget external evaluation of audited Raw, Normal, and Hard code-data arms.",
+  "audited_raw_input": {
+    "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+    "benchmark_exclusion_audit": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+    "required_status": "benchmark_exclusion_complete"
+  },
+  "curation": {
+    "normal_config": "protocols/code_7m_normal_confirmatory_curation_v1.json",
+    "hard_config": "protocols/code_7m_hard_confirmatory_curation_v1.json",
+    "policy_boundary": "Hard is confirmatory-only and must not be used for production curation before external results are frozen."
+  },
+  "training": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["raw_audited_natural", "normal_natural", "hard_natural"],
+    "seeds": [101, 202, 303],
+    "budget": "natural_dataset_budget_per_arm",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "adapter": {"rank": 32, "alpha": 64, "dropout": 0.05, "target_modules": "all-linear"},
+    "output_root": "D:/UNLV-Research/code_5m_corpus_v2/hard_confirmatory_7m_v1"
+  },
+  "primary_benchmarks": ["humanevalplus", "mbppplus", "bigcodebench_complete", "cruxeval_input_prediction", "cruxeval_output_prediction", "ds1000"],
+  "blocked_benchmarks": ["livecodebench_code_generation_lite"],
+  "selector_boundary": {"utility_read": false, "benchmark_outcomes_read": false, "target_token_fraction_read": false},
+  "claim_boundary": "This protocol evaluates frozen policy outputs on one benchmark-disjoint Code corpus. It cannot establish universal quality, domain-general downstream effectiveness, or production readiness before results are analyzed."
+}

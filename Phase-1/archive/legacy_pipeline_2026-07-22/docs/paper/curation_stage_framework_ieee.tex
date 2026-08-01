@@ -1,0 +1,656 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\figplaceholder}[2]{%
+\fbox{\begin{minipage}{0.92\linewidth}
+\centering
+\vspace{0.5em}
+\textbf{Figure placeholder: #1}\\[0.35em]
+\small #2
+\vspace{0.5em}
+\end{minipage}}}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{From Quality Filtering to Curation Decisions: A Stage-Boundary Framework for Language-Model Training Data}
+
+\author{\IEEEauthorblockN{Keonsoo Lee}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{University of Nevada, Las Vegas}\\
+Las Vegas, USA \\
+leek133@unlv.nevada.edu}
+\and
+\IEEEauthorblockN{Shaikh Arifuzzaman}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{University of Nevada, Las Vegas}\\
+Las Vegas, USA \\
+shaikh.arifuzzaman@unlv.edu}
+}
+
+\maketitle
+
+\begin{abstract}
+Foundation-model training pipelines increasingly depend on large,
+heterogeneous, and repeatedly refreshed candidate corpora.  The operational
+step between data collection and model training is often described as generic
+filtering or quality scoring, although real training-data decisions combine
+structural validity, risk quarantine, redundancy control, coverage
+preservation, budget allocation, and downstream validation.  This paper argues
+that training-data preparation should be treated as a curation decision
+problem rather than a single quality-filtering problem.  The framework
+separates operational responsibilities into Core-Metric-Policy layers and
+enforces a staged contract:
+Stage 0 quarantines risk, Stage A applies chunk-level hard gates, Stage B
+performs optional budgeted chunk selection, and Stage C validates the resulting
+subset through held-out training evidence.  A central design constraint is that
+Utility is measured only in Stage C and is never used as a Stage-B selector
+objective.  The novelty is not another quality score; it is an auditable
+separation between record disposition, budget allocation, and downstream
+validation.  The current evidence contains one positive code-domain validation
+and one negative math-domain validation.  In code, a natural-budget curated
+arm reduces packed training tokens by 60.8\% while improving held-out NLL and
+EvalPlus macro pass rate over raw fine-tuning.  In math, the first selector
+fails, and the repaired selector improves over that failure but still does not
+beat raw training.  A frozen 48-task LiveCodeBench pilot gives identical
+18.75\% pass@1 to base, raw, and curated arms, so independent benchmark
+transfer is not yet demonstrated.  The result is not a universal data-quality detector or a
+production-ready safety filter; it is evidence that curation policies should
+expose pass, fail, and abstain outcomes under frozen validation rather than
+collapse all data preparation into an opaque quality score.
+\end{abstract}
+
+\begin{IEEEkeywords}
+big data, data curation, foundation models, language models, pretraining data,
+data-centric AI, data selection, deduplication, reproducibility
+\end{IEEEkeywords}
+
+\section{Introduction}
+Training data is a primary control surface for language models.  As model
+training and updating cycles continue, practitioners may collect new candidate
+data between training runs, from web corpora, code repositories, documentation,
+domain-specific sources, or generated and human-authored mixtures.  The central
+question is not whether every collected item is intrinsically ``high quality.''
+Rather, the operational question is whether the collected corpus can be turned
+into a training-ready pool, or an explicitly budgeted training subset, under a
+reproducible and auditable policy.
+
+This distinction matters because raw candidate corpora can fail in different
+ways.  Some records are structurally unusable, contaminated, unsafe, malformed,
+or outside the intended rights boundary.  Some records are individually usable
+but redundant enough to waste a constrained training budget.  Some records are
+valuable precisely because they preserve rare styles, sources, domains, or
+task forms.  A single scalar quality score cannot represent all of these
+decisions without hiding the policy assumptions behind the score.
+
+We therefore frame data preparation as a \emph{curation stage} between
+collection and training.  The curation stage does not claim to solve universal
+data quality.  It maps candidate data into explicit dispositions: quarantine,
+Stage-A pass, retained curated pool, optional budget-selected subset, or
+abstention when the evidence is insufficient.  This paper focuses on that
+operational layer.  This changes the research question from ``Can we score data
+quality?'' to ``Can we make training-data decisions reproducible, stage-local,
+and falsifiable?''
+
+The main contributions are:
+\begin{itemize}
+    \item \textbf{A decision framework, not a quality score.}  We define a
+    curation contract that separates record disposition, optional budget
+    allocation, and downstream validation.
+    \item \textbf{A Core-Metric-Policy method.}  We map each Core
+    responsibility to metric surfaces, stage ownership, and forbidden claims.
+    \item \textbf{A Utility isolation rule.}  We enforce that downstream
+    Utility is measured only in Stage C and is never available to the Stage-B
+    selector objective.
+    \item \textbf{An evidence package with positive and abstain outcomes.}  We
+    report historical positive code-domain evidence awaiting a current-framework
+    rerun, alongside a math-domain abstain under the same frozen validation
+    discipline.
+\end{itemize}
+
+This framing gives reviewers a falsifiable target.  The claim is not that the
+framework can certify any dataset as high quality.  The claim is that an
+LM-training corpus can be processed through explicit curation stages whose
+outputs, failures, and unsupported claims are machine-checkable.
+
+\begin{figure*}[t]
+\centering
+\figplaceholder{Curation-stage pipeline}{Replace with a full-width pipeline from raw candidate corpus to Stage 0, Stage A, full curated pool, optional Stage B, and Stage C.  Mark Stage C as validation-only and show the blocked Utility feedback path into Stage B.}
+\caption{Curation-stage view of language-model training data management.  Stage B is optional and budget-driven; Utility is observed only in Stage C and cannot flow back into the Stage-B selector objective.}
+\label{fig:pipeline}
+\end{figure*}
+
+\section{Motivation and Scope}
+Large-scale language-model corpora commonly use filtering, deduplication,
+contamination checks, source balancing, and quality-related heuristics.  Prior
+work on web-scale corpus construction and dataset filtering motivates these
+operations, while deduplication studies show that repeated text can affect both
+evaluation and training behavior~\cite{ccnet,dedup,refinedweb,dolma}.  However,
+many practical systems combine several different objectives under a broad
+quality-filtering label.
+
+The big-data aspect is the operational state of the corpus, not token count
+alone.  Candidate corpora are large, heterogeneous, refreshed over time, and
+useful only after admissibility, redundancy, coverage, budget, and downstream
+evidence are recorded.  We therefore treat curation as an auditable
+data-management stage before training, rather than as a hidden preprocessing
+detail inside a model-training recipe.
+
+Our scope is narrower and more explicit.  We do not attempt to define an
+intrinsic semantic quality oracle.  We also do not claim production-grade
+license, PII, secret, poisoning, or benchmark-contamination detection.  Instead,
+we study whether a collected corpus can be passed through a documented curation
+stage whose gates, selector, diagnostics, and validation evidence are
+reproducible.
+
+The current evidence supports a bounded research claim: the proposed
+curation-stage decision structure can be specified, implemented, audited, and
+falsified under frozen downstream validation.  It does not support a production
+deployment claim or a universal all-domain improvement claim.
+
+\section{Related Work}
+\subsection{Large-Scale Corpus Construction}
+Large language-model corpora are usually built through layered data-processing
+pipelines rather than through a single quality decision.  C4 popularized a
+large cleaned Common Crawl corpus for transfer learning experiments~\cite{c4}.
+CCNet used language identification, deduplication, and filtering to extract
+monolingual web corpora~\cite{ccnet}.  The Pile emphasized mixture diversity
+across multiple high-quality sources~\cite{pile}.  RefinedWeb showed that
+filtered and deduplicated web data can be competitive at large scale~\cite{refinedweb}.
+Dolma documented an open three-trillion-token corpus and its curation
+practices~\cite{dolma}, while FineWeb-Edu further highlighted how filtering
+choices can change downstream behavior~\cite{finewebedu}.
+
+These projects motivate the need for data curation, but they do not by
+themselves define a reusable policy boundary between hard gates, budgeted
+selection, and downstream validation.  Our work contributes that policy
+separation and the associated reproducibility package.
+
+\subsection{Deduplication, Diversity, and Data-Centric Evaluation}
+Deduplication is a necessary but incomplete curation operation.  Lee et
+al. showed that duplicated training data affects memorization and evaluation
+overlap~\cite{dedup}.  However, for code and technical text, repeated APIs,
+tests, and idioms can also be useful recurrence.  The framework therefore
+separates hard duplicate gates from softer redundancy-risk penalties.
+
+Data-centric benchmarks such as DataComp make the dataset construction process
+itself an object of evaluation~\cite{datacomp}.  This paper follows the same
+spirit for language-model training data: the curation stage is evaluated as a
+reproducible data-management process, not merely as a hidden preprocessing
+detail before model training.
+
+\section{Problem Setting}
+Let $D=\{x_i\}_{i=1}^{n}$ be a candidate corpus collected before a language-model
+training run.  The goal is not to assign a universal quality score to every
+$x_i$.  The goal is to produce a reproducible disposition for each record and,
+when a token budget $B$ is binding, a training subset $S_B \subseteq D$ whose
+construction is auditable.
+
+The framework must support five outcomes.  First, a record can be quarantined
+because it violates a risk or admissibility boundary.  Second, it can fail
+Stage A and be excluded from the curated pool.  Third, it can pass Stage A and
+remain in the full curated pool.  Fourth, it can be selected by Stage B under a
+budgeted training subset.  Fifth, the whole subset can be held, rejected, or
+accepted after Stage-C validation.  These outcomes are different policy states:
+``budget not selected'' is not the same as ``bad data,'' and a retain-all
+outcome is valid when the corpus already fits the training budget.
+
+This formulation yields three requirements:
+\begin{enumerate}
+    \item decisions must be stage-local, so that chunk-level gates do not
+    accidentally consume subset-level outcomes;
+    \item metrics must be attached to explicit policy roles rather than
+    interpreted as free-standing quality claims;
+    \item each claim must be traceable to frozen artifacts, commands, configs,
+    and validation reports.
+\end{enumerate}
+
+\section{Framework}
+\subsection{Core-Metric-Policy Separation}
+The framework distinguishes three layers.  A \emph{Core} is an operational
+curation responsibility.  A \emph{Metric} is an observable proxy or measurement
+used to support that responsibility.  A \emph{Policy} is the stage-specific rule
+that consumes the metric.  This separation prevents a metric from silently
+expanding into a claim it cannot support.
+
+The current Core surfaces are:
+\begin{itemize}
+    \item \textbf{Validity:} structural usability and basic training-input
+    admissibility;
+    \item \textbf{Selection Value Evidence:} observable pre-outcome evidence
+    used for optional budget allocation, not intrinsic quality judgment;
+    \item \textbf{Redundancy:} duplicate and saturation control, while
+    distinguishing harmful duplication from useful recurrence;
+    \item \textbf{Coverage:} observable retention of source, style, path,
+    content type, and cluster structure;
+    \item \textbf{Utility:} downstream training effect, measured only after a
+    subset is constructed.
+\end{itemize}
+
+The term Quality is retained only as a legacy implementation label where
+necessary.  The paper-level construct is Selection Value Evidence, because the
+framework cannot prove that a chunk has intrinsic semantic quality from
+automatic proxy features alone.
+
+\begin{table*}[t]
+\caption{Core-Metric-Policy Mapping}
+\label{tab:corepolicy}
+\centering
+\small
+\begin{tabular}{L{0.13\textwidth}L{0.30\textwidth}L{0.28\textwidth}L{0.19\textwidth}}
+\toprule
+Core & Operational responsibility & Example metric surface & Policy role \\
+\midrule
+Validity & Structural usability and admissibility as pretraining input & structural validity gate, malformed-text checks & Stage-A hard gate \\
+Selection Value Evidence & Observable pre-outcome evidence for budget allocation; not intrinsic quality & code usefulness proxy, source/path/style support & Stage-B ranking signal when budget binds \\
+Redundancy & Duplicate and saturation control while preserving useful recurrence & canonical-exact duplicate indicator, fuzzy near-duplicate risk & Exact-only Stage-A gate and reversible Stage-B penalty \\
+Coverage & Retention of observable source, style, path, content-type, and cluster structure & coverage retention and tail/source diagnostics & Stage-C subset validator and diagnostic \\
+Utility & Downstream training effect under frozen comparison arms & held-out NLL and guardrails & Stage-C validation only \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\figplaceholder{Core-Metric-Policy map}{Replace with a compact matrix linking Validity, Selection Value Evidence, Redundancy, Coverage, and Utility to metric surfaces, stage ownership, and claim boundaries. Highlight Utility as Stage C only.}
+\caption{The framework treats metrics as policy-bound evidence, not as free-standing quality claims.}
+\label{fig:corepolicy}
+\end{figure}
+
+\subsection{Stages}
+The curation pipeline is organized into four stages.
+
+\textbf{Stage 0: risk quarantine.}  Stage 0 removes or quarantines candidates
+that violate project-defined safety or admissibility boundaries, including
+detected secrets, PII-like records, benchmark-contamination indicators,
+poisoning patterns, malformed text, or unsupported rights status.  In the
+current work, this is a scoped project detector, not a production compliance
+system.
+
+\textbf{Stage A: chunk-level hard gate.}  Stage A applies structural validity
+and hard duplicate gates.  A Stage-A failure means the chunk should not enter
+the curated pool under the current contract.
+
+\textbf{Stage B: chunk-level selection.}  Stage B ranks Stage-A-passing chunks
+only when a binding training budget requires a subset.  It may use pre-outcome
+selection evidence and redundancy risk, but it cannot use Stage-C Utility or
+training outcomes.  If no budget requires reduction, retaining all Stage-A
+passing chunks is valid.
+
+\textbf{Stage C: subset-level validation.}  Stage C evaluates the constructed
+subset.  Utility is measured here through downstream training evidence and
+guardrails.  Stage-C outcomes may support, reject, or abstain from a paper
+claim, but they are not fed back into Stage-B selection on frozen holdouts.
+
+\begin{table*}[t]
+\caption{Stage Responsibilities and Forbidden Uses}
+\label{tab:stages}
+\centering
+\begin{tabular}{p{0.08\textwidth}p{0.41\textwidth}p{0.41\textwidth}}
+\toprule
+Stage & Allowed responsibility & Forbidden use \\
+\midrule
+0 & Quarantine scoped risk and admissibility hazards & Production legal or safety certification \\
+A & Chunk-level hard gate for structural failures and hard duplicates & Utility-aware filtering \\
+B & Optional budgeted selection among Stage-A-passing chunks & Consuming Stage-C outcomes \\
+C & Subset validation through training evidence and guardrails & Retuning Stage B on frozen holdouts \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\figplaceholder{Utility leakage boundary}{Replace with a two-side diagram: allowed Stage-B selector inputs on the left, Stage-C outcomes on the right, and a blocked feedback arrow from Stage C back to Stage B.}
+\caption{Utility is downstream validation evidence and is forbidden as a Stage-B selector objective.}
+\label{fig:utilityboundary}
+\end{figure}
+
+\section{Implementation}
+The implementation records each major decision as a machine-readable artifact.
+Core behavior audits check that each Core surface remains within its allowed
+interpretation.  Selector-leakage audits check that Utility-like fields do not
+enter Stage-B selector objectives.  Comparison tables freeze training arms,
+token budgets, and ablations before Stage-C interpretation.  A reproducibility
+manifest records scripts, configs, outputs, and local hardware policy.
+
+The artifact structure is grouped by scientific role: Core defense, Stage-C
+validation, decision boundary, comparison tables, and reproducibility.  This
+organization is deliberately different from a training log.  The goal is to
+make each claim traceable to the stage where it is allowed, and to make failed
+or incomplete evidence visible rather than treating it as a hidden engineering
+detail.
+
+\subsection{Audit Boundaries}
+The audits are intentionally conservative.  A passing operational audit means
+that the role declaration and stage boundary are consistent.  It does not mean
+that every metric is a validated psychological, semantic, or legal construct.
+Similarly, a Stage-0 detector benchmark shows scoped fixture behavior; it does
+not certify a production detector.  The evidence artifacts therefore contain
+both supported claims and forbidden claims.
+
+\subsection{Selector Leakage Control}
+The framework treats Utility as a post-selection outcome.  Stage-B inputs are
+pre-outcome signals only.  Leakage control is therefore not a cosmetic
+engineering check; it is required for the scientific claim.  If Stage-C NLL
+results were allowed to tune Stage-B on the same frozen holdouts, the
+comparison would collapse into outcome-driven optimization rather than a
+curation-stage policy evaluation.
+
+\section{Experimental Setup}
+\subsection{Corpus Scenarios}
+The validation setting contains one positive code-domain case and one negative
+math-domain case.  Code is a useful stress case because code corpora mix
+natural language, structured symbols, repeated APIs, tests, templates, project
+metadata, and repository-specific conventions.  Math is a useful counter-case
+because short answers, long derivations, worked examples, noisy extraction
+artifacts, and rare topics can create different failure modes for the same
+selection logic.  The experiment therefore evaluates not only whether curation
+can improve a training arm, but also whether the framework exposes a failed
+domain instead of hiding it.
+
+\subsection{Training Arms}
+The current natural-budget comparison reports base, raw, and curated arms.  The
+base arm checks whether fine-tuning changes the model at all.  The raw arm
+uses the collected corpus without Stage-B selection.  The curated arm uses the
+framework output under the frozen policy.  For earlier equal-token development
+runs, Stage-A random and known-reference arms provide additional diagnostic
+baselines, but the current paper table emphasizes the natural-budget
+comparison because it matches the practical question: can the framework train
+less while preserving or improving downstream behavior?
+
+The Stage-B ablation table also compares the full selector with quality-only,
+redundancy-only, and no-coverage-support variants.  These ablations are
+diagnostic; they are not Utility evidence by themselves.
+
+\subsection{Evaluation}
+The primary Stage-C measurement is held-out negative log-likelihood (NLL);
+lower is better.  The code case also uses EvalPlus macro pass rate and a frozen
+LiveCodeBench pilot as external capability checks.  The math case is currently
+evaluated by held-out NLL only and is reported as failed.  All Stage-C outcomes
+are validation evidence, not selector features.
+
+The primary estimand is the mean NLL reduction
+\begin{equation}
+\Delta_{\mathrm{curated},b}=\frac{1}{K}\sum_{k=1}^{K}
+\left(\mathrm{NLL}_{b,k}-\mathrm{NLL}_{\mathrm{curated},k}\right),
+\end{equation}
+where $b$ is a baseline arm and $K$ is the number of frozen seeds.  A positive
+value means the curated arm has lower NLL than the baseline.  The natural-budget
+table reports raw as the main practical baseline; equal-token development runs
+retain Stage-A random as a diagnostic baseline for isolating the Stage-B effect.
+
+\section{Results}
+Table~\ref{tab:stagec} summarizes the current natural-budget Stage-C evidence.
+Lower NLL is better.  Code is positive on five-seed held-out NLL and EvalPlus,
+while an independent LiveCodeBench pilot is neutral.  Math v2 is the failed
+selector, and math v3 is the repair-only abstain case.
+
+\begin{table}[t]
+\caption{Frozen Natural-Budget Stage-C Evidence}
+\label{tab:stagec}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{llrccc}
+\toprule
+Domain & Arm & Tokens & NLL & Eval+ & Decision \\
+\midrule
+Code & Base & 0 & 1.23418 & 47.18 & Ref. \\
+Code & Raw & 980992 & 1.20998 & 51.08 & Ref. \\
+Code & Curated & 385024 & 1.20090 & 58.22 & Pass \\
+Math & Base & 0 & 1.55945 & -- & Ref. \\
+Math & Raw & 1120256 & 1.49565 & -- & Ref. \\
+Math & Curated v2 & 626688 & 1.52706 & -- & Fail \\
+Math & Curated v3 & 1026048 & 1.49899 & -- & Abstain \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In code, the curated arm uses 60.8\% fewer packed training tokens than raw,
+improves held-out NLL by 0.00908, and improves same-protocol EvalPlus macro pass rate from
+51.08\% to 58.22\%.  The frozen LiveCodeBench seed-101 pilot does not reproduce
+an external capability gain: base, raw, and curated each pass 9 of 48 tasks.
+Generated programs differ across arms, but the paired correctness vector is
+identical.  In math, selector v2 uses 44.1\% fewer packed tokens but
+worsens held-out NLL by 0.03141.  Selector v3 repairs most of that regression,
+using 8.4\% fewer packed tokens than raw and reducing NLL to 1.49899, but it
+still does not beat raw.  The paper therefore reports math as an abstain case,
+not as a success and not as a tuning target.
+
+\begin{figure}[t]
+\centering
+\figplaceholder{Natural-budget result summary}{Replace with a two-panel chart. Panel A: Code base/raw/curated NLL and EvalPlus. Panel B: Math base/raw/curated-v2/curated-v3 NLL. Use subdued colors and mark lower NLL as better.}
+\caption{Code NLL and EvalPlus evidence is positive, the LiveCodeBench pilot is neutral, and Math remains an abstain case.}
+\label{fig:results}
+\end{figure}
+
+Table~\ref{tab:ablation} summarizes the Stage-B ablation diagnostics.  The full
+selector selects 423 chunks with a token proxy of 120235 and lower mean soft
+redundancy risk than the quality-only variant.  These diagnostics support the
+interpretation that the selector is not merely a quality-only ranking rule.
+The quality-only variant selects slightly more chunks but carries higher
+redundancy risk, while the redundancy-only variant aggressively reduces
+redundancy at the cost of selecting far fewer chunks.  The full selector
+therefore occupies the intended middle ground: it prefers concise and useful
+chunks while retaining enough coverage support to avoid a pure deduplication
+policy.  A separate Stage-B feature-shift diagnostic is consistent with this
+mechanism: among 1913 Stage-A-passing records, the 1424 selected records have
+higher structural richness and lower soft redundancy risk than the 489
+budget-not-selected records.
+
+\begin{table}[t]
+\caption{Stage-B Ablation Diagnostics}
+\label{tab:ablation}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccc}
+\toprule
+Arm & Chunks & Token proxy & Redundancy risk \\
+\midrule
+Full selector & 423 & 120235 & 0.19243 \\
+Quality only & 446 & 120238 & 0.22203 \\
+Redundancy only & 270 & 120238 & 0.04087 \\
+No coverage support & 412 & 120237 & 0.18621 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\caption{Claim Boundary from the Current Evidence Package}
+\label{tab:claimboundary}
+\centering
+\footnotesize
+\begin{tabular}{@{}p{0.46\columnwidth}p{0.48\columnwidth}@{}}
+\toprule
+Supported bounded claim & Unsupported stronger claim \\
+\midrule
+Historical Code Stage-C result; current rerun required & Universal domain improvement \\
+Math abstain remains reported & Hiding failed domains \\
+Utility is post-selection evidence & Utility-driven Stage-B selection \\
+Core behavior is scoped and audited & Proof of intrinsic quality \\
+Artifact set is reproducible & Production safety certification \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\figplaceholder{Evidence and claim boundary}{Replace with a stacked evidence diagram: commands/configs, scoring artifacts, audits, Stage-C results, final claim. Show supported research claim separately from unsupported production and universal-quality claims.}
+\caption{The paper claim is supported by frozen artifacts, while production and universal data-quality claims remain outside scope.}
+\label{fig:evidence}
+\end{figure}
+
+\section{Discussion}
+The result supports a bounded claim: in the studied code-domain setting, the
+curation-stage framework produced a natural-budget curated arm that improved
+held-out NLL and EvalPlus macro pass rate while using fewer packed training
+tokens than raw fine-tuning.  However, identical LiveCodeBench pass@1 across
+all three arms shows that this gain cannot yet be generalized to an independent
+temporal code benchmark.  The math-domain validation fails under the
+current selector, which is also evidence: the framework can expose that a
+domain-specific Core/Metric/Policy configuration is not yet validated.  These
+results do not imply that the framework measures intrinsic data quality, that
+it will improve every future corpus, or that the risk detectors are
+production-grade.
+
+This boundary is important.  A raw corpus may already be sufficiently strong
+after Stage 0 and Stage A, in which case forced removal would be harmful.  The
+framework therefore allows retain-all outcomes.  Stage B is activated by a
+budget constraint, not by an assumption that every corpus must be reduced.
+Likewise, a corpus can be rejected or held for more validation if Stage-C
+evidence is insufficient.
+
+\subsection{Retain-All Is a Valid Outcome}
+A common failure mode in automatic data curation is assuming that a framework
+must always remove data.  That assumption is wrong for this setting.  If a
+corpus passes Stage 0 and Stage A and fits the available training budget, the
+correct framework output can be retain-all.  Stage B is a budget allocator, not
+a moral judgment about discarded examples.  This design choice is important for
+high-quality raw corpora, where unnecessary filtering can reduce coverage or
+remove useful recurrence.
+
+\subsection{Next Evidence Tier}
+The next validation tier must test the same contract on corpora that mix
+high-quality reference data with raw collected data.  The frozen protocol
+requires equal-token fine-tuning arms for raw-random, Stage-A-random, curated,
+and known-reference subsets; pre- and post-curation record, chunk, and token
+counts; and external benchmark families matched to the domain.  For code, the
+high-cost confirmatory target is SWE-bench-style issue resolution~\cite{swebench}
+in addition to held-out code NLL and EvalPlus retention.  A powered multi-seed
+LiveCodeBench run must also test whether the neutral 48-task pilot reflects low
+power or a genuine lack of transfer.  For math, the target
+benchmarks are GSM8K~\cite{gsm8k} and MATH~\cite{math}.  These experiments are
+not claimed as completed evidence in this paper; they define the boundary
+between the current code-domain result and a future multi-domain claim.
+
+\section{Limitations and Threats to Validity}
+\textbf{Core metric validity.}  The audits verify scoped operational behavior,
+but they do not prove that every metric fully captures its intended construct.
+Coverage remains limited by observable metadata, and Selection Value Evidence
+is not a semantic quality oracle.
+
+\textbf{Production readiness.}  The current Stage-0 detectors are project
+benchmarks and fixtures, not production safety, legal, or license-compliance
+certification.
+
+\textbf{Domain scope.}  The strongest current training evidence is code-domain
+evidence.  Math-domain evidence currently remains abstain after selector v3,
+so the current selector must not be presented as a validated all-domain method.
+Instruction, medical, legal, multilingual, and other specialized corpora
+require their own frozen Stage-C validation before a training-use claim is
+allowed.
+
+\textbf{Feedback risk.}  Stage-C outcomes must not be used to tune Stage-B on
+the same frozen holdouts.  The framework explicitly treats Utility as
+validation-only to reduce this risk.
+
+\section{Reproducibility}
+The artifact set records commands, configs, source scripts, output artifacts,
+documentation artifacts, and local hardware policy.  The current paper-evidence
+package has a canonical lightweight rebuild path with seven scripts:
+the Code evidence report, final evidence table, domain-composition audit,
+coverage/domain-mix audit, Stage-B policy-contract audit, paper release gate,
+and paper-claim consistency audit.  This path
+rebuilds the claim-facing evidence package from existing Stage-C and guardrail
+reports; it is deliberately not a full raw-data acquisition, benchmark
+generation, GPU training, or production release runner.
+
+\begin{table}[t]
+\caption{Canonical Paper-Evidence Rebuild Path}
+\label{tab:canonicalpath}
+\centering
+\footnotesize
+\begin{tabular}{cl}
+\toprule
+Step & Script \\
+\midrule
+1 & \texttt{213\_build\_final\_paper\_evidence\_table.py} \\
+2 & \texttt{219\_build\_domain\_composition\_audit.py} \\
+3 & \texttt{220\_build\_coverage\_domain\_mix\_audit.py} \\
+4 & \texttt{221\_build\_stage\_b\_policy\_contract\_audit.py} \\
+5 & \texttt{218\_build\_paper\_claim\_consistency\_audit.py} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The local default GPU policy records \texttt{CUDA\_VISIBLE\_DEVICES=1},
+corresponding to the NVIDIA GeForce RTX 3070 Ti.  The RTX 4060 Ti is
+approval-gated for local interactive-use reasons.  Production deployment
+remains a separate blocked tier.
+
+\section{Conclusion}
+This paper presents a curation-stage framework for language-model training data
+selection.  The framework separates Core responsibilities, measurable proxies,
+and policy roles; enforces a staged boundary between hard gates, budgeted
+selection, and downstream validation; and keeps Utility out of the selector
+objective.  In the current evidence package, code is a positive natural-budget
+validation case on NLL and EvalPlus, a LiveCodeBench pilot is neutral, and math
+is an abstain case after a repaired selector still fails to beat raw training.
+The claim is intentionally limited but useful:
+the work operationalizes the data-curation stage for LM training, while
+explicitly rejecting stronger claims about universal data-quality measurement,
+all-domain improvement, or production-ready filtering.
+
+\begin{thebibliography}{00}
+\bibitem{ccnet}
+G. Wenzek, M.-A. Lachaux, A. Conneau, V. Chaudhary, F. Guzman,
+A. Joulin, and E. Grave, ``CCNet: Extracting high quality monolingual datasets
+from web crawl data,'' in \emph{Proc. LREC}, 2020.
+
+\bibitem{dedup}
+K. Lee, D. Ippolito, A. Nystrom, C. Zhang, D. Eck, C. Callison-Burch,
+and N. Carlini, ``Deduplicating training data makes language models better,''
+in \emph{Proc. ACL}, 2022.
+
+\bibitem{refinedweb}
+G. Penedo, Q. Malartic, D. Hesslow, R. Cojocaru, A. Cappelli,
+H. Alobeidli, B. Pannier, E. Almazrouei, and J. Launay, ``The RefinedWeb
+dataset for Falcon LLM: Outperforming curated corpora with web data only,''
+in \emph{Advances in Neural Information Processing Systems}, 2023.
+
+\bibitem{dolma}
+L. Soldaini et al., ``Dolma: An open corpus of three trillion tokens for
+language model pretraining research,'' 2024.
+
+\bibitem{finewebedu}
+G. Penedo et al., ``The FineWeb datasets: Decanting the web for the finest text
+data at scale,'' 2024.
+
+\bibitem{c4}
+C. Raffel et al., ``Exploring the limits of transfer learning with a unified
+text-to-text transformer,'' \emph{Journal of Machine Learning Research}, 2020.
+
+\bibitem{pile}
+L. Gao et al., ``The Pile: An 800GB dataset of diverse text for language
+modeling,'' 2020.
+
+\bibitem{datacomp}
+S. Y. Gadre et al., ``DataComp: In search of the next generation of multimodal
+datasets,'' in \emph{Advances in Neural Information Processing Systems}, 2023.
+
+\bibitem{swebench}
+C. E. Jimenez, J. Yang, A. Wettig, S. Yao, K. Pei, O. Press, and
+K. R. Narasimhan, ``SWE-bench: Can language models resolve real-world GitHub
+issues?,'' in \emph{International Conference on Learning Representations}, 2024.
+
+\bibitem{gsm8k}
+K. Cobbe et al., ``Training verifiers to solve math word problems,'' 2021.
+
+\bibitem{math}
+D. Hendrycks et al., ``Measuring mathematical problem solving with the MATH
+dataset,'' in \emph{Advances in Neural Information Processing Systems}, 2021.
+\end{thebibliography}
+
+\end{document}

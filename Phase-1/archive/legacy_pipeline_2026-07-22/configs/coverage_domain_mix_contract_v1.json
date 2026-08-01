@@ -1,0 +1,31 @@
+{
+  "schema_version": "coverage-domain-mix-contract-v1",
+  "status": "coverage_domain_mix_contract_frozen",
+  "coverage_core_definition": "Coverage tracks observable retention and drift over source, style, path, content, cluster, and declared domain/capability mix axes when metadata and a deployment contract support them.",
+  "coverage_role": "composition_and_collapse_audit_not_utility_evidence",
+  "required_inputs": {
+    "coverage_fixture_report": "outputs/validation/coverage_domain_fixture_benchmark_report.json",
+    "domain_composition_report": "outputs/validation/domain_composition_audit_report.json",
+    "domain_mix_contract": "configs/domain_mix_contract_v1.json"
+  },
+  "required_statuses": {
+    "coverage_fixture_report": "coverage_domain_fixture_benchmark_passed",
+    "domain_composition_report": "domain_composition_audit_completed",
+    "domain_mix_contract": "domain_mix_contract_frozen"
+  },
+  "current_claim_scope": "observed_paper_domain_arm_composition",
+  "target_mix_claim_allowed": false,
+  "observed_composition_claim_allowed": true,
+  "stage_boundary": {
+    "stage_b": "Coverage may support optional budget allocation using pre-outcome observable axes only.",
+    "stage_c": "Coverage may validate composition drift against a frozen deployment contract, but Utility remains separate."
+  },
+  "forbidden_claims": [
+    "coverage_proves_utility",
+    "coverage_measures_intrinsic_quality",
+    "observed_mix_is_universal_target",
+    "domain_mix_as_selector_utility",
+    "utility_as_selector_objective"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective"
+}

@@ -1,0 +1,150 @@
+{
+  "schema_version": "policy-profiles-v1",
+  "purpose": "Declare user-facing Normal/Hard modes separately from archived candidate research without changing the active A-B-C runtime.",
+  "legacy_profile_aliases": {"text_only_structural_v2": "normal_structural_v1"},
+  "profiles": [
+    {
+      "id": "safe_structural_v3",
+      "status": "historical_frozen",
+      "description": "Historical provenance-and-safety profile retained only for reproducing v1 experiments. It is not the default source-agnostic runtime.",
+      "stage_c_policy_ids": [
+        "stage_c_symmetric_near_duplicate",
+        "stage_c_explicit_generated_artifact",
+        "stage_c_license_comment_only",
+        "stage_c_structural_scaffold",
+        "stage_c_empty_html_shell",
+        "stage_c_web_chrome_only_chunk"
+      ],
+      "selector": {
+        "kind": "reason_coded_only",
+        "reads_utility": false,
+        "reads_benchmark_outcomes": false,
+        "reads_target_retention_fraction": false
+      },
+      "forbids_implicit_fixed_fraction": true,
+      "output": "full_reason_coded_curated_pool"
+    },
+    {
+      "id": "normal_structural_v1",
+      "status": "active",
+      "user_facing_mode": "normal",
+      "description": "Default source-agnostic A-B-C profile. It uses high-precision reason-coded text-structural rules only; source, rights, hazard, language, and path fields are audit-only when supplied.",
+      "stage_a_policy": "text_only_v2",
+      "stage_c_policy_ids": [
+        "stage_c_symmetric_near_duplicate",
+        "stage_c_explicit_generated_artifact",
+        "stage_c_license_comment_only",
+        "stage_c_structural_scaffold",
+        "stage_c_empty_html_shell",
+        "stage_c_web_chrome_only_chunk"
+      ],
+      "selector": {
+        "kind": "reason_coded_text_structural_only",
+        "reads_utility": false,
+        "reads_benchmark_outcomes": false,
+        "reads_target_retention_fraction": false,
+        "reads_source_identity": false,
+        "reads_source_tier": false,
+        "reads_rights": false,
+        "reads_path": false
+      },
+      "forbids_implicit_fixed_fraction": true,
+      "output": "full_reason_coded_curated_pool"
+    },
+    {
+      "id": "hard_structural_v1",
+      "status": "development_only_pending_n4_ablation",
+      "user_facing_mode": "hard",
+      "description": "Development-only stronger structural profile. It contains Normal plus three frozen deterministic span rules; it remains unavailable for production curation until N4 development ablation closes.",
+      "stage_a_policy": "text_only_v2",
+      "inherits_profile": "normal_structural_v1",
+      "stage_c_policy_ids": [
+        "stage_c_inline_license_header_candidate",
+        "stage_c_inline_license_comment_block_candidate",
+        "stage_c_repeated_span_template_candidate"
+      ],
+      "candidate_policy_ids": [
+        "stage_c_inline_license_header_candidate",
+        "stage_c_inline_license_comment_block_candidate",
+        "stage_c_repeated_span_template_candidate"
+      ],
+      "selector": {
+        "kind": "development_only_reason_coded_structural_span_compaction",
+        "reads_utility": false,
+        "reads_benchmark_outcomes": false,
+        "reads_target_retention_fraction": false,
+        "reads_source_identity": false,
+        "reads_domain": false
+      },
+      "forbids_implicit_fixed_fraction": true,
+      "output": "development_only_reason_coded_curated_pool"
+    },
+    {
+      "id": "calibrated_selector_template_v1",
+      "status": "retired_not_runnable",
+      "description": "Retired score-selector shape retained only to prevent accidental reactivation. The active framework has no learned or weighted selector.",
+      "stage_c_policy_ids": [],
+      "selector": {
+        "kind": "retired_score_selector",
+        "contract_template": "configs/calibrated_selector_contract.example.json",
+        "reference_distribution_score_status": "excluded_from_stage_c_until_new_policy_card_passes",
+        "reads_utility": false,
+        "reads_benchmark_outcomes": false,
+        "activation_requirements": [
+          "frozen_reference_data",
+          "declared_score_direction",
+          "held_out_calibration",
+          "executable_negative_condition_test",
+          "cross_domain_or_scope_audit",
+          "external_validation_without_benchmark_feedback"
+        ]
+      },
+      "forbids_implicit_fixed_fraction": true,
+      "output": "permanently_unavailable_in_active_runtime"
+    },
+    {
+      "id": "aggressive_structural_candidate_v1",
+      "status": "archived_candidate_research",
+      "description": "Archived development-only five-arm text-structural ablation. It may support policy research but is not a user-facing mode and cannot change the active A-B-C runtime.",
+      "stage_a_policy": "text_only_v2",
+      "stage_c_policy_ids": [
+        "stage_c_inline_license_header_candidate",
+        "stage_c_inline_license_comment_block_candidate",
+        "stage_c_repeated_span_template_candidate",
+        "stage_c_strengthened_symmetric_near_duplicate_candidate"
+      ],
+      "selector": {
+        "kind": "candidate_reason_coded_text_structural_ablation",
+        "reads_utility": false,
+        "reads_benchmark_outcomes": false,
+        "reads_source_identity": false,
+        "reads_source_tier": false,
+        "reads_rights": false,
+        "reads_path": false
+      },
+      "forbids_implicit_fixed_fraction": true,
+      "output": "development_only_candidate_artifacts"
+    },
+    {
+      "id": "quality_retention_candidate_v1",
+      "status": "development_only",
+      "description": "Normal policies plus isolated text-only Quality candidates for closed error-navigation chunks, URL-directory-only chunks, and payload-preserving web-control spans.",
+      "inherits_profile": "normal_structural_v1",
+      "stage_c_policy_ids": [
+        "stage_c_explicit_error_navigation_only_candidate",
+        "stage_c_url_directory_only_candidate",
+        "stage_c_explicit_web_control_span_candidate"
+      ],
+      "selector": {
+        "kind": "development_only_quality_retention_evidence",
+        "reads_utility": false,
+        "reads_benchmark_outcomes": false,
+        "reads_source_identity": false,
+        "reads_domain": false,
+        "reads_target_retention_fraction": false
+      },
+      "forbids_implicit_fixed_fraction": true,
+      "output": "development_only_quality_candidate_artifacts"
+    }
+  ]
+}

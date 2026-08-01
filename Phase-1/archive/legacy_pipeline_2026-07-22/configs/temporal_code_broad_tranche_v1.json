@@ -1,0 +1,26 @@
+{
+  "schema_version": "temporal-code-broad-tranche-v1",
+  "status": "frozen_before_tranche_content_fetch",
+  "purpose": "Bounded operational validation of broad-manifest content gates before a full development collection.",
+  "selection_rule": "Within each split, sort frozen repositories by tree_path_count then repository_identity and select evenly spaced rank quantiles.",
+  "repositories_per_split": {
+    "train": 12,
+    "development": 4,
+    "confirmatory": 4
+  },
+  "maximum_pull_requests_per_repository": 2,
+  "selection_uses": [
+    "assigned split",
+    "tree path count",
+    "normalized repository identity"
+  ],
+  "selection_forbids": [
+    "fetched content",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "claim_boundary": "Operational broad-content tranche only; no training or Utility claim."
+}

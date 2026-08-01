@@ -1,0 +1,741 @@
+{
+  "schema_version": "policy-cards-v1",
+  "purpose": "Versioned operational specifications for every active curation policy. These cards define reproducible trigger boundaries, not intrinsic Quality judgments.",
+  "runtime_forbidden_inputs": [
+    "intrinsic_quality_score",
+    "human_quality_label",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction",
+    "source_pool_role",
+    "source_tier",
+    "composition"
+  ],
+  "cards": [
+    {
+      "id": "stage_c_route_conditioned_quality_candidate",
+      "version": "0.2.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A distinct valid chunk is positively retention-eligible only when the routing precondition and both independent Quality evidence heads pass frozen route-scoped boundaries.",
+      "decision_unit": "stage_b_pass_chunk",
+      "deployment_scope": "registered observable content routes with complete frozen evidence bundles",
+      "allowed_inputs": [
+        "chunk text",
+        "content-router-v2 output",
+        "frozen route evidence bundles"
+      ],
+      "forbidden_inputs": [
+        "source identity",
+        "source tier",
+        "dataset identity",
+        "path",
+        "route label as standalone Quality evidence",
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark outcomes",
+        "target retention fraction",
+        "global weighted Quality score"
+      ],
+      "reason_codes": [
+        "quality_both_evidence_heads_passed",
+        "quality_calibrated_negative_boundary",
+        "quality_evidence_incomplete",
+        "quality_routing_mixed",
+        "quality_routing_unknown",
+        "quality_routing_out_of_distribution"
+      ],
+      "negative_conditions": [
+        "a route label without both external evidence heads abstains",
+        "a bundle for a route not assigned by the router abstains",
+        "mixed unknown and out-of-distribution routing abstains",
+        "an indeterminate missing or out-of-scope head abstains",
+        "a below-positive score without a named negative boundary cannot reject"
+      ],
+      "coverage_impact": "candidate decisions are reported by route status; Coverage cannot change a Quality decision or threshold",
+      "rollback_behavior": "remove the incomplete route bundle and return to abstain-retain without changing the active Stage-C policy",
+      "runtime_implementation": [
+        "content_router.py",
+        "route_conditioned_quality.py",
+        "route_quality_evidence_candidates.py"
+      ],
+      "empirical_status": "candidate_adapter_validated_all_routes_abstain_missing_or_indeterminate_evidence_not_runtime_active",
+      "evidence_gate": "configs/quality_route_evidence_gate_v2.json",
+      "candidate_evidence_registry": "configs/route_quality_evidence_candidates_v1.json"
+    },
+    {
+      "id": "stage_a_b_validity_recovery_candidate",
+      "version": "0.1.0",
+      "core": "validity",
+      "stage": "Stage A/B",
+      "hypothesis": "Closed integrity evidence should trigger deterministic repair or context-preserving rechunking before quarantine, and rejection should require absence of interpretable payload after recovery.",
+      "decision_unit": "chunk_with_optional_immutable_source_record",
+      "deployment_scope": "all text inputs under the registered explicit structural guard",
+      "allowed_inputs": [
+        "chunk text",
+        "optional immutable source-record text"
+      ],
+      "forbidden_inputs": [
+        "source identity",
+        "source tier",
+        "dataset identity",
+        "path",
+        "domain label",
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark outcomes",
+        "target retention fraction"
+      ],
+      "reason_codes": [
+        "validity_cp1252_punctuation_repaired",
+        "validity_payload_absence_after_recovery",
+        "validity_forbidden_control_character",
+        "validity_unicode_replacement_burst",
+        "validity_unclosed_latex_environment",
+        "validity_unclosed_explicit_xml_tag",
+        "validity_dangling_markdown_fence",
+        "validity_trailing_delimiter_damage",
+        "validity_chunk_boundary_structural_split"
+      ],
+      "negative_conditions": [
+        "clean interpretable payload passes without intervention",
+        "mathematical angle notation is retained",
+        "excess structural closers alone are retained",
+        "ambiguous control characters are never guessed into punctuation",
+        "a structural chunk defect cannot authorize rejection when source-record context is unavailable"
+      ],
+      "coverage_impact": "no selection authority; repair and rechunk preserve original text hashes, while quarantine and reject remain separate dispositions",
+      "rollback_behavior": "preserve the immutable original and disable candidate recovery without altering the active Stage-A output",
+      "runtime_implementation": [
+        "validity_recovery.py",
+        "explicit_structural_coherence.py"
+      ],
+      "empirical_status": "fixture_validated_candidate_not_runtime_active"
+    },
+    {
+      "id": "stage_a_provenance_contract",
+      "version": "1.0.0",
+      "core": "validity",
+      "stage": "Stage A",
+      "hypothesis": "A training candidate must expose source identity, URI, and collection time.",
+      "decision_unit": "candidate",
+      "deployment_scope": "all declared input sources",
+      "allowed_inputs": [
+        "candidate provenance"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "missing_provenance_source_name",
+        "missing_provenance_source_uri",
+        "missing_provenance_collected_at"
+      ],
+      "negative_conditions": [
+        "all required provenance fields are declared"
+      ],
+      "coverage_impact": "none",
+      "rollback_behavior": "quarantine only; repair upstream manifest and rerun",
+      "runtime_implementation": [
+        "ingestion/candidate_processing.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_a_risk_quarantine",
+      "version": "1.0.0",
+      "core": "validity",
+      "stage": "Stage A",
+      "hypothesis": "Declared risk signals require quarantine rather than a training release decision.",
+      "decision_unit": "candidate",
+      "deployment_scope": "all declared input sources",
+      "allowed_inputs": [
+        "normalized text",
+        "declared rights",
+        "declared PII context"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "pii_detected",
+        "secret_detected",
+        "benchmark_contamination",
+        "poisoning_suspected",
+        "rights_unknown",
+        "rights_restricted",
+        "rights_invalid"
+      ],
+      "negative_conditions": [
+        "no declared rights or hazard signal is present"
+      ],
+      "coverage_impact": "none; quarantine is not a domain-mix decision",
+      "rollback_behavior": "retain quarantined artifact and revise only a declared detector or source context",
+      "runtime_implementation": [
+        "ingestion/candidate_processing.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_a_normalized_text_integrity",
+      "version": "1.0.0",
+      "core": "validity",
+      "stage": "Stage A",
+      "hypothesis": "Only a closed text-validity failure may quarantine a source-agnostic candidate.",
+      "decision_unit": "candidate",
+      "deployment_scope": "all declared input sources",
+      "allowed_inputs": [
+        "normalized text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "payload_absence",
+        "text_contract_violation",
+        "unrecoverable_corruption",
+        "acquisition_failure"
+      ],
+      "negative_conditions": [
+        "short but interpretable text is retained",
+        "unfamiliar format is retained",
+        "partial examples are retained"
+      ],
+      "coverage_impact": "none",
+      "rollback_behavior": "quarantine only; correct normalizer or upstream encoding and rerun",
+      "runtime_implementation": [
+        "ingestion/candidate_processing.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_a_bom_normalization",
+      "version": "1.0.0",
+      "core": "validity",
+      "stage": "Stage A",
+      "hypothesis": "Repository-code line endings and a leading UTF-8 BOM can be normalized without selection.",
+      "decision_unit": "candidate",
+      "deployment_scope": "sources declaring pii_context=repository_code",
+      "allowed_inputs": [
+        "declared PII context",
+        "raw text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [],
+      "negative_conditions": [
+        "non-repository sources do not use this normalization branch"
+      ],
+      "coverage_impact": "none",
+      "rollback_behavior": "disable transformation and preserve original input",
+      "runtime_implementation": [
+        "ingestion/candidate_processing.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_b_invalid_chunk",
+      "version": "1.0.0",
+      "core": "validity",
+      "stage": "Stage B",
+      "hypothesis": "Only an empty or corrupted chunk result may fail the Stage-B validity gate.",
+      "decision_unit": "chunk",
+      "deployment_scope": "all Stage-A release candidates",
+      "allowed_inputs": [
+        "chunk text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "invalid_chunk_result"
+      ],
+      "negative_conditions": [
+        "short nonempty chunk is retained"
+      ],
+      "coverage_impact": "none; invalid chunk rejection has no representative family",
+      "rollback_behavior": "retain rejected chunk by disabling the specific hard gate",
+      "runtime_implementation": [
+        "run_curation.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_b_exact_duplicate",
+      "version": "1.0.0",
+      "core": "redundancy",
+      "stage": "Stage B",
+      "hypothesis": "A losslessly normalized exact duplicate adds no distinct learning signal once a stable representative exists.",
+      "decision_unit": "exact duplicate family member",
+      "deployment_scope": "all Stage-A release candidates",
+      "allowed_inputs": [
+        "chunk text",
+        "lossless normalized chunk digest"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "normalized_exact_duplicate"
+      ],
+      "negative_conditions": [
+        "lossless normalized digest has not appeared"
+      ],
+      "coverage_impact": "the first stable representative is retained for every exact duplicate family",
+      "rollback_behavior": "retain rejected chunk by disabling the specific hard gate",
+      "runtime_implementation": [
+        "run_curation.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_c_symmetric_near_duplicate",
+      "version": "1.0.0",
+      "core": "redundancy",
+      "stage": "Stage C",
+      "hypothesis": "A symmetric lexical overlap family can retain one stable representative.",
+      "decision_unit": "chunk family",
+      "deployment_scope": "chunks meeting declared lexical-token and overlap conditions",
+      "allowed_inputs": [
+        "chunk text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "near_duplicate_representative_retained"
+      ],
+      "negative_conditions": [
+        "pair overlap is below threshold or either chunk lacks minimum lexical tokens"
+      ],
+      "coverage_impact": "one representative per declared stratum is retained",
+      "rollback_behavior": "retain all family members by disabling near-duplicate compaction",
+      "runtime_implementation": [
+        "stage_c_selection.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_c_explicit_generated_artifact",
+      "version": "1.0.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A source record explicitly marked generated and non-editable is a removable structural artifact.",
+      "decision_unit": "source record",
+      "deployment_scope": "records with both explicit generated and non-editable in-text evidence",
+      "allowed_inputs": [
+        "chunk text",
+        "source-record grouping"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "explicit_generated_artifact"
+      ],
+      "negative_conditions": [
+        "generated declaration is absent",
+        "non-editable declaration is absent",
+        "source-declared generation alone is insufficient"
+      ],
+      "coverage_impact": "no target-mix restoration",
+      "rollback_behavior": "retain source record by disabling this artifact rule",
+      "runtime_implementation": [
+        "stage_c_selection.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_c_license_comment_only",
+      "version": "1.0.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A self-contained chunk containing only explicit license/comment text has no independent learnable payload.",
+      "decision_unit": "chunk",
+      "deployment_scope": "all text-only Stage-C chunks",
+      "allowed_inputs": [
+        "chunk text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "license_comment_only_chunk"
+      ],
+      "negative_conditions": [
+        "chunk contains executable or explanatory payload",
+        "license marker is absent"
+      ],
+      "coverage_impact": "none",
+      "rollback_behavior": "retain chunk by disabling this rule",
+      "runtime_implementation": [
+        "stage_c_selection.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_c_structural_scaffold",
+      "version": "1.0.0",
+      "core": "redundancy",
+      "stage": "Stage C",
+      "hypothesis": "Only an identical normalized import/export-only scaffold family can retain one stable representative.",
+      "decision_unit": "normalized structural family",
+      "deployment_scope": "text-only chunks satisfying the scaffold syntax condition and sharing the same normalized signature",
+      "allowed_inputs": [
+        "chunk text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "structural_scaffold_representative_retained"
+      ],
+      "negative_conditions": [
+        "chunk contains substantive implementation",
+        "normalized scaffold signature differs"
+      ],
+      "coverage_impact": "one stable representative per identical normalized scaffold family is retained",
+      "rollback_behavior": "retain all scaffold family members by disabling this rule",
+      "runtime_implementation": [
+        "stage_c_selection.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_c_coverage_guard",
+      "version": "2.0.0",
+      "core": "coverage",
+      "stage": "Stage C",
+      "hypothesis": "Every redundancy removal must retain a linked representative in the curated pool; Coverage audits this invariant without selecting records.",
+      "decision_unit": "reason-coded removal trace",
+      "deployment_scope": "materialization audit only",
+      "allowed_inputs": [
+        "reason code",
+        "chunk identifier",
+        "representative chunk identifier",
+        "curated survivor identifiers"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [],
+      "negative_conditions": [
+        "metadata strata, source identity, language, content type, or composition would alter selection"
+      ],
+      "coverage_impact": "reports missing representative links and zero-survivor violations; never restores or targets a composition",
+      "rollback_behavior": "fail the audit report when a required representative link is absent or not curated",
+      "runtime_implementation": [
+        "run_curation.py"
+      ],
+      "empirical_status": "audit_invariant_not_selector"
+    },
+    {
+      "id": "stage_c_empty_html_shell",
+      "version": "1.0.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A complete HTML shell with no visible lexical payload is a removable non-payload artifact.",
+      "decision_unit": "chunk",
+      "deployment_scope": "complete HTML documents with no visible lexical payload after tags are removed",
+      "allowed_inputs": [
+        "chunk text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "empty_html_shell"
+      ],
+      "negative_conditions": [
+        "HTML with visible text, script, style, image, or embedded content remains"
+      ],
+      "coverage_impact": "whole-chunk removal is allowed only after explicit empty-shell evidence",
+      "rollback_behavior": "retain the chunk by disabling this rule",
+      "runtime_implementation": [
+        "stage_c_selection.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_c_inline_license_header_candidate",
+      "version": "0.2.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "An explicit prefix license header is separable non-payload when the residual independently satisfies the Stage-B payload boundary.",
+      "decision_unit": "prefix comment span",
+      "deployment_scope": "Hard development profile only; text-only chunks with an explicit license marker",
+      "allowed_inputs": ["chunk text", "declared Stage-B minimum_chunk_chars"],
+      "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_pool_role", "source_tier", "composition"],
+      "reason_codes": ["inline_license_header_removed"],
+      "negative_conditions": ["ordinary documentation, a non-prefix header, or copyright attribution without an explicit license marker remains", "a license-only residual remains unmodified"],
+      "coverage_impact": "rewrites a span only; the residual chunk must pass the declared Stage-B boundary",
+      "rollback_behavior": "disable the Hard development profile and preserve the original chunk",
+      "runtime_implementation": ["hard_structural_runtime.py", "inline_license_header_compaction.py"],
+      "empirical_status": "development_only_pending_n4_ablation"
+    },
+    {
+      "id": "stage_c_inline_license_comment_block_candidate",
+      "version": "0.2.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A self-contained explicit license comment block is separable non-payload when the residual independently satisfies the Stage-B payload boundary.",
+      "decision_unit": "contiguous comment-block span",
+      "deployment_scope": "Hard development profile only; text-only chunks with an explicit license marker",
+      "allowed_inputs": ["chunk text", "declared Stage-B minimum_chunk_chars"],
+      "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_pool_role", "source_tier", "composition"],
+      "reason_codes": ["inline_license_comment_block_removed"],
+      "negative_conditions": ["ordinary comments, API documentation, and code-bearing comment blocks remain", "a residual below the Stage-B boundary remains unmodified"],
+      "coverage_impact": "rewrites a span only; the residual chunk must pass the declared Stage-B boundary",
+      "rollback_behavior": "disable the Hard development profile and preserve the original chunk",
+      "runtime_implementation": ["hard_structural_runtime.py", "inline_license_comment_block_compaction.py"],
+      "empirical_status": "development_only_pending_n4_ablation"
+    },
+    {
+      "id": "stage_c_repeated_span_template_candidate",
+      "version": "0.2.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A long exact normalized repeated paragraph is separable non-payload only from nonrepresentative chunks with an independently valid residual.",
+      "decision_unit": "exact normalized paragraph span",
+      "deployment_scope": "Hard development profile only; Stage-B pass chunks",
+      "allowed_inputs": ["chunk text", "stable chunk identifier", "declared Stage-B minimum_chunk_chars"],
+      "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_pool_role", "source_tier", "composition"],
+      "reason_codes": ["repeated_exact_template_span_removed"],
+      "negative_conditions": ["short shared phrases, near matches, independent test matrices, and chunks without residual payload remain"],
+      "coverage_impact": "links every removed span to a stable representative occurrence and retains every rewritten chunk",
+      "rollback_behavior": "disable the Hard development profile and preserve the original chunk",
+      "runtime_implementation": ["hard_structural_runtime.py", "span_level_template_compaction.py"],
+      "empirical_status": "development_only_pending_n4_ablation"
+    },
+    {
+      "id": "stage_c_explicit_web_control_span_candidate",
+      "version": "0.1.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A contiguous run of closed-set web controls or URL-only directory lines is separable non-payload when a substantive residual independently passes the Stage-B boundary.",
+      "decision_unit": "contiguous text span",
+      "deployment_scope": "candidate-only text-structural development materialization",
+      "allowed_inputs": ["chunk text", "declared Stage-B minimum_chunk_chars"],
+      "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_identity", "source_tier", "rights", "path", "composition"],
+      "reason_codes": ["web_control_span_removed", "url_directory_span_removed"],
+      "negative_conditions": ["privacy or cookie terms inside explanatory prose remain", "reference lists with titles or explanations remain", "dialogue-like speaker turns remain", "a chunk without a Validity-compliant residual remains unchanged"],
+      "coverage_impact": "rewrites only identified spans, preserves the chunk, and requires a residual-payload check before materialization",
+      "rollback_behavior": "do not materialize the candidate plan; preserve original chunk text",
+      "runtime_implementation": ["general_web_span_compaction.py"],
+      "empirical_status": "candidate_fixture_validated_not_runtime_active"
+    },
+    {
+      "id": "stage_c_explicit_error_navigation_only_candidate",
+      "version": "0.1.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A whole chunk containing only a closed error marker and at least three closed navigation labels has no independent training payload.",
+      "decision_unit": "chunk",
+      "deployment_scope": "development-only text-structural candidate",
+      "allowed_inputs": ["chunk text"],
+      "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_identity", "source_tier", "rights", "path", "composition"],
+      "reason_codes": ["explicit_error_navigation_only_chunk"],
+      "negative_conditions": ["error explanations remain", "code and logs containing error markers remain", "any line outside the closed error/navigation sets retains the chunk"],
+      "coverage_impact": "whole-chunk rejection is candidate-only and must report zero-survivor effects before promotion",
+      "rollback_behavior": "disable the candidate key and retain the original chunk",
+      "runtime_implementation": ["quality_retention.py"],
+      "empirical_status": "candidate_fixture_validated_not_runtime_active"
+    },
+    {
+      "id": "stage_c_url_directory_only_candidate",
+      "version": "0.1.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A whole chunk containing at least five standalone URL lines and no other payload is a candidate non-payload directory artifact.",
+      "decision_unit": "chunk",
+      "deployment_scope": "development-only text-structural candidate",
+      "allowed_inputs": ["chunk text"],
+      "forbidden_inputs": ["intrinsic_quality_score", "human_quality_label", "Utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "source_identity", "source_tier", "rights", "path", "composition"],
+      "reason_codes": ["url_directory_only_chunk"],
+      "negative_conditions": ["annotated references remain", "mixed prose and URL content remains", "fewer than five standalone URL lines remain"],
+      "coverage_impact": "whole-chunk rejection is candidate-only and must report zero-survivor effects before promotion",
+      "rollback_behavior": "disable the candidate key and retain the original chunk",
+      "runtime_implementation": ["quality_retention.py"],
+      "empirical_status": "candidate_fixture_validated_not_runtime_active"
+    },
+    {
+      "id": "stage_c_repeated_label_block_candidate",
+      "version": "0.1.0",
+      "core": "redundancy",
+      "stage": "Stage C",
+      "hypothesis": "Only a later exact occurrence of a closed-set navigation-marker block within one chunk is a candidate redundant span when the residual independently passes the Stage-B boundary.",
+      "decision_unit": "later exact repeated contiguous text span",
+      "deployment_scope": "candidate-only text-structural development materialization",
+      "allowed_inputs": [
+        "chunk text",
+        "declared Stage-B minimum_chunk_chars"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_identity",
+        "source_tier",
+        "rights",
+        "path",
+        "composition"
+      ],
+      "reason_codes": [
+        "repeated_label_block_removed"
+      ],
+      "negative_conditions": [
+        "repeated document headings remain",
+        "tables, code, quotations, references, and test matrices remain",
+        "a first occurrence remains",
+        "a chunk without a Validity-compliant residual remains unchanged",
+        "a label outside the closed navigation-marker set remains"
+      ],
+      "coverage_impact": "rewrites only a later repeated span, preserves the first occurrence and whole chunk, and requires a residual-payload check before materialization",
+      "rollback_behavior": "do not materialize the candidate plan; preserve original chunk text",
+      "runtime_implementation": [
+        "repeated_line_block_compaction.py"
+      ],
+      "empirical_status": "retired_zero_observed_spans_in_development"
+    },
+    {
+      "id": "stage_c_web_chrome_only_chunk",
+      "version": "1.0.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A chunk composed entirely of explicit cookie-control UI markers has no independent textual learning payload.",
+      "decision_unit": "chunk",
+      "deployment_scope": "chunks with four or more nonblank lines, each an explicit cookie-control marker",
+      "allowed_inputs": [
+        "chunk text"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "explicit_web_chrome_only_chunk"
+      ],
+      "negative_conditions": [
+        "explanatory prose, substantive text, or any unrecognized line remains"
+      ],
+      "coverage_impact": "whole-chunk removal is allowed only after explicit all-lines UI evidence",
+      "rollback_behavior": "retain the chunk by disabling this rule",
+      "runtime_implementation": [
+        "stage_c_selection.py"
+      ],
+      "empirical_status": "unvalidated_structural_policy"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "records": [
+    {
+      "id": "raw-clean",
+      "text": "<p>A clean &amp; useful candidate document.</p>\n\n\nIt preserves provenance after normalization.",
+      "source_name": "fixture",
+      "source_uri": "https://example.invalid/raw-clean",
+      "collected_at": "2026-06-07T00:00:00Z",
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "allowed", "license": "fixture-only"}
+    },
+    {
+      "id": "raw-pii",
+      "text": "Contact the private account at person@example.com before publishing this candidate record.",
+      "source_name": "fixture",
+      "source_uri": "https://example.invalid/raw-pii",
+      "collected_at": "2026-06-07T00:00:00Z",
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "allowed", "license": "fixture-only"}
+    },
+    {
+      "id": "raw-secret",
+      "text": "Configuration example with api_key = abcdefghijklmnop that must be quarantined.",
+      "source_name": "fixture",
+      "source_uri": "https://example.invalid/raw-secret",
+      "collected_at": "2026-06-07T00:00:00Z",
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "allowed", "license": "fixture-only"}
+    },
+    {
+      "id": "raw-benchmark",
+      "text": "This document reproduces answers from the GSM8K benchmark and must be reviewed.",
+      "source_name": "fixture",
+      "source_uri": "https://example.invalid/raw-benchmark",
+      "collected_at": "2026-06-07T00:00:00Z",
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "allowed", "license": "fixture-only"}
+    },
+    {
+      "id": "raw-rights",
+      "text": "A useful-looking document whose rights are unknown and therefore cannot be released.",
+      "source_name": "fixture",
+      "source_uri": "https://example.invalid/raw-rights",
+      "collected_at": "2026-06-07T00:00:00Z",
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "unknown", "license": null}
+    }
+  ]
+}

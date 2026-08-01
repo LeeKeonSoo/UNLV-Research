@@ -1,0 +1,67 @@
+{
+  "schema_version": "hard-development-ablation-fixtures-v1",
+  "scenarios": [
+    {
+      "id": "code-clean-and-boundary",
+      "domain": "code",
+      "clean_retention_required": true,
+      "expected_hard_reason_codes": [],
+      "records": [
+        {"id": "code-clean", "text": "def add(left, right):\n    return left + right\n\nThe function returns a sum without side effects."},
+        {"id": "code-copyright-only", "text": "# Copyright 2026 Example Foundation\n\ndef multiply(left, right):\n    return left * right"},
+        {"id": "code-near-template", "text": "This transport note explains retries, deadlines, and authentication behavior for the client.\n\nA distinct implementation uses a bounded retry loop."}
+      ]
+    },
+    {
+      "id": "code-explicit-span-artifacts",
+      "domain": "code",
+      "clean_retention_required": false,
+      "expected_hard_reason_codes": ["inline_license_header_removed", "inline_license_comment_block_removed", "repeated_exact_template_span_removed"],
+      "records": [
+        {"id": "code-a", "text": "# SPDX-License-Identifier: Apache-2.0\n# Licensed under the Apache License\n\nThis generated transport template documents retries, deadlines, authentication, and stable client behavior.\n\nThe first implementation preserves a useful recovery explanation."},
+        {"id": "code-b", "text": "This generated transport template documents retries, deadlines, authentication, and stable client behavior.\n\nThe second implementation explains refresh-token failure handling."},
+        {"id": "code-c", "text": "def parse(value):\n    return value.strip()\n\n# SPDX-License-Identifier: Apache-2.0\n# Licensed under the Apache License\n\nprint(parse(' value '))"}
+      ]
+    },
+    {
+      "id": "math-clean-and-boundary",
+      "domain": "math",
+      "clean_retention_required": true,
+      "expected_hard_reason_codes": [],
+      "records": [
+        {"id": "math-clean", "text": "Theorem: the derivative of a sum is the sum of the derivatives. Proof: apply the limit definition term by term."},
+        {"id": "math-short-common-phrase", "text": "Assume the hypothesis.\n\nA proof then applies the definition and checks the boundary conditions."}
+      ]
+    },
+    {
+      "id": "math-repeated-template",
+      "domain": "math",
+      "clean_retention_required": false,
+      "expected_hard_reason_codes": ["repeated_exact_template_span_removed"],
+      "records": [
+        {"id": "math-a", "text": "This proof template records hypotheses, intermediate transformations, boundary assumptions, and the final verification step.\n\nThe first proof establishes convergence by an epsilon argument."},
+        {"id": "math-b", "text": "This proof template records hypotheses, intermediate transformations, boundary assumptions, and the final verification step.\n\nThe second proof derives a derivative identity from the limit definition."}
+      ]
+    },
+    {
+      "id": "general-clean-and-boundary",
+      "domain": "general",
+      "clean_retention_required": true,
+      "expected_hard_reason_codes": [],
+      "records": [
+        {"id": "general-clean", "text": "A field notebook records observations, methods, uncertainty, and the conditions under which a result was obtained."},
+        {"id": "general-license-discussion", "text": "The chapter explains why a license grants permissions and why attribution can support reproducible scholarship."}
+      ]
+    },
+    {
+      "id": "general-repeated-template",
+      "domain": "general",
+      "clean_retention_required": false,
+      "expected_hard_reason_codes": ["repeated_exact_template_span_removed"],
+      "records": [
+        {"id": "general-a", "text": "This collection note describes provenance, collection conditions, formatting assumptions, and the standard review procedure for every retained document.\n\nThe report discusses a coastal survey and its uncertainty estimates."},
+        {"id": "general-b", "text": "This collection note describes provenance, collection conditions, formatting assumptions, and the standard review procedure for every retained document.\n\nThe report discusses an archive catalog and its revision history."}
+      ]
+    }
+  ]
+}

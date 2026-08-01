@@ -1,0 +1,211 @@
+{
+  "schema_version": "temporal-code-stage-b-proxy-fixtures-v1",
+  "claim_boundary": "Frozen automated Core-proxy direction checks only; no Utility, human labels, or benchmark outcomes.",
+  "records": [
+    {
+      "chunk_uid": "quality-code-structured",
+      "path": "src/parsing/records.py",
+      "content_type": "code",
+      "text": "def parse_records(lines):\n    records = []\n    for line in lines:\n        value = line.strip()\n        if not value or value.startswith('#'):\n            continue\n        key, separator, payload = value.partition('=')\n        if not separator:\n            raise ValueError(f'missing separator: {value}')\n        records.append((key.strip(), payload.strip()))\n    return records\n"
+    },
+    {
+      "chunk_uid": "quality-code-trivial",
+      "path": "src/parsing/constants.py",
+      "content_type": "code",
+      "text": "def value():\n    return 1\n"
+    },
+    {
+      "chunk_uid": "quality-code-renamed",
+      "path": "src/parsing/records_renamed.py",
+      "content_type": "code",
+      "text": "def decode_entries(source_lines):\n    output = []\n    for source_line in source_lines:\n        cleaned = source_line.strip()\n        if not cleaned or cleaned.startswith('#'):\n            continue\n        name, delimiter, body = cleaned.partition('=')\n        if not delimiter:\n            raise ValueError(f'missing separator: {cleaned}')\n        output.append((name.strip(), body.strip()))\n    return output\n"
+    },
+    {
+      "chunk_uid": "quality-code-pass-through-chain",
+      "path": "src/parsing/placeholder.py",
+      "content_type": "code",
+      "text": "def placeholder(value):\n    first = value\n    second = first\n    third = second\n    fourth = third\n    fifth = fourth\n    sixth = fifth\n    seventh = sixth\n    eighth = seventh\n    ninth = eighth\n    return ninth\n"
+    },
+    {
+      "chunk_uid": "quality-code-concise-guard",
+      "path": "src/api/guard.py",
+      "content_type": "code",
+      "text": "def is_retryable(status):\n    return status in {408, 429, 500, 502, 503, 504}\n"
+    },
+    {
+      "chunk_uid": "quality-code-bug-fix",
+      "path": "src/cache/expiry.py",
+      "content_type": "code",
+      "text": "def is_expired(expires_at, now):\n    if expires_at is None:\n        return False\n    return expires_at <= now\n"
+    },
+    {
+      "chunk_uid": "quality-code-long-noop-chain",
+      "path": "src/noop.py",
+      "content_type": "code",
+      "text": "def shuffle_names(value):\n    alpha = value\n    beta = alpha\n    gamma = beta\n    delta = gamma\n    epsilon = delta\n    zeta = epsilon\n    eta = zeta\n    theta = eta\n    iota = theta\n    kappa = iota\n    return kappa\n"
+    },
+    {
+      "chunk_uid": "quality-test-placeholder",
+      "path": "tests/test_placeholder.py",
+      "content_type": "test",
+      "text": "def test_placeholder():\n    assert True\n"
+    },
+    {
+      "chunk_uid": "quality-test-edge-case",
+      "path": "tests/test_cache_expiry.py",
+      "content_type": "test",
+      "text": "def test_is_expired_handles_missing_deadline():\n    assert is_expired(None, now=1700000000) is False\n\n\ndef test_is_expired_rejects_past_deadline():\n    assert is_expired(1699999999, now=1700000000) is True\n"
+    },
+    {
+      "chunk_uid": "quality-doc-technical",
+      "path": "docs/parsing.rst",
+      "content_type": "documentation",
+      "text": "Parsing configuration records\n=============================\n\nUse :func:`parse_records` for line-oriented configuration input. Empty lines and comments are ignored. Each remaining line must contain an equals separator; malformed input raises :class:`ValueError` instead of silently dropping data.\n\n.. code-block:: python\n\n   records = parse_records([\"host=localhost\", \"port=8080\"])\n   assert records == [(\"host\", \"localhost\"), (\"port\", \"8080\")]\n"
+    },
+    {
+      "chunk_uid": "quality-doc-vague",
+      "path": "docs/notes.rst",
+      "content_type": "documentation",
+      "text": "Notes\n=====\n\nThis section has some information about the feature. It is useful in several situations and can be used when needed. More details may be added later.\n"
+    },
+    {
+      "chunk_uid": "quality-doc-verbose-filler",
+      "path": "docs/general_information.rst",
+      "content_type": "documentation",
+      "text": "General information\n===================\n\nThis feature provides a flexible and convenient approach for many different situations. Users can consider various available options and choose suitable settings depending on their particular needs. The overall process offers helpful capabilities, useful behavior, broad support, practical improvements, and several possible benefits. Additional details, examples, recommendations, considerations, explanations, descriptions, guidance, and related information may be provided in future revisions when appropriate.\n"
+    },
+    {
+      "chunk_uid": "quality-doc-api-usage",
+      "path": "docs/client.rst",
+      "content_type": "documentation",
+      "text": "Client timeout example\n======================\n\nUse :func:`Client.get` with an explicit timeout so retries cannot hang forever.\n\n.. code-block:: python\n\n   response = client.get('/health', timeout=5)\n   response.raise_for_status()\n"
+    },
+    {
+      "chunk_uid": "template-001",
+      "path": "tests/generated/test_case_001.py",
+      "content_type": "test",
+      "text": "def test_case_001():\n    payload = {'name': 'alpha', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['name'] == 'alpha'\n    assert result['enabled'] is True\n"
+    },
+    {
+      "chunk_uid": "template-002",
+      "path": "tests/generated/test_case_002.py",
+      "content_type": "test",
+      "text": "def test_case_002():\n    payload = {'name': 'beta', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['name'] == 'beta'\n    assert result['enabled'] is True\n"
+    },
+    {
+      "chunk_uid": "template-003",
+      "path": "tests/generated/test_case_003.py",
+      "content_type": "test",
+      "text": "def test_case_003():\n    payload = {'name': 'gamma', 'enabled': True}\n    result = normalize_payload(payload)\n    assert result['name'] == 'gamma'\n    assert result['enabled'] is True\n"
+    },
+    {
+      "chunk_uid": "diverse-retry",
+      "path": "src/network/retry.py",
+      "content_type": "code",
+      "text": "async def retry(operation, attempts, delay):\n    last_error = None\n    for attempt in range(attempts):\n        try:\n            return await operation()\n        except TimeoutError as error:\n            last_error = error\n            if attempt + 1 < attempts:\n                await sleep(delay * (attempt + 1))\n    raise last_error\n"
+    },
+    {
+      "chunk_uid": "diverse-window",
+      "path": "src/metrics/window.py",
+      "content_type": "code",
+      "text": "def rolling_average(values, width):\n    if width <= 0:\n        raise ValueError('width must be positive')\n    totals = []\n    running = 0.0\n    for index, value in enumerate(values):\n        running += value\n        if index >= width:\n            running -= values[index - width]\n        if index + 1 >= width:\n            totals.append(running / width)\n    return totals\n"
+    },
+    {
+      "chunk_uid": "diverse-validation",
+      "path": "tests/test_records.py",
+      "content_type": "test",
+      "text": "def test_parse_records_rejects_missing_separator():\n    with pytest.raises(ValueError, match='missing separator'):\n        parse_records(['host=localhost', 'broken-line'])\n"
+    }
+  ],
+  "assertions": [
+    {
+      "id": "selection_value_structured_code_beats_trivial_code",
+      "type": "selection_value_pair",
+      "higher": "quality-code-structured",
+      "lower": "quality-code-trivial",
+      "minimum_margin": 0.15,
+      "rationale": "A multi-step parse-and-validate unit exposes more learnable structure than a constant-return function."
+    },
+    {
+      "id": "selection_value_technical_documentation_beats_vague_note",
+      "type": "selection_value_pair",
+      "higher": "quality-doc-technical",
+      "lower": "quality-doc-vague",
+      "minimum_margin": 0.15,
+      "rationale": "Specific API behavior, failure semantics, and an example are stronger Core evidence than generic filler."
+    },
+    {
+      "id": "selection_value_semantics_preserving_rename_is_stable",
+      "type": "selection_value_invariance",
+      "left": "quality-code-structured",
+      "right": "quality-code-renamed",
+      "maximum_absolute_delta": 0.08,
+      "rationale": "Renaming identifiers without changing control flow should not materially change the Quality proxy."
+    },
+    {
+      "id": "selection_value_structured_code_beats_pass_through_chain",
+      "type": "selection_value_pair",
+      "higher": "quality-code-structured",
+      "lower": "quality-code-pass-through-chain",
+      "minimum_margin": 0.15,
+      "rationale": "Length created by name-to-name assignments should not substitute for meaningful operations and validation."
+    },
+    {
+      "id": "selection_value_technical_documentation_beats_verbose_filler",
+      "type": "selection_value_pair",
+      "higher": "quality-doc-technical",
+      "lower": "quality-doc-verbose-filler",
+      "minimum_margin": 0.15,
+      "rationale": "Generic verbosity without code-domain specificity should not receive the same support as concrete API documentation."
+    },
+    {
+      "id": "selection_value_concise_guard_beats_empty_test",
+      "type": "selection_value_pair",
+      "higher": "quality-code-concise-guard",
+      "lower": "quality-test-placeholder",
+      "minimum_margin": 0.35,
+      "rationale": "Short code can still be high-value when it encodes an API-relevant decision boundary; empty placeholder tests should not pass by being short."
+    },
+    {
+      "id": "selection_value_bug_fix_beats_long_noop_chain",
+      "type": "selection_value_pair",
+      "higher": "quality-code-bug-fix",
+      "lower": "quality-code-long-noop-chain",
+      "minimum_margin": 0.12,
+      "rationale": "A concise bug-fix guard should beat long pass-through assignment chains; length alone must not act as Quality."
+    },
+    {
+      "id": "selection_value_edge_case_test_beats_placeholder_test",
+      "type": "selection_value_pair",
+      "higher": "quality-test-edge-case",
+      "lower": "quality-test-placeholder",
+      "minimum_margin": 0.25,
+      "rationale": "Small tests with concrete edge-case assertions should be preserved over placeholder tests."
+    },
+    {
+      "id": "selection_value_api_usage_doc_beats_verbose_filler",
+      "type": "selection_value_pair",
+      "higher": "quality-doc-api-usage",
+      "lower": "quality-doc-verbose-filler",
+      "minimum_margin": 0.10,
+      "rationale": "Concrete API usage with a code example should beat verbose generic prose."
+    },
+    {
+      "id": "soft_redundancy_detects_identifier_renamed_structure",
+      "type": "redundancy_pair_floor",
+      "left": "quality-code-structured",
+      "right": "quality-code-renamed",
+      "minimum_pair_risk": 0.75,
+      "rationale": "Identifier renaming should not hide a structurally identical Python unit from Stage-B soft redundancy."
+    },
+    {
+      "id": "soft_redundancy_detects_template_saturation",
+      "type": "redundancy_group",
+      "higher_risk_group": ["template-001", "template-002", "template-003"],
+      "lower_risk_group": ["diverse-retry", "diverse-window", "diverse-validation"],
+      "minimum_mean_margin": 0.25,
+      "rationale": "Literal-varied test templates should have greater saturation risk than distinct implementation and validation units."
+    }
+  ],
+  "forbidden_evidence": ["Utility", "benchmark outcomes", "development outcomes", "confirmatory outcomes"]
+}

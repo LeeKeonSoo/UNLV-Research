@@ -1,0 +1,36 @@
+{
+  "schema_version": "math-complete-bundle-calibration-v3",
+  "status": "frozen_before_v2_structural_four_head_calibration",
+  "supersedes": "configs/math_complete_bundle_calibration_v2.json",
+  "supersession_evidence": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_hard_candidate_audit_v1.json",
+  "clean_text": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_clean_controls_v6.jsonl",
+  "clean_known_head_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_clean_control_provider_scores_v6.jsonl",
+  "clean_structural_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_structural_calibration_scores_v2.jsonl",
+  "candidate_text": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+  "candidate_known_head_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_positive_scores_v1.jsonl",
+  "candidate_structural_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_structural_scores_v2.jsonl",
+  "calibration_source_groups": [
+    "TeamBasedInquiryLearning/linear-algebra",
+    "jim-hefferon/linear-algebra"
+  ],
+  "lower_quantiles": [0.0, 0.0025, 0.005, 0.01, 0.025, 0.05],
+  "confidence_level": 0.95,
+  "normal_false_reject_wilson_upper_bound": 0.01,
+  "hard_false_reject_wilson_upper_bound": 0.05,
+  "required_gate": "pooled_and_each_source_and_leave_one_source_out",
+  "structural_model_training_source_groups": [
+    "openstax/osbooks-calculus-bundle",
+    "oscarlevin/discrete-book",
+    "wojtask/clrs4e-solutions",
+    "OpenLogicProject/OpenLogic",
+    "active-calculus/active-calculus-single-mbx"
+  ],
+  "structural_feature_schema_version": "v2",
+  "structural_model_artifact_sha256": {
+    "substantive_payload": "3d7a998d82f4fe345eab8726a7cd4ab3daa7f48020eb2db7839503c1534c902b",
+    "coherence_completeness": "e992d5df9505536097ec98a2b5798fbe78ee4437868b4f1039de9087d7dba579"
+  },
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "math-structural-head-development-v2",
+  "status": "frozen_before_v2_model_training",
+  "clean_control_protocol": "configs/math_open_educational_clean_control_protocol_v6.json",
+  "clean_control_text": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_clean_controls_v6.jsonl",
+  "candidate_text": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+  "training_source_groups": [
+    "openstax/osbooks-calculus-bundle",
+    "oscarlevin/discrete-book",
+    "wojtask/clrs4e-solutions",
+    "OpenLogicProject/OpenLogic",
+    "active-calculus/active-calculus-single-mbx"
+  ],
+  "calibration_source_groups": [
+    "TeamBasedInquiryLearning/linear-algebra",
+    "jim-hefferon/linear-algebra"
+  ],
+  "feature_schema_version": "v2",
+  "heads": {
+    "substantive_payload": {
+      "negative_transformations": ["repeated_title_shell", "matched_length_navigation_shell"]
+    },
+    "coherence_completeness": {
+      "negative_transformations": ["mid_document_truncation", "mid_document_rotation", "closing_delimiter_damage"]
+    }
+  },
+  "model": {
+    "type": "standard_scaler_plus_logistic_regression",
+    "class_weight": "balanced",
+    "random_state": 0,
+    "max_iter": 2000,
+    "feature_weights_hand_authored": false
+  },
+  "claim_boundary": "The v2 models detect only the declared metamorphic structural failures under a source-disjoint calibration split. They do not measure semantic truth, mathematical correctness, novelty, or universal data quality.",
+  "runtime_inputs": ["chunk_text"],
+  "forbidden_inputs": [
+    "source_identity",
+    "path",
+    "dataset_identity",
+    "MathScore",
+    "FineMath",
+    "benchmark_results",
+    "target_retention_fraction"
+  ],
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

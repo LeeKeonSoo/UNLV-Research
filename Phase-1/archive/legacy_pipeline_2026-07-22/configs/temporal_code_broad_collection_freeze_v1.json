@@ -1,0 +1,31 @@
+{
+  "schema_version": "temporal-code-broad-collection-freeze-v1",
+  "status": "frozen_before_broad_content_fetch",
+  "inclusion_rule": "Include every repository that passed the frozen discovery, enrichment, commit-reproducibility, license, split, and benchmark-collision gates.",
+  "minimum_merged_prs_in_assigned_window": 1,
+  "repository_order": "assigned_split_then_normalized_repository_identity",
+  "content_fetch_limits": {
+    "maximum_pull_requests_per_repository": 2,
+    "maximum_changed_files_per_pull_request": 50,
+    "maximum_file_bytes": 524288,
+    "allowed_file_suffixes": [
+      ".py",
+      ".md",
+      ".rst",
+      ".toml",
+      ".cfg",
+      ".ini",
+      ".txt"
+    ],
+    "issue_and_pull_request_prose": "do_not_fetch_for_training_payload",
+    "binary_generated_vendor_lock_files": "exclude"
+  },
+  "required_after_fetch": [
+    "apply the same content, secret, PII, generated-file, benchmark, and split gates used by the bounded smoke",
+    "run Stage 0 and Stage A independently per split",
+    "construct Stage-B selected and common disjoint Stage-A-random arms from train only",
+    "do not approve any repository or bundle for training from manifest membership alone"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "This freezes broad collection eligibility and fetch limits, not training approval or Utility."
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "raw-corpus-matrix-v1",
+  "status": "frozen_before_materialization",
+  "purpose": "Define provenance-rich candidate-corpus conditions for curation validation before data acquisition, training, or benchmark outcomes.",
+  "required_record_fields": [
+    "record_id",
+    "text_or_code",
+    "source_dataset",
+    "source_config",
+    "source_split",
+    "source_uri",
+    "repository_or_origin",
+    "collected_at",
+    "license_family",
+    "content_type",
+    "source_tier",
+    "dedup_key",
+    "benchmark_exclusion_status",
+    "token_proxy"
+  ],
+  "conditions": {
+    "clean_retain_all": {
+      "purpose": "Confirm that an eligible corpus fitting the declared budget retains all records rather than forcing reduction.",
+      "expected_policy_outcome": "retain_all",
+      "source_mix": {"known_high_quality_reference": 1.0},
+      "required_stage0_observation": "all release candidates have provenance and allowed rights"
+    },
+    "raw_mixed": {
+      "purpose": "Primary curation condition with raw-like records, known-reference context, duplicates, malformed records, and quarantined hazards.",
+      "expected_policy_outcome": "full_curated_pool_plus_optional_budgeted_subset",
+      "source_mix": {"raw_like": 0.7, "known_high_quality_reference": 0.3},
+      "required_stage0_observation": "reason-coded quarantine and retained provenance"
+    },
+    "risk_heavy": {
+      "purpose": "Stress condition with a high raw-like share and injected risk cases to verify quarantine, abstention, and insufficient-usable-data behavior.",
+      "expected_policy_outcome": "quarantine_or_abstain_when_guardrails_fail",
+      "source_mix": {"raw_like": 0.9, "known_high_quality_reference": 0.1},
+      "required_stage0_observation": "hazard reasons and unresolved-rights cases remain outside the release candidate pool"
+    }
+  },
+  "stage_b_blinding": {
+    "source_tier_available_to_stage_b": false,
+    "source_dataset_available_to_stage_b": false,
+    "known_reference_label_available_to_stage_b": false,
+    "audit_only_fields": ["source_tier", "source_dataset", "license_family", "repository_or_origin"]
+  },
+  "benchmark_exclusion": {
+    "task_hash_or_registry_required": true,
+    "train_eval_split_disjoint_required": true,
+    "contamination_or_uncertainty_action": "quarantine",
+    "benchmark_outcomes_available_to_stage_b": false
+  },
+  "materialization_requirements": [
+    "per-condition raw, Stage-0, Stage-A, and Stage-B record/chunk/token counts",
+    "source and transformation lineage manifest with sha256",
+    "license and provenance missingness audit",
+    "source-tier leakage audit",
+    "benchmark contamination overlap audit",
+    "frozen train/development/confirmatory split manifest"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective"
+}

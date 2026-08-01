@@ -1,0 +1,41 @@
+{
+  "schema_version": "temporal-code-development-fresh-expansion-v1",
+  "status": "feasibility_amendment_frozen_before_fresh_expansion_content_fetch_or_execution",
+  "revision_reason": "The first freeze correctly abstained because only 14 unused development repositories had the predeclared test-only or code-only path strata; five unused repositories had only documentation, configuration, or no allowed paths.",
+  "purpose": "Use every remaining repository-disjoint development candidate with test-only or code-only changed-path evidence before broadening discovery.",
+  "assigned_split": "development",
+  "allowed_path_strata_in_priority_order": [
+    "test_only",
+    "code_only"
+  ],
+  "selection_mode": "all_eligible_remaining_repositories",
+  "minimum_repository_count": 14,
+  "one_pull_request_per_repository": true,
+  "representative_pull_request_rule": "first available path stratum by frozen priority, then lowest pull request number",
+  "exclude_repository_plans": [
+    "outputs/temporal_code_collection/temporal_code_path_stratified_tranche_plan_v2.json",
+    "outputs/temporal_code_collection/temporal_code_development_execution_expansion_plan.json"
+  ],
+  "selection_uses": [
+    "assigned split",
+    "path-only changed-file metadata",
+    "normalized repository identity",
+    "pull request number"
+  ],
+  "selection_forbids": [
+    "file content",
+    "pull request title or body",
+    "generic execution outcomes",
+    "native execution outcomes",
+    "Stage-0 outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "execution_rule": "Apply the already frozen generic and repository-native metadata execution rules without repository-specific exceptions.",
+  "failure_decision": "insufficient_sampling_frame",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Fresh development executable-evaluation candidate expansion only; no Utility or training-benefit claim."
+}

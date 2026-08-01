@@ -1,0 +1,46 @@
+{
+  "schema_version": "target-effect-release-protocol-v1",
+  "protocol_name": "future_target_effect_robustness_protocol_v1",
+  "applies_to": "future Stage-C target-SLM release candidates only",
+  "non_retroactive": true,
+  "rationale": {
+    "observed_paired_mde95_range": [
+      0.00012470385935095177,
+      0.00012857275199472889
+    ],
+    "practical_margin": 0.00015,
+    "margin_rule": "The practical margin is rounded upward from the observed paired MDE95 range and must be frozen before a future candidate is evaluated.",
+    "current_candidate_status": "The existing frozen confirmatory result remains confirmatory_joint_not_supported."
+  },
+  "development_requirements": {
+    "minimum_training_seeds": 5,
+    "minimum_distributionally_distinct_target_holdouts": 2,
+    "may_select_candidate_or_stopping_rule": true,
+    "must_not_use_frozen_confirmatory_holdouts": true
+  },
+  "confirmatory_requirements": {
+    "minimum_fresh_training_seeds": 5,
+    "minimum_untouched_target_holdouts": 2,
+    "minimum_predeclared_task_suites": 1,
+    "target_mean_improvement_minimum": 0.00015,
+    "target_seed_level_lower_tolerance": -0.00015,
+    "target_mean_confidence_rule": "one-sided 95% training-seed-level lower confidence bound must exceed zero",
+    "external_retention_rule": "candidate external-retention NLL must not exceed base no-update for every fresh seed",
+    "task_rule": "predeclared task aggregate must improve or remain within a frozen non-inferiority margin",
+    "all_requirements_mandatory": true
+  },
+  "forbidden_uses": [
+    "retroactively changing an existing frozen confirmatory decision",
+    "using Utility or target-model outcomes in the Stage-B selector objective",
+    "selecting a candidate on confirmatory holdouts",
+    "claiming release readiness without task-based evidence"
+  ],
+  "framework_scope": {
+    "stage_a": "unchanged chunk-level hard gate",
+    "stage_b": "unchanged chunk-level selection",
+    "stage_c": "target, retention, and task validation",
+    "release_layer": "applies the predeclared robustness protocol"
+  },
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Protocol definition only; it does not certify the current candidate."
+}

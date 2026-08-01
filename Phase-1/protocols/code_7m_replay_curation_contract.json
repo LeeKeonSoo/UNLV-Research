@@ -1,0 +1,34 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "purpose": "Replay the frozen Code candidate corpus through the active domain-general curation runtime after benchmark-overlap exclusion.",
+  "input": {
+    "sources": [
+      {
+        "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates.jsonl",
+        "text_fields": ["text"],
+        "defaults": {
+          "pii_context": "repository_code"
+        }
+      }
+    ]
+  },
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit.json",
+  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/abc_curation",
+  "stage_b": {
+    "minimum_chunk_chars": 40,
+    "max_chunk_chars": 6000
+  },
+  "stage_c_selection": {
+    "near_duplicate_compaction": {
+      "shingle_size": 5,
+      "minimum_lexical_tokens": 40,
+      "symmetric_overlap_threshold": 0.95
+    }
+  },
+  "stage_c": {
+    "training_budget_token_proxy": null,
+    "no_binding_budget_action": "retain_all_without_binding_budget"
+  },
+  "claim_boundary": "This run materializes an auditable curated pool. Its incomplete benchmark-exclusion audit blocks any subsequent training claim until all frozen primary benchmark snapshots are supplied."
+}

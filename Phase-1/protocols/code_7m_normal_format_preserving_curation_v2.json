@@ -1,0 +1,23 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "purpose": "Regenerate the audited 7M Code Normal output after the Stage-B format-preserving chunker correction. The prior flattened-chunk output remains historical only.",
+  "input": {
+    "candidate_files": [
+      "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl"
+    ],
+    "text_fields": ["text"],
+    "defaults": {}
+  },
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/format_preserving_7m_v2/normal_curation",
+  "stage_a": {"policy": "text_only_v2"},
+  "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"candidate_enabled": false, "shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true, "license_comment_only_chunk": true, "empty_html_shell": true, "web_chrome_only_chunk": true}
+  },
+  "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
+  "claim_boundary": "Format-preserving Normal curation replay. It replaces neither the policy definition nor the raw input, and external evaluation remains outside the runtime."
+}

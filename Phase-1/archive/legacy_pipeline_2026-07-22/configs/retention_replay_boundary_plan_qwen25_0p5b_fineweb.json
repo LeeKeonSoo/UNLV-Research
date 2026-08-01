@@ -1,0 +1,29 @@
+{
+  "schema_version": "retention-replay-development-plan-v1",
+  "plan_name": "fineweb_coverage_backfill_wikitext_replay_joint_boundary_v1",
+  "scope": "final_development_boundary_check_not_selector_objective",
+  "target_component": "coverage_backfilled_interleaved50_equal_budget",
+  "replay_source": "wikitext103_train_only",
+  "replay_selection_seed": 20260611,
+  "candidate_target_fractions": [
+    0.9925,
+    0.99,
+    0.985
+  ],
+  "matched_comparator": "stageA_random_equal_budget",
+  "pilot_contract": {
+    "sequence_length": 1024,
+    "train_sequences": 1024,
+    "optimizer_steps": 128,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 0.00001,
+    "seed": 20260611,
+    "gpu_constraint": "physical CUDA device 1, NVIDIA GeForce RTX 3070 Ti only"
+  },
+  "joint_development_success_rule": "Target NLL must be lower than matched Stage-A random and external WikiText NLL must not exceed base no-update.",
+  "primary_target_evaluation": "confirmatory_coverage_stratified_stageA_eval",
+  "retention_guardrail_evaluation": "wikitext103_validation_test_guardrail",
+  "selection_rule": "If a joint-pass arm exists, freeze it only as a candidate for fresh confirmation. Otherwise stop ratio refinement and revise the training recipe or replay source.",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Final development boundary check only; no deployment, certification, universal-mixture, or task-capability claim."
+}

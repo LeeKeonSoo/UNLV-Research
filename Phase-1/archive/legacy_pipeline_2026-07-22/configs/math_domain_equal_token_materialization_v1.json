@@ -1,0 +1,44 @@
+{
+  "schema_version": "math-domain-equal-token-materialization-v1",
+  "status": "frozen_before_math_stage_c_outcomes",
+  "purpose": "Materialize math-domain Stage 0/A/B outputs and equal-token training arms before held-out math NLL, GSM8K, or MATH outcomes.",
+  "input_pools": {
+    "raw_mixed_pool": "outputs/math_domain_block4/raw_mixed_math_pool.jsonl",
+    "known_high_quality_reference_pool": "outputs/math_domain_block4/known_high_quality_math_reference_pool.jsonl"
+  },
+  "output_dir": "outputs/math_domain_stage_materialization",
+  "seed": 20260702,
+  "stage0": {
+    "blocked_benchmark_terms": [
+      "gsm8k",
+      "grade school math 8k",
+      "hendrycks",
+      "competition_math",
+      "math-500"
+    ],
+    "minimum_token_proxy": 20
+  },
+  "stage_a": {
+    "minimum_token_proxy": 30,
+    "minimum_math_signal_count": 2
+  },
+  "stage_b": {
+    "budget_fraction_of_stage_a_tokens": 0.55,
+    "objective": "math_signal_plus_readability_plus_coverage_minus_redundancy",
+    "selector_forbidden_signals": [
+      "held-out math NLL",
+      "GSM8K",
+      "MATH",
+      "Utility",
+      "downstream benchmark outcomes"
+    ]
+  },
+  "equal_token_arms": [
+    "raw_random_equal_budget",
+    "stageA_random_equal_budget",
+    "curated_math_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Math Stage 0/A/B materialization and equal-token arm freeze only; no math downstream improvement claim."
+}

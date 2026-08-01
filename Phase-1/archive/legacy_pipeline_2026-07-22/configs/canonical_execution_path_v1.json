@@ -1,0 +1,156 @@
+{
+  "schema_version": "canonical-execution-path-v1",
+  "scope": "paper_evidence_package_rebuild_path",
+  "claim_boundary": "This registry defines the lightweight canonical rebuild path for current paper evidence and claim audits. It is not a full raw-data acquisition, training, or production release runner.",
+  "environment": {
+    "os": "Windows",
+    "conda_environment": "research",
+    "default_command_prefix": "python"
+  },
+  "canonical_runner": {
+    "script": "run_canonical_paper_evidence.py",
+    "command": "python run_canonical_paper_evidence.py --execute",
+    "decision_exit_codes": [0, 2]
+  },
+  "active_entry_points": [
+    "00_run_data_eval.py",
+    "run_canonical_paper_evidence.py"
+  ],
+  "compatibility_entry_points": [
+    "13_run_paper_release.py"
+  ],
+  "canonical_execution_path": [
+    {
+      "script": "229_build_code_livecodebench_confirmation_summary.py",
+      "command": "python 229_build_code_livecodebench_confirmation_summary.py",
+      "role": "freeze the multiseed independent LiveCodeBench confirmation and its external-transfer claim boundary",
+      "expected_outputs": [
+        "outputs/validation/code_livecodebench_confirmation_summary_report.json",
+        "outputs/validation/code_livecodebench_confirmation_summary_report.md"
+      ]
+    },
+    {
+      "script": "211_build_code_paper_evidence_report.py",
+      "command": "python 211_build_code_paper_evidence_report.py",
+      "role": "bind Code paper metrics to one protocol and check current-framework implementation hashes",
+      "expected_outputs": [
+        "outputs/validation/code_paper_evidence_report.json",
+        "outputs/validation/code_paper_evidence_report.md"
+      ]
+    },
+    {
+      "script": "227_build_code_livecodebench_pilot_summary.py",
+      "command": "python 227_build_code_livecodebench_pilot_summary.py",
+      "role": "summarize frozen independent LiveCodeBench pilot outcomes without rerunning generation or evaluation",
+      "expected_outputs": [
+        "outputs/validation/code_livecodebench_pilot_summary_report.json",
+        "outputs/validation/code_livecodebench_pilot_summary_report.md"
+      ]
+    },
+    {
+      "script": "213_build_final_paper_evidence_table.py",
+      "command": "python 213_build_final_paper_evidence_table.py",
+      "role": "freeze current Code/Math base/raw/curated evidence table",
+      "expected_outputs": [
+        "outputs/validation/final_paper_evidence_table.json",
+        "outputs/validation/final_paper_evidence_table.md"
+      ]
+    },
+    {
+      "script": "190_run_paper_claim_release_gate.py",
+      "command": "python 190_run_paper_claim_release_gate.py",
+      "role": "block the current paper claim when curation implementation hashes require a Stage-C rerun",
+      "expected_outputs": [
+        "outputs/validation/paper_claim_release_gate_report.json"
+      ]
+    },
+    {
+      "script": "219_build_domain_composition_audit.py",
+      "command": "python 219_build_domain_composition_audit.py",
+      "role": "audit observed raw-vs-curated paper-domain composition",
+      "expected_outputs": [
+        "outputs/validation/domain_composition_audit_report.json",
+        "outputs/validation/domain_composition_audit_report.md"
+      ]
+    },
+    {
+      "script": "220_build_coverage_domain_mix_audit.py",
+      "command": "python 220_build_coverage_domain_mix_audit.py",
+      "role": "bind Coverage to composition/collapse audit rather than utility evidence",
+      "expected_outputs": [
+        "outputs/validation/coverage_domain_mix_audit_report.json",
+        "outputs/validation/coverage_domain_mix_audit_report.md"
+      ]
+    },
+    {
+      "script": "221_build_stage_b_policy_contract_audit.py",
+      "command": "python 221_build_stage_b_policy_contract_audit.py",
+      "role": "audit Stage-B as optional budget allocation with retain-all semantics",
+      "expected_outputs": [
+        "outputs/validation/stage_b_policy_contract_audit_report.json",
+        "outputs/validation/stage_b_policy_contract_audit_report.md"
+      ]
+    },
+    {
+      "script": "218_build_paper_claim_consistency_audit.py",
+      "command": "python 218_build_paper_claim_consistency_audit.py",
+      "role": "verify paper claim consistency and forbidden-claim boundaries",
+      "expected_outputs": [
+        "outputs/validation/paper_claim_consistency_audit_report.json",
+        "outputs/validation/paper_claim_consistency_audit_report.md"
+      ]
+    }
+  ],
+  "support_reports": [
+    {
+      "path": "outputs/validation/code_paper_evidence_report.json",
+      "role": "Code natural-budget Stage-C NLL and EvalPlus evidence"
+    },
+    {
+      "path": "outputs/validation/code_livecodebench_pilot_summary_report.json",
+      "role": "Independent Code LiveCodeBench pilot and transfer-claim boundary"
+    },
+    {
+      "path": "outputs/validation/code_livecodebench_confirmation_summary_report.json",
+      "role": "Multiseed independent LiveCodeBench confirmation and external-transfer limitation"
+    },
+    {
+      "path": "outputs/validation/math_domain_selector_v3_stage_c_summary_report.json",
+      "role": "Math v2/v3 natural-budget Stage-C summary"
+    },
+    {
+      "path": "outputs/validation/paper_claim_release_gate_report.json",
+      "role": "Bounded paper claim and production-claim blocker gate"
+    },
+    {
+      "path": "outputs/validation/selector_utility_leakage_audit.json",
+      "role": "Selector Utility non-consumption audit"
+    },
+    {
+      "path": "outputs/validation/coverage_domain_fixture_benchmark_report.json",
+      "role": "Coverage fixture behavior benchmark used by coverage domain-mix audit"
+    },
+    {
+      "path": "outputs/validation/record_disposition_audit_report.json",
+      "role": "Retain-all and not-selected disposition semantics"
+    }
+  ],
+  "forbidden_in_canonical_path": [
+    "raw_data_acquisition",
+    "dataset_collection",
+    "qlora_training",
+    "gpu_finetuning",
+    "benchmark_generation"
+  ],
+  "forbidden_script_name_fragments": [
+    "acquire",
+    "collect",
+    "fetch",
+    "run_code_domain_qlora",
+    "run_math",
+    "train",
+    "training",
+    "generate_code_domain_evalplus_samples"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective"
+}

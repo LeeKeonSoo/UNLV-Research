@@ -1,0 +1,53 @@
+{
+  "schema_version": "math-positive-development-bundle-v1",
+  "status": "scored_incomplete_candidate_not_runtime_active",
+  "provider_manifest": "configs/math_positive_provider_manifest_v1.json",
+  "provider_manifest_sha256": "93f778bcda6fb0870e11a67479db8e799aeab86dc4a8d1bb8ecbdf55a105f757",
+  "artifacts": {
+    "candidate_text": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+    "candidate_text_sha256": "dbeb7a31932290e00c6f2fc24f72ec8044f903be1b825f54551030344123c418",
+    "candidate_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_positive_scores_v1.jsonl",
+    "candidate_scores_sha256": "6309a143c87def131306f4b05085bbcf87d2fd9681d4dfb7ad10b476b08a14d5"
+  },
+  "candidate_corpus": {
+    "source_dataset": "open-web-math/open-web-math",
+    "records": 3936,
+    "qwen3_4b_tokens": 5000169
+  },
+  "independent_evidence": {
+    "route_confidence": "closed_explicit_math_notation_or_MathScore_probability_when_notation_absent",
+    "substantive_payload": null,
+    "coherence_completeness": null,
+    "route_specific_evidence": "FineMath_raw_regression_score"
+  },
+  "route_cascade_diagnostics": {
+    "explicit_notation_records": 2763,
+    "explicit_notation_tokens": 3922835,
+    "no_notation_mathscore_at_least_0_8_records": 381,
+    "no_notation_mathscore_at_least_0_8_tokens": 162472,
+    "cascade_route_records": 3144,
+    "cascade_route_tokens": 4085307
+  },
+  "published_threshold_diagnostic_arms": {
+    "cascade_and_finemath_3plus": {
+      "records": 1521,
+      "tokens": 1399842
+    },
+    "cascade_and_finemath_4plus": {
+      "records": 557,
+      "tokens": 501107
+    }
+  },
+  "diagnostic_warning": "FineMath 3+ and 4+ are published dataset-construction settings, not locally calibrated Normal or Hard thresholds. The diagnostic arms have no selection authority.",
+  "activation_blockers": [
+    "substantive_payload_evidence_missing",
+    "coherence_completeness_evidence_missing",
+    "provider_training_disjoint_clean_controls_missing",
+    "normal_and_hard_false_reject_calibration_missing",
+    "positive_false_positive_adversarial_and_long_document_fixtures_missing",
+    "frozen_natural_budget_external_evaluation_missing"
+  ],
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

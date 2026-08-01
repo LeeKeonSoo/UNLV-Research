@@ -1,0 +1,28 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "purpose": "Repeat the frozen OpenWebMath 5M-token-proxy replay with the declared technical_math PII context. This context preserves high-confidence formatted or contact-context phone detections while suppressing formula, citation, and numerical-identifier false positives.",
+  "input": {
+    "sources": [
+      {
+        "path": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+        "text_fields": ["text"],
+        "defaults": {"pii_context": "technical_math"},
+        "metadata_capabilities": {
+          "partition.source_document_uri": {"availability": "provided_by_upstream"},
+          "partition.source_document_date": {"availability": "provided_by_upstream"},
+          "artifact_context.generation": {"availability": "not_provided_by_upstream", "inference": "forbidden"}
+        }
+      }
+    ]
+  },
+  "output_dir": "D:/UNLV-Research/cross_domain_stress/abc_curation_openwebmath_5m_technical_math_v2",
+  "stage_b": {"minimum_chunk_chars": 40, "max_chunk_chars": 6000},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true},
+    "coverage_guard": {"strata": ["language_code", "content_type"]}
+  },
+  "stage_c": {"no_binding_budget_action": "materialize_reason_coded_survivors"},
+  "claim_boundary": "This is a declared source-context sensitivity replay for the Validity Core. It does not add a domain-specific Stage C selector, intrinsic Quality score, Utility input, or benchmark feedback."
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "temporal-code-broad-test-command-policy-v1",
+  "status": "frozen_before_broad_tranche_test_execution",
+  "python_image": "python:3.11-slim",
+  "install_arguments": [
+    "-e",
+    ".",
+    "pytest"
+  ],
+  "test_target_rule": "Prefer fetched changed Python test paths, then frozen enrichment Python test-path samples; use at most two paths.",
+  "maximum_test_targets": 2,
+  "fallback_test_arguments": [
+    "-m",
+    "pytest",
+    "-q",
+    "--maxfail=1",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "isolation_contract": {
+    "host_execution_forbidden": true,
+    "test_network": "none",
+    "root_filesystem": "read_only",
+    "common_writable_tmpfs": [
+      "/root:rw,noexec,nosuid,size=512m",
+      "/tmp:rw,noexec,nosuid,size=1g"
+    ],
+    "capabilities": "drop_all",
+    "no_new_privileges": true,
+    "memory": "4g",
+    "cpus": "2",
+    "pids_limit": 512,
+    "timeout_seconds": 600
+  },
+  "forbidden_inputs": [
+    "test execution outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "claim_boundary": "Automatically frozen executable-test hypotheses only; passing or failing does not establish Utility."
+}

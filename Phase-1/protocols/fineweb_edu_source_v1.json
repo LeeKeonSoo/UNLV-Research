@@ -1,0 +1,15 @@
+{
+  "source_name": "HuggingFaceFW/fineweb-edu",
+  "source_uri": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu",
+  "collected_at": "2026-07-31T00:00:00Z",
+  "text_field": "text",
+  "stable_record_id_field": "id",
+  "rights": {"status": "allowed", "license": "ODC-By-1.0"},
+  "pii_context": "general",
+  "language": {"code": "en", "confidence": null},
+  "partition": {
+    "source_dataset": "HuggingFaceFW/fineweb-edu",
+    "source_pool_role": "clean_control",
+    "content_type": "general_text"
+  }
+}

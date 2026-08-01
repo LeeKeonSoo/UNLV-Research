@@ -1,0 +1,230 @@
+{
+  "schema_version": "redundancy-target-size-qwen3-4b-development-report-v1",
+  "status": "target_size_development_passed",
+  "source_sha256": {
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_target_size_development_qwen3_4b_v1.json": "5cf9d1ca49346c394f8dbe233f4f853270a68bf45d3df1db025a2246e7d41bf8",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_target_size_qwen3_4b_blocks_manifest.json": "dbb32721fc991be7d44d66e1195796feff2e9d50594e8e957120b5f674d780b3",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\redundancy_target_size_qwen3_4b_v1\\heldout_nll\\base_no_update.json": "550fac96f2336591b76c34d4019bcc790f43f13441e9596cf7044ec4a1e825e8",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_canonical_guardrail_decision_report.json": "043dcdd514a46b654e532ee7892eb2a997277dca39e232598e4ee66802c9daa4"
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main",
+    "snapshot_path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "snapshot_artifacts": {
+      "config.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539\\config.json",
+        "sha256": "304b2545a258d35620f1d4bf46940c0471d9baa00715ff8e77f84c2fca5057c1"
+      },
+      "tokenizer.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539\\tokenizer.json",
+        "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+      },
+      "tokenizer_config.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539\\tokenizer_config.json",
+        "sha256": "3c04ed3ca964ea2f6b2b5faf0dc4d31aec1cb1e8b4bcf63f402d295046b422b5"
+      }
+    }
+  },
+  "comparison": {
+    "treatment": "binary_current_equal_budget",
+    "baseline": "stageA_random_common_disjoint_equal_budget",
+    "base_no_update_mean_nll": 1.3746470548212528,
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "rows": [
+      {
+        "seed": 11,
+        "treatment_mean_nll": 1.3420530576258898,
+        "baseline_mean_nll": 1.3455323912203312,
+        "baseline_minus_treatment_nll": 0.003479333594441414,
+        "treatment_result_sha256": "76a63a14defd4e1114eefb0961a6cca8a774b21249dd77a4c7f036527efacd63",
+        "baseline_result_sha256": "2f6b17a51d229f4759325bac90a893d62c4a7696861e32bafae9acc8aec0537a"
+      },
+      {
+        "seed": 23,
+        "treatment_mean_nll": 1.3415213376283646,
+        "baseline_mean_nll": 1.3466875310987234,
+        "baseline_minus_treatment_nll": 0.005166193470358849,
+        "treatment_result_sha256": "367eec535b3159a9dbd70521ce6f7f8e3342231a321ebbc2e8a69e4f2a15f8df",
+        "baseline_result_sha256": "79f1fa7addc33a27bd89f3bbe6381cb88ec1397d11abfeb8101c6b6988491648"
+      },
+      {
+        "seed": 37,
+        "treatment_mean_nll": 1.341690519824624,
+        "baseline_mean_nll": 1.3481458369642496,
+        "baseline_minus_treatment_nll": 0.006455317139625549,
+        "treatment_result_sha256": "8ab6a4715e7aad305aef63a125d69734711dc945eca0f6484291eb2e5dbd047f",
+        "baseline_result_sha256": "885375b7ab92317822e76d80633be6edc3973e53cf5b6c765c059a3e44ebee5a"
+      }
+    ],
+    "treatment_summary": {
+      "mean": 1.3417549716929595,
+      "sd": 0.00027165616400331706,
+      "stderr": 0.00015684075941433623,
+      "t_critical_95_two_sided_df2": 4.302652729911275,
+      "ci95_low": 1.3410801403713042,
+      "ci95_high": 1.342429803014615
+    },
+    "baseline_summary": {
+      "mean": 1.346788586427768,
+      "sd": 0.0013096502581787122,
+      "stderr": 0.0007561269291037424,
+      "t_critical_95_two_sided_df2": 4.302652729911275,
+      "ci95_low": 1.3435352348321004,
+      "ci95_high": 1.3500419380234356
+    },
+    "baseline_minus_treatment_summary": {
+      "mean": 0.005033614734808604,
+      "sd": 0.001492414941007279,
+      "stderr": 0.000861646167933172,
+      "t_critical_95_two_sided_df2": 4.302652729911275,
+      "ci95_low": 0.0013262504981333529,
+      "ci95_high": 0.008740978971483855
+    },
+    "required_mean_nll_reduction": 0.005,
+    "mean_margin_passed": true,
+    "all_seed_direction_positive": true,
+    "all_seed_margin_passed": false
+  },
+  "guardrail_status": {
+    "missing_guardrails": [],
+    "failed_guardrails": [],
+    "missing_guardrail_action": "abstain",
+    "release_decision": "release_supported"
+  },
+  "stage_c_guardrails": {
+    "general_text_retention_nll": {
+      "evidence_key": "general_text_retention",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_canonical_guardrail_decision_report.json",
+      "passed": true,
+      "evidence": {
+        "margin": 0.01,
+        "arms": {
+          "binary_current_equal_budget": {
+            "seed_deltas": [
+              -0.018662471684717463,
+              -0.01842661995080208,
+              -0.018413913586447173
+            ],
+            "mean": -0.01850100174065557,
+            "sample_sd": 0.00013998132036201314,
+            "one_sided_95_lower": -0.01873698990793821,
+            "one_sided_95_upper": -0.018265013573372933,
+            "paired_mde_95": 0.00023598816728263852,
+            "positive_seed_count": 0,
+            "nonpositive_seed_count": 3
+          },
+          "log_count_equal_budget": {
+            "seed_deltas": [
+              -0.018744589580643733,
+              -0.017674101937201758,
+              -0.0190003519096682
+            ],
+            "mean": -0.018473014475837896,
+            "sample_sd": 0.0007035975593544476,
+            "one_sided_95_lower": -0.019659177730386338,
+            "one_sided_95_upper": -0.017286851221289454,
+            "paired_mde_95": 0.0011861632545484416,
+            "positive_seed_count": 0,
+            "nonpositive_seed_count": 3
+          },
+          "stageA_random_common_disjoint_equal_budget": {
+            "seed_deltas": [
+              -0.010792062407539937,
+              -0.012515941694859478,
+              -0.010338534991587434
+            ],
+            "mean": -0.01121551303132895,
+            "sample_sd": 0.0011488071252190187,
+            "one_sided_95_lower": -0.013152234926368616,
+            "one_sided_95_upper": -0.009278791136289283,
+            "paired_mde_95": 0.0019367218950396671,
+            "positive_seed_count": 0,
+            "nonpositive_seed_count": 3
+          }
+        },
+        "passed": true
+      }
+    },
+    "general_task_retention": {
+      "evidence_key": "general_task_retention",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_canonical_guardrail_decision_report.json",
+      "passed": true,
+      "evidence": {
+        "base_macro_score": 0.5132927021563743,
+        "arm_macro_score": 0.5149723516657055,
+        "macro_absolute_regression": -0.0016796495093311936,
+        "maximum_allowed_macro_regression": 0.01,
+        "macro_passed": true,
+        "suite_passed": true,
+        "passed": true,
+        "tasks": {
+          "hellaswag": {
+            "base_score": 0.49731129257120094,
+            "arm_mean_score": 0.5002655513509925,
+            "absolute_regression": -0.002954258779791552,
+            "maximum_allowed_absolute_regression": 0.02,
+            "passed": true
+          },
+          "arc_challenge": {
+            "base_score": 0.2986348122866894,
+            "arm_mean_score": 0.30659840728100113,
+            "absolute_regression": -0.007963594994311707,
+            "maximum_allowed_absolute_regression": 0.02,
+            "passed": true
+          },
+          "piqa": {
+            "base_score": 0.6936887921653971,
+            "arm_mean_score": 0.6913311570547697,
+            "absolute_regression": 0.002357635110627476,
+            "maximum_allowed_absolute_regression": 0.02,
+            "passed": true
+          },
+          "winogrande": {
+            "base_score": 0.56353591160221,
+            "arm_mean_score": 0.5616942909760589,
+            "absolute_regression": 0.0018416206261510082,
+            "maximum_allowed_absolute_regression": 0.02,
+            "passed": true
+          }
+        }
+      }
+    },
+    "evalplus_development": {
+      "evidence_key": "evalplus_development_retention",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_canonical_guardrail_decision_report.json",
+      "passed": true,
+      "evidence": {
+        "macro_base_pass_rate": 0.1459335624284078,
+        "macro_arm_pass_rate": 0.19644902634593356,
+        "macro_absolute_regression": -0.05051546391752576,
+        "macro_passed": true,
+        "suite_passed": true,
+        "passed": true,
+        "suites": {
+          "HumanEval+": {
+            "base_pass_rate": 0.044444444444444446,
+            "arm_mean_pass_rate": 0.1111111111111111,
+            "absolute_regression": -0.06666666666666665,
+            "passed": true
+          },
+          "MBPP+": {
+            "base_pass_rate": 0.24742268041237114,
+            "arm_mean_pass_rate": 0.281786941580756,
+            "absolute_regression": -0.03436426116838487,
+            "passed": true
+          }
+        }
+      }
+    }
+  },
+  "blockers": [],
+  "utility_scope": "Stage C validation only; never selector objective.",
+  "confirmatory_outcomes_read": false,
+  "claim_boundary": "Target-size development target-code NLL evidence only. General-text, general-task, and EvalPlus guardrails remain required before promotion."
+}

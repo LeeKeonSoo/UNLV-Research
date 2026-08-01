@@ -1,0 +1,20 @@
+{
+  "schema_version": "code-5m-reference-pool-shard-c-v2",
+  "status": "frozen_before_reference_content_fetch",
+  "parent_protocol": "configs/code_5m_corpus_acquisition_v2.json",
+  "purpose": "Materialize an additional immutable, permissively licensed reference shard so corpus composition can meet the predeclared token target. It is unavailable to Stage B.",
+  "seed": 20260719,
+  "maximum_files_per_repository": 600,
+  "maximum_file_bytes": 262144,
+  "allowed_suffixes": [".py"],
+  "exclude_path_parts": [".github", "benchmarks", "build", "dist", "docs", "examples", "scripts", "test", "tests", "vendor", "vendored"],
+  "repositories": [
+    {"repository_identity": "fastapi/fastapi", "expected_license": "MIT", "quality_basis": "Fixed mature public Python project; source tier is audit metadata only."},
+    {"repository_identity": "sqlalchemy/sqlalchemy", "expected_license": "MIT", "quality_basis": "Fixed mature public Python project; source tier is audit metadata only."},
+    {"repository_identity": "Textualize/rich", "expected_license": "MIT", "quality_basis": "Fixed mature public Python project; source tier is audit metadata only."},
+    {"repository_identity": "psf/black", "expected_license": "MIT", "quality_basis": "Fixed mature public Python project; source tier is audit metadata only."}
+  ],
+  "forbidden_uses": ["using this shard as the raw candidate corpus", "using source tier as a Stage-B feature", "using target-model Utility or benchmark outcomes to choose files", "changing Stage-B objective weights based on this shard"],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Reference-source provenance only, not an intrinsic quality score or target-model outcome."
+}

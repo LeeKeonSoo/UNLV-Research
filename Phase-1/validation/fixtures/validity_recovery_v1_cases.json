@@ -1,0 +1,113 @@
+{
+  "schema_version": "validity-recovery-v1-fixtures",
+  "cases": [
+    {
+      "id": "clean_payload_passes",
+      "text": "A complete document contains interpretable payload.",
+      "expected_final_action": "pass",
+      "expected_action_trace": [],
+      "expected_reason_codes": []
+    },
+    {
+      "id": "contextual_cp1252_apostrophe_is_repaired",
+      "text": "The bird\u0092s wing remains visible.",
+      "expected_recovered_text": "The bird\u2019s wing remains visible.",
+      "expected_final_action": "repair",
+      "expected_action_trace": ["repair"],
+      "expected_reason_codes": ["validity_cp1252_punctuation_repaired"]
+    },
+    {
+      "id": "contextual_cp1252_em_dash_is_repaired",
+      "text": "The first result \u0097 the control result \u0097 remains stable.",
+      "expected_recovered_text": "The first result \u2014 the control result \u2014 remains stable.",
+      "expected_final_action": "repair",
+      "expected_action_trace": ["repair"],
+      "expected_reason_codes": ["validity_cp1252_punctuation_repaired"]
+    },
+    {
+      "id": "unknown_control_with_payload_is_quarantined",
+      "text": "A useful statement contains an embedded null\u0000character.",
+      "expected_final_action": "quarantine",
+      "expected_action_trace": ["quarantine"],
+      "expected_reason_codes": ["validity_forbidden_control_character"]
+    },
+    {
+      "id": "no_payload_after_recovery_is_rejected",
+      "text": "\u0000\u0001 \ufffd",
+      "expected_final_action": "reject",
+      "expected_action_trace": ["reject"],
+      "expected_reason_codes": ["validity_payload_absence_after_recovery"]
+    },
+    {
+      "id": "chunk_boundary_fence_is_rechunked",
+      "text": "```text\nA useful payload continues in the source record.",
+      "source_record_text": "```text\nA useful payload continues in the source record.\n```",
+      "expected_final_action": "rechunk",
+      "expected_action_trace": ["rechunk"],
+      "expected_reason_codes": [
+        "validity_dangling_markdown_fence",
+        "validity_chunk_boundary_structural_split"
+      ]
+    },
+    {
+      "id": "dangling_fence_without_clean_source_is_quarantined",
+      "text": "```text\nA useful payload has no closing source context.",
+      "expected_final_action": "quarantine",
+      "expected_action_trace": ["quarantine"],
+      "expected_reason_codes": ["validity_dangling_markdown_fence"]
+    },
+    {
+      "id": "unclosed_latex_in_whole_source_is_quarantined",
+      "text": "\\begin{proof}\nThe claim remains useful but incomplete.",
+      "source_record_text": "\\begin{proof}\nThe claim remains useful but incomplete.",
+      "expected_final_action": "quarantine",
+      "expected_action_trace": ["quarantine"],
+      "expected_reason_codes": ["validity_unclosed_latex_environment"]
+    },
+    {
+      "id": "replacement_burst_is_quarantined",
+      "text": "A useful sentence has damaged bytes \ufffd\ufffd\ufffd in its payload.",
+      "expected_final_action": "quarantine",
+      "expected_action_trace": ["quarantine"],
+      "expected_reason_codes": ["validity_unicode_replacement_burst"]
+    },
+    {
+      "id": "excess_closer_is_not_an_unclosed_structure",
+      "text": "\\end{input}\nA closing construct alone does not prove truncation.",
+      "expected_final_action": "pass",
+      "expected_action_trace": [],
+      "expected_reason_codes": []
+    },
+    {
+      "id": "mathematical_angle_notation_is_preserved",
+      "text": "For every i<j and vector v<R, the relation remains meaningful.",
+      "expected_final_action": "pass",
+      "expected_action_trace": [],
+      "expected_reason_codes": []
+    },
+    {
+      "id": "trailing_delimiter_split_is_rechunked",
+      "text": "A derivation continues here (((",
+      "source_record_text": "A derivation continues here ((( x + y ))).",
+      "expected_final_action": "rechunk",
+      "expected_action_trace": ["rechunk"],
+      "expected_reason_codes": [
+        "validity_trailing_delimiter_damage",
+        "validity_chunk_boundary_structural_split"
+      ]
+    },
+    {
+      "id": "repair_then_rechunk_trace_is_preserved",
+      "text": "The bird\u0092s example starts a fence.\n```text",
+      "source_record_text": "The bird\u0092s example starts a fence.\n```text\npayload\n```",
+      "expected_recovered_text": "The bird\u2019s example starts a fence.\n```text",
+      "expected_final_action": "rechunk",
+      "expected_action_trace": ["repair", "rechunk"],
+      "expected_reason_codes": [
+        "validity_cp1252_punctuation_repaired",
+        "validity_dangling_markdown_fence",
+        "validity_chunk_boundary_structural_split"
+      ]
+    }
+  ]
+}

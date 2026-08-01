@@ -1,0 +1,63 @@
+{
+  "schema_version": "code-rawsafe-7m-natural-budget-execution-qwen3-4b-v1",
+  "status": "frozen_before_development_outcomes",
+  "purpose": "Run three-seed QLoRA continued-pretraining and development-only EvalPlus comparisons from frozen Raw-safe and Curated 7M-code artifacts.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "training_arms": ["raw_safe_natural", "curated_natural"],
+  "primary_comparison": {
+    "treatment": "curated_natural",
+    "primary_baseline": "raw_safe_natural",
+    "comparison_type": "natural_budget"
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps_by_arm": {
+      "raw_safe_natural": 429,
+      "curated_natural": 156
+    },
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "development_training_seeds": [11, 23, 37]
+  },
+  "frozen_inputs": {
+    "materialization_report": "D:\\UNLV-Research\\code_5m_corpus_v2\\external_validation_v1\\code_5m_external_validation_inputs_report.json",
+    "raw_safe_blocks": "D:\\UNLV-Research\\code_5m_corpus_v2\\external_validation_v1\\token_blocks\\raw_safe_natural.pt",
+    "curated_blocks": "D:\\UNLV-Research\\code_5m_corpus_v2\\external_validation_v1\\token_blocks\\curated_natural.pt",
+    "heldout_nll": "outputs/raw_corpus_matrix_stage_c_v1/holdouts/development/stage_a_pass.jsonl"
+  },
+  "heldout_nll": {
+    "frozen_heldout": {
+      "path": "outputs/raw_corpus_matrix_stage_c_v1/holdouts/development/stage_a_pass.jsonl"
+    },
+    "metric": "mean_nll",
+    "direction": "lower_is_better"
+  },
+  "benchmark": {
+    "family": "EvalPlus HumanEval+ and MBPP+",
+    "role": "development_comparative_only"
+  },
+  "stage_b_isolation": {
+    "utility_available_to_stage_b": false,
+    "benchmark_outcomes_available_to_stage_b": false,
+    "development_outcomes_available_to_stage_b": false
+  },
+  "utility_scope": "External validation only; never selector objective",
+  "claim_boundary": "Development-only natural-budget comparison. Benchmark outcomes remain non-confirmatory because a task-hash contamination audit is not yet available for the raw corpus."
+}

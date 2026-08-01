@@ -1,0 +1,18 @@
+{
+  "schema_version": "python-template-family-false-positive-audit-labels-v1",
+  "scope": "Labels describe why current v3 template-family candidates must be retained. They do not label all code or authorize a new rule.",
+  "families": [
+    {"template_sha256": "62e585246059572e41621f02d0658e4f5c73cadaf818be248951638940c51f31", "disposition": "retain", "basis": "public_api_export_structure", "path_prefixes": ["src/transformers/models/"]},
+    {"template_sha256": "bafff799bed5c605ca7eb982c5247980980918f8a4ebd363892373a49d310e12", "disposition": "retain", "basis": "public_api_export_structure", "path_prefixes": ["src/transformers/models/"]},
+    {"template_sha256": "059bb6f2209de24c8a8b4d3f18921a825e9db9c840cb21b124aa643063a222f4", "disposition": "retain", "basis": "public_api_export_structure", "path_prefixes": ["src/transformers/models/"]},
+    {"template_sha256": "090cb41b57463e3ffb3bd71cace1762455a9dbf8c72d53c300f78952f87bf925", "disposition": "retain", "basis": "public_api_export_structure", "path_prefixes": ["src/transformers/models/"]},
+    {"template_sha256": "f108730122e164d966d2916e0ef971ef2ced546783dc1512730ff9e352e6892e", "disposition": "retain", "basis": "public_api_export_structure", "path_prefixes": ["src/transformers/models/"]},
+    {"template_sha256": "307afa7d760fc78b992bbf3b2130f1f19262e9e87d7bfb5c72c49b21928dad47", "disposition": "retain", "basis": "versioned_schema_migration", "path_prefixes": ["locations/migrations/", "djangoProject/api/migrations/", "user/migrations/"]},
+    {"template_sha256": "682019c3d09e81beaaa62f4d3a7ca505db0d0120e97f447e87da24655f3180ae", "disposition": "retain", "basis": "versioned_schema_migration", "path_prefixes": ["twitmining/migrations/", "routes/migrations/", "wtbblog/migrations/"]},
+    {"template_sha256": "958d2f7adc72b7acaf8b8338acb73da5304d08537b7863a436574bde8488e111", "disposition": "retain", "basis": "versioned_schema_migration", "path_prefixes": ["ebirdtaiwan/fall/migrations/", "QRSMS/student_portal/migrations/", "vocabulary/migrations/"]},
+    {"template_sha256": "083708f19ba6e3f43737037466b0b9c9772d6ac8a292ccbb6545a0bee9367acc", "disposition": "retain", "basis": "distinct_model_configuration", "path_prefixes": ["src/transformers/models/deberta/"]},
+    {"template_sha256": "7c45da1e87c3bb1bb25f0abbb129d0d7b93e012df4f47b8997747f3f2963b06a", "disposition": "retain", "basis": "versioned_schema_migration", "path_prefixes": ["apps/classes/migrations/", "src/waldur_mastermind/invoices/migrations/"]},
+    {"template_sha256": "d05818bc4967fe38a9bc654bc87e3f5aca565fc4239a4f0aa1ae3480a3eda7ea", "disposition": "retain", "basis": "distinct_bug_regression_test", "path_prefixes": ["tests/bugs/"]},
+    {"template_sha256": "e3899adf80dfec915541ce411508d771cf69270efb6a86516868766f7bf10711", "disposition": "retain", "basis": "versioned_schema_migration", "path_prefixes": ["students/", "merchex/listings/migrations/"]}
+  ]
+}

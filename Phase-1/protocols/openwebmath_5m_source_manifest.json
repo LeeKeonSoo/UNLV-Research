@@ -1,0 +1,25 @@
+{
+  "source_name": "open-web-math/open-web-math",
+  "source_uri": "https://huggingface.co/datasets/open-web-math/open-web-math",
+  "collected_at": "2026-07-27T00:00:00+09:00",
+  "rights": {
+    "status": "allowed",
+    "license": "ODC-By-1.0"
+  },
+  "pii_context": "general",
+  "language": {
+    "code": "en",
+    "confidence": null
+  },
+  "partition": {
+    "source_dataset": "open-web-math/open-web-math",
+    "source_tier": "declared_math_web",
+    "content_type": "general_text"
+  },
+  "rights_evidence_uri": "https://huggingface.co/datasets/open-web-math/open-web-math",
+  "rights_obligations": [
+    "ODC-By-1.0 attribution obligations",
+    "Common Crawl terms of use"
+  ],
+  "source_scope": "This is a declared-license mathematics web source. It is not labeled raw-like and does not authorize an intrinsic Quality claim."
+}

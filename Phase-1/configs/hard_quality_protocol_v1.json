@@ -1,0 +1,19 @@
+{
+  "schema_version": "hard-quality-protocol-v1",
+  "status": "opt_in_candidate_only_not_runtime_active",
+  "purpose": "Define a model-and-use-case-scoped allocation study without changing the default Weak A-B-C runtime.",
+  "runtime_authorization": "none_candidate_cannot_select_or_remove",
+  "required_user_declaration": ["model_id", "tokenizer_sha256", "training_recipe_fingerprint", "intended_use", "max_training_tokens"],
+  "budget_contract": {
+    "kind": "explicit_user_declared_max_training_tokens",
+    "hidden_retention_fraction": false,
+    "declaration_must_be_frozen_before_selection": true
+  },
+  "requires_mid_estimator_report": "mid-quality-development-report-v1",
+  "eligible_group_rule": "effect_estimate_positive_and_calibrated_upper_confidence_bound_positive",
+  "mid_candidate_remove_rule": "exclude_only_when_calibrated_upper_confidence_bound_is_non_positive",
+  "ranking": "descending_expected_marginal_contribution_per_token_then_group_id",
+  "forbidden_inputs": ["Quality", "Utility", "NLL", "benchmark_outcomes", "source_identity", "domain", "target_retention_fraction"],
+  "activation_requirements": ["validated_mid_estimator", "frozen_user_declaration", "coverage_and_reason_code_audit", "three_corpus_mode_ablation", "confirmatory_evaluation_without_runtime_feedback"],
+  "claim_boundary": "Hard is an opt-in model-and-use-case-specific allocation study. It cannot support a domain-general runtime claim or alter the default Weak profile."
+}

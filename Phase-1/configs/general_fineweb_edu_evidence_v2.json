@@ -1,0 +1,22 @@
+{
+  "schema_version": "general-scalar-provider-audit-config-v2",
+  "provider": {
+    "provider_id": "HuggingFaceFW/fineweb-edu-classifier",
+    "revision": "284663cbb2dabf9bda30d8f8cc49601251ee1631",
+    "evidence_head": "route_specific_evidence",
+    "claim_semantics": "Llama3_annotated_educational_value_for_English_FineWeb_pages"
+  },
+  "lower_quantiles": [0.0, 0.0025, 0.005, 0.01, 0.02, 0.05],
+  "confidence_level": 0.95,
+  "normal_false_reject_wilson_upper_bound": 0.01,
+  "hard_false_reject_wilson_upper_bound": 0.05,
+  "stress_wilson_upper_bound": 0.05,
+  "outputs": {
+    "clean_controls": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+    "stress_fixtures": "D:/UNLV-Research/positive_quality_v2/general/stress_fixtures_v2.jsonl",
+    "clean_scores": "D:/UNLV-Research/positive_quality_v2/general/fineweb_edu_clean_scores_v2.jsonl",
+    "stress_scores": "D:/UNLV-Research/positive_quality_v2/general/fineweb_edu_stress_scores_v2.jsonl",
+    "audit_report": "D:/UNLV-Research/positive_quality_v2/general/fineweb_edu_general_audit_v2.json"
+  },
+  "runtime_activation": false
+}

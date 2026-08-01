@@ -1,0 +1,29 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "purpose": "Exercise source-declared Git attribute metadata through the active A-B-C runtime without treating it as intrinsic Quality or an automatic removal signal.",
+  "input": {
+    "sources": [
+      {
+        "path": "D:/UNLV-Research/source_metadata_stress/wgpu_git_attribute_raw.jsonl",
+        "text_fields": ["text"],
+        "defaults": {"pii_context": "repository_code"},
+        "metadata_capabilities": {
+          "partition.path": {"availability": "provided"},
+          "partition.repository_identity": {"availability": "provided"},
+          "artifact_context.generation": {"availability": "provided_by_git_check_attr", "attribute": "linguist-generated", "inference": "forbidden"},
+          "artifact_context.dependency_copy": {"availability": "not_provided_by_upstream", "inference": "forbidden"}
+        }
+      }
+    ]
+  },
+  "output_dir": "D:/UNLV-Research/source_metadata_stress/abc_curation_wgpu_git_attribute_v1",
+  "stage_b": {"minimum_chunk_chars": 40, "max_chunk_chars": 6000},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true},
+    "coverage_guard": {"strata": ["language_code", "content_type"]}
+  },
+  "stage_c": {"no_binding_budget_action": "materialize_reason_coded_survivors"},
+  "claim_boundary": "This is a controlled metadata stress replay. artifact_context.generation alone is not a removal reason; any removal must still have an active Stage C reason code. No intrinsic Quality, Utility, or benchmark claim is made."
+}

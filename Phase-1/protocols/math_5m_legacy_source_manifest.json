@@ -1,0 +1,20 @@
+{
+  "source_name": "brando/small-open-web-math-dataset-v2",
+  "source_uri": "https://huggingface.co/datasets/brando/small-open-web-math-dataset-v2",
+  "collected_at": "2026-07-22T14:50:00+09:00",
+  "rights": {
+    "status": "unknown",
+    "license": null
+  },
+  "pii_context": "general",
+  "language": {
+    "code": "en",
+    "confidence": null
+  },
+  "partition": {
+    "source_tier": "raw_like",
+    "content_type": "general_text"
+  },
+  "rights_evidence": "The upstream dataset card was inspected on 2026-07-27 and does not declare a reusable dataset license. This manifest intentionally does not promote rights to allowed.",
+  "provenance_evidence": "The legacy collection stdout reports dataset_id, train split, 5,000,112 token proxy, and 4,292 records; the collection artifact timestamp supplies the reconstructed collected_at value."
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "coverage-taxonomy-fixtures-v1",
+  "cases": [
+    {
+      "id": "code_and_math_multilabel",
+      "text": "def integrate(values):\n    return sum(values)\n\nThe theorem proves that the integral equals the stated equation.",
+      "expected": {
+        "semantic_domain": ["code", "math"],
+        "format_genre": ["source_code", "formula"],
+        "content_morphology": ["implementation"]
+      }
+    },
+    {
+      "id": "korean_medical_explanation",
+      "text": "환자는 발열과 기침 증상을 보였다. 진단 결과 감염성 질환으로 확인되었으며, 치료 과정과 약물 반응을 설명한다.",
+      "expected": {
+        "semantic_domain": ["medicine"],
+        "language_script": ["hangul"],
+        "format_genre": ["prose"],
+        "content_morphology": ["explanation"]
+      }
+    },
+    {
+      "id": "dialogue_question_answer",
+      "text": "Question: Why does ice float?\nAnswer: Ice is less dense than liquid water.\nTeacher: Density changes because the crystal structure expands.",
+      "expected": {
+        "semantic_domain": ["science"],
+        "language_script": ["latin"],
+        "format_genre": ["dialogue", "question_answer"],
+        "content_morphology": ["explanation"]
+      }
+    },
+    {
+      "id": "unsupported_symbol_fragment",
+      "text": "@@@ ### 12345 === ???",
+      "expected_unknown_axes": [
+        "semantic_domain",
+        "language_script",
+        "format_genre",
+        "content_morphology"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "schema_version": "paper-multidomain-benchmark-protocol-v1",
+  "status": "frozen_design_no_training_outcomes",
+  "purpose": "Define the next evidence tier for reviewer-facing validation beyond the current code-domain NLL result.",
+  "claim_boundary": {
+    "current_paper_claim": "A curation-stage framework can be specified, implemented, and validated in a code-domain equal-token setting.",
+    "expanded_claim_requires": "At least one non-code domain and one external benchmark family must complete the same raw-versus-curated comparison without guardrail regression.",
+    "forbidden_claim_until_completed": "The framework generally improves all LM training corpora."
+  },
+  "core_external_validity_contract": "configs/core_external_validity_benchmark_contract_v1.json",
+  "novelty_hypothesis": [
+    "The framework separates record disposition, budget allocation, and downstream validation instead of collapsing them into a single quality score.",
+    "Utility is treated as a Stage-C outcome and is forbidden from Stage-B selector objectives.",
+    "Retain-all, reject, abstain, and budget-select are all valid policy outcomes, so curation is not assumed to mean forced removal."
+  ],
+  "candidate_pool_design": {
+    "pool_types": [
+      {
+        "name": "raw_mixed",
+        "description": "Collected corpus that intentionally mixes useful records, duplicates, malformed records, generated files, benchmark-risk records, and low-information fragments."
+      },
+      {
+        "name": "known_high_quality_reference",
+        "description": "Domain-specific reference pool used as context, not as an oracle or selector label."
+      },
+      {
+        "name": "stage0_stageA_retained",
+        "description": "Records that survive risk quarantine and hard gates before optional budgeted selection."
+      },
+      {
+        "name": "curated_stageB",
+        "description": "Budget-selected subset produced by the frozen Stage-B policy when the token budget binds."
+      }
+    ],
+    "required_size_accounting": [
+      "raw_record_count",
+      "raw_chunk_count",
+      "raw_token_proxy",
+      "stage0_quarantined_record_count",
+      "stageA_pass_chunk_count",
+      "stageA_pass_token_proxy",
+      "stageB_selected_chunk_count",
+      "stageB_selected_token_proxy",
+      "retained_fraction_by_record",
+      "retained_fraction_by_token",
+      "training_payload_sha256"
+    ]
+  },
+  "training_arms": [
+    "base_no_update",
+    "raw_random_equal_token",
+    "stageA_random_equal_token",
+    "curated_stageB_equal_token",
+    "known_high_quality_reference_equal_token"
+  ],
+  "supporting_natural_budget_arms": [
+    "raw_all_natural_budget",
+    "curated_stageB_natural_budget"
+  ],
+  "domains": [
+    {
+      "domain": "code",
+      "raw_sources": [
+        "recent GitHub repository files",
+        "issues and pull-request linked code changes",
+        "project documentation and tests"
+      ],
+      "known_high_quality_reference_sources": [
+        "well-maintained Python repositories",
+        "curated executable benchmark-style tasks"
+      ],
+      "primary_stage_c_metrics": [
+        "held-out code NLL",
+        "SWE-bench Lite or SWE-bench Verified resolved-rate when compute allows"
+      ],
+      "guardrails": [
+        "EvalPlus pass-rate non-inferiority",
+        "general-text NLL retention",
+        "general-task retention"
+      ],
+      "external_benchmark_status": "high_cost_confirmatory"
+    },
+    {
+      "domain": "math",
+      "raw_sources": [
+        "raw math problem/solution pages",
+        "mixed educational derivations",
+        "synthetic or scraped worked examples after Stage-0 quarantine"
+      ],
+      "known_high_quality_reference_sources": [
+        "curated math instruction datasets",
+        "verified solution-format examples"
+      ],
+      "primary_stage_c_metrics": [
+        "held-out math NLL",
+        "GSM8K accuracy",
+        "MATH accuracy"
+      ],
+      "guardrails": [
+        "general-text NLL retention",
+        "format-following retention"
+      ],
+      "external_benchmark_status": "medium_cost_confirmatory"
+    },
+    {
+      "domain": "general_text_instruction",
+      "raw_sources": [
+        "raw web/document corpus",
+        "mixed instruction-style records",
+        "domain documentation and explanatory text"
+      ],
+      "known_high_quality_reference_sources": [
+        "FineWeb-Edu-style educational text",
+        "curated instruction records"
+      ],
+      "primary_stage_c_metrics": [
+        "held-out general-text NLL",
+        "instruction-following win-rate or rubric score when available"
+      ],
+      "guardrails": [
+        "code NLL retention",
+        "toxicity and PII quarantine audit"
+      ],
+      "external_benchmark_status": "development_first"
+    }
+  ],
+  "success_rules": {
+    "within_domain": [
+      "curated_stageB_equal_token must beat stageA_random_equal_token on the domain primary metric by a frozen practical margin",
+      "curated_stageB_equal_token must not regress required guardrails beyond frozen non-inferiority margins",
+      "raw_random_equal_token and known_high_quality_reference_equal_token are reported as context, not tuned against",
+      "curated_stageB_natural_budget must be compared with raw_all_natural_budget to report the practical training-cost and retained-performance tradeoff"
+    ],
+    "cross_domain": [
+      "If only code passes, claim remains code-domain bounded.",
+      "If code plus one non-code domain pass, claim may expand to multi-domain evidence.",
+      "If a high-quality raw corpus is not reduced, retain-all is reported as a correct framework outcome rather than a failure."
+    ]
+  },
+  "forbidden_uses": [
+    "using SWE-bench, GSM8K, MATH, NLL, or any benchmark outcome inside Stage-B selector objectives",
+    "changing Stage-B policy after seeing Stage-C benchmark outcomes",
+    "claiming intrinsic semantic quality from proxy metrics",
+    "using natural-budget results alone to attribute an effect specifically to Stage-B selection without equal-token training budgets for the control arms",
+    "using equal-token results alone to claim end-to-end training-cost savings",
+    "omitting pre/post curation record, chunk, and token counts"
+  ],
+  "paper_reporting_requirements": [
+    "dataset composition table with raw, Stage-0, Stage-A, and Stage-B sizes",
+    "equal-token training arm table",
+    "benchmark table for base, raw, Stage-A random, curated, and reference arms",
+    "coverage and redundancy shift figure",
+    "failure-case table for retain-all, abstain, and rejected-corpus outcomes"
+  ]
+}

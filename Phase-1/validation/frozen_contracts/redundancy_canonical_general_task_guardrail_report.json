@@ -1,0 +1,207 @@
+{
+  "schema_version": "code-domain-general-task-guardrail-report-v1",
+  "status": "general_task_guardrail_passed",
+  "source_sha256": {
+    "configs\\temporal_code_redundancy_canonical_guardrails_qwen25_0p5b_v1.json": "d8f454e119549142ae6377be27ed3aa68af94f612d0b81a322ecd1f8d9110cb3",
+    "outputs\\temporal_code_collection\\temporal_code_retention_guardrail_plan.json": "218bd6ab67345fb432b27e57a11d4d554138c2169bfac999baec4adc18cf3a16",
+    "outputs\\redundancy_saturation_proxy_qwen25_0p5b_v1\\general_task_guardrail\\lm_eval\\base_no_update_base_full.json": "963a6460f262068387971630acd23e9b0dcf85845ec4e23670fcaa7328659bc6",
+    "outputs\\redundancy_saturation_proxy_qwen25_0p5b_v1\\general_task_guardrail\\lm_eval\\binary_current_equal_budget_seed11_full.json": "29da5eb98b7f2321aaf6a0275ba5a2e8c1e358488c7aad2177b85ce4678bf7c9",
+    "outputs\\redundancy_saturation_proxy_qwen25_0p5b_v1\\general_task_guardrail\\lm_eval\\binary_current_equal_budget_seed23_full.json": "335f1d13506de52b0fb91c1dd15215c81c35e8fd752693317dc34bb198f44c2c",
+    "outputs\\redundancy_saturation_proxy_qwen25_0p5b_v1\\general_task_guardrail\\lm_eval\\binary_current_equal_budget_seed37_full.json": "a8449d163498225c82fda47fc0fea02a417d40522e5eaa175ac30ef941453fd3"
+  },
+  "retention_contract": {
+    "suites": [
+      "HellaSwag",
+      "ARC-Challenge",
+      "PIQA",
+      "WinoGrande"
+    ],
+    "metric": "accuracy",
+    "maximum_allowed_absolute_regression_per_suite": 0.02,
+    "maximum_allowed_absolute_regression_macro": 0.01
+  },
+  "primary_metric_policy": {
+    "hellaswag": "lm-eval canonical normalized accuracy",
+    "arc_challenge": "lm-eval canonical normalized accuracy",
+    "piqa": "lm-eval raw accuracy",
+    "winogrande": "lm-eval raw accuracy",
+    "metric_keys": {
+      "hellaswag": "acc_norm,none",
+      "arc_challenge": "acc_norm,none",
+      "piqa": "acc,none",
+      "winogrande": "acc,none"
+    },
+    "diagnostic_accuracy_metrics_retained": true
+  },
+  "base_no_update": {
+    "task_scores": {
+      "hellaswag": 0.49731129257120094,
+      "arc_challenge": 0.2986348122866894,
+      "piqa": 0.6936887921653971,
+      "winogrande": 0.56353591160221
+    },
+    "diagnostic_metrics": {
+      "hellaswag": {
+        "acc,none": 0.3879705238000398,
+        "acc_norm,none": 0.49731129257120094
+      },
+      "arc_challenge": {
+        "acc,none": 0.2764505119453925,
+        "acc_norm,none": 0.2986348122866894
+      },
+      "piqa": {
+        "acc,none": 0.6936887921653971,
+        "acc_norm,none": 0.6866158868335147
+      },
+      "winogrande": {
+        "acc,none": 0.56353591160221
+      }
+    },
+    "macro_score": 0.5132927021563743
+  },
+  "arm_summaries": {
+    "binary_current_equal_budget": {
+      "tasks": {
+        "hellaswag": {
+          "primary_metric": "acc_norm,none",
+          "mean_score": 0.5002655513509925,
+          "sample_std_score": 0.0005012171835139533,
+          "per_seed_score": {
+            "11": 0.5001991635132443,
+            "23": 0.5007966540529775,
+            "37": 0.4998008364867556
+          },
+          "diagnostic_metrics_by_seed": {
+            "11": {
+              "acc,none": 0.3915554670384386,
+              "acc_norm,none": 0.5001991635132443
+            },
+            "23": {
+              "acc,none": 0.3920533758215495,
+              "acc_norm,none": 0.5007966540529775
+            },
+            "37": {
+              "acc,none": 0.39095797649870545,
+              "acc_norm,none": 0.4998008364867556
+            }
+          }
+        },
+        "arc_challenge": {
+          "primary_metric": "acc_norm,none",
+          "mean_score": 0.30659840728100113,
+          "sample_std_score": 0.001776165528554725,
+          "per_seed_score": {
+            "11": 0.30802047781569963,
+            "23": 0.30716723549488056,
+            "37": 0.3046075085324232
+          },
+          "diagnostic_metrics_by_seed": {
+            "11": {
+              "acc,none": 0.2815699658703072,
+              "acc_norm,none": 0.30802047781569963
+            },
+            "23": {
+              "acc,none": 0.28242320819112626,
+              "acc_norm,none": 0.30716723549488056
+            },
+            "37": {
+              "acc,none": 0.28242320819112626,
+              "acc_norm,none": 0.3046075085324232
+            }
+          }
+        },
+        "piqa": {
+          "primary_metric": "acc,none",
+          "mean_score": 0.6913311570547697,
+          "sample_std_score": 0.0017489392022112952,
+          "per_seed_score": {
+            "11": 0.6893362350380848,
+            "23": 0.6920565832426551,
+            "37": 0.6926006528835691
+          },
+          "diagnostic_metrics_by_seed": {
+            "11": {
+              "acc,none": 0.6893362350380848,
+              "acc_norm,none": 0.6887921653971708
+            },
+            "23": {
+              "acc,none": 0.6920565832426551,
+              "acc_norm,none": 0.6887921653971708
+            },
+            "37": {
+              "acc,none": 0.6926006528835691,
+              "acc_norm,none": 0.6931447225244831
+            }
+          }
+        },
+        "winogrande": {
+          "primary_metric": "acc,none",
+          "mean_score": 0.5616942909760589,
+          "sample_std_score": 0.003729925514011502,
+          "per_seed_score": {
+            "11": 0.5588003157063931,
+            "23": 0.5603788476716653,
+            "37": 0.5659037095501184
+          },
+          "diagnostic_metrics_by_seed": {
+            "11": {
+              "acc,none": 0.5588003157063931
+            },
+            "23": {
+              "acc,none": 0.5603788476716653
+            },
+            "37": {
+              "acc,none": 0.5659037095501184
+            }
+          }
+        }
+      },
+      "macro_score": 0.5149723516657055
+    }
+  },
+  "comparisons_vs_base": {
+    "binary_current_equal_budget": {
+      "base_macro_score": 0.5132927021563743,
+      "arm_macro_score": 0.5149723516657055,
+      "macro_absolute_regression": -0.0016796495093311936,
+      "maximum_allowed_macro_regression": 0.01,
+      "macro_passed": true,
+      "suite_passed": true,
+      "passed": true,
+      "tasks": {
+        "hellaswag": {
+          "base_score": 0.49731129257120094,
+          "arm_mean_score": 0.5002655513509925,
+          "absolute_regression": -0.002954258779791552,
+          "maximum_allowed_absolute_regression": 0.02,
+          "passed": true
+        },
+        "arc_challenge": {
+          "base_score": 0.2986348122866894,
+          "arm_mean_score": 0.30659840728100113,
+          "absolute_regression": -0.007963594994311707,
+          "maximum_allowed_absolute_regression": 0.02,
+          "passed": true
+        },
+        "piqa": {
+          "base_score": 0.6936887921653971,
+          "arm_mean_score": 0.6913311570547697,
+          "absolute_regression": 0.002357635110627476,
+          "maximum_allowed_absolute_regression": 0.02,
+          "passed": true
+        },
+        "winogrande": {
+          "base_score": 0.56353591160221,
+          "arm_mean_score": 0.5616942909760589,
+          "absolute_regression": 0.0018416206261510082,
+          "maximum_allowed_absolute_regression": 0.02,
+          "passed": true
+        }
+      }
+    }
+  },
+  "blockers": [],
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "General-task retention guardrail only; Stage C evidence, never selector objective."
+}

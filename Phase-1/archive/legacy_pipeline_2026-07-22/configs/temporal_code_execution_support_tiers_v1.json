@@ -1,0 +1,35 @@
+{
+  "schema_version": "temporal-code-execution-support-tiers-v1",
+  "status": "frozen_after_repository_disjoint_development_transfer_before_stage_c_development",
+  "purpose": "Separate training-content eligibility from executable-task eligibility so repository execution support cannot silently become a curation gate.",
+  "orthogonal_axes": {
+    "training_content": {
+      "C0": "not training-content eligible",
+      "C1": "passes license, content, provenance, split, hazard, generated-file, and benchmark-quarantine gates"
+    },
+    "execution_support": {
+      "E0": "no frozen isolated execution candidate",
+      "E1": "frozen isolated execution candidate attempted but task-class-specific reproducibility verification not established",
+      "E2": "the frozen isolated execution protocol passes the task-class-specific reproducibility contract"
+    }
+  },
+  "task_class_e2_contracts": {
+    "repository_patch": "the same frozen isolated command passes on both parent and merge commits",
+    "function_generation": "the frozen isolated evaluator, dependency image, public tests, and hidden tests pass on the reference solution and the evaluator rejects at least one frozen negative control",
+    "other": "requires a separately frozen task-class-specific reproducibility contract before Stage-C entry"
+  },
+  "stage_entry_rules": {
+    "stage_0_training_content": "requires C1; execution tier is irrelevant",
+    "executable_stage_c_task": "requires E2; training-content tier is irrelevant",
+    "stage_b_selector": "must not use execution tier",
+    "utility": "Stage C validation only; never selector objective"
+  },
+  "decision_rules": [
+    "C1/E0 and C1/E1 records may remain training-data candidates but cannot become executable Stage-C tasks",
+    "C0/E2 bundles may support executable evaluation but cannot enter training",
+    "execution failure cannot imply Stage-B, curation, or Utility failure",
+    "executable-task acquisition may use a separately prevalidated task harness"
+  ],
+  "human_or_llm_review": "optional diagnostic only; never ground truth, tuning signal, or entry gate",
+  "claim_boundary": "Execution-support taxonomy only; no Utility, curation-benefit, or release claim."
+}

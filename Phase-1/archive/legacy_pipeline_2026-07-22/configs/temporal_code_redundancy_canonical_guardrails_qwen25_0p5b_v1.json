@@ -1,0 +1,260 @@
+{
+  "schema_version": "temporal-code-redundancy-canonical-guardrails-v1",
+  "status": "frozen_before_canonical_guardrail_outcomes",
+  "purpose": "Evaluate the canonical binary recurrence selector path against base_no_update on frozen Stage-C general-task and EvalPlus development guardrails.",
+  "source_sha256": {
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_experiment_qwen25_0p5b_v1.json": "6691597b97b603a745f9232a1b5f06b8a872c9fe12c88cc54297d6a30c818f40",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_evaluation_inputs_v1.json": "14e35e20c5aae1f3c95dd02758a446385147d6cfad0ead566149ccef0d705dab",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_proxy_decision_report.json": "03ee6342ed8b424e1ad0fcbc77f934bbe896ac7e1876d18b3c2dce2838878b9d"
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen2.5-0.5B",
+    "tokenizer_id": "Qwen/Qwen2.5-0.5B",
+    "revision": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "parameter_count": 490000000,
+    "snapshot_path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen2.5-0.5B\\snapshots\\060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "snapshot_artifacts": {
+      "config.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen2.5-0.5B\\snapshots\\060db6499f32faf8b98477b0a26969ef7d8b9987\\config.json",
+        "sha256": "479dcf0c5286339e41ad3992cd08ae88a467c4187587936248e2b7c96283484b"
+      },
+      "tokenizer.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen2.5-0.5B\\snapshots\\060db6499f32faf8b98477b0a26969ef7d8b9987\\tokenizer.json",
+        "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+      },
+      "model.safetensors": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen2.5-0.5B\\snapshots\\060db6499f32faf8b98477b0a26969ef7d8b9987\\model.safetensors",
+        "sha256": "88c142557820ccad55bb59756bfcfcf891de9cc6202816bd346445188a0ed342"
+      }
+    },
+    "local_files_only": true
+  },
+  "training_arms": [
+    "binary_current_equal_budget"
+  ],
+  "excluded_arms": {
+    "log_count_equal_budget": "candidate promotion is futile after the frozen directional non-worse failure",
+    "stageA_random_common_disjoint_equal_budget": "operational target-NLL baseline, not a release candidate requiring retention certification"
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 40,
+    "effective_sequences_per_step": 8,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "same_seed_set_for_every_arm": true,
+    "shuffle_training_blocks_per_seed": true,
+    "development_training_seeds": [
+      11,
+      23,
+      37
+    ]
+  },
+  "external_code_guardrails": {
+    "maximum_allowed_absolute_regression_per_suite": 0.02,
+    "maximum_allowed_absolute_regression_macro_vs_base": 0.02
+  },
+  "general_task_guardrail": {
+    "harness": "lm-evaluation-harness",
+    "version": "0.4.12",
+    "tasks": {
+      "hellaswag": {
+        "task_implementation": [
+          {
+            "path": "C:\\Users\\ksl11\\miniconda3\\envs\\research\\Lib\\site-packages\\lm_eval\\tasks\\hellaswag\\hellaswag.yaml",
+            "sha256": "e9ef8ac3fed02bf283777d946ae76cbf906152e9c92533c9794e5a9dad78d1cf",
+            "bytes": 480
+          },
+          {
+            "path": "C:\\Users\\ksl11\\miniconda3\\envs\\research\\Lib\\site-packages\\lm_eval\\tasks\\hellaswag\\utils.py",
+            "sha256": "07d23b60b28f2a4f658dcf8440623a63fe6644854ce9b846a114dde980dc1214",
+            "bytes": 717
+          }
+        ],
+        "dataset_cache_root": "D:\\UNLV-Research\\hf_cache\\datasets\\Rowan___hellaswag\\default\\0.0.0\\218ec52e09a7e7462a5400043bb9a69a41d06b76",
+        "dataset_info": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\Rowan___hellaswag\\default\\0.0.0\\218ec52e09a7e7462a5400043bb9a69a41d06b76\\dataset_info.json",
+          "sha256": "9ec51dfb1fc90f94ec95e0c924880717bf2309fdc57d26640cbbf59d97b5a8e5",
+          "bytes": 1653
+        },
+        "validation_split": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\Rowan___hellaswag\\default\\0.0.0\\218ec52e09a7e7462a5400043bb9a69a41d06b76\\hellaswag-validation.arrow",
+          "sha256": "5d21a8cf3f95280f2916128ed480c6b518a11aacb18b1ea200eefd8c0b92c16b",
+          "bytes": 11186432
+        },
+        "validation_examples": 10042
+      },
+      "arc_challenge": {
+        "task_implementation": [
+          {
+            "path": "C:\\Users\\ksl11\\miniconda3\\envs\\research\\Lib\\site-packages\\lm_eval\\tasks\\arc\\arc_challenge.yaml",
+            "sha256": "682621c26ae24b1065a2d732460a55a8ef2b9f2544574431666c9309a9efd7bd",
+            "bytes": 71
+          },
+          {
+            "path": "C:\\Users\\ksl11\\miniconda3\\envs\\research\\Lib\\site-packages\\lm_eval\\tasks\\arc\\arc_easy.yaml",
+            "sha256": "96da1d9efe1df88659481cedc13985cb347dc068554a2eae561303fa39bfab3f",
+            "bytes": 579
+          }
+        ],
+        "dataset_cache_root": "D:\\UNLV-Research\\hf_cache\\datasets\\allenai___ai2_arc\\ARC-Challenge\\0.0.0\\210d026faf9955653af8916fad021475a3f00453",
+        "dataset_info": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\allenai___ai2_arc\\ARC-Challenge\\0.0.0\\210d026faf9955653af8916fad021475a3f00453\\dataset_info.json",
+          "sha256": "5319b440c470177b130ec8ac8f5d2dce9abc5842108b002e3b61fedf0498d5ba",
+          "bytes": 1417
+        },
+        "validation_split": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\allenai___ai2_arc\\ARC-Challenge\\0.0.0\\210d026faf9955653af8916fad021475a3f00453\\ai2_arc-validation.arrow",
+          "sha256": "4cf59b321066b627168d8a7b4c0ddeb5c29b5db6a8083056871baa943d5b0c90",
+          "bytes": 98080
+        },
+        "validation_examples": 299
+      },
+      "piqa": {
+        "task_implementation": [
+          {
+            "path": "C:\\Users\\ksl11\\miniconda3\\envs\\research\\Lib\\site-packages\\lm_eval\\tasks\\piqa\\piqa.yaml",
+            "sha256": "e874f7956ccac325b888d4a5dc600bad867b79fba2bd358fe8761ab8263270fb",
+            "bytes": 485
+          }
+        ],
+        "dataset_cache_root": "D:\\UNLV-Research\\hf_cache\\datasets\\baber___piqa\\default\\0.0.0\\142f6d7367fd9877f0fb3b5734ea6a545f54cdd1",
+        "dataset_info": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\baber___piqa\\default\\0.0.0\\142f6d7367fd9877f0fb3b5734ea6a545f54cdd1\\dataset_info.json",
+          "sha256": "9e09601e47c01719ff0388a5061f376986742d0e5f52dee4333d427c7624aa94",
+          "bytes": 1226
+        },
+        "validation_split": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\baber___piqa\\default\\0.0.0\\142f6d7367fd9877f0fb3b5734ea6a545f54cdd1\\piqa-validation.arrow",
+          "sha256": "6e14731c78016adc6a5738d661111f5cb4c6bce461c454561eb66be4abc39222",
+          "bytes": 465608
+        },
+        "validation_examples": 1838
+      },
+      "winogrande": {
+        "task_implementation": [
+          {
+            "path": "C:\\Users\\ksl11\\miniconda3\\envs\\research\\Lib\\site-packages\\lm_eval\\tasks\\winogrande\\default.yaml",
+            "sha256": "7a73c28f1c760f1f54b4185f21f8df5927c1fe7278a8520f38ee03cc7f40d9e7",
+            "bytes": 506
+          },
+          {
+            "path": "C:\\Users\\ksl11\\miniconda3\\envs\\research\\Lib\\site-packages\\lm_eval\\tasks\\winogrande\\preprocess_winogrande.py",
+            "sha256": "e55327629264a98f1d383fda24645b6779afb53fa0bce2150042b9416b1ae006",
+            "bytes": 377
+          }
+        ],
+        "dataset_cache_root": "D:\\UNLV-Research\\hf_cache\\datasets\\allenai___winogrande\\winogrande_xl\\0.0.0\\01e74176c63542e6b0bcb004dcdea22d94fb67b5",
+        "dataset_info": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\allenai___winogrande\\winogrande_xl\\0.0.0\\01e74176c63542e6b0bcb004dcdea22d94fb67b5\\dataset_info.json",
+          "sha256": "faeb9162c1c286eb49b20915eb9cd95a1a5a170f949aa9317d583e1c1f2672a6",
+          "bytes": 1355
+        },
+        "validation_split": {
+          "path": "D:\\UNLV-Research\\hf_cache\\datasets\\allenai___winogrande\\winogrande_xl\\0.0.0\\01e74176c63542e6b0bcb004dcdea22d94fb67b5\\winogrande-validation.arrow",
+          "sha256": "992af8404b202ada4356228ed2ebb27f10495126efdf78678ced33e94e82b830",
+          "bytes": 165504
+        },
+        "validation_examples": 1267
+      }
+    },
+    "num_fewshot": 0,
+    "limit": null,
+    "batch_size": "auto",
+    "primary_metric": "accuracy",
+    "maximum_allowed_absolute_regression_per_suite": 0.02,
+    "maximum_allowed_absolute_regression_macro": 0.01
+  },
+  "evalplus_guardrail": {
+    "package": "evalplus",
+    "version": "0.3.1",
+    "development_task_count": 284,
+    "suite_counts": {
+      "HumanEval+": 90,
+      "MBPP+": 194
+    },
+    "development_task_id_order_sha256": "a0d6dcebf032a36c55ddd2fc0c31c5d39c0e9c10679989d02905dd66d99d5b78",
+    "split_plan": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\evalplus_guardrail_split_plan.json",
+      "sha256": "b17cdd13669f2628d2fb02f05739fe431da641b012c747990c19145acf5af920",
+      "bytes": 79853
+    },
+    "prevalidation": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\validation\\temporal_code_evalplus_guardrail_prevalidation.json",
+      "sha256": "b6832ad5f59c20daf44237480c6263dfeef6a41c7a4ca6502aee832e6c0944d5",
+      "bytes": 4227
+    },
+    "execution_support_tier": "E2",
+    "isolated_image_tag": "unlv-evalplus-prevalidation:0.3.1",
+    "isolated_image_id": "sha256:accf5f5c607dd141b0af13fc390449d23336ffb61acf4edb7cf3ccbc6e1e3dcf",
+    "dataset_cache": {
+      "HumanEval+": {
+        "path": "C:\\Users\\ksl11\\AppData\\Local\\evalplus\\evalplus\\Cache\\HumanEvalPlus-v0.1.10.jsonl",
+        "sha256": "b6ed6a3a7e560bad75038eb9e72029ace2d26592e04b3f0596b4b75a55529465",
+        "bytes": 7714830
+      },
+      "MBPP+": {
+        "path": "C:\\Users\\ksl11\\AppData\\Local\\evalplus\\evalplus\\Cache\\MbppPlus-v0.2.0.jsonl",
+        "sha256": "ee1701c904eb306523280b5a38a661d13248d16dd92d2e4fe2de36b519d3c413",
+        "bytes": 2592747
+      }
+    },
+    "temperature": 0,
+    "samples_per_task": 1,
+    "metric": "pass_at_1",
+    "maximum_allowed_absolute_regression_per_suite": 0.02,
+    "maximum_allowed_absolute_regression_macro": 0.02,
+    "task_content_training_authorized": false
+  },
+  "required_jobs": {
+    "general_task": {
+      "base_evaluated_once": true,
+      "trained_arm_seed_jobs": 3,
+      "tasks_per_job": 4
+    },
+    "evalplus_development": {
+      "base_evaluated_once": true,
+      "trained_arm_seed_jobs": 3,
+      "tasks_per_job": 284,
+      "suites": [
+        "HumanEval+",
+        "MBPP+"
+      ],
+      "isolated_execution_support_tier": "E2"
+    }
+  },
+  "decision_rule": {
+    "reference_arm": "base_no_update",
+    "all_guardrails_mandatory": true,
+    "missing_evidence_action": "abstain",
+    "failed_guardrail_action": "reject_canonical_release",
+    "development_evidence_cannot_be_called_confirmatory": true
+  },
+  "forbidden_uses": [
+    "feeding guardrail outcomes into Stage-B selection",
+    "running further log_count guardrails after the frozen futility boundary",
+    "changing tasks, margins, seeds, or model snapshot after outcomes",
+    "calling development EvalPlus evidence confirmatory"
+  ],
+  "confirmatory_outcomes_read": false,
+  "blockers": [],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Canonical Qwen2.5-0.5B development guardrail execution contract only. Passing does not by itself establish production release or cross-model generality."
+}

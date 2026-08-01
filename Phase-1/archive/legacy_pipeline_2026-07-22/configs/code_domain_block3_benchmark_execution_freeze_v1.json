@@ -1,0 +1,108 @@
+{
+  "schema_version": "code-domain-block3-benchmark-execution-freeze-v1",
+  "status": "block3_code_benchmark_execution_frozen",
+  "decision": "run_lightweight_evalplus_generation_first_swebench_after_feasibility_gate",
+  "purpose": "Freeze the code-domain benchmark execution order before adding reviewer-facing Stage-C benchmark outcomes.",
+  "claim_boundary": {
+    "current_supported_claim": "Code-domain equal-token curation has completed payload readiness and held-out NLL validation.",
+    "block3_additional_claim_if_passed": "Curated code-domain fine-tuning transfers to lightweight code-generation benchmarks without required retention guardrail regression.",
+    "forbidden_claim_until_swebench_and_noncode_pass": "The framework is generally validated for agentic software engineering or non-code LM training corpora."
+  },
+  "utility_scope": "All benchmark outcomes are Stage-C validation evidence only and are forbidden from Stage-B selector objectives.",
+  "readiness_source": "outputs/validation/raw_vs_curated_benchmark_readiness_report.json",
+  "training_contract": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "training_arms": [
+      "base_no_update",
+      "raw_random_equal_budget",
+      "stageA_random_equal_budget",
+      "curated_v2_equal_budget",
+      "known_high_quality_equal_budget"
+    ],
+    "common_packed_token_budget": 325632,
+    "training_token_budget_cap": 327222,
+    "same_training_recipe_and_seed_set_required": true
+  },
+  "benchmark_tiers": [
+    {
+      "tier": "tier0_completed_stage_c_support",
+      "execution_decision": "already_available_supporting_evidence",
+      "benchmarks": [
+        "held-out code NLL",
+        "EvalPlus confirmatory guardrail",
+        "general-text retention guardrail",
+        "general-task retention guardrail"
+      ],
+      "source_reports": [
+        "outputs/validation/stage_c_training_validation_report.json",
+        "outputs/validation/code_domain_v2_evalplus_confirmatory_guardrail_report.json",
+        "outputs/validation/code_domain_v2_general_text_confirmatory_guardrail_report.json",
+        "outputs/validation/code_domain_v2_general_task_confirmatory_guardrail_report.json"
+      ],
+      "selector_access": false
+    },
+    {
+      "tier": "tier1_lightweight_code_generation",
+      "execution_decision": "execute_first",
+      "benchmarks": [
+        "HumanEval+",
+        "MBPP+"
+      ],
+      "role": "Primary next code-domain external benchmark family because it is cheaper and less agentic than SWE-bench.",
+      "generation_script": "143_generate_code_domain_evalplus_samples.py",
+      "evaluation_script": "144_run_code_domain_evalplus_guardrail.py",
+      "command_templates": [
+        "python 143_generate_code_domain_evalplus_samples.py missing --plan configs/code_domain_v2_confirmatory_protocol_qwen3_4b.json --output-dir outputs/code_domain_v2_confirmatory_qwen3_4b --datasets HumanEval+,MBPP+ --arms raw_random_equal_budget,stageA_random_equal_budget,curated_v2_equal_budget,known_high_quality_equal_budget --seeds 101,131,163,197,239 --allow-download",
+        "python 144_run_code_domain_evalplus_guardrail.py --output-dir outputs/code_domain_v2_confirmatory_qwen3_4b --datasets humaneval,mbpp"
+      ],
+      "success_rule": {
+        "primary_comparison": "curated_v2_equal_budget_vs_stageA_random_equal_budget",
+        "metric": "macro EvalPlus pass-rate across HumanEval+ and MBPP+",
+        "direction": "higher_is_better",
+        "required_absolute_macro_pass_rate_improvement": 0.01,
+        "guardrail_rule": "No required confirmatory retention guardrail may fail.",
+        "inconclusive_action": "Report as inconclusive; do not tune Stage B using benchmark outcomes."
+      },
+      "selector_access": false
+    },
+    {
+      "tier": "tier2_swebench_capstone",
+      "execution_decision": "defer_until_feasibility_gate_passes",
+      "benchmarks": [
+        "SWE-bench Lite",
+        "SWE-bench Verified"
+      ],
+      "role": "High-cost capstone for agentic software engineering evidence, not the first proof of the curation framework.",
+      "metadata_script": "104_acquire_swebench_harness_metadata.py",
+      "required_feasibility_gate": [
+        "Docker or equivalent isolated execution confirmed",
+        "storage and runtime budget confirmed outside C drive pressure",
+        "agentic patch-generation harness frozen before outcomes",
+        "benchmark task split frozen before outcomes",
+        "benchmark task content quarantined away from Stage-B artifacts",
+        "local versus cloud execution surface decided before outcomes"
+      ],
+      "success_rule": {
+        "primary_comparison": "curated_v2_equal_budget_vs_stageA_random_equal_budget",
+        "metric": "resolved-rate on frozen SWE-bench split",
+        "direction": "higher_is_better",
+        "margin_status": "must_be_frozen_after_feasibility_gate_and_before_outcomes",
+        "missing_or_infeasible_action": "Keep paper claim bounded to NLL plus EvalPlus evidence."
+      },
+      "selector_access": false
+    }
+  ],
+  "forbidden_uses": [
+    "using EvalPlus, HumanEval+, MBPP+, SWE-bench, NLL, or retention outcomes inside Stage-B selector objectives",
+    "changing Stage-B policy after seeing Stage-C benchmark outcomes",
+    "changing benchmark margins after seeing benchmark outcomes",
+    "using benchmark task content as candidate training data",
+    "claiming production-grade curation from tier1 results alone"
+  ],
+  "next_actions": [
+    "Run tier1 EvalPlus sample generation for all trained code-domain arms and frozen seeds.",
+    "Run isolated EvalPlus evaluation for HumanEval+ and MBPP+.",
+    "Build a tier1 benchmark comparison report with raw, Stage-A random, curated, and high-quality reference arms.",
+    "Only after tier1 is complete, decide whether SWE-bench feasibility is worth the compute and storage cost."
+  ]
+}

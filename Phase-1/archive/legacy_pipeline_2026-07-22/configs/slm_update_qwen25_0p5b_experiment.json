@@ -1,0 +1,100 @@
+{
+  "schema_version": "slm-update-training-config-v1",
+  "config_name": "qwen25_0p5b_slm_update_v1",
+  "purpose": "Frozen target-SLM continued-pretraining validation config for equal-budget curation arms.",
+  "target_model": {
+    "model_id": "Qwen/Qwen2.5-0.5B",
+    "tokenizer_id": "Qwen/Qwen2.5-0.5B",
+    "model_family": "Qwen2.5",
+    "parameter_count": 490000000,
+    "checkpoint_role": "base causal language model",
+    "release_window": "2024-era",
+    "license": "apache-2.0",
+    "selection_status": "frozen_for_experiment",
+    "selection_reason": "Small permissive base model with public Transformers support; model card describes it as a pretraining-stage causal LM suitable for continued pretraining.",
+    "source_url": "https://huggingface.co/Qwen/Qwen2.5-0.5B"
+  },
+  "comparison_contract": {
+    "primary_comparison": "curated_equal_budget_vs_stageA_random_equal_budget",
+    "supporting_comparisons": [
+      "curated_equal_budget_vs_raw_random_equal_budget",
+      "curated_equal_budget_vs_base_no_update",
+      "stageA_all_reference_vs_base_no_update",
+      "raw_all_reference_vs_base_no_update"
+    ],
+    "utility_scope": "Stage C validation only; never selector objective",
+    "minimum_primary_training_seeds": 3,
+    "primary_success_rule": "Curated arm must improve the pre-registered primary evaluation over Stage-A random at matched tokenizer tokens and compute, across at least three seeds, without violating forgetting, safety, or contamination limits."
+  },
+  "token_budget": {
+    "budget_source": "curated_equal_budget",
+    "budget_unit": "target_tokenizer_tokens",
+    "truncate_or_pack_policy": "tokenize_then_pack_contiguous_blocks_with_eos_until_budget",
+    "overflow_policy": "split_long_records_across_sequence_blocks; truncate_only_after_matched_token_budget",
+    "sequence_length": 1024
+  },
+  "training_recipe": {
+    "method": "continued_pretraining_causal_lm",
+    "precision": "bf16_if_supported_else_fp16",
+    "optimizer": "adamw_torch",
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "warmup_ratio": 0.03,
+    "lr_scheduler_type": "cosine",
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 16,
+    "max_grad_norm": 1.0,
+    "save_strategy": "epoch",
+    "eval_strategy": "no_during_primary_update",
+    "logging_steps": 25,
+    "gradient_checkpointing": true,
+    "packing": true,
+    "train_full_parameters_by_default": false,
+    "adapter_fallback": {
+      "enabled_if_full_finetune_does_not_fit": true,
+      "method": "lora",
+      "r": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj"
+      ]
+    }
+  },
+  "evaluation_contract": {
+    "primary_eval": {
+      "name": "held_out_new_data_distribution",
+      "metric": "mean_nll_or_perplexity",
+      "direction": "lower_is_better",
+      "dataset_status": "must_be_frozen_before_training"
+    },
+    "required_secondary_evals": [
+      "general_capability_benchmarks",
+      "forgetting_or_regression_suite",
+      "benchmark_contamination_audit",
+      "domain_source_slice_analysis",
+      "training_stability_and_seed_variance",
+      "cost_and_retained_token_efficiency"
+    ],
+    "forbidden_eval_sources": [
+      "training_arm_records",
+      "Stage-B selector scores",
+      "Stage-C Utility probe training targets"
+    ]
+  },
+  "contamination_controls": {
+    "required_before_claim": true,
+    "minimum_controls": [
+      "exact_text_hash_overlap_check_between_train_and_eval",
+      "near_duplicate_overlap_check_between_train_and_eval",
+      "public_benchmark_string_overlap_scan",
+      "model-pretraining-overlap caveat for public web corpora"
+    ]
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "schema_version": "code-domain-next-development-cycle-v2-design",
+  "status": "design_draft_not_executable_protocol",
+  "purpose": "Design a separate v2 code-domain development cycle after the completed negative v1 confirmatory primary-margin result.",
+  "operational_framework_target": {
+    "goal": "Build a practical LM-training-data curation framework, not an intrinsic data-quality measurement tool.",
+    "input_output_contract": "candidate corpus -> supported training release or explicit abstention",
+    "quality_boundary": "Quality is a pre-outcome proxy for observable information-density and structural signals, not ground-truth data quality.",
+    "release_boundary": "The framework may reject or abstain when evidence is missing, guardrails fail, or the candidate corpus lacks enough usable data."
+  },
+  "source_postmortem": {
+    "path": "outputs/validation/code_domain_confirmatory_postmortem_report.json",
+    "locked_v1_status": "confirmatory_decision_reject_primary_margin_failure",
+    "locked_v1_interpretation": "negative primary-margin result with positive directional curation signal",
+    "v1_may_be_used_for": [
+      "diagnosis",
+      "paper evidence",
+      "designing a separate future development cycle"
+    ],
+    "v1_must_not_be_used_for": [
+      "retroactively changing the completed confirmatory margin",
+      "retroactively changing completed confirmatory seeds",
+      "retroactively changing completed confirmatory heldouts",
+      "reclassifying the completed primary-margin failure as a pass"
+    ]
+  },
+  "stage_boundaries": {
+    "stage_a": "chunk-level hard gate",
+    "stage_b": "chunk-level selection among Stage-A-pass chunks",
+    "stage_c": "subset/model validation only",
+    "utility_scope": "Stage C validation only; never selector objective"
+  },
+  "selector_signal_policy": {
+    "allowed_stage_b_signal_family": [
+      "code-local structural quality proxies",
+      "soft redundancy risk",
+      "useful recurrence",
+      "coverage support",
+      "repository and path diversity support",
+      "length and packing support"
+    ],
+    "forbidden_stage_b_signals": [
+      "Utility",
+      "benchmark outcomes",
+      "retention outcomes",
+      "development model outcomes",
+      "confirmatory model outcomes",
+      "human review labels",
+      "LLM review labels"
+    ]
+  },
+  "candidate_pool_requirements": {
+    "domain": "raw-like Python code corpus",
+    "split_contract": "time-disjoint and repository-disjoint",
+    "minimum_stage_a_pass_repositories": {
+      "train": 30,
+      "development_heldout": 10,
+      "confirmatory_heldout": 10
+    },
+    "maximum_token_share_per_repository": 0.25,
+    "heldout_token_proxy_budget": {
+      "minimum_each_split": 65536,
+      "preferred_each_split": 131072
+    },
+    "maximum_development_confirmatory_test_ratio_difference": 0.05,
+    "required_split_profile_fields": [
+      "repository_count",
+      "top_repository_token_shares",
+      "content_type_ratios",
+      "chunk_kind_ratios",
+      "token_proxy_distribution",
+      "base_nll_scale"
+    ],
+    "insufficient_data_action": "insufficient_usable_data"
+  },
+  "stage_b_v2_proxy_plan": {
+    "candidate_proxy_families": [
+      "ast_granularity",
+      "independent_parseability",
+      "test_code_balance_support",
+      "import_api_meaningfulness",
+      "concise_example_support",
+      "bugfix_or_regression_test_signal",
+      "docstring_comment_density_bounds",
+      "generated_template_vendored_risk",
+      "harmful_soft_redundancy_and_saturation",
+      "useful_recurrence",
+      "cluster_coverage_support",
+      "repository_path_diversity_caps",
+      "length_and_packing_support"
+    ],
+    "required_ablations": [
+      "full_selector",
+      "quality_only",
+      "redundancy_only",
+      "no_coverage_support",
+      "no_test_code_balance",
+      "no_repository_diversity_cap",
+      "no_useful_recurrence_support",
+      "no_concise_example_support",
+      "stageA_random_equal_budget",
+      "raw_random_equal_budget"
+    ],
+    "ablation_role": "mechanism evidence only; not a post-confirmatory selector search",
+    "operational_readiness_checks": [
+      "selected-vs-rejected feature-shift report",
+      "harmful duplication separated from useful recurrence",
+      "concise examples, tests, bug fixes, and API usage chunks are not systematically discarded",
+      "repository, path, and template concentration caps are reported",
+      "failure diagnosis is emitted when curated does not beat Stage-A-random"
+    ]
+  },
+  "stage_c_arms": {
+    "primary_arms": [
+      "base_no_update",
+      "raw_random_equal_budget",
+      "stageA_random_equal_budget",
+      "curated_v2_equal_budget",
+      "known_high_quality_equal_budget"
+    ],
+    "optional_supporting_arms": [
+      "all_raw_compute_efficiency_reference",
+      "all_stageA_compute_efficiency_reference",
+      "curated_v2_plus_frozen_replay"
+    ],
+    "primary_comparison": {
+      "treatment": "curated_v2_equal_budget",
+      "baseline": "stageA_random_equal_budget",
+      "budget_contract": "equal tokens and equal compute"
+    }
+  },
+  "margin_calibration": {
+    "status": "development_only_calibration_required_before_v2_confirmatory_freeze",
+    "inputs_allowed": [
+      "v2 development heldout",
+      "v2 development training outcomes",
+      "v2 development seed-level variance",
+      "v2 development base-NLL scale",
+      "v2 development and candidate split profiles"
+    ],
+    "inputs_forbidden": [
+      "v2 confirmatory outcomes",
+      "post-freeze confirmatory diagnostics from the same cycle"
+    ],
+    "candidate_margin_forms": [
+      "absolute_nll_reduction",
+      "relative_base_normalized_nll_reduction",
+      "stratified_code_test_nll_reduction"
+    ],
+    "freeze_requirement": "choose exactly one primary success rule before v2 confirmatory outcomes are read"
+  },
+  "development_promotion_rule": {
+    "all_conditions_required": true,
+    "conditions": [
+      "curated_v2 beats Stage-A-random on the development primary metric by the frozen development margin or calibrated detectable-effect rule",
+      "curated_v2 is directionally no worse than raw-random",
+      "code guardrails pass",
+      "general retention guardrails pass",
+      "heldout stratification constraints pass",
+      "Stage-A-random hardness diagnostics are recorded",
+      "all required development training seeds complete or the report is explicitly feasibility-only"
+    ],
+    "failure_actions": {
+      "primary_margin_failure": "do_not_promote_recipe",
+      "guardrail_failure": "reject_recipe",
+      "missing_required_evidence": "abstain",
+      "insufficient_candidate_pool": "insufficient_usable_data"
+    }
+  },
+  "confirmatory_freeze_requirements": [
+    "model_and_tokenizer_identity",
+    "training_arms",
+    "token_budget_and_optimizer_steps",
+    "seed_set",
+    "heldout_slice_and_hash",
+    "primary_metric_and_margin",
+    "code_guardrail_thresholds",
+    "retention_guardrail_thresholds",
+    "contamination_audit",
+    "common_disjoint_stageA_baseline_for_sensitivity_arms"
+  ],
+  "confirmatory_outcomes_read_for_v2": false,
+  "claim_boundary": "Design draft only. It authorizes no v2 training claim, no confirmatory claim, and no release claim."
+}

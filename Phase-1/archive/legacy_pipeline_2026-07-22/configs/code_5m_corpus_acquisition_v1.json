@@ -1,0 +1,62 @@
+{
+  "schema_version": "code-5m-corpus-acquisition-v1",
+  "status": "frozen_waiting_for_primary_source_access",
+  "purpose": "Collect a provenance-rich 5M-token raw-like Python corpus for a future natural-budget curation study without using popularity or outcome labels in Stage B.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "sequence_length": 2048
+  },
+  "target": {
+    "raw_packed_tokens": 5242880,
+    "raw_complete_gradient_accumulation_tokens": 5242880,
+    "gradient_accumulation_steps": 8,
+    "oversample_source_tokens": 7864320,
+    "raw_like_fraction": 0.7,
+    "reference_fraction": 0.3
+  },
+  "primary_source": {
+    "dataset": "bigcode/the-stack-v2",
+    "revision": "7408bfbcfd48e5833d62fd3dba48afd20d109473",
+    "language": "Python",
+    "access_requirement": "Hugging Face gated dataset access must be accepted before collection.",
+    "admission_rule": {
+      "allowed_spdx_licenses": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "PSF-2.0", "Unlicense"],
+      "exclude_path_fragments": ["/test/", "/tests/", "/benchmark/", "/benchmarks/", "/eval/", "/evaluation/", "/vendor/", "/vendored/", "/node_modules/", "/third_party/", "/generated/", "/dist/", "/build/", "/examples/"],
+      "max_file_bytes": 262144,
+      "min_file_bytes": 256,
+      "repository_concentration_cap_fraction": 0.01,
+      "exact_duplicate_action": "retain_one_by_stable_content_hash",
+      "near_duplicate_action": "retain_one_by_frozen_minhash_cluster_representative",
+      "pii_or_secret_action": "quarantine",
+      "benchmark_contamination_or_uncertainty_action": "quarantine"
+    }
+  },
+  "reference_source": {
+    "role": "audit-only known-high-quality context; never a selector label",
+    "source": "expanded permissively licensed public Python repository allowlist",
+    "admission_rule": {
+      "immutable_commit_required": true,
+      "allowed_spdx_licenses": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "PSF-2.0"],
+      "same_file_hazard_and_contamination_rules_as_primary": true,
+      "repository_concentration_cap_fraction": 0.05
+    }
+  },
+  "non_quality_rules": {
+    "github_star_cutoff": "forbidden_as_admission_rule",
+    "reddit_karma_cutoff": "not_applicable_to_code_source_admission",
+    "source_tier": "audit_only_and_blinded_from_stage_b",
+    "benchmark_or_utility_outcomes": "forbidden_before_and_during_stage_b"
+  },
+  "required_record_fields": ["record_id", "text", "source_dataset", "source_revision", "source_shard", "repository_or_origin", "path", "license", "content_sha256", "dedup_cluster", "collected_at", "source_tier", "benchmark_exclusion_status"],
+  "required_release_artifacts": ["source_manifest", "license_provenance_audit", "deduplication_audit", "pii_secret_audit", "benchmark_contamination_audit", "repository_concentration_audit", "stage_b_blinding_audit", "raw_token_manifest"],
+  "stage_b_isolation": {
+    "source_tier_available_to_stage_b": false,
+    "source_dataset_available_to_stage_b": false,
+    "license_available_to_stage_b": false,
+    "github_stars_available_to_stage_b": false,
+    "utility_available_to_stage_b": false,
+    "benchmark_outcomes_available_to_stage_b": false
+  },
+  "claim_boundary": "This protocol fixes source admission and provenance requirements. It does not claim that source metadata measures intrinsic quality or that the resulting corpus is release-ready before Stage 0 through Stage C validation."
+}

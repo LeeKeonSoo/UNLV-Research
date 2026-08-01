@@ -1,0 +1,34 @@
+{
+  "schema_version": "span-level-template-candidate-ablation-preregistration-v1",
+  "status": "preregistered_not_executed",
+  "candidate_policy_id": "stage_c_repeated_span_template_candidate",
+  "purpose": "Development-only external validation of one frozen text-structural candidate; it cannot tune the active runtime.",
+  "frozen_input_snapshot": {
+    "required_fields": ["input_sha256", "policy_fingerprint", "stage_b_pass_sha256"],
+    "selection_unit": "Stage-B pass chunks",
+    "metadata_available_to_candidate": []
+  },
+  "arms": [
+    {
+      "id": "active_profile_baseline",
+      "candidate_enabled": false,
+      "materialization": "current frozen active Stage-C policy only"
+    },
+    {
+      "id": "candidate_span_compaction_development",
+      "candidate_enabled": true,
+      "materialization": "apply the frozen candidate only after Stage-B pass and before active Stage-C selection"
+    }
+  ],
+  "external_evaluation": {
+    "primary_comparison": "natural_budget_external_benchmark",
+    "equal_token_comparison": "not_primary_not_required",
+    "feedback_into_policy": false,
+    "allowed_role": "post_hoc_development_evidence_only",
+    "required_reporting": ["raw_and_curated_token_counts", "reason_code_impact_audit", "benchmark_scores_by_seed", "failure_cases"]
+  },
+  "promotion_rule": {
+    "required_before_runtime_activation": ["false_positive_fixture_passed", "reason_code_impact_audit_complete", "development_ablation_reported", "confirmatory_evaluation_without_runtime_feedback"],
+    "forbidden_conclusion_before_confirmatory_evidence": "candidate_is_generally_beneficial_or_runtime_ready"
+  }
+}

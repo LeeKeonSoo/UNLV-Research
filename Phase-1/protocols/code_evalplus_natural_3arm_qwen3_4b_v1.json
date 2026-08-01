@@ -1,0 +1,66 @@
+{
+  "schema_version": "code-evalplus-natural-3arm-qwen3-4b-v1",
+  "status": "frozen_before_official_full_benchmark_outcomes",
+  "purpose": "Evaluate Base, Raw-safe natural, and operational-policy Curated natural training on frozen full EvalPlus benchmarks.",
+  "evaluation_scope": {
+    "benchmarks": ["humanevalplus", "mbppplus"],
+    "benchmark_exclusion_audit": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/evalplus_natural_v1/benchmark_exclusion_audit.json",
+    "scope": "official_full",
+    "task_counts": {"humanevalplus": 164, "mbppplus": 378},
+    "generation_output_root": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/evalplus_natural_v1/runs/evalplus_official/samples",
+    "evaluator": {"image": "ganler/evalplus:latest", "digest": "sha256:26b118098bef281fe8dfe999bf05f1d5b45374b4e6c00161ec0f30592aef4740"},
+    "scope_boundary": "Official full EvalPlus evidence for frozen snapshots only; no claim about LiveCodeBench, BigCodeBench, DS-1000, OJBench, or universal code performance."
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539"
+  },
+  "training_arms": ["base_no_update", "raw_safe_natural", "curated_natural"],
+  "primary_comparison": {
+    "treatment": "curated_natural",
+    "primary_baseline": "raw_safe_natural",
+    "supporting_baseline": "base_no_update",
+    "comparison_type": "natural_budget"
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps_by_arm": {
+      "raw_safe_natural": 429,
+      "curated_natural": 222
+    },
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "development_training_seeds": [11, 23, 37]
+  },
+  "frozen_inputs": {
+    "materialization_report": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/evalplus_natural_v1/code_5m_external_validation_inputs_report.json",
+    "raw_safe_blocks": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/evalplus_natural_v1/token_blocks/raw_safe_natural.pt",
+    "curated_blocks": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/evalplus_natural_v1/token_blocks/curated_natural.pt",
+    "effective_training_tokens": {
+      "raw_safe_natural": 7028736,
+      "curated_natural": 3637248
+    }
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false
+  },
+  "utility_scope": "External evaluation only; never selector objective.",
+  "claim_boundary": "This is a frozen full-EvalPlus comparison. It tests whether the policy-selected natural pool can retain or improve official EvalPlus performance with fewer natural training tokens."
+}

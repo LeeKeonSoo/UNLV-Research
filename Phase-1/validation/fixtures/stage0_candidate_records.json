@@ -1,0 +1,64 @@
+{
+  "records": [
+    {
+      "schema_version": "candidate-corpus-record-v1",
+      "record_id": "clean-001",
+      "text": "A clean candidate document with provenance and an allowed training-data status.",
+      "provenance": {
+        "source_name": "stage0_fixture",
+        "source_uri": "https://example.invalid/clean-001",
+        "collected_at": "2026-06-07T00:00:00Z"
+      },
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "allowed", "license": "fixture-only"},
+      "hazards": {
+        "pii_detected": false,
+        "secret_detected": false,
+        "benchmark_contamination": false,
+        "poisoning_suspected": false
+      },
+      "quarantine": {"status": "release_candidate", "reasons": []},
+      "transformations": ["text_extraction", "unicode_normalization"]
+    },
+    {
+      "schema_version": "candidate-corpus-record-v1",
+      "record_id": "pii-001",
+      "text": "A fixture document representing content that contains detected personal information.",
+      "provenance": {
+        "source_name": "stage0_fixture",
+        "source_uri": "https://example.invalid/pii-001",
+        "collected_at": "2026-06-07T00:00:00Z"
+      },
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "allowed", "license": "fixture-only"},
+      "hazards": {
+        "pii_detected": true,
+        "secret_detected": false,
+        "benchmark_contamination": false,
+        "poisoning_suspected": false
+      },
+      "quarantine": {"status": "quarantined", "reasons": ["pii_detected"]},
+      "transformations": ["text_extraction", "pii_scan"]
+    },
+    {
+      "schema_version": "candidate-corpus-record-v1",
+      "record_id": "rights-unknown-001",
+      "text": "A fixture document with unknown rights that must not enter the release candidate pool.",
+      "provenance": {
+        "source_name": "stage0_fixture",
+        "source_uri": "https://example.invalid/rights-unknown-001",
+        "collected_at": "2026-06-07T00:00:00Z"
+      },
+      "language": {"code": "en", "confidence": 0.99},
+      "rights": {"status": "unknown", "license": null},
+      "hazards": {
+        "pii_detected": false,
+        "secret_detected": false,
+        "benchmark_contamination": false,
+        "poisoning_suspected": false
+      },
+      "quarantine": {"status": "quarantined", "reasons": ["rights_unknown"]},
+      "transformations": ["text_extraction"]
+    }
+  ]
+}

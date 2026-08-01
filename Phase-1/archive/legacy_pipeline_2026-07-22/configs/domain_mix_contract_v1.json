@@ -1,0 +1,32 @@
+{
+  "schema_version": "domain-mix-contract-v1",
+  "status": "domain_mix_contract_frozen",
+  "contract_mode": "observed_paper_domain_arm_composition",
+  "canonical_claim": "deployment-conditioned LM training corpus curation framework",
+  "target_domain_mix": null,
+  "allowed_target_drift": null,
+  "domains": [
+    {
+      "domain": "Code",
+      "source_report": "outputs/validation/code_domain_natural_budget_stage_c_summary_report.json",
+      "raw_arm": "raw_full_natural",
+      "curated_arm": "curated_v2_natural",
+      "required_curated_decision": "pass"
+    },
+    {
+      "domain": "Math",
+      "source_report": "outputs/validation/math_domain_selector_v3_stage_c_summary_report.json",
+      "raw_arm": "raw_full_natural",
+      "curated_arm": "curated_math_v3_natural",
+      "required_curated_decision": "repair_only_abstain"
+    }
+  ],
+  "claim_boundary": "This contract reports observed domain-arm composition for the current paper evidence. It is not a joint production mixture target and does not claim universal domain proportions.",
+  "forbidden_claims": [
+    "fixed_universal_domain_mix",
+    "joint_production_mix_certification",
+    "domain_mix_as_intrinsic_quality",
+    "utility_as_selector_objective"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective"
+}

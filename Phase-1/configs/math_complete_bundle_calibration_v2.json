@@ -1,0 +1,30 @@
+{
+  "schema_version": "math-complete-bundle-calibration-v2",
+  "status": "frozen_before_four_source_calibration",
+  "supersedes": "configs/math_complete_bundle_calibration_v1.json",
+  "clean_text": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_clean_controls_v3.jsonl",
+  "clean_known_head_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_clean_control_provider_scores_v3.jsonl",
+  "clean_structural_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v3/math_structural_calibration_scores_v3.jsonl",
+  "candidate_text": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+  "candidate_known_head_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_positive_scores_v1.jsonl",
+  "candidate_structural_scores": "D:/UNLV-Research/positive_quality_v1/development/openwebmath_5m_math_structural_scores_v1.jsonl",
+  "calibration_source_groups": [
+    "oscarlevin/discrete-book",
+    "wojtask/clrs4e-solutions",
+    "OpenLogicProject/OpenLogic",
+    "active-calculus/active-calculus-single-mbx"
+  ],
+  "lower_quantiles": [0.0, 0.0025, 0.005, 0.01, 0.025, 0.05],
+  "confidence_level": 0.95,
+  "normal_false_reject_wilson_upper_bound": 0.01,
+  "hard_false_reject_wilson_upper_bound": 0.05,
+  "required_gate": "pooled_and_each_source_and_leave_one_source_out",
+  "structural_model_training_source_groups": ["openstax/osbooks-calculus-bundle"],
+  "structural_model_artifact_sha256": {
+    "substantive_payload": "b8203cebe8baa1fe0ae79a4bdf90a2f1a1e80a3233993215bf3b21469ba24895",
+    "coherence_completeness": "c1e48026c2f0d6829a3480604f7f1103e163327bfec789a7685a68009a4eb728"
+  },
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

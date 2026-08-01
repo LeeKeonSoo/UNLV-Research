@@ -1,0 +1,124 @@
+{
+  "schema_version": "code-domain-development-plan-qwen3-4b-v1",
+  "status": "frozen_before_development_training_outcomes",
+  "purpose": "Freeze the first development-stage Qwen3-4B QLoRA raw-vs-curated comparison before running multi-step development arms.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "inputs": {
+    "equal_token_arms_report": "outputs/temporal_code_training_freeze_v1/equal_token_arms/equal_token_training_arms_report.json",
+    "qlora_smoke_report": "outputs/validation/code_domain_qlora_smoke_qwen3_4b_report.json",
+    "qlora_smoke_blocks": "outputs/code_domain_qlora_smoke_qwen3_4b_v1/token_blocks/block_manifest.json",
+    "development_stage_a_pass": "outputs/temporal_code_collection/stage_a_path_stratified_tranche/development/stage_a_pass.jsonl",
+    "evalplus_guardrail_split": "configs/temporal_code_evalplus_guardrail_split_v1.json",
+    "retention_guardrails": "configs/temporal_code_stage_c_retention_guardrails_v1.json"
+  },
+  "training_arms": [
+    "base_no_update",
+    "raw_random_equal_budget",
+    "stageA_random_equal_budget",
+    "curated_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "primary_comparison": {
+    "treatment": "curated_equal_budget",
+    "primary_baseline": "stageA_random_equal_budget",
+    "supporting_baselines": [
+      "raw_random_equal_budget",
+      "base_no_update"
+    ],
+    "reference_arm": "known_high_quality_equal_budget"
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "development_training_seeds": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "same_seed_set_for_every_arm": true,
+    "common_packed_token_budget": 118784,
+    "training_token_budget_cap": 120191
+  },
+  "heldout_nll": {
+    "development_slice_name": "development_code_nll_heldout",
+    "source_split": "development",
+    "source_file": "outputs/temporal_code_collection/stage_a_path_stratified_tranche/development/stage_a_pass.jsonl",
+    "allowed_content_types": [
+      "code",
+      "test"
+    ],
+    "selection_rule": "Sort by sha256(seed + ':' + chunk_uid), then take chunks until the token-proxy budget is reached.",
+    "seed": 20260619,
+    "token_proxy_budget": 65536,
+    "confirmatory_read_forbidden": true
+  },
+  "external_code_guardrails": {
+    "development": [
+      "EvalPlus HumanEval+ development split, pass_at_1_temperature_0",
+      "EvalPlus MBPP+ development split, pass_at_1_temperature_0"
+    ],
+    "role": "code capability and retention guardrail; not a selector signal",
+    "maximum_allowed_absolute_regression_macro_vs_base": 0.02
+  },
+  "general_retention_guardrails": {
+    "suites": [
+      "HellaSwag",
+      "ARC-Challenge",
+      "PIQA",
+      "WinoGrande"
+    ],
+    "general_text_nll": true,
+    "missing_evidence_action": "abstain"
+  },
+  "practical_effect_margin": {
+    "primary_development_metric": "development_code_nll_heldout mean NLL",
+    "curated_vs_stageA_random_required_absolute_nll_reduction": 0.005,
+    "curated_vs_raw_random_required_direction": "curated mean NLL must be lower than raw-random mean NLL unless the difference is below the precomputed detectable-effect floor",
+    "seed_aggregation": "paired by the same five development seeds; report every seed and arithmetic mean",
+    "decision_note": "This margin gates development promotion only. It is not a confirmatory or release rule."
+  },
+  "development_decision_rule": {
+    "promote_to_confirmatory_only_if": [
+      "curated beats Stage-A-random on the frozen heldout NLL margin",
+      "curated is directionally no worse than raw-random on heldout NLL",
+      "EvalPlus development guardrails do not regress beyond the frozen margins",
+      "general retention evidence is present and passes, otherwise abstain",
+      "training completed for all frozen development seeds or the report explicitly remains a feasibility-only partial result"
+    ],
+    "failure_actions": {
+      "primary_margin_failure": "do_not_promote_recipe",
+      "guardrail_failure": "reject_recipe",
+      "missing_required_evidence": "abstain",
+      "infrastructure_failure": "infrastructure_blocked_no_scientific_claim"
+    }
+  },
+  "forbidden_uses": [
+    "using Utility, benchmark outcomes, development outcomes, confirmatory outcomes, or human/LLM review labels in Stage B",
+    "changing training seeds, optimizer steps, token budget, heldout slice, benchmark split, guardrail margin, or practical effect margin after development outcomes",
+    "reading confirmatory outcomes before the development decision is frozen",
+    "using different Stage-A baselines for sensitivity arms"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Development-plan freeze only; no model outcome, Utility result, release decision, or paper claim."
+}

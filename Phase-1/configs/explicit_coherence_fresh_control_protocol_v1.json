@@ -1,0 +1,45 @@
+{
+  "schema_version": "explicit-coherence-fresh-control-protocol-v1",
+  "status": "frozen_before_post_guard_scoring",
+  "role": "fresh_source_disjoint_structural_coherence_control",
+  "claim_boundary": "Complete educational physics units test only the domain-general explicit structural guard. They do not calibrate Math route, payload, or educational-value providers.",
+  "selection_blind_to": [
+    "explicit_coherence_outcome",
+    "MathScore",
+    "FineMath",
+    "structural_model_scores",
+    "candidate_scores",
+    "benchmark_results",
+    "target_retention_fraction"
+  ],
+  "selection_rule": {
+    "complete_structural_units_only": true,
+    "minimum_normalized_characters": 256,
+    "maximum_records_per_source_group": 500,
+    "sample_order": "sha256(record_id + normalized_text_sha256)",
+    "cross_source_exact_deduplication": true,
+    "provider_score_may_change_membership": false
+  },
+  "candidate_disjointness": {
+    "candidate_artifact": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+    "stable_record_id": "required",
+    "normalized_text_sha256": "required"
+  },
+  "active_sources": [
+    {
+      "source_group": "openstax/osbooks-physics",
+      "role": "post_freeze_coherence_control_only",
+      "repository": "https://github.com/openstax/osbooks-physics",
+      "commit": "dfdfd7a5356ecdd42e504de3df50d9153e33ea49",
+      "license": "CC-BY-4.0",
+      "root_directory": "math_open_educational_v1/repos/osbooks-physics/modules",
+      "format": "cnxml",
+      "unit_tags": ["exercise", "note", "example"]
+    }
+  ],
+  "coherence_contract": "configs/math_explicit_coherence_guard_v2.json",
+  "coherence_contract_sha256": "65618a012578d297c5af29c513617f4354c68254e3d3f576059b21d4fddffe94",
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

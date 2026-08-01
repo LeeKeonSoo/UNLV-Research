@@ -1,0 +1,47 @@
+{
+  "schema_version": "explicit-coherence-fresh-control-protocol-v2",
+  "status": "frozen_before_winitzki_heading_materialization",
+  "supersedes": "configs/explicit_coherence_fresh_control_protocol_v1.json",
+  "supersession_reason": "The v1 Physics source contained objective C1 control-character corruption and is retained as a diagnostic corpus rather than a clean retention control.",
+  "role": "fresh_source_disjoint_structural_coherence_retention_control",
+  "claim_boundary": "Complete LaTeX heading units test only the domain-general explicit structural guard. They do not calibrate provider payload, route, or educational-value scores.",
+  "selection_blind_to": [
+    "explicit_coherence_outcome",
+    "MathScore",
+    "FineMath",
+    "structural_model_scores",
+    "candidate_scores",
+    "benchmark_results",
+    "target_retention_fraction"
+  ],
+  "selection_rule": {
+    "complete_structural_units_only": true,
+    "minimum_normalized_characters": 256,
+    "maximum_records_per_source_group": 500,
+    "sample_order": "sha256(record_id + normalized_text_sha256)",
+    "cross_source_exact_deduplication": true,
+    "provider_score_may_change_membership": false
+  },
+  "candidate_disjointness": {
+    "candidate_artifact": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+    "stable_record_id": "required",
+    "normalized_text_sha256": "required"
+  },
+  "active_sources": [
+    {
+      "source_group": "winitzki/linear-algebra-book",
+      "role": "post_freeze_coherence_retention_control_only",
+      "repository": "https://github.com/winitzki/linear-algebra-book",
+      "commit": "d4f178d6b8f61c743d854470138de224136570e2",
+      "license": "GFDL-1.2-or-later",
+      "root_directory": "math_open_educational_v4/repos/linear-algebra-book/linalg-src",
+      "format": "latex_heading_units",
+      "file_glob": "linalg.tex"
+    }
+  ],
+  "coherence_contract": "configs/math_explicit_coherence_guard_v2.json",
+  "coherence_contract_sha256": "65618a012578d297c5af29c513617f4354c68254e3d3f576059b21d4fddffe94",
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

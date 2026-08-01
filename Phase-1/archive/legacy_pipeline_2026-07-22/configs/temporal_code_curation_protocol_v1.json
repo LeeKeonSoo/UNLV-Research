@@ -1,0 +1,309 @@
+{
+  "schema_version": "temporal-code-curation-protocol-v1",
+  "protocol_name": "qwen3_4b_temporal_python_curation_v1",
+  "status": "preregistered_before_collection",
+  "research_question": "Under matched update tokens and compute, does framework-curated recent Python change data improve executable coding utility over raw-random and Stage-A-random data while preserving prior capabilities?",
+  "models": {
+    "primary": {
+      "model_id": "Qwen/Qwen3-4B-Base",
+      "role": "primary causal curation experiment",
+      "parameters": "4.0B",
+      "training_stage": "pretraining",
+      "license": "Apache-2.0",
+      "public_release_date": "2025-04-28",
+      "safe_collection_start": "2025-05-01",
+      "selection_reason": "Exact 4B base model with coding capability; post-release data gives a defensible temporal non-exposure boundary."
+    },
+    "transfer_replication": {
+      "model_id": "bigcode/starcoder2-3b",
+      "role": "later model-transfer replication",
+      "parameters": "3B",
+      "training_stage": "pretraining",
+      "license": "BigCode-OpenRAIL-M-v1",
+      "selection_reason": "Code-specific base model with documented The Stack v2 provenance and opt-out handling."
+    }
+  },
+  "claim_scope": {
+    "primary": "parameter-efficient continued pretraining on recently collected Python change bundles",
+    "not_yet_claimed": [
+      "full-parameter continued-pretraining effectiveness",
+      "universal benefit across programming languages",
+      "universal benefit across model families",
+      "deployment readiness"
+    ]
+  },
+  "collection_contract": {
+    "source_type": "public merged pull requests and associated repository state",
+    "primary_language": "Python",
+    "collection_unit": "change_bundle",
+    "required_bundle_fields": [
+      "repository_identity",
+      "repository_license",
+      "issue_or_pr_title",
+      "issue_or_pr_body",
+      "parent_commit",
+      "merge_commit",
+      "execution_validation",
+      "pre_change_files",
+      "patch",
+      "post_change_files",
+      "changed_tests",
+      "merge_timestamp",
+      "provenance_urls"
+    ],
+    "training_payload_rule": "Repository code, tests, and documentation may enter training only when covered by an allowlisted repository license and after content, provenance, split, and contamination gates pass. Issue and pull-request prose is retained for provenance and executable evaluation but excluded from training unless a separate documented use basis is recorded.",
+    "execution_validation_boundary": "Verified executable test commands are required for executable-evaluation eligibility, not for licensed training-content eligibility. Execution failures remain Stage-C/evaluation blockers and must not silently approve an executable task.",
+    "acquisition_rules": [
+      "use approved public APIs or reproducible public archives",
+      "honor source rate limits, access controls, deletion signals, and opt-out requirements",
+      "record acquisition timestamp, source URL, commit identity, and collector version",
+      "do not bypass authentication, access restrictions, or robots and policy controls"
+    ],
+    "training_window": {
+      "start": "2025-05-01",
+      "end": "2025-12-31"
+    },
+    "development_holdout_window": {
+      "start": "2026-01-01",
+      "end": "2026-02-28"
+    },
+    "frozen_confirmatory_holdout_window": {
+      "start": "2026-03-01",
+      "end": "2026-05-31"
+    },
+    "allowed_licenses": [
+      "Apache-2.0",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "ISC"
+    ],
+    "repository_requirements": [
+      "not a fork or mirror",
+      "not archived at collection time",
+      "license detected and allowlisted",
+      "test suite or executable validation command exists",
+      "merge commit and parent commit are reproducibly fetchable",
+      "repository is not assigned to another split"
+    ],
+    "hard_exclusions": [
+      "unknown or disallowed license",
+      "benchmark source repository",
+      "fork or mirror",
+      "generated, vendored, minified, binary, lock, or dependency snapshot files",
+      "secrets, credentials, or detected high-risk PII",
+      "non-reproducible merge state",
+      "pure formatting or metadata-only change",
+      "exact or hard near-duplicate of an evaluation item"
+    ]
+  },
+  "split_contract": {
+    "primary_rule": "time-disjoint and repository-disjoint",
+    "repository_assignment_algorithm": "sha256(normalized_repository_identity) modulo 100; train buckets 0-79, development 80-89, confirmatory 90-99",
+    "repository_identity_cannot_cross_splits": true,
+    "same_repository_temporal_holdout": "secondary diagnostic only; never primary confirmation",
+    "split_assignment_frozen_before_core_scoring": true,
+    "benchmark_quarantine_frozen_before_training": true
+  },
+  "benchmark_quarantine": {
+    "never_training_sources": [
+      "LiveCodeBench tasks and solutions",
+      "BigCodeBench tasks and solutions",
+      "HumanEval and EvalPlus variants",
+      "MBPP and EvalPlus variants",
+      "SWE-bench and Multi-SWE-bench task repositories and patches",
+      "project-created temporal executable holdouts"
+    ],
+    "checks": [
+      "repository identity exclusion",
+      "exact normalized text and code hashes",
+      "token and AST near-duplicate search",
+      "problem statement and test signature search",
+      "provenance audit"
+    ]
+  },
+  "pipeline_ownership": {
+    "stage_0": [
+      "normalization",
+      "provenance and license validation",
+      "training-payload authorization by content type",
+      "secret and PII quarantine",
+      "benchmark contamination quarantine",
+      "generated and vendored file exclusion"
+    ],
+    "stage_a": [
+      "structural validity",
+      "parseability",
+      "exact and hard near-duplicate rejection",
+      "pathological repetition rejection"
+    ],
+    "stage_b": [
+      "quality and soft redundancy selection",
+      "repository, API, change-type, and difficulty coverage support"
+    ],
+    "stage_c": [
+      "executable task utility",
+      "external code benchmark utility",
+      "general and code capability retention",
+      "seed and holdout robustness"
+    ],
+    "release_layer": [
+      "select release construction under a frozen deployment contract",
+      "add frozen general replay if required by retention evidence",
+      "accept, reject, or abstain"
+    ]
+  },
+  "stage_b_contract": {
+    "status": "frozen_before_stage_b_smoke",
+    "input": "train split Stage-A-pass chunks only",
+    "budget": {
+      "type": "token_proxy_fraction_of_train_stage_a_pass",
+      "fraction": 0.4,
+      "purpose": "retain a disjoint Stage-A pool large enough for later equal-budget counterfactual construction"
+    },
+    "objective": {
+      "code_quality_proxy_weight": 0.8,
+      "soft_redundancy_support_weight": 0.2,
+      "allowed_signals": [
+        "content-type-specific structural richness",
+        "learnable-unit length support",
+        "lexical or identifier diversity",
+        "within-train soft token-shingle redundancy"
+      ],
+      "forbidden_signals": [
+        "Utility",
+        "benchmark outcomes",
+        "development outcomes",
+        "confirmatory outcomes"
+      ],
+      "redundancy_search_mode": "indexed_exact",
+      "indexed_search_must_match_all_pairs_on_smoke": true
+    },
+    "coverage_support": {
+      "role": "selection constraint only; never part of the ranking objective",
+      "axes": [
+        "bundle_id",
+        "content_type",
+        "change_type",
+        "path_family",
+        "difficulty_band"
+      ],
+      "minimum_exemplars_per_observed_value": 1,
+      "distribution_axes": [
+        "bundle_id",
+        "content_type",
+        "difficulty_band"
+      ],
+      "minimum_relative_token_share": 0.5
+    },
+    "stage_a_random_baseline": {
+      "seed": 42,
+      "must_be_disjoint_from_selected": true,
+      "budget_type": "same token-proxy cap as selected"
+    },
+    "claim_boundary": "Stage-B Core-proxy engineering smoke only; no Utility, Stage-C, or training-release claim."
+  },
+  "validation_philosophy": {
+    "primary_stage_b_validation": "automated metamorphic properties, frozen ablations, and equal-budget downstream Stage-C comparison",
+    "human_or_llm_review": "optional diagnostic only; never selector ground truth, promotion gate, tuning signal, or Stage-C entry blocker",
+    "project_specific_parameters": [
+      "Stage-B objective weights",
+      "content-type Quality formula weights",
+      "structural duplicate risk",
+      "coverage relative-token-share floor"
+    ],
+    "parameter_claim": "frozen project hypotheses requiring ablation and untouched confirmatory evidence; not validated by citation alone"
+  },
+  "training_contract": {
+    "local_method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all linear projection modules"
+    },
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "gradient_checkpointing": true,
+    "matched_across_arms": [
+      "token budget",
+      "optimizer steps",
+      "sequence packing",
+      "learning-rate schedule",
+      "adapter configuration",
+      "training seeds",
+      "evaluation prompts and decoding"
+    ],
+    "budgets": {
+      "smoke_tokens": 1000000,
+      "development_tokens": 10000000,
+      "confirmatory_tokens": 20000000
+    },
+    "minimum_development_seeds": 5,
+    "minimum_fresh_confirmatory_seeds": 5,
+    "full_parameter_replication": "required before extending the claim beyond parameter-efficient continued pretraining"
+  },
+  "comparison_arms": [
+    "base_no_update",
+    "raw_random_equal_token",
+    "stageA_random_equal_token",
+    "curated_equal_token",
+    "curated_plus_frozen_general_replay_equal_token",
+    "all_raw_compute_reported_separately"
+  ],
+  "evaluation_contract": {
+    "primary": {
+      "name": "repository-disjoint temporal executable holdout",
+      "metrics": [
+        "unit_test_pass_at_1",
+        "patch_apply_rate",
+        "compile_or_import_success",
+        "resolved_issue_rate"
+      ]
+    },
+    "external_code": [
+      "LiveCodeBench post-training-window slice",
+      "EvalPlus HumanEval+",
+      "EvalPlus MBPP+",
+      "BigCodeBench"
+    ],
+    "secondary_repository_level": [
+      "SWE-bench-compatible heldout tasks",
+      "Multi-SWE-bench-compatible heldout tasks"
+    ],
+    "general_retention": [
+      "external general-text NLL",
+      "HellaSwag",
+      "ARC-Challenge",
+      "PIQA",
+      "WinoGrande"
+    ],
+    "decoding": {
+      "primary_pass_at_1_temperature": 0.0,
+      "max_generation_tokens": "frozen per benchmark before development comparison",
+      "execution_sandbox_required": true
+    }
+  },
+  "future_release_rule": {
+    "primary_effect": "curated release must beat recipe-matched Stage-A random on the primary executable aggregate",
+    "primary_confidence": "one-sided 95% paired seed-level confidence bound must exceed zero",
+    "practical_margin": "freeze from the smoke calibration before development candidate selection; never derive it from confirmatory results",
+    "holdout_robustness": "must pass both repository-disjoint development and untouched confirmatory holdouts",
+    "retention": "must satisfy every frozen code and general retention non-inferiority guardrail",
+    "task_requirement": "NLL-only evidence cannot support release",
+    "all_requirements_mandatory": true
+  },
+  "forbidden_uses": [
+    "using Utility or benchmark outcomes in the Stage-B selector objective",
+    "changing collection or split rules after confirmatory results",
+    "training on benchmark tasks, solutions, repositories, or near-duplicates",
+    "claiming full-parameter update effectiveness from QLoRA results",
+    "claiming universal code curation effectiveness from Python-only evidence",
+    "assuming a repository code license automatically licenses issue or pull-request prose for training"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "The protocol was preregistered before collection. Bounded collection and Stage-0/A/B engineering smokes now exist, but no Stage-C or 4B result has yet been produced."
+}

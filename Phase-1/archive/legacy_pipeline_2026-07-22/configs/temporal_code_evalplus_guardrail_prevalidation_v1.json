@@ -1,0 +1,43 @@
+{
+  "schema_version": "temporal-code-evalplus-guardrail-prevalidation-v1",
+  "status": "frozen_before_evaluator_prevalidation_or_model_outcomes",
+  "purpose": "Prevalidate an evaluation-only function-generation guardrail without treating it as the primary temporal executable aggregate.",
+  "package": {
+    "name": "evalplus",
+    "version": "0.3.1"
+  },
+  "datasets": {
+    "HumanEval+": {
+      "loader": "get_human_eval_plus",
+      "smoke_task_count": 3
+    },
+    "MBPP+": {
+      "loader": "get_mbpp_plus",
+      "smoke_task_count": 3
+    }
+  },
+  "smoke_selection_rule": "lexicographically first task IDs from each dataset",
+  "reference_control": "official canonical solution must pass base and plus tests",
+  "negative_control": "a fixed same-entry-point implementation returning None must fail at least one base or plus test",
+  "e2_requirements": {
+    "reference_and_negative_controls_pass": true,
+    "isolated_execution_required_for_model_generated_code": true,
+    "host_process_reliability_guard_alone_is_e1_not_e2": true
+  },
+  "isolated_execution_protocol": {
+    "backend": "Docker Desktop Linux WSL2 backend",
+    "image_tag": "unlv-evalplus-prevalidation:0.3.1",
+    "network": "none",
+    "root_filesystem": "read_only",
+    "capabilities": "drop_all",
+    "security_option": "no_new_privileges",
+    "memory_limit": "4g",
+    "pid_limit": 512,
+    "task_content_host_persistence": false
+  },
+  "role": "external code guardrail only; never the sole primary temporal executable aggregate",
+  "task_content_training_authorized": false,
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Evaluator semantic prevalidation only; no model Utility or E2 claim without isolated execution."
+}

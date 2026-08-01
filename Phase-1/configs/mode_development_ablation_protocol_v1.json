@@ -1,0 +1,18 @@
+{
+  "schema_version": "mode-development-ablation-protocol-v1",
+  "status": "preregistered_candidate_only_not_runtime_active",
+  "purpose": "Materialize frozen Weak, Mid, and Hard development arms before any external evaluation.",
+  "runtime_authorization": "none_candidate_cannot_select_or_remove",
+  "development_matrix": ["code_raw_like", "math_raw_like", "general_text_raw_like"],
+  "arms": ["weak", "mid", "hard"],
+  "required_artifacts": ["frozen_weak_stage_c_jsonl", "frozen_group_membership_manifest", "mid_quality_development_report", "hard_quality_candidate_plan"],
+  "invariants": ["every_weak_chunk_has_exactly_one_group_membership", "mid_decides_every_group", "hard_plan_partitions_every_group", "reason_code_for_every_exclusion", "composition_and_coverage_audit_only"],
+  "excluded_inputs": ["legacy_stage_c2_proxy_artifacts", "Quality", "Utility", "NLL", "benchmark_outcomes", "source_identity", "domain", "target_retention_fraction"],
+  "external_evaluation": {
+    "training_budget": "natural_budget_per_materialized_arm",
+    "minimum_seeds": [101, 202, 303],
+    "feedback_into_policy": false,
+    "required_before_claim": "benchmark_disjoint_confirmatory_protocol"
+  },
+  "claim_boundary": "A development arm report verifies materialization integrity and does not establish that Mid or Hard is beneficial or runtime-ready."
+}

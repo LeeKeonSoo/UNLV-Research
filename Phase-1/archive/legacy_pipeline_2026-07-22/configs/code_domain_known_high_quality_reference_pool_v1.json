@@ -1,0 +1,74 @@
+{
+  "schema_version": "code-domain-known-high-quality-reference-pool-v1",
+  "status": "frozen_before_reference_content_fetch",
+  "purpose": "Build an allowlisted high-quality Python reference pool for an equal-token reference arm. This pool is not the raw candidate corpus and must not tune Stage B.",
+  "selection_rule": "Use fixed public repositories with permissive licenses and broad Python ecosystem recognition. Resolve each default branch to a commit before file content fetch, then sample eligible Python source files by a stable hash of repository, commit, path, and seed.",
+  "seed": 20260619,
+  "maximum_files_per_repository": 40,
+  "maximum_file_bytes": 262144,
+  "allowed_suffixes": [
+    ".py"
+  ],
+  "exclude_path_parts": [
+    ".github",
+    "benchmarks",
+    "build",
+    "dist",
+    "docs",
+    "examples",
+    "scripts",
+    "test",
+    "tests",
+    "vendor",
+    "vendored"
+  ],
+  "repositories": [
+    {
+      "repository_identity": "pallets/flask",
+      "expected_license": "BSD-3-Clause",
+      "quality_basis": "Widely used Python web framework with mature review and maintenance practices."
+    },
+    {
+      "repository_identity": "pallets/click",
+      "expected_license": "BSD-3-Clause",
+      "quality_basis": "Widely used Python CLI framework with compact, mature source code."
+    },
+    {
+      "repository_identity": "psf/requests",
+      "expected_license": "Apache-2.0",
+      "quality_basis": "Canonical Python HTTP library with stable public maintenance history."
+    },
+    {
+      "repository_identity": "pytest-dev/pytest",
+      "expected_license": "MIT",
+      "quality_basis": "Core Python testing framework with extensive public maintenance and review."
+    },
+    {
+      "repository_identity": "pydantic/pydantic",
+      "expected_license": "MIT",
+      "quality_basis": "Widely used Python data validation library with modern typing-heavy code."
+    },
+    {
+      "repository_identity": "python-poetry/poetry",
+      "expected_license": "MIT",
+      "quality_basis": "Widely used Python packaging tool with production-grade application code."
+    },
+    {
+      "repository_identity": "scikit-learn/scikit-learn",
+      "expected_license": "BSD-3-Clause",
+      "quality_basis": "Mature scientific Python library with strong review norms and stable APIs."
+    },
+    {
+      "repository_identity": "huggingface/transformers",
+      "expected_license": "Apache-2.0",
+      "quality_basis": "Large, actively maintained Python ML library with broad ecosystem usage."
+    }
+  ],
+  "forbidden_uses": [
+    "using this pool as the raw candidate corpus",
+    "using target-model Utility, benchmark outcomes, or human/LLM review labels to choose files",
+    "changing Stage-B objective weights based on this pool"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Known-high-quality reference-pool construction only; no target-model training or Utility claim."
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "temporal-code-path-stratified-tranche-v2",
+  "status": "frozen_after_path_metadata_feasibility_only_before_content_fetch",
+  "supersedes": "configs/temporal_code_path_stratified_tranche_v1.json",
+  "amendment_reason": "The v1 frame correctly abstained because development and confirmatory had zero test-only representative PR candidates. This amendment uses path-metadata availability only and does not use file content, Stage outcomes, Utility, benchmarks, or review labels.",
+  "purpose": "Create a fresh temporal-code tranche whose sampling frame can test a code-curation claim without documentation-only or single-repository dominance.",
+  "one_pull_request_per_repository": true,
+  "representative_pull_request_priority": [
+    "code_and_test",
+    "code_only"
+  ],
+  "required_repositories_by_split_and_stratum": {
+    "train": {
+      "code_and_test": 14,
+      "code_only": 10
+    },
+    "development": {
+      "code_and_test": 5,
+      "code_only": 3
+    },
+    "confirmatory": {
+      "code_and_test": 5,
+      "code_only": 3
+    }
+  },
+  "selection_uses": [
+    "assigned split",
+    "path-only changed-file metadata",
+    "tree path count",
+    "normalized repository identity",
+    "pull request number"
+  ],
+  "selection_forbids": [
+    "file content",
+    "pull request title or body",
+    "Stage-0 outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "failure_decision": "insufficient_sampling_frame",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Fresh path-stratified collection frame only; no Stage-B, Stage-C, Utility, or training-benefit claim."
+}

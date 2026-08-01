@@ -1,0 +1,28 @@
+{
+  "schema_version": "code-rawsafe-7m-external-validation-study-v1",
+  "status": "frozen_before_model_outcomes",
+  "purpose": "Compare the frozen Stage-0 Raw-safe corpus with the frozen Stage-B Curated subset under natural training budgets.",
+  "training_sources": {
+    "raw_safe_release_candidates": "D:\\UNLV-Research\\code_5m_corpus_v2\\stage0_output\\release_candidates.jsonl",
+    "curated_stage_b_selected": "D:\\UNLV-Research\\code_5m_corpus_v2\\stages\\stage_b_selected.jsonl"
+  },
+  "holdout_contract": {
+    "development": {
+      "source": "outputs/raw_corpus_matrix_stage_c_v1/holdouts/development/stage_a_pass.jsonl",
+      "stage_b_read": false
+    }
+  },
+  "benchmark": {
+    "family": "EvalPlus HumanEval+ and MBPP+",
+    "split": "outputs/temporal_code_collection/evalplus_guardrail_split_plan.json",
+    "role": "development_comparative_only",
+    "contamination_caveat": "The raw Stack-derived corpus has heuristic benchmark-name quarantine but no task-hash exclusion audit; results are non-confirmatory comparative evidence."
+  },
+  "benchmark_contamination_boundary": "development_comparative_only",
+  "stage_b_isolation": {
+    "utility_available_to_stage_b": false,
+    "benchmark_outcomes_available_to_stage_b": false,
+    "source_tier_available_to_stage_b": false
+  },
+  "claim_boundary": "Development comparison only. Do not use outcomes to alter Stage B or claim contamination-free confirmatory benchmark performance."
+}

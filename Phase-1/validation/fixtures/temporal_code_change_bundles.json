@@ -1,0 +1,196 @@
+{
+  "bundles": [
+    {
+      "schema_version": "temporal-code-change-bundle-v1",
+      "bundle_id": "fixture-train-clean",
+      "repository_identity": "https://github.com/fixture/repo0.git",
+      "repository_url": "https://github.com/fixture/repo0",
+      "repository_rights": {
+        "status": "allowed",
+        "license": "MIT"
+      },
+      "parent_commit": "1111111111111111111111111111111111111111",
+      "merge_commit": "2222222222222222222222222222222222222222",
+      "merge_timestamp": "2025-08-10T00:00:00Z",
+      "provenance": {
+        "collector": "fixture-collector",
+        "collector_version": "v1",
+        "collected_at": "2026-06-11T00:00:00Z",
+        "source_urls": [
+          "https://github.com/fixture/repo0/pull/1"
+        ]
+      },
+      "execution_validation": {
+        "test_suite_present": true,
+        "test_command": "python -m pytest -q",
+        "test_command_verified": true,
+        "parent_checkout_reproducible": true,
+        "merge_checkout_reproducible": true
+      },
+      "prose": {
+        "title": "Fix parser behavior",
+        "body": "This prose is retained for evaluation context only.",
+        "training_authorized": false
+      },
+      "files": [
+        {
+          "path": "src/parser.py",
+          "change_type": "modified",
+          "content_type": "code",
+          "before_text": "def parse(x):\n    return None\n",
+          "after_text": "def parse(x):\n    return x.strip()\n",
+          "rights": {
+            "status": "allowed",
+            "license": "MIT"
+          },
+          "generated": false,
+          "vendored": false,
+          "binary": false,
+          "secret_detected": false,
+          "pii_detected": false
+        },
+        {
+          "path": "tests/test_parser.py",
+          "change_type": "added",
+          "content_type": "test",
+          "before_text": null,
+          "after_text": "def test_parse():\n    assert parse(' x ') == 'x'\n",
+          "rights": {
+            "status": "allowed",
+            "license": "MIT"
+          },
+          "generated": false,
+          "vendored": false,
+          "binary": false,
+          "secret_detected": false,
+          "pii_detected": false
+        },
+        {
+          "path": "vendor/helper.py",
+          "change_type": "modified",
+          "content_type": "code",
+          "before_text": "OLD = 1\n",
+          "after_text": "OLD = 2\n",
+          "rights": {
+            "status": "allowed",
+            "license": "MIT"
+          },
+          "generated": false,
+          "vendored": true,
+          "binary": false,
+          "secret_detected": false,
+          "pii_detected": false
+        }
+      ],
+      "content_signatures": []
+    },
+    {
+      "schema_version": "temporal-code-change-bundle-v1",
+      "bundle_id": "fixture-dev-window-repo-mismatch",
+      "repository_identity": "fixture/repo0",
+      "repository_url": "https://github.com/fixture/repo0",
+      "repository_rights": {
+        "status": "allowed",
+        "license": "MIT"
+      },
+      "parent_commit": "3333333333333333333333333333333333333333",
+      "merge_commit": "4444444444444444444444444444444444444444",
+      "merge_timestamp": "2026-01-15T00:00:00Z",
+      "provenance": {
+        "collector": "fixture-collector",
+        "collector_version": "v1",
+        "collected_at": "2026-06-11T00:00:00Z",
+        "source_urls": [
+          "https://github.com/fixture/repo0/pull/2"
+        ]
+      },
+      "execution_validation": {
+        "test_suite_present": true,
+        "test_command": "python -m pytest -q",
+        "test_command_verified": true,
+        "parent_checkout_reproducible": true,
+        "merge_checkout_reproducible": true
+      },
+      "prose": {
+        "title": "Later change in a train-assigned repository",
+        "body": null,
+        "training_authorized": false
+      },
+      "files": [
+        {
+          "path": "src/later.py",
+          "change_type": "added",
+          "content_type": "code",
+          "before_text": null,
+          "after_text": "VALUE = 1\n",
+          "rights": {
+            "status": "allowed",
+            "license": "MIT"
+          },
+          "generated": false,
+          "vendored": false,
+          "binary": false,
+          "secret_detected": false,
+          "pii_detected": false
+        }
+      ],
+      "content_signatures": []
+    },
+    {
+      "schema_version": "temporal-code-change-bundle-v1",
+      "bundle_id": "fixture-benchmark-repository",
+      "repository_identity": "openai/humaneval",
+      "repository_url": "https://github.com/openai/human-eval",
+      "repository_rights": {
+        "status": "allowed",
+        "license": "MIT"
+      },
+      "parent_commit": "5555555555555555555555555555555555555555",
+      "merge_commit": "6666666666666666666666666666666666666666",
+      "merge_timestamp": "2025-09-01T00:00:00Z",
+      "provenance": {
+        "collector": "fixture-collector",
+        "collector_version": "v1",
+        "collected_at": "2026-06-11T00:00:00Z",
+        "source_urls": [
+          "https://github.com/openai/human-eval/pull/1"
+        ]
+      },
+      "execution_validation": {
+        "test_suite_present": true,
+        "test_command": "python -m pytest -q",
+        "test_command_verified": true,
+        "parent_checkout_reproducible": true,
+        "merge_checkout_reproducible": true
+      },
+      "prose": {
+        "title": "Benchmark content",
+        "body": null,
+        "training_authorized": false
+      },
+      "files": [
+        {
+          "path": "benchmark/task.py",
+          "change_type": "modified",
+          "content_type": "code",
+          "before_text": "pass\n",
+          "after_text": "return 1\n",
+          "rights": {
+            "status": "allowed",
+            "license": "MIT"
+          },
+          "generated": false,
+          "vendored": false,
+          "binary": false,
+          "secret_detected": false,
+          "pii_detected": false
+        }
+      ],
+      "content_signatures": [
+        {
+          "normalized_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": "general-provider-candidate-decision-v2",
+  "decision": "reject_all_evaluated_general_provider_candidates",
+  "scope": "DCLM_fastText_and_FineWeb_Edu_on_frozen_Common_Pile_General_controls",
+  "protocol": {
+    "path": "configs/general_provider_candidate_protocol_v2.json",
+    "sha256": "086d141c7e7df9346260a8a275493c44d4e087ccd4c64314907f0500d47bfb9d"
+  },
+  "shared_artifacts": {
+    "clean_controls": {
+      "path": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+      "sha256": "17d796c1237b767808939bed2dab1b1a2c5868d9b672fde6fb01f27cabe837c4",
+      "records": 1200
+    },
+    "stress_fixtures": {
+      "path": "D:/UNLV-Research/positive_quality_v2/general/stress_fixtures_v2.jsonl",
+      "sha256": "19d7dcc0cef635ee0f592aa33f8b75dedf43a4fb28a572a18cbfb348d8bc8121",
+      "records": 1350
+    }
+  },
+  "candidates": [
+    {
+      "provider_id": "mlfoundations/fasttext-oh-eli5",
+      "revision": "cd8b714a90f2dbcd3b02cf5fc972e5d7c7f4f107",
+      "model_weight_sha256": "f8da53846636ce5ed2836f95e2fffada6aade035e2169af1d6c099bda2674915",
+      "supported_heads": ["route_specific_evidence"],
+      "complete_quality_bundle": false,
+      "decision": "reject",
+      "blocking_gates": ["source_transfer", "semantic_destruction"],
+      "measurements": {
+        "regulations_leave_one_source_out_failures": 17,
+        "regulations_leave_one_source_out_trials": 400,
+        "max_leave_one_source_out_wilson_upper_bound": 0.06239167264112932,
+        "semantic_destruction_outscore_violations": 181,
+        "semantic_destruction_trials": 450,
+        "semantic_destruction_wilson_upper_bound": 0.44071833251940595,
+        "html_decision_flips": 0,
+        "markdown_decision_flips": 0
+      },
+      "artifacts": {
+        "clean_scores_sha256": "687e9c5579e0acc33937ea14fbdd735a10ec2f0736b585c9c0e97c1df4eced03",
+        "stress_scores_sha256": "612bd57aaea6b8ec85f61635642c4e23231c0b45338d2da36d1d7c8430f83c06",
+        "audit_report_sha256": "d3a2936b90002e3a5843915203460c0def304e5454eefd1685cbb287ef6b7431"
+      }
+    },
+    {
+      "provider_id": "HuggingFaceFW/fineweb-edu-classifier",
+      "revision": "284663cbb2dabf9bda30d8f8cc49601251ee1631",
+      "model_weight_sha256": "27fbfe65ce71c3fc50df7b71246c83fe9b6da329f9572d957a9355f7d290a1bc",
+      "supported_heads": ["route_specific_evidence"],
+      "complete_quality_bundle": false,
+      "decision": "reject",
+      "blocking_gates": ["source_transfer", "semantic_destruction"],
+      "measurements": {
+        "regulations_leave_one_source_out_failures": 18,
+        "regulations_leave_one_source_out_trials": 400,
+        "max_leave_one_source_out_wilson_upper_bound": 0.06532153832422491,
+        "semantic_destruction_outscore_violations": 139,
+        "semantic_destruction_trials": 450,
+        "semantic_destruction_wilson_upper_bound": 0.3457678994231133,
+        "html_decision_flips": 0,
+        "markdown_decision_flips": 0
+      },
+      "artifacts": {
+        "clean_scores_sha256": "e4d465843d03157bc65326b4ef08f1c54b7d39d5c927887b7c11dac460e7614e",
+        "stress_scores_sha256": "cab119c092a76c17b3e74b9eccffe2fe7ec25808634d61bd93f1b7bc59adf9ef",
+        "audit_report_sha256": "4191fbd8e37accbfee71a7b0d3f09ec5104e10511e918bb687e4df59d7a7df20"
+      }
+    }
+  ],
+  "ensemble_activation": false,
+  "ensemble_reason": "Two rejected route-specific components cannot be combined to manufacture substantive-payload evidence or runtime authority.",
+  "runtime_activation": false,
+  "external_results_visible": false,
+  "target_retention_fraction_used": false
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "temporal-code-swebench-metadata-acquisition-v1",
+  "status": "frozen_before_task_metadata_acquisition_or_model_outcomes",
+  "purpose": "Measure whether SWE-bench Verified can supply repository- and time-disjoint executable-harness candidates without retaining task prompts, patches, tests, solutions, or outcomes.",
+  "source": {
+    "dataset": "SWE-bench/SWE-bench_Verified",
+    "config": "default",
+    "split": "test",
+    "task_class": "repository_patch"
+  },
+  "persisted_fields": [
+    "instance_id",
+    "repository_identity",
+    "base_commit",
+    "created_at",
+    "version",
+    "assigned_split",
+    "split_bucket"
+  ],
+  "forbidden_persisted_fields": [
+    "problem_statement",
+    "hints_text",
+    "patch",
+    "test_patch",
+    "FAIL_TO_PASS",
+    "PASS_TO_PASS",
+    "solution",
+    "model_outcome"
+  ],
+  "split_rule": {
+    "repository_bucket_algorithm": "sha256(normalized_repository_identity) modulo 100",
+    "development_repository_buckets": [0, 49],
+    "confirmatory_repository_buckets": [50, 99],
+    "development_task_end_inclusive": "2022-12-31T23:59:59Z",
+    "confirmatory_task_start_inclusive": "2023-01-01T00:00:00Z",
+    "middle_or_missing_timestamp_action": "exclude",
+    "repository_identity_cannot_cross_splits": true
+  },
+  "e2_boundary": "SWE-bench Verified membership is candidate-source metadata only and does not establish local E2 reproducibility.",
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Outcome-free task-source feasibility profiling only."
+}

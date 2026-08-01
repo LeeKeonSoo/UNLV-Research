@@ -1,0 +1,206 @@
+{
+  "schema_version": "weak-development-gate-fixtures-v1",
+  "scenarios": [
+    {
+      "id": "code-clean",
+      "domain": "code",
+      "scenario_type": "clean",
+      "clean_retention_required": true,
+      "expected_all_rule_reason_codes": [],
+      "records": [
+        {
+          "id": "code-clean-1",
+          "text": "def add(left, right):\n    return left + right\n\nThe function returns a sum without side effects."
+        }
+      ]
+    },
+    {
+      "id": "code-duplicate-heavy",
+      "domain": "code",
+      "scenario_type": "duplicate_heavy",
+      "expected_all_rule_reason_codes": [
+        "normalized_exact_duplicate"
+      ],
+      "records": [
+        {
+          "id": "code-duplicate-1",
+          "text": "def square(value):\n    return value * value\n\nThe function computes a square deterministically."
+        },
+        {
+          "id": "code-duplicate-2",
+          "text": "def square(value):\n    return value * value\n\nThe function computes a square deterministically."
+        }
+      ]
+    },
+    {
+      "id": "code-malformed",
+      "domain": "code",
+      "scenario_type": "malformed",
+      "expected_all_rule_reason_codes": [
+        "payload_absence"
+      ],
+      "records": [
+        {
+          "id": "code-empty",
+          "text": ""
+        },
+        {
+          "id": "code-retained",
+          "text": "def add(left, right):\n    return left + right\n\nThe function returns a sum without side effects."
+        }
+      ]
+    },
+    {
+      "id": "math-clean",
+      "domain": "math",
+      "scenario_type": "clean",
+      "clean_retention_required": true,
+      "expected_all_rule_reason_codes": [],
+      "records": [
+        {
+          "id": "math-clean-1",
+          "text": "Theorem: the derivative of a sum is the sum of the derivatives. Proof: apply the limit definition term by term."
+        }
+      ]
+    },
+    {
+      "id": "math-duplicate-heavy",
+      "domain": "math",
+      "scenario_type": "duplicate_heavy",
+      "expected_all_rule_reason_codes": [
+        "normalized_exact_duplicate"
+      ],
+      "records": [
+        {
+          "id": "math-duplicate-1",
+          "text": "Lemma: if a sequence converges, every subsequence converges to the same limit."
+        },
+        {
+          "id": "math-duplicate-2",
+          "text": "Lemma: if a sequence converges, every subsequence converges to the same limit."
+        }
+      ]
+    },
+    {
+      "id": "math-malformed",
+      "domain": "math",
+      "scenario_type": "malformed",
+      "expected_all_rule_reason_codes": [
+        "payload_absence"
+      ],
+      "records": [
+        {
+          "id": "math-empty",
+          "text": ""
+        },
+        {
+          "id": "math-retained",
+          "text": "Theorem: the derivative of a sum is the sum of the derivatives. Proof: apply the limit definition term by term."
+        }
+      ]
+    },
+    {
+      "id": "general-clean",
+      "domain": "general",
+      "scenario_type": "clean",
+      "clean_retention_required": true,
+      "expected_all_rule_reason_codes": [],
+      "records": [
+        {
+          "id": "general-clean-1",
+          "text": "A field notebook records observations, methods, uncertainty, and the conditions under which a result was obtained."
+        }
+      ]
+    },
+    {
+      "id": "general-duplicate-heavy",
+      "domain": "general",
+      "scenario_type": "duplicate_heavy",
+      "expected_all_rule_reason_codes": [
+        "normalized_exact_duplicate"
+      ],
+      "records": [
+        {
+          "id": "general-duplicate-1",
+          "text": "A careful explanation distinguishes evidence, inference, and an open question."
+        },
+        {
+          "id": "general-duplicate-2",
+          "text": "A careful explanation distinguishes evidence, inference, and an open question."
+        }
+      ]
+    },
+    {
+      "id": "general-malformed",
+      "domain": "general",
+      "scenario_type": "malformed",
+      "expected_all_rule_reason_codes": [
+        "payload_absence"
+      ],
+      "records": [
+        {
+          "id": "general-empty",
+          "text": ""
+        },
+        {
+          "id": "general-retained",
+          "text": "A field notebook records observations, methods, uncertainty, and the conditions under which a result was obtained."
+        }
+      ]
+    },
+    {
+      "id": "code-boilerplate-heavy",
+      "domain": "code",
+      "scenario_type": "boilerplate_heavy",
+      "expected_all_rule_reason_codes": [
+        "license_comment_only_chunk"
+      ],
+      "records": [
+        {
+          "id": "code-license-only",
+          "text": "# Copyright 2026 Fixture Authors\n# SPDX-License-Identifier: Apache-2.0\n"
+        },
+        {
+          "id": "code-payload",
+          "text": "def normalize(value):\n    return value.strip().casefold()"
+        }
+      ]
+    },
+    {
+      "id": "math-boilerplate-heavy",
+      "domain": "math",
+      "scenario_type": "boilerplate_heavy",
+      "expected_all_rule_reason_codes": [
+        "empty_html_shell"
+      ],
+      "records": [
+        {
+          "id": "math-empty-shell",
+          "text": "<!doctype html><html><head><meta charset=\"utf-8\"><title></title></head><body></body></html>"
+        },
+        {
+          "id": "math-payload",
+          "text": "The integral of a sum is the sum of the integrals when the usual hypotheses hold."
+        }
+      ]
+    },
+    {
+      "id": "general-boilerplate-heavy",
+      "domain": "general",
+      "scenario_type": "boilerplate_heavy",
+      "expected_all_rule_reason_codes": [
+        "explicit_web_chrome_only_chunk"
+      ],
+      "records": [
+        {
+          "id": "general-web-chrome",
+          "text": "Cookie preferences\nAccept all\nReject all\nManage preferences\nPrivacy policy\nTerms of service"
+        },
+        {
+          "id": "general-payload",
+          "text": "A consent policy should explain what data is collected and how a person can withdraw permission."
+        }
+      ]
+    }
+  ]
+}

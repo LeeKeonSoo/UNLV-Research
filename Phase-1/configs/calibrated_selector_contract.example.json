@@ -1,0 +1,21 @@
+{
+  "schema_version": "calibrated-selector-contract-v1",
+  "status": "template_not_runnable",
+  "profile_id": "calibrated_selector_template_v1",
+  "purpose": "Template for a scoped reference-distribution selector. It does not define intrinsic Quality and cannot select data.",
+  "selection_hypothesis": null,
+  "score_direction": null,
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false
+  },
+  "artifacts": {
+    "reference_data": null,
+    "held_out_calibration": null,
+    "scope_audit": null,
+    "external_validation_plan": null
+  },
+  "false_positive_audit": {"status": "not_started"},
+  "activation": {"status": "not_implemented"}
+}

@@ -1,0 +1,272 @@
+{
+  "schema_version": "content-routing-quality-coverage-contract-v2",
+  "status": "design_frozen_not_runtime_active",
+  "runtime_activation": false,
+  "current_runtime_contract": "configs/curation_contract.json",
+  "supersedes_design_contract": "configs/positive_quality_coverage_contract_v1.json",
+  "purpose": "Freeze shared observable content routing, route-conditioned Quality, and audit-only Coverage without changing the active A-B-C runtime.",
+  "canonical_cores": [
+    "validity",
+    "redundancy",
+    "coverage",
+    "quality"
+  ],
+  "content_router": {
+    "is_core": false,
+    "authority": "shared_observable_metadata_only",
+    "consumers": [
+      "quality",
+      "coverage"
+    ],
+    "input": [
+      "chunk_text",
+      "runtime_local_normalized_structure"
+    ],
+    "forbidden_inputs": [
+      "source_identity",
+      "source_tier",
+      "dataset_identity",
+      "path",
+      "human_quality_label",
+      "Utility",
+      "NLL",
+      "benchmark_outcomes",
+      "target_retention_fraction",
+      "declared_domain_quota"
+    ],
+    "classification": "multi_label_with_mixed_unknown_and_ood",
+    "axes": [
+      "content_format",
+      "structural_state",
+      "language_script",
+      "semantic_domain"
+    ],
+    "axis_examples": {
+      "content_format": [
+        "prose",
+        "source_code",
+        "mathematical_notation",
+        "table",
+        "dialogue",
+        "question_answer",
+        "instruction",
+        "log",
+        "markup",
+        "mixed",
+        "unknown"
+      ],
+      "structural_state": [
+        "complete_document",
+        "complete_artifact",
+        "snippet",
+        "template",
+        "generated_artifact",
+        "partial",
+        "mixed",
+        "unknown"
+      ],
+      "language_script": [
+        "latin",
+        "hangul",
+        "han",
+        "kana",
+        "cyrillic",
+        "arabic",
+        "devanagari",
+        "mixed",
+        "unknown"
+      ],
+      "semantic_domain": [
+        "code",
+        "math",
+        "science",
+        "medicine",
+        "law",
+        "finance_economics",
+        "history_humanities",
+        "general_knowledge",
+        "mixed",
+        "unknown"
+      ]
+    },
+    "quality_routing_priority": [
+      "content_format",
+      "structural_state",
+      "language_script",
+      "semantic_domain"
+    ],
+    "training_stage_or_objective_inferred": false,
+    "may_select_or_remove": false,
+    "may_assign_importance": false,
+    "may_enforce_target_mix_or_quota": false,
+    "required_output": [
+      "route_labels",
+      "route_status",
+      "route_confidence",
+      "evidence_codes",
+      "router_version"
+    ],
+    "confidence_semantics": "A calibrated routing confidence under a declared route, never a Quality score.",
+    "mixed_document_rule": "Route at the smallest stable chunk or span that preserves context; never force one exclusive domain label on a mixed unit."
+  },
+  "validity": {
+    "definition": "Determine whether text payload is interpretable under closed integrity rules, while preferring reversible repair or rechunking over deletion.",
+    "owns_structural_coherence_and_integrity": true,
+    "actions": [
+      "repair",
+      "rechunk",
+      "quarantine",
+      "reject"
+    ],
+    "action_order": "repair_then_rechunk_then_quarantine_then_reject",
+    "original_text_preserved_for_repair_or_rechunk": true,
+    "reject_boundary": "Reject only an unrecoverable unit with no interpretable text payload after declared repair and rechunk options are exhausted.",
+    "candidate_evidence": [
+      "forbidden_control_character",
+      "unambiguous_encoding_corruption",
+      "unclosed_registered_structure",
+      "dangling_fence",
+      "trailing_delimiter_corruption"
+    ],
+    "migration": "The explicit structural coherence guard is a candidate Validity policy. Historical Quality-head artifacts remain immutable development records and have no runtime authority."
+  },
+  "redundancy": {
+    "definition": "Reduce repeated learning payload while preserving deterministic representative linkage.",
+    "router_dependency": "none_required",
+    "route_labels_may_authorize_removal": false,
+    "representative_required": true
+  },
+  "quality": {
+    "definition": "route_conditioned_positive_retention_eligibility",
+    "owns_structural_coherence_and_integrity": false,
+    "routing_precondition": {
+      "name": "route_confidence",
+      "owner": "content_router_v2",
+      "quality_evidence": false,
+      "may_authorize_removal": false,
+      "failure_action": "abstain_retain"
+    },
+    "registered_routes": [
+      "general_prose",
+      "code_artifact",
+      "mathematical_content",
+      "technical_documentation",
+      "conversation",
+      "instruction",
+      "table_structured_data",
+      "mixed",
+      "unknown"
+    ],
+    "required_evidence": [
+      "substantive_payload",
+      "route_specific_evidence"
+    ],
+    "combination": "conjunctive_per_registered_route_without_weighted_sum",
+    "route_label_is_quality_evidence": false,
+    "domain_membership_may_authorize_removal": false,
+    "semantic_domain_role": "May select an additional registered validator only after format and structural scope are established; it never establishes retention eligibility by itself.",
+    "common_rules": "Closed domain-independent non-payload policies may run on every route, including unknown, when their own trigger and false-positive gates are satisfied.",
+    "route_specific_rule": "A route-specific policy may act only when routing confidence, scope preconditions, substantive payload evidence, and route-specific evidence all use frozen calibrated boundaries.",
+    "unknown_mixed_or_ood_action": "common_rules_only_then_abstain_retain",
+    "decisions": [
+      "eligible_keep",
+      "reject",
+      "abstain_retain"
+    ],
+    "global_weighted_score_allowed": false,
+    "intrinsic_quality_claim_allowed": false,
+    "target_retention_fraction_allowed": false,
+    "benchmark_or_utility_input_allowed": false,
+    "evidence_gate": "configs/quality_route_evidence_gate_v2.json",
+    "candidate_evidence_adapter": "route_quality_evidence_candidates.py",
+    "candidate_evidence_registry": "configs/route_quality_evidence_candidates_v1.json",
+    "registered_route_evidence_status": {
+      "general_prose": "missing_substantive_payload_and_indeterminate_route_specific_evidence",
+      "code_artifact": "missing_substantive_payload_and_indeterminate_route_specific_evidence",
+      "mathematical_content": "both_heads_indeterminate",
+      "technical_documentation": "both_heads_missing",
+      "conversation": "both_heads_missing",
+      "instruction": "both_heads_missing",
+      "table_structured_data": "both_heads_missing"
+    },
+    "mode_boundary": {
+      "normal": "Retain abstentions; remove only closed explicit rejections.",
+      "hard": "May exclude an abstention only for a separately calibrated in-scope route; unknown, mixed, and OOD remain retained until such a route exists."
+    }
+  },
+  "coverage": {
+    "definition": "Audit representation and loss across shared observable routing axes.",
+    "authority": "representation_and_loss_audit_only",
+    "consumes_shared_router_output": true,
+    "may_select_or_remove": false,
+    "may_assign_cross_stratum_importance": false,
+    "may_enforce_target_mix_or_quota": false,
+    "may_change_quality_threshold": false,
+    "may_rescue_quality_reject": false,
+    "required_audits": [
+      "raw_and_curated_document_share_by_axis",
+      "raw_and_curated_token_share_by_axis",
+      "stratum_retention_rate",
+      "semantic_cluster_survival",
+      "tail_cluster_loss",
+      "unknown_mixed_and_ood_rate",
+      "redundancy_representative_presence"
+    ],
+    "release_role": "May block a release when required audit evidence or representative linkage is missing, but cannot alter the curated membership to satisfy the audit."
+  },
+  "prospective_stage_contract": {
+    "stage_a": "normalization, reversible repair, and source-record integrity handling",
+    "stage_b": "chunk Validity hard gate and exact Redundancy gate",
+    "stage_c_order": [
+      "shared_content_routing",
+      "route_conditioned_quality_gate",
+      "non_exact_redundancy_representative_resolution",
+      "coverage_pre_post_loss_audit",
+      "reason_coded_materialization"
+    ],
+    "external_evaluation": "outside_the_curation_runtime_and_never_selector_visible"
+  },
+  "required_decision_trace": [
+    "chunk_uid",
+    "router_version",
+    "route_labels_status_confidence_and_evidence_codes",
+    "quality_evidence_head_results",
+    "policy_ids",
+    "reason_codes",
+    "representative_linkage_when_applicable",
+    "token_delta",
+    "coverage_audit_tags"
+  ],
+  "activation_gates": [
+    "router_fixture_matrix_passed_for_all_axes_and_unknown_mixed_ood",
+    "router_source_and_dataset_disjoint_calibration_passed",
+    "validity_coherence_actions_split_into_repair_rechunk_quarantine_and_reject",
+    "each_quality_route_has_routing_precondition_and_complete_two_head_quality_evidence_or_abstains",
+    "route_labels_are_excluded_as_standalone_quality_evidence",
+    "coverage_selection_leakage_tests_passed",
+    "normal_and_hard_development_ablations_complete",
+    "one_profile_frozen_before_confirmatory_external_evaluation",
+    "three_seed_natural_budget_external_evaluation_complete"
+  ],
+  "completed_candidate_blocks": [
+    "four_axis_content_router_with_mixed_unknown_and_ood_fixtures",
+    "validity_repair_rechunk_quarantine_reject_decision_with_trace",
+    "routing_precondition_and_two_head_route_conditioned_quality_decision_with_abstention",
+    "frozen_v2_route_evidence_gate_with_fail_closed_general_code_math_decisions"
+  ],
+  "activation_rule": "atomic_contract_runtime_tests_and_docs_switch_after_all_gates_pass",
+  "claim_boundary": {
+    "allowed": [
+      "The framework routes observable content structure to calibrated Quality policies and audits resulting representation change.",
+      "Coverage reports domain and format composition without assigning importance or enforcing a mixture.",
+      "Unknown, mixed, and out-of-distribution content is retained when route-specific evidence is insufficient."
+    ],
+    "forbidden": [
+      "Coverage determines Quality.",
+      "Domain membership is evidence that a unit should be kept or removed.",
+      "The framework measures universal intrinsic data Quality.",
+      "A target domain ratio or retained fraction is a curation objective.",
+      "Benchmark outcomes or Utility are runtime selection inputs."
+    ]
+  }
+}

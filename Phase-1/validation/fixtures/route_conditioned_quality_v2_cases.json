@@ -1,0 +1,115 @@
+{
+  "schema_version": "route-conditioned-quality-v2-fixtures",
+  "cases": [
+    {
+      "id": "code_routing_precondition_and_two_quality_heads_pass",
+      "text": "import math\ndef area(radius):\n    return math.pi * radius * radius",
+      "bundles": [
+        {
+          "route": "code_artifact",
+          "substantive_payload": "pass",
+          "route_specific_evidence": "pass"
+        }
+      ],
+      "expected_decision": "eligible_keep",
+      "expected_reason_code": "quality_both_evidence_heads_passed"
+    },
+    {
+      "id": "route_label_without_evidence_abstains",
+      "text": "import math\ndef area(radius):\n    return math.pi * radius * radius",
+      "bundles": [],
+      "expected_decision": "abstain_retain",
+      "expected_reason_code": "quality_evidence_incomplete"
+    },
+    {
+      "id": "named_substantive_negative_boundary",
+      "text": "import math\ndef area(radius):\n    return math.pi * radius * radius",
+      "bundles": [
+        {
+          "route": "code_artifact",
+          "substantive_payload": "negative",
+          "route_specific_evidence": "pass"
+        }
+      ],
+      "expected_decision": "reject",
+      "expected_reason_code": "quality_calibrated_negative_boundary"
+    },
+    {
+      "id": "indeterminate_head_abstains",
+      "text": "import math\ndef area(radius):\n    return math.pi * radius * radius",
+      "bundles": [
+        {
+          "route": "code_artifact",
+          "substantive_payload": "pass",
+          "route_specific_evidence": "indeterminate"
+        }
+      ],
+      "expected_decision": "abstain_retain",
+      "expected_reason_code": "quality_evidence_incomplete"
+    },
+    {
+      "id": "wrong_route_bundle_cannot_decide",
+      "text": "import math\ndef area(radius):\n    return math.pi * radius * radius",
+      "bundles": [
+        {
+          "route": "mathematical_content",
+          "substantive_payload": "pass",
+          "route_specific_evidence": "pass"
+        }
+      ],
+      "expected_decision": "abstain_retain",
+      "expected_reason_code": "quality_evidence_incomplete"
+    },
+    {
+      "id": "math_routing_precondition_and_two_quality_heads_pass",
+      "text": "The theorem follows from the matrix equation. Proof: use \\frac{1}{2} and \\sum_i x_i.",
+      "bundles": [
+        {
+          "route": "mathematical_content",
+          "substantive_payload": "pass",
+          "route_specific_evidence": "pass"
+        }
+      ],
+      "expected_decision": "eligible_keep",
+      "expected_reason_code": "quality_both_evidence_heads_passed"
+    },
+    {
+      "id": "mixed_content_abstains_even_with_route_bundles",
+      "text": "Ava: Please inspect this function.\nBen: I will run it now.\nAva: Send me the result.\ndef solve(value):\n    return value + 1\nimport math",
+      "bundles": [
+        {
+          "route": "code_artifact",
+          "substantive_payload": "pass",
+          "route_specific_evidence": "pass"
+        },
+        {
+          "route": "conversation",
+          "substantive_payload": "pass",
+          "route_specific_evidence": "pass"
+        }
+      ],
+      "expected_decision": "abstain_retain",
+      "expected_reason_code": "quality_routing_mixed"
+    },
+    {
+      "id": "unknown_content_abstains",
+      "text": "@@@ ### 12345 === ???",
+      "bundles": [],
+      "expected_decision": "abstain_retain",
+      "expected_reason_code": "quality_routing_unknown"
+    },
+    {
+      "id": "unsupported_script_abstains",
+      "text": "\u0391\u03c5\u03c4\u03cc \u03b5\u03af\u03bd\u03b1\u03b9 \u03ad\u03bd\u03b1 \u03c0\u03b1\u03c1\u03ac\u03b4\u03b5\u03b9\u03b3\u03bc\u03b1 \u03ba\u03b5\u03b9\u03bc\u03ad\u03bd\u03bf\u03c5 \u03bc\u03b5 \u03c0\u03bf\u03bb\u03bb\u03ad\u03c2 \u03bb\u03ad\u03be\u03b5\u03b9\u03c2. \u03a0\u03b5\u03c1\u03b9\u03ad\u03c7\u03b5\u03b9 \u03ba\u03b1\u03b9 \u03b4\u03b5\u03cd\u03c4\u03b5\u03c1\u03b7 \u03c0\u03c1\u03cc\u03c4\u03b1\u03c3\u03b7 \u03b3\u03b9\u03b1 \u03ad\u03bb\u03b5\u03b3\u03c7\u03bf.",
+      "bundles": [
+        {
+          "route": "general_prose",
+          "substantive_payload": "pass",
+          "route_specific_evidence": "pass"
+        }
+      ],
+      "expected_decision": "abstain_retain",
+      "expected_reason_code": "quality_routing_out_of_distribution"
+    }
+  ]
+}

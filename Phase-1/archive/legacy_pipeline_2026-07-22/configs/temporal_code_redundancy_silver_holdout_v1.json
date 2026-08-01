@@ -1,0 +1,43 @@
+{
+  "schema_version": "temporal-code-redundancy-silver-holdout-v1",
+  "status": "frozen_before_threshold_arm_holdout_evaluation",
+  "stage_a_source": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\stage_a_code_domain_v2_combined\\train\\stage_a_pass.jsonl",
+  "calibration_report": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\validation\\redundancy_real_corpus_calibration_report.json",
+  "calibration_repository_overlap": 0,
+  "source_count": 13,
+  "source_repository_count": 13,
+  "source_strata": {
+    "code::large": 2,
+    "code::medium": 2,
+    "code::small": 2,
+    "documentation::large": 1,
+    "test::large": 2,
+    "test::medium": 2,
+    "test::small": 2
+  },
+  "source_chunk_uids": [
+    "droidrun__mobilerun__pr238::000::droidrun/__init__.py::chunk-0000",
+    "google__weather-tools__pr510::000::weather_mv/loader_pipeline/sinks.py::chunk-0005",
+    "huggingface__diffusers__pr12862::001::src/diffusers/guiders/magnitude_aware_guidance.py::chunk-0003",
+    "hypothesis__bouncer__pr929::000::bouncer/views.py::chunk-0006",
+    "kapadia__usgs__pr76::000::usgs/__init__.py::chunk-0001",
+    "marin-community__marin__pr2264::000::lib/haliax/src/haliax/_src/fp8.py::chunk-0001",
+    "pawamoy__mkdocs-coverage__pr11::000::README.md::chunk-0000",
+    "profusion__sgqlc__pr258::002::tests/test-endpoint-httpx.py::chunk-0000",
+    "pypa__hatch__pr2127::001::tests/env/plugin/test_interface.py::chunk-0002",
+    "strands-agents__harness-sdk__pr1387::002::tests/strands/event_loop/test_event_loop.py::chunk-0000",
+    "streamlink__streamlink__pr6758::001::tests/cli/test_argparser.py::chunk-0000",
+    "scikit-hep__awkward__pr3773::018::tests/test_3773_almost_equal_unionarray.py::chunk-0001",
+    "tenstorrent__tt-exalens__pr807::000::test/ttexalens/unit_tests/test_ttexalens_init.py::chunk-0001"
+  ],
+  "transformations": [
+    "exact_copy",
+    "format_only",
+    "containment_extension",
+    "semantic_change_control_when_available",
+    "cross_repository_independent"
+  ],
+  "threshold_outcomes_read": false,
+  "utility_consumed": false,
+  "benchmark_outcomes_consumed": false
+}

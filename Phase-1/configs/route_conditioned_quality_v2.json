@@ -1,0 +1,97 @@
+{
+  "schema_version": "route-conditioned-quality-v2",
+  "status": "candidate_not_runtime_active",
+  "runtime_activation": false,
+  "implementation": "route_conditioned_quality.py",
+  "contract": "configs/content_routing_quality_coverage_contract_v2.json",
+  "router": "configs/content_router_v2.json",
+  "candidate_evidence_adapter": "route_quality_evidence_candidates.py",
+  "candidate_evidence_registry": "configs/route_quality_evidence_candidates_v1.json",
+  "decision_unit": "stage_b_pass_chunk",
+  "definition": "route_conditioned_positive_retention_eligibility",
+  "routing_precondition": {
+    "name": "route_confidence",
+    "owner": "content_router_v2",
+    "quality_evidence": false,
+    "may_authorize_removal": false,
+    "failure_action": "abstain_retain"
+  },
+  "required_evidence_heads": [
+    "substantive_payload",
+    "route_specific_evidence"
+  ],
+  "head_ownership": {
+    "substantive_payload": "route_registered_frozen_evidence_provider",
+    "route_specific_evidence": "route_registered_frozen_evidence_provider"
+  },
+  "coherence_completeness_owner": "validity_not_quality",
+  "routes": [
+    "general_prose",
+    "code_artifact",
+    "mathematical_content",
+    "technical_documentation",
+    "conversation",
+    "instruction",
+    "table_structured_data"
+  ],
+  "combination": "routing_precondition_then_conjunctive_two_quality_heads_without_weighted_sum",
+  "route_label_is_quality_evidence": false,
+  "domain_membership_may_authorize_removal": false,
+  "global_weighted_score_allowed": false,
+  "intrinsic_quality_score_allowed": false,
+  "target_retention_fraction_allowed": false,
+  "decisions": {
+    "eligible_keep": "router establishes one supported route and both external evidence heads pass their frozen boundaries",
+    "reject": "a matched in-scope evidence head crosses a separately named frozen negative boundary",
+    "abstain_retain": "routing or evidence is incomplete, mixed, unknown, out of distribution, indeterminate, missing, or out of scope"
+  },
+  "negative_boundary_contract": {
+    "named_boundary_id_required": true,
+    "frozen_profile_sha256_required": true,
+    "evidence_artifact_sha256_required": true,
+    "below_positive_threshold_alone_is_negative": false
+  },
+  "unknown_mixed_ood_action": "abstain_retain",
+  "runtime_forbidden_inputs": [
+    "source_identity",
+    "source_tier",
+    "dataset_identity",
+    "path",
+    "human_quality_label",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction",
+    "declared_domain_quota",
+    "global_weighted_quality_score"
+  ],
+  "required_trace": [
+    "router_version",
+    "route_status",
+    "routing_precondition",
+    "routed_routes",
+    "evaluated_routes",
+    "substantive_payload_outcome",
+    "route_specific_evidence_outcome",
+    "profile_sha256",
+    "evidence_artifact_sha256",
+    "decision",
+    "reason_code"
+  ],
+  "historical_contract": {
+    "config": "configs/positive_quality_evidence_v1.json",
+    "implementation": "positive_quality_evidence.py",
+    "status": "preserved_immutable_four_head_development_evidence"
+  },
+  "validation_fixture": "validation/fixtures/route_conditioned_quality_v2_cases.json",
+  "activation_gates": [
+    "route_label_alone_always_abstains",
+    "mixed_unknown_and_ood_always_abstain",
+    "negative_outcome_requires_named_frozen_boundary",
+    "each_route_has_source_disjoint_two_head_quality_calibration_or_abstains",
+    "coverage_output_selection_leakage_test_passes",
+    "normal_and_hard_development_ablations_pass",
+    "one_profile_is_frozen_before_confirmatory_external_evaluation"
+  ],
+  "current_candidate_result": "all_routes_abstain_retain_due_to_missing_or_indeterminate_heads"
+}

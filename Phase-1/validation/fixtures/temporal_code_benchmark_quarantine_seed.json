@@ -1,0 +1,89 @@
+{
+  "entries": [
+    {
+      "benchmark": "HumanEval",
+      "source_url": "https://github.com/openai/human-eval",
+      "repository_patterns": [
+        "openai/humaneval",
+        "openai/human-eval"
+      ],
+      "text_sha256": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "task_artifact_manifest_status": "not_applicable",
+      "task_artifact_rules": []
+    },
+    {
+      "benchmark": "LiveCodeBench",
+      "source_url": "https://github.com/LiveCodeBench/LiveCodeBench",
+      "repository_patterns": [
+        "livecodebench/livecodebench",
+        "livecodebench/submissions"
+      ],
+      "text_sha256": [],
+      "task_artifact_manifest_status": "not_applicable",
+      "task_artifact_rules": []
+    },
+    {
+      "benchmark": "BigCodeBench",
+      "source_url": "https://github.com/bigcode-project/bigcodebench",
+      "repository_patterns": [
+        "bigcode-project/bigcodebench",
+        "bigcode-project/bigcodebench-annotation"
+      ],
+      "text_sha256": [],
+      "task_artifact_manifest_status": "not_applicable",
+      "task_artifact_rules": []
+    },
+    {
+      "benchmark": "EvalPlus",
+      "source_url": "https://github.com/evalplus/evalplus",
+      "repository_patterns": [
+        "evalplus/evalplus"
+      ],
+      "text_sha256": [],
+      "task_artifact_manifest_status": "not_applicable",
+      "task_artifact_rules": []
+    },
+    {
+      "benchmark": "SWE-bench",
+      "source_url": "https://github.com/princeton-nlp/SWE-bench",
+      "repository_patterns": [
+        "princeton-nlp/swe-bench"
+      ],
+      "text_sha256": [],
+      "task_artifact_manifest_status": "required_before_freeze",
+      "task_artifact_rules": [],
+      "dataset_sources": [
+        {
+          "dataset": "princeton-nlp/SWE-bench",
+          "config": "default",
+          "splits": ["train", "dev", "test"]
+        },
+        {
+          "dataset": "SWE-bench/SWE-bench_Verified",
+          "config": "default",
+          "splits": ["test"]
+        }
+      ]
+    },
+    {
+      "benchmark": "Multi-SWE-bench",
+      "source_url": "https://github.com/multi-swe-bench/multi-swe-bench",
+      "repository_patterns": [
+        "multi-swe-bench/multi-swe-bench",
+        "multi-swe-bench/experiments"
+      ],
+      "text_sha256": [],
+      "task_artifact_manifest_status": "not_applicable_python_only_initial_protocol",
+      "task_artifact_rules": [],
+      "dataset_sources": [
+        {
+          "dataset": "ByteDance-Seed/Multi-SWE-bench",
+          "config": "default",
+          "splits": ["train"]
+        }
+      ]
+    }
+  ]
+}

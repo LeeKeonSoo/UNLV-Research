@@ -1,0 +1,15 @@
+{
+  "source_name": "open-web-math/open-web-math",
+  "source_uri": "https://huggingface.co/datasets/open-web-math/open-web-math",
+  "collected_at": "2026-07-31T00:00:00Z",
+  "text_field": "text",
+  "stable_record_id_field": "url",
+  "rights": {"status": "allowed", "license": "ODC-By-1.0"},
+  "pii_context": "technical_math",
+  "language": {"code": "en", "confidence": null},
+  "partition": {
+    "source_dataset": "open-web-math/open-web-math",
+    "source_pool_role": "clean_control",
+    "content_type": "mathematical_text"
+  }
+}

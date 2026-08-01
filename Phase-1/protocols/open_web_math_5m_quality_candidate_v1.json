@@ -1,0 +1,25 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "execution_scope": "development",
+  "development_candidate_profile": "quality_retention_candidate_v1",
+  "input": {"candidate_files": ["D:/UNLV-Research/hf_validation_corpora_v1/raw/open_web_math_5m.jsonl"], "text_fields": ["text"], "defaults": {}},
+  "output_dir": "D:/UNLV-Research/hf_validation_corpora_v1/quality_retention_candidate_v1/open_web_math",
+  "stage_a": {"policy": "text_only_v2"},
+  "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"candidate_enabled": false, "shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {
+      "explicit_generated_artifact": true,
+      "license_comment_only_chunk": true,
+      "empty_html_shell": true,
+      "web_chrome_only_chunk": true,
+      "explicit_error_navigation_only_chunk_candidate": true,
+      "url_directory_only_chunk_candidate": true
+    },
+    "quality_span_candidate_rules": {"web_control_and_url_directory": true}
+  },
+  "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
+  "claim_boundary": "Development-only Quality retention candidate replay; candidate removals are not active Normal policy or downstream evidence."
+}

@@ -1,0 +1,198 @@
+{
+  "schema_version": "lm-curation-operational-framework-v2",
+  "status": "active_operational_target",
+  "purpose": "Define the practical framework target: convert an upstream candidate corpus into a supported language-model training release or an explicit abstention decision.",
+  "mission": {
+    "input": "candidate corpus from upstream collection with retained provenance when available",
+    "output": "full curated pool plus an optional budgeted training subset, scoped release with caveats, rejection, quarantine, or explicit abstention",
+    "not_guaranteed": "The framework does not guarantee that every candidate corpus can be made useful for training.",
+    "primary_success_condition": "Hard curation must retain all usable and policy-eligible data. Only when a training budget is constrained must a selected subset beat matched equal-token baselines under the frozen External Evaluation Protocol while satisfying retention, safety, contamination, and coverage guardrails."
+  },
+  "core_interpretation": {
+    "validity": {
+      "role": "structural_validity_gate",
+      "stage": "Stage B",
+      "claim_boundary": "Hard usability gate, not semantic usefulness or data quality."
+    },
+    "selection_value": {
+      "role": "observable_pre_outcome_selection_evidence",
+      "stage": "Stage C",
+      "claim_boundary": "Observable information-density, structural-usefulness, and boilerplate-risk evidence for budget allocation. It is not intrinsic or ground-truth quality, has no Stage-B hard-reject authority, and need not reduce a usable corpus."
+    },
+    "quality": {
+      "role": "legacy_alias_for_selection_value_evidence",
+      "stage": "Compatibility only",
+      "claim_boundary": "Legacy runtime and artifact alias only. Quality is not a separate intrinsic construct and must not authorize rejection."
+    },
+    "redundancy": {
+      "role": "duplication_and_saturation_control",
+      "stage": "Stage B and Stage C",
+      "claim_boundary": "Raw and canonical-content exact duplicates are gates. Fuzzy near-duplicate and saturation evidence are soft Stage-C signals until independent precision and useful-data-dropout gates pass. Useful recurrence must be preserved."
+    },
+    "coverage": {
+      "role": "observable_distribution_retention",
+      "stage": "Stage C support and External Evaluation validation",
+      "claim_boundary": "Source, style, content-type, path, and cluster support. Domain or semantic coverage is claimed only when metadata supports it."
+    }
+  },
+  "stage_contract": {
+    "stage_a": {
+      "name": "ingestion_normalization_quarantine",
+      "owns": [
+        "candidate schema",
+        "provenance retention",
+        "source-layout preserving normalization",
+        "PII and secret quarantine",
+        "license and policy quarantine",
+        "benchmark contamination quarantine",
+        "poisoning and adversarial-risk quarantine"
+      ]
+    },
+    "stage_b": {
+      "name": "chunk_level_hard_gate",
+      "owns": [
+        "structural parseability",
+        "empty or corrupted chunk rejection",
+        "pathological repetition rejection",
+        "raw exact duplicate rejection",
+        "canonical-content exact duplicate rejection"
+      ],
+      "forbidden": [
+        "semantic usefulness judgment",
+        "benchmark outcomes",
+        "Utility outcomes"
+      ]
+    },
+    "stage_c": {
+      "name": "optional_budget_constrained_chunk_selection",
+      "owns": [
+        "pre-outcome selection-value proxies",
+        "harmful soft redundancy risk",
+        "useful recurrence preservation",
+        "source and repository diversity caps",
+        "path and content-type balance",
+        "length and packing support",
+        "coverage support"
+      ],
+      "activation": "Run only when an explicit training-token or compute budget is smaller than the full curated pool. Otherwise emit retain_all.",
+      "forbidden": [
+        "Utility",
+        "benchmark outcomes",
+        "retention outcomes",
+        "development model outcomes",
+        "confirmatory model outcomes",
+        "human review labels",
+        "LLM review labels",
+        "fixed rejection or selection quotas presented as quality decisions",
+        "treating budget-not-selected records as rejected or low quality"
+      ]
+    },
+    "external_evaluation": {
+      "name": "subset_and_model_validation",
+      "owns": [
+        "equal-token training validation",
+        "equal-compute training validation when feasible",
+        "target-domain heldout NLL",
+        "external benchmark guardrails",
+        "general retention guardrails",
+        "matched baseline comparisons",
+        "failure diagnosis"
+      ]
+    },
+    "decision_release": {
+      "name": "operational_action",
+      "allowed_actions": [
+        "accept",
+        "accept_with_caveat",
+        "retain_all",
+        "full_curated_pool",
+        "budgeted_training_subset",
+        "selected_only",
+        "coverage_backfilled",
+        "stageA_broad",
+        "cap_or_downsample",
+        "route_to_specialized_pool",
+        "manual_review",
+        "quarantine",
+        "reject",
+        "insufficient_usable_data",
+        "abstain"
+      ]
+    }
+  },
+  "disposition_contract": {
+    "curation_dispositions": [
+      "retained",
+      "rejected",
+      "quarantined"
+    ],
+    "training_budget_dispositions": [
+      "not_requested",
+      "selected_for_training_budget",
+      "budget_not_selected"
+    ],
+    "invariants": [
+      "Every Stage-B-pass non-quarantined record belongs to the full curated pool.",
+      "Budget-not-selected is not rejection and is not a low-quality label.",
+      "Retain-all is a valid expected outcome when the full curated pool fits the declared budget.",
+      "No fixed rejection quota or target reduction ratio is allowed.",
+      "Uncertain safety cases are quarantined; uncertain selection-value cases remain retained unless an independent hard gate applies."
+    ]
+  },
+  "stage_c_operational_improvements": {
+    "required_before_claiming_operational_readiness": [
+      "split harmful duplication from useful recurrence",
+      "preserve concise but useful examples, tests, bug fixes, and API usage chunks",
+      "separate AST richness from learnable code usefulness",
+      "cap repository, path, and template concentration",
+      "report selected-vs-budget-not-selected feature shifts before External Evaluation without labeling either side as ground-truth quality",
+      "emit failure diagnoses when curated does not beat the Stage-B-random control"
+    ],
+    "code_domain_required_features": [
+      "parseable_unit_type",
+      "content_type_code_test_doc",
+      "import_api_meaningfulness",
+      "concise_example_support",
+      "bugfix_or_regression_test_signal",
+      "generated_template_vendored_risk",
+      "useful_recurrence_bucket",
+      "harmful_duplication_bucket",
+      "repository_path_diversity_bucket",
+      "length_packing_bucket"
+    ]
+  },
+  "external_evaluation_operational_readiness": {
+    "required_baselines": [
+      "raw_random_equal_budget",
+      "stageA_random_equal_budget",
+      "known_high_quality_equal_budget_when_available"
+    ],
+    "required_guardrails": [
+      "target_domain_heldout_nll",
+      "external_domain_benchmark_guardrail",
+      "general_text_retention_guardrail",
+      "general_task_retention_guardrail",
+      "contamination_audit"
+    ],
+    "missing_evidence_action": "abstain",
+    "failed_primary_action": "reject_or_redesign_next_cycle",
+    "failed_guardrail_action": "reject_release"
+  },
+  "forbidden_claims": [
+    "The framework measures intrinsic data quality.",
+    "A high Stage-C Quality or selection-value proxy score proves training usefulness.",
+    "Curation must always reduce the input corpus.",
+    "A budget-not-selected record is low quality or rejected.",
+    "A positive result on an already curated dataset proves raw-corpus operation.",
+    "External Evaluation outcomes can be used to tune Stage-C for the same frozen cycle.",
+    "Every arbitrary candidate corpus can be transformed into a useful training dataset."
+  ],
+  "allowed_claim_template": "The framework removes or quarantines only records covered by explicit hard rules, preserves the remaining full curated pool, and uses frozen pre-outcome selection-value, redundancy, and coverage evidence to construct an optional budgeted training subset whose downstream effect is validated by the External Evaluation Protocol.",
+  "utility_scope": "External Evaluation Protocol only; never Stage-C selector objective",
+  "legacy_nomenclature": {
+    "legacy Stage 0": "Stage A",
+    "legacy Stage A": "Stage B",
+    "legacy Stage B": "Stage C",
+    "legacy Stage C": "External Evaluation Protocol"
+  }
+}

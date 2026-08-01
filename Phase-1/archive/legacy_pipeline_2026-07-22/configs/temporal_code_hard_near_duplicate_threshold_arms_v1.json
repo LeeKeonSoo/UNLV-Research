@@ -1,0 +1,51 @@
+{
+  "schema_version": "temporal-code-hard-near-duplicate-threshold-arms-v1",
+  "status": "frozen_after_development_calibration_before_holdout_evaluation",
+  "claim_boundary": "Candidate Stage-A threshold arms derived from silver development evidence. No arm is canonical until independent holdout and cluster-dropout evidence pass.",
+  "development_source": "outputs/validation/redundancy_real_corpus_calibration_report.json",
+  "current_arm": "current",
+  "arms": {
+    "current": {
+      "simhash_threshold": 3,
+      "jaccard_threshold": 0.75,
+      "containment_threshold": 0.88,
+      "development_role": "frozen canonical control"
+    },
+    "zero_dropout_candidate": {
+      "simhash_threshold": 5,
+      "jaccard_threshold": 0.40,
+      "containment_threshold": 0.70,
+      "development_role": "best development F1 with zero observed silver useful-data dropout"
+    },
+    "low_dropout_candidate": {
+      "simhash_threshold": 8,
+      "jaccard_threshold": 0.40,
+      "containment_threshold": 0.70,
+      "development_role": "best development F1 under 0.05 observed silver useful-data dropout"
+    },
+    "moderate_dropout_candidate": {
+      "simhash_threshold": 10,
+      "jaccard_threshold": 0.40,
+      "containment_threshold": 0.70,
+      "development_role": "best development F1 under 0.10 observed silver useful-data dropout"
+    },
+    "high_recall_candidate": {
+      "simhash_threshold": 32,
+      "jaccard_threshold": 0.90,
+      "containment_threshold": 0.95,
+      "development_role": "high-recall diagnostic under 0.15 observed silver useful-data dropout"
+    }
+  },
+  "selection_rule_after_holdout": [
+    "Reject any candidate with holdout useful-data dropout above 0.05.",
+    "Among remaining candidates, require holdout precision at least 0.98.",
+    "Prefer the highest holdout near-only recall.",
+    "Do not promote without cluster-level representative-dropout evidence."
+  ],
+  "forbidden_inputs": [
+    "Utility",
+    "benchmark outcomes",
+    "target-model outcomes",
+    "confirmatory outcomes"
+  ]
+}

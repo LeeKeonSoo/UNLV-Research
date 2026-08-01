@@ -1,0 +1,48 @@
+{
+  "schema_version": "stage-b-policy-contract-v1",
+  "status": "stage_b_policy_contract_frozen",
+  "stage": "Stage B",
+  "canonical_role": "optional_budget_allocation_over_stage_a_survivors",
+  "activation_rule": "Run Stage B only when a declared token or compute budget is smaller than the full curated pool.",
+  "no_binding_budget_action": "retain_all",
+  "binding_budget_actions": [
+    "selected_for_training_budget",
+    "budget_not_selected"
+  ],
+  "required_reports": {
+    "operational_framework": "configs/lm_curation_operational_framework_v1.json",
+    "record_disposition_audit": "outputs/validation/record_disposition_audit_report.json",
+    "selector_utility_leakage_audit": "outputs/validation/selector_utility_leakage_audit.json",
+    "coverage_domain_mix_audit": "outputs/validation/coverage_domain_mix_audit_report.json"
+  },
+  "required_statuses": {
+    "operational_framework": "active_operational_target",
+    "record_disposition_audit": "record_disposition_audit_passed",
+    "selector_utility_leakage_audit": "selector_utility_leakage_audit_passed",
+    "coverage_domain_mix_audit": "coverage_domain_mix_audit_passed_with_scope_boundary"
+  },
+  "required_invariants": [
+    "Every Stage-A-pass non-quarantined record belongs to the full curated pool.",
+    "Budget-not-selected is not rejection and is not a low-quality label.",
+    "Retain-all is a valid expected outcome when the full curated pool fits the declared budget.",
+    "No fixed rejection quota or target reduction ratio is allowed.",
+    "Uncertain safety cases are quarantined; uncertain selection-value cases remain retained unless an independent hard gate applies."
+  ],
+  "forbidden_stage_b_inputs": [
+    "Utility",
+    "benchmark outcomes",
+    "heldout NLL",
+    "EvalPlus",
+    "Stage-C outcomes",
+    "human review labels",
+    "LLM review labels"
+  ],
+  "forbidden_claims": [
+    "stage_b_is_quality_rejection",
+    "curation_requires_dataset_shrinkage",
+    "budget_not_selected_is_low_quality",
+    "retain_all_is_failure",
+    "utility_as_selector_objective"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective"
+}

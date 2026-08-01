@@ -1,0 +1,56 @@
+{
+  "schema_version": "mid-quality-protocol-v1",
+  "status": "preregistered_not_runtime_active",
+  "purpose": "Define a model-relative candidate research protocol without changing the active Weak A-B-C runtime.",
+  "runtime_authorization": "none_candidate_cannot_select_or_remove",
+  "base_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_id": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "config_sha256": "304b2545a258d35620f1d4bf46940c0471d9baa00715ff8e77f84c2fca5057c1",
+    "tokenizer_sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+  },
+  "training_recipe": {
+    "method": "QLoRA_continued_pretraining",
+    "quantization": "4-bit_NF4_double_quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {"rank": 32, "alpha": 64, "dropout": 0.05, "target_modules": "all-linear"}
+  },
+  "development_split": {
+    "corpora": ["code_raw_like", "math_raw_like", "general_text_raw_like"],
+    "disjointness_keys": ["stable_record_id", "normalized_text_sha256"],
+    "development_records_must_be_disjoint_from": ["confirmatory_corpus", "external_benchmark_snapshots"],
+    "split_manifest_requirement": "Each corpus must provide frozen input and heldout-target manifests before estimator training."
+  },
+  "development_target": {
+    "kind": "heldout_continuation_loss",
+    "benchmark_disjoint": true,
+    "role": "group-level ablation target only",
+    "prohibits": ["final_benchmark_score", "current_corpus_NLL_as_runtime_input", "human_quality_label"]
+  },
+  "estimator": {
+    "unit": "semantic_or_structural_group",
+    "evidence": "repeated group-level ablation under the frozen model and recipe",
+    "uncertainty": "bootstrap_or_seeded_ablation_confidence_interval",
+    "implementation": "mid_quality_estimator.build_mid_quality_development_report",
+    "report_schema_version": "mid-quality-development-report-v1",
+    "calibration": "null_control_bootstrap_margin",
+    "selection_rule": "negative_only_after_calibrated_upper_confidence_bound_is_non_positive",
+    "proxy_nll_rank_is_not_an_estimator": true,
+    "required_output_fields": ["group_id", "effect_estimate", "upper_confidence_bound", "estimator_manifest_sha256", "reason_code"]
+  },
+  "forbidden_runtime_inputs": ["Quality", "Utility", "NLL", "benchmark_outcomes", "source_identity", "domain", "target_retention_fraction", "budget"],
+  "existing_stage_c2_candidate": {
+    "decision": "remains_archived_not_a_mid_estimator",
+    "blocking_evidence": ["semantic_only_overdeletion_risk", "known_high_quality_reference_false_positive_risk", "joint_rule_insufficient_cross_domain_activation"],
+    "reason": "Frozen proxy NLL ranks and semantic neighbors do not measure a calibrated marginal contribution."
+  },
+  "activation_requirements": ["frozen_split_manifests", "group_level_ablation_estimator", "calibration_and_false_positive_audit", "three_corpus_development_report", "confirmatory_evaluation_without_runtime_feedback"],
+  "claim_boundary": "This protocol freezes a future candidate-study design. It neither estimates universal intrinsic Quality nor authorizes a Mid runtime selector."
+}

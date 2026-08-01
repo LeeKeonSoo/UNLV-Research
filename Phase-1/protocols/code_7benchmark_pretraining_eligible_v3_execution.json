@@ -1,0 +1,125 @@
+{
+  "schema_version": "code-7benchmark-pretraining-eligible-v3-execution-v1",
+  "status": "blocked_pending_v3_training_and_temporal_declarations",
+  "evaluation_role": "external_offline_validation",
+  "may_mutate_curation_output": false,
+  "purpose": "Evaluate the pretraining-eligible v3 Raw and Curated Code arms after their natural-budget continued-pretraining runs complete.",
+  "curation_input": {
+    "curation_contract": "protocols/code_7m_pretraining_eligible_curation_v3_contract.json",
+    "curation_contract_sha256": "ef8ef12d81ad3ca0edc4abca99461c347907a2f96ea38f095597e6fa98943083",
+    "curation_report": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/abc_curation_pretraining_eligible_v3/curation_report.json",
+    "curation_report_sha256": "57a1f43d10e8a860edc2d3e9020967b630b0d797c2f2554e4067884bd2631dce",
+    "benchmark_exclusion_audit": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+    "benchmark_exclusion_audit_sha256": "67d255be38ccf5b111dccce83cd42995fa46b0199194e733c0ad9473c69a4e1d",
+    "eligibility_requirement": "benchmark_exclusion_complete and pretraining_eligible must both be true before training"
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base"
+  },
+  "training": {
+    "arms": ["base_no_update", "stage_a_release_natural_v3", "curated_natural_v3"],
+    "seeds": [101, 202, 303],
+    "comparison": "natural_dataset_budget_per_arm",
+    "natural_budget_rule": "Freeze tokenizer-materialized token totals and optimizer steps from the v3 Stage-A-release and Curated inputs before the first training run; do not use a target fraction or equal-token resampling.",
+    "materialized_inputs": {
+      "report": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/pretraining_eligible_v3_training/training_inputs_report.json",
+      "report_sha256": "122dec3f62112fd361ebee30d0a26b48ef93cd9e246a6f4c62288ef61b92c1f8",
+      "stage_a_release_natural_v3": {"materialized_tokens": 6963200, "optimizer_steps": 425},
+      "curated_natural_v3": {"materialized_tokens": 6815744, "optimizer_steps": 416},
+      "comparison_note": "Curated retains 97.88% of the Stage-A-release natural token count on this corpus; this is a measured outcome of the no-budget operational rules, not a target."
+    },
+    "adapter_directory_template": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/pretraining_eligible_v3_training/runs/{arm}_seed{seed}",
+    "base_arm_has_no_adapter": true
+  },
+  "global_generation": {
+    "decoding": "greedy",
+    "do_sample": false,
+    "temperature": 0.0,
+    "num_return_sequences": 1,
+    "prompt_change_rule": "Freeze each suite prompt template and its source revision before the first generation for that suite.",
+    "evaluator_change_rule": "Record evaluator source revision and runtime or container digest in the run manifest before scoring."
+  },
+  "primary_benchmarks": [
+    {
+      "id": "humanevalplus",
+      "suite": "EvalPlus",
+      "metric": "pass_at_1",
+      "generation": {"prompt": "official HumanEval+ prompt", "max_new_tokens": 512},
+      "scoring": "official EvalPlus evaluator pinned in the run manifest"
+    },
+    {
+      "id": "mbppplus",
+      "suite": "EvalPlus",
+      "metric": "pass_at_1",
+      "generation": {"prompt": "official MBPP+ prompt", "max_new_tokens": 512},
+      "scoring": "official EvalPlus evaluator pinned in the run manifest"
+    },
+    {
+      "id": "livecodebench_code_generation_lite",
+      "suite": "LiveCodeBench",
+      "metric": "pass_at_1",
+      "generation": {"prompt": "official code_generation_lite base-model prompt", "max_new_tokens": 1024},
+      "scoring": "official LiveCodeBench evaluator",
+      "temporal_gate": "blocked_until_model_pretraining_cutoff_and_raw_corpus_snapshot_end_are_declared_with_sources_and_a_post_cutoff_task_subset_is_materialized"
+    },
+    {
+      "id": "bigcodebench_complete",
+      "suite": "BigCodeBench",
+      "metric": "pass_at_1",
+      "generation": {"prompt": "complete_prompt", "max_new_tokens": 1024},
+      "scoring": "official BigCodeBench evaluator"
+    },
+    {
+      "id": "cruxeval_input_prediction",
+      "suite": "CRUXEval",
+      "metric": "pass_at_1",
+      "generation": {"prompt": "make_direct_input_prompt", "max_new_tokens": 512},
+      "scoring": "official evaluation/evaluate_generations.py --mode input",
+      "generation_file_contract": "JSON object with sample_0 through sample_799 keys, each mapped to a one-element generation list"
+    },
+    {
+      "id": "cruxeval_output_prediction",
+      "suite": "CRUXEval",
+      "metric": "pass_at_1",
+      "generation": {"prompt": "make_direct_output_prompt", "max_new_tokens": 512},
+      "scoring": "official evaluation/evaluate_generations.py --mode output",
+      "generation_file_contract": "JSON object with sample_0 through sample_799 keys, each mapped to a one-element generation list"
+    },
+    {
+      "id": "ds1000",
+      "suite": "DS-1000",
+      "metric": "pass_at_1",
+      "generation": {"prompt": "official DS-1000 prompt", "max_new_tokens": 1024},
+      "scoring": "isolated official DS-1000 evaluator"
+    }
+  ],
+  "frozen_benchmark_snapshots": {
+    "directory": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2",
+    "public_surface_boundary": "The LiveCodeBench snapshot contains the public task surface only; it does not establish absence of benchmark material in unavailable private tests.",
+    "source_revisions": {
+      "livecodebench_code_generation_lite": "0fe84c3912ea0c4d4a78037083943e8f0c4dd505",
+      "bigcodebench_complete": "b74c0d0bf70d2c0bc459be537895cca163007f1a",
+      "cruxeval": "190faf16d175b5847b0af05d937872b1fb395942",
+      "ds1000": "b39aab71da6d23ef8d3cac59a7c5f834516ab334"
+    }
+  },
+  "temporal_declaration": {
+    "model_pretraining_cutoff": null,
+    "raw_corpus_snapshot_end": null,
+    "reason_unset": "The local Qwen3-4B model card and the v3 source snapshot do not provide auditable cutoff dates. Do not infer either date from model release or file timestamps.",
+    "required_before_livecodebench_generation": true
+  },
+  "reporting": {
+    "aggregate_rule": "Report each benchmark and family separately; never calculate a single cross-benchmark score.",
+    "uncertainty": "Report the three seed values, their summary, and paired task-level Raw-versus-Curated differences where supported.",
+    "required_context": ["Stage-A-release and Curated materialized token totals", "benchmark exclusion audit", "curation report", "per-suite evaluator version"]
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false
+  },
+  "claim_boundary": "This manifest specifies external validation only. It cannot establish universal downstream utility, and its LiveCodeBench result is invalid until the declared temporal gate is satisfied."
+}

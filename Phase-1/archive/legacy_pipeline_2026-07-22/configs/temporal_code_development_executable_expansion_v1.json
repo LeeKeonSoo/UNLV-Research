@@ -1,0 +1,33 @@
+{
+  "schema_version": "temporal-code-development-executable-expansion-v1",
+  "status": "frozen_before_expansion_content_fetch_or_execution",
+  "purpose": "Expand the repository-disjoint development executable-evaluation candidate pool before development Utility outcomes.",
+  "assigned_split": "development",
+  "required_path_stratum": "code_and_test",
+  "selection_mode": "all_eligible_remaining_repositories",
+  "minimum_repository_count": 11,
+  "one_pull_request_per_repository": true,
+  "representative_pull_request_rule": "lowest pull request number among path-metadata-complete code_and_test candidates",
+  "exclude_repositories_from_plan": "outputs/temporal_code_collection/temporal_code_path_stratified_tranche_plan_v2.json",
+  "selection_uses": [
+    "assigned split",
+    "path-only changed-file metadata",
+    "normalized repository identity",
+    "pull request number"
+  ],
+  "selection_forbids": [
+    "file content",
+    "pull request title or body",
+    "test execution outcomes",
+    "Stage-0 outcomes",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "failure_decision": "insufficient_sampling_frame",
+  "development_entry_boundary": "Development Utility remains blocked until executable verification and a task-count-aware practical-effect and inference contract are frozen.",
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Development executable-evaluation candidate expansion only; no Utility or training-benefit claim."
+}

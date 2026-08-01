@@ -1,0 +1,20 @@
+{
+  "schema_version": "development-source-manifest-v1",
+  "purpose": "Collect a bounded broad-web, raw-like General-text stress slice for curation behavior only.",
+  "source_name": "HuggingFaceFW/fineweb:CC-MAIN-2024-10",
+  "source_uri": "https://huggingface.co/datasets/HuggingFaceFW/fineweb",
+  "revision": "main",
+  "collected_at": "2026-07-30T00:00:00Z",
+  "text_field": "text",
+  "stable_record_id_field": "id",
+  "path_field": "file_path",
+  "rights": {"status": "unknown", "license": "unknown"},
+  "language": {"code": "und", "confidence": null},
+  "pii_context": "unknown_unreviewed_development_probe",
+  "collection_admission": {
+    "maximum_bytes": 200000,
+    "note": "Only prevents a single unusually large document from consuming the bounded probe; it is not a quality filter."
+  },
+  "runtime_boundary": "Source, URL, date, language, and rights metadata are collection/audit-only. The curation runtime receives text and runtime-local structure only.",
+  "release_boundary": "Development-only. This source has no production rights, PII, secret, poisoning, or benchmark-contamination clearance."
+}

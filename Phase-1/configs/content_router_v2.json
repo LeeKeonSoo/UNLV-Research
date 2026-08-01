@@ -1,0 +1,113 @@
+{
+  "schema_version": "content-router-v2",
+  "status": "candidate_audit_only",
+  "implementation": "content_router.py",
+  "contract": "configs/content_routing_quality_coverage_contract_v2.json",
+  "authority": "shared_observable_metadata_only",
+  "selection_authority": false,
+  "quality_authority": false,
+  "input": [
+    "chunk_text"
+  ],
+  "forbidden_inputs": [
+    "source_identity",
+    "source_tier",
+    "dataset_identity",
+    "path",
+    "declared_domain",
+    "human_quality_label",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction",
+    "declared_domain_quota"
+  ],
+  "classification": "multi_label_with_mixed_unknown_and_out_of_distribution",
+  "axis_priority_for_quality_dispatch": [
+    "content_format",
+    "structural_state",
+    "language_script",
+    "semantic_domain"
+  ],
+  "axes": {
+    "content_format": [
+      "prose",
+      "source_code",
+      "mathematical_notation",
+      "table",
+      "dialogue",
+      "question_answer",
+      "instruction",
+      "log",
+      "markup",
+      "mixed",
+      "unknown"
+    ],
+    "structural_state": [
+      "complete_document",
+      "complete_artifact",
+      "snippet",
+      "template",
+      "generated_artifact",
+      "partial",
+      "mixed",
+      "unknown"
+    ],
+    "language_script": [
+      "latin",
+      "hangul",
+      "han",
+      "kana",
+      "cyrillic",
+      "arabic",
+      "devanagari",
+      "mixed",
+      "unknown"
+    ],
+    "semantic_domain": [
+      "code",
+      "math",
+      "science",
+      "medicine",
+      "law",
+      "finance_economics",
+      "history_humanities",
+      "general_knowledge",
+      "unknown"
+    ]
+  },
+  "routes": [
+    "general_prose",
+    "code_artifact",
+    "mathematical_content",
+    "technical_documentation",
+    "conversation",
+    "instruction",
+    "table_structured_data",
+    "mixed",
+    "unknown"
+  ],
+  "route_statuses": [
+    "routed",
+    "mixed",
+    "unknown",
+    "out_of_distribution"
+  ],
+  "route_confidence_classes": {
+    "closed_evidence": "One supported route is established by closed text evidence. This is not a probability or a Quality score.",
+    "ambiguous_evidence": "Multiple incompatible specialized routes are present.",
+    "none": "No registered closed routing evidence fired.",
+    "unsupported": "Alphabetic content uses a script outside the registered taxonomy."
+  },
+  "specialized_route_precedence": "A compatible prose label does not make Code, Math, Conversation, Instruction, Table, or Technical Documentation ambiguous. Multiple incompatible specialized routes produce mixed.",
+  "unknown_mixed_ood_quality_action": "common_rules_only_then_abstain_retain",
+  "training_stage_or_objective_inferred": false,
+  "validation_fixture": "validation/fixtures/content_router_v2_cases.json",
+  "activation_gates": [
+    "positive_negative_mixed_unknown_and_ood_fixtures_pass",
+    "source_and_dataset_disjoint_calibration_passes",
+    "route_label_selection_leakage_test_passes",
+    "coverage_consumer_integration_passes",
+    "quality_dispatch_consumer_integration_passes"
+  ]
+}

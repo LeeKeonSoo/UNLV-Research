@@ -1,0 +1,37 @@
+{
+  "schema_version": "redundancy-proxy-evaluation-inputs-freeze-report-v1",
+  "status": "redundancy_proxy_evaluation_inputs_frozen",
+  "config_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_evaluation_inputs_v1.json",
+  "config_sha256": "14e35e20c5aae1f3c95dd02758a446385147d6cfad0ead566149ccef0d705dab",
+  "mechanism_status": "template_saturation_mechanism_precheck_passed",
+  "mechanism_checks": {
+    "candidate_risk_increases_before_cap_and_is_nondecreasing": true,
+    "binary_risk_is_flat_after_first_match": true,
+    "candidate_does_not_increase_high_saturation_token_share": true,
+    "candidate_does_not_increase_severe_saturation_token_share": true,
+    "candidate_preserves_repository_count": true,
+    "candidate_preserves_test_token_share_within_one_point": true
+  },
+  "general_text_blocks": 496,
+  "general_text_tokens": 507904,
+  "general_task_validation_examples": {
+    "hellaswag": 10042,
+    "arc_challenge": 299,
+    "piqa": 1838,
+    "winogrande": 1267
+  },
+  "evalplus_development_task_count": 284,
+  "comparison_arms": [
+    "base_no_update",
+    "binary_current_equal_budget",
+    "log_count_equal_budget",
+    "stageA_random_common_disjoint_equal_budget"
+  ],
+  "training_seeds": [
+    11,
+    23,
+    37
+  ],
+  "blockers": [],
+  "claim_boundary": "Evaluation-input and mechanism precheck freeze only. No model was trained and no Utility, retention, promotion, or release result exists."
+}

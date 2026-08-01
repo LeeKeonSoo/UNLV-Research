@@ -1,0 +1,103 @@
+{
+  "schema_version": "math-open-educational-clean-control-protocol-v5",
+  "status": "frozen_before_v5_materialization",
+  "supersedes": "configs/math_open_educational_clean_control_protocol_v4.json",
+  "supersession_reason": "The v4 Hefferon root incorrectly named a nonexistent src/gauss directory and materialized zero records for that source.",
+  "role": "source_disjoint_training_and_calibration_controls_for_math_structural_evidence_v2",
+  "claim_boundary": "Public complete educational units are clean controls for false-reject and metamorphic corruption tests, not universal human quality labels.",
+  "selection_blind_to": ["MathScore", "FineMath", "structural_model_scores", "candidate_scores", "benchmark_results", "target_retention_fraction"],
+  "selection_rule": {
+    "complete_structural_units_only": true,
+    "minimum_normalized_characters": 256,
+    "maximum_records_per_source_group": 500,
+    "sample_order": "sha256(record_id + normalized_text_sha256)",
+    "cross_source_exact_deduplication": true,
+    "provider_score_may_change_membership": false
+  },
+  "candidate_disjointness": {
+    "candidate_artifact": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+    "stable_record_id": "required",
+    "normalized_text_sha256": "required"
+  },
+  "active_sources": [
+    {
+      "source_group": "openstax/osbooks-calculus-bundle",
+      "role": "structural_v2_training",
+      "repository": "https://github.com/openstax/osbooks-calculus-bundle",
+      "commit": "8dbc2ce19e804924b2517b89ac72ee45be949d15",
+      "license": "CC-BY-NC-SA-4.0",
+      "root_directory": "math_open_educational_v2/repos/osbooks-calculus-bundle/modules",
+      "format": "cnxml",
+      "unit_tags": ["exercise", "note"]
+    },
+    {
+      "source_group": "oscarlevin/discrete-book",
+      "role": "structural_v2_training",
+      "repository": "https://github.com/oscarlevin/discrete-book",
+      "commit": "27cd60ff6a6ef83f9da01697b4bb0230c82bbaa5",
+      "license": "CC-BY-SA-4.0",
+      "root_directory": "math_open_educational_v1/repos/discrete-book/source",
+      "format": "pretext_xml",
+      "unit_tags": ["investigation", "example", "exercise", "proof", "definition", "theorem"]
+    },
+    {
+      "source_group": "wojtask/clrs4e-solutions",
+      "role": "structural_v2_training",
+      "repository": "https://github.com/wojtask/clrs4e-solutions",
+      "commit": "5ac5fec2c046ed9253a15fa9ade9375cb0e430b1",
+      "license": "CC-BY-4.0",
+      "root_directory": "math_open_educational_v1/repos/clrs4e-solutions",
+      "format": "latex_complete_file",
+      "file_glob": "**/*.tex"
+    },
+    {
+      "source_group": "OpenLogicProject/OpenLogic",
+      "role": "structural_v2_training",
+      "repository": "https://github.com/OpenLogicProject/OpenLogic",
+      "commit": "9620cc73f9c8e0ad003c514a5d3748f29611c4c0",
+      "license": "CC-BY-4.0",
+      "root_directory": "math_open_educational_v3/repos/OpenLogic/content",
+      "format": "latex_complete_file",
+      "file_glob": "**/*.tex"
+    },
+    {
+      "source_group": "active-calculus/active-calculus-single-mbx",
+      "role": "structural_v2_training",
+      "repository": "https://github.com/active-calculus/active-calculus-single-mbx",
+      "commit": "04cb7f4345d6001b290132f4cb97327fbb368b43",
+      "license": "CC-BY-SA",
+      "root_directory": "math_open_educational_v3/repos/active-calculus-single-mbx/source",
+      "format": "pretext_xml",
+      "file_glob": "**/*.xml",
+      "unit_tags": ["activity", "exercise", "example", "definition"]
+    },
+    {
+      "source_group": "TeamBasedInquiryLearning/linear-algebra",
+      "role": "structural_v2_calibration_only",
+      "repository": "https://github.com/TeamBasedInquiryLearning/linear-algebra",
+      "commit": "2a6ce2e5700e49b7890ae0331a14bbbf9f5342bc",
+      "license": "CC-BY-NC-SA-4.0",
+      "root_directory": "math_open_educational_v4/repos/tbil-linear-algebra/source",
+      "format": "pretext_xml",
+      "file_glob": "**/*.ptx",
+      "unit_tags": ["activity", "exercise", "example", "definition", "theorem", "task", "question"]
+    },
+    {
+      "source_group": "jim-hefferon/linear-algebra",
+      "role": "structural_v2_calibration_only",
+      "repository": "https://github.com/gfrubi/linear-algebra",
+      "commit": "cdc8286a37020306baf68b910f547c2fc8539d22",
+      "license": "CC-BY-SA-2.5-or-GFDL",
+      "root_directory": "math_open_educational_v4/repos/hefferon-linear-algebra/src",
+      "format": "latex_complete_file",
+      "file_globs": ["gr/**/*.tex", "vs/**/*.tex", "det/**/*.tex", "map/**/*.tex"]
+    }
+  ],
+  "source_roles": {
+    "training": ["openstax/osbooks-calculus-bundle", "oscarlevin/discrete-book", "wojtask/clrs4e-solutions", "OpenLogicProject/OpenLogic", "active-calculus/active-calculus-single-mbx"],
+    "calibration_only": ["TeamBasedInquiryLearning/linear-algebra", "jim-hefferon/linear-algebra"]
+  },
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

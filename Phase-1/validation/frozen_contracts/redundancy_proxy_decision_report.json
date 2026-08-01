@@ -1,0 +1,91 @@
+{
+  "schema_version": "redundancy-proxy-decision-report-v1",
+  "status": "redundancy_proxy_candidate_decision_frozen",
+  "candidate": "log_count",
+  "canonical_control": "binary_current",
+  "candidate_decision": "hold_log_count_keep_binary_current_directional_nonworse_failed",
+  "promotion_allowed": false,
+  "qwen3_4b_development_allowed": false,
+  "source_sha256": {
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_experiment_qwen25_0p5b_v1.json": "6691597b97b603a745f9232a1b5f06b8a872c9fe12c88cc54297d6a30c818f40",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_evaluation_inputs_v1.json": "14e35e20c5aae1f3c95dd02758a446385147d6cfad0ead566149ccef0d705dab",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\redundancy_saturation_proxy_qwen25_0p5b_v1\\qlora_runs\\train_missing_summary.json": "4423aa7fb489d165ddbd65528343fe536c9beadc862e111433a8a6b55abbaded",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\redundancy_saturation_proxy_qwen25_0p5b_v1\\nll_evaluation\\nll_summary.json": "92b6e4e39701ef8e4de08803bede750e108ccb642c8dff1f4296841ef1e8b1d9"
+  },
+  "target_nll_means": {
+    "base_no_update": 1.7562928850000554,
+    "binary_current_equal_budget": 1.6970210233768384,
+    "log_count_equal_budget": 1.6972542587138,
+    "stageA_random_common_disjoint_equal_budget": 1.7113468624773003
+  },
+  "curation_effect": {
+    "seed_deltas": [
+      0.013302300776635079,
+      0.014550711308325859,
+      0.014424799205539962
+    ],
+    "mean": 0.0140926037635003,
+    "sample_sd": 0.00068731184530245,
+    "one_sided_95_lower": 0.012933895856580247,
+    "one_sided_95_upper": 0.015251311670420353,
+    "paired_mde_95": 0.0011587079069200524,
+    "positive_seed_count": 3,
+    "nonpositive_seed_count": 0,
+    "required_lower_bound": 0.002,
+    "passed": true
+  },
+  "candidate_vs_binary": {
+    "seed_deltas": [
+      0.00047762160534614573,
+      3.562231997511489e-05,
+      0.00018646208556383215
+    ],
+    "mean": 0.0002332353369616976,
+    "sample_sd": 0.00022468120716221779,
+    "one_sided_95_lower": -0.00014554453283763933,
+    "one_sided_95_upper": 0.0006120152067610346,
+    "paired_mde_95": 0.0003787798697993369,
+    "positive_seed_count": 3,
+    "nonpositive_seed_count": 0,
+    "maximum_upper_bound": 0.002,
+    "passed": false,
+    "statistical_noninferiority_passed": true,
+    "directional_nonworse_passed": false,
+    "interpretation": "The candidate is within the frozen non-inferiority margin, but all three paired seed deltas favor binary_current. The effect is small and below the practical floor, so this is a hold rather than evidence that log_count is harmful."
+  },
+  "promotion_requirements": {
+    "curation_effect_vs_common_stageA_random": true,
+    "statistical_noninferiority_vs_binary_current": true,
+    "directional_nonworse_in_at_least_two_seeds": false,
+    "template_saturation_mechanism_precheck": true,
+    "general_text_retention": true,
+    "general_task_retention": null,
+    "evalplus_code_retention": null
+  },
+  "futility_rule": {
+    "triggered": true,
+    "reason": "A mandatory pre-registered directional promotion condition has failed, so unrun guardrails cannot make promotion possible.",
+    "general_task_and_evalplus_for_candidate": "not_run_after_futility_boundary"
+  },
+  "framework_evidence": {
+    "curation_vs_common_stageA_random": "positive_target_heldout_nll_evidence",
+    "general_text_retention": "passed",
+    "release_status": "abstain_missing_general_task_and_evalplus_guardrails",
+    "interpretation": "The proxy supports the value of Stage-B curation relative to common disjoint Stage-A random, but does not support replacing binary_current with log_count or making a framework release claim."
+  },
+  "blockers": [],
+  "forbidden_next_actions": [
+    "retuning log_count from these outcomes",
+    "changing the frozen seed-direction rule retroactively",
+    "promoting log_count to Qwen3-4B development",
+    "using target or retention outcomes in Stage B"
+  ],
+  "required_next_work": [
+    "keep binary_current canonical",
+    "preserve the positive curated-vs-random proxy result as development evidence",
+    "complete general-task and EvalPlus guardrails only for the canonical framework release path",
+    "design any future saturation candidate as a new preregistered cycle"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Frozen proxy candidate decision. It supports holding log_count and retaining binary_current; the full framework release remains abstain."
+}

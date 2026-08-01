@@ -1,0 +1,58 @@
+{
+  "schema_version": "general-provider-candidate-protocol-v2",
+  "status": "frozen_candidate_comparison_not_runtime_active",
+  "route": "general_prose",
+  "objective": "continued_pretraining",
+  "shared_clean_controls": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+  "shared_stress_fixtures": "D:/UNLV-Research/positive_quality_v2/general/stress_fixtures_v2.jsonl",
+  "providers": [
+    {
+      "provider_id": "mlfoundations/fasttext-oh-eli5",
+      "revision": "cd8b714a90f2dbcd3b02cf5fc972e5d7c7f4f107",
+      "model_file": "openhermes_reddit_eli5_vs_rw_v2_bigram_200k_train.bin",
+      "model_weight_sha256": "f8da53846636ce5ed2836f95e2fffada6aade035e2169af1d6c099bda2674915",
+      "clean_controls": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+      "stress_fixtures": "D:/UNLV-Research/positive_quality_v2/general/stress_fixtures_v2.jsonl",
+      "supported_heads": ["route_specific_evidence"],
+      "claim_semantics": "probability_of_similarity_to_OH2.5_or_Reddit_ELI5_over_Common_Crawl_reference_distribution",
+      "not_claimed": [
+        "universal_prose_quality",
+        "substantive_payload",
+        "document_completeness"
+      ],
+      "clean_scores": "D:/UNLV-Research/positive_quality_v2/general/dclm_clean_scores_v2.jsonl",
+      "stress_scores": "D:/UNLV-Research/positive_quality_v2/general/dclm_stress_scores_v2.jsonl",
+      "audit_report": "D:/UNLV-Research/positive_quality_v2/general/dclm_general_audit_v2.json"
+    },
+    {
+      "provider_id": "HuggingFaceFW/fineweb-edu-classifier",
+      "revision": "284663cbb2dabf9bda30d8f8cc49601251ee1631",
+      "model_file": "model.safetensors",
+      "model_weight_sha256": "27fbfe65ce71c3fc50df7b71246c83fe9b6da329f9572d957a9355f7d290a1bc",
+      "clean_controls": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+      "stress_fixtures": "D:/UNLV-Research/positive_quality_v2/general/stress_fixtures_v2.jsonl",
+      "supported_heads": ["route_specific_evidence"],
+      "claim_semantics": "Llama3_annotated_educational_value_for_English_FineWeb_pages",
+      "not_claimed": [
+        "universal_prose_quality",
+        "substantive_payload",
+        "higher_education_or_specialized_domain_quality"
+      ],
+      "clean_scores": "D:/UNLV-Research/positive_quality_v2/general/fineweb_edu_clean_scores_v2.jsonl",
+      "stress_scores": "D:/UNLV-Research/positive_quality_v2/general/fineweb_edu_stress_scores_v2.jsonl",
+      "audit_report": "D:/UNLV-Research/positive_quality_v2/general/fineweb_edu_general_audit_v2.json"
+    }
+  ],
+  "lower_quantiles": [0.0, 0.0025, 0.005, 0.01, 0.02, 0.05],
+  "confidence_level": 0.95,
+  "normal_false_reject_wilson_upper_bound": 0.01,
+  "hard_false_reject_wilson_upper_bound": 0.05,
+  "stress_wilson_upper_bound": 0.05,
+  "required_calibration_gate": "pooled_and_each_source_and_leave_one_source_out_and_length_quartile",
+  "required_stress_gate": "format_decision_invariance_and_semantic_destruction_non_outscore",
+  "published_threshold_is_runtime_authority": false,
+  "ensemble_may_fill_missing_quality_heads": false,
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

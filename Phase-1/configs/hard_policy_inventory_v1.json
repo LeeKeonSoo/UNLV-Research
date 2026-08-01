@@ -1,0 +1,69 @@
+{
+  "schema_version": "hard-policy-inventory-v1",
+  "status": "development_runtime_pending_n4_ablation",
+  "base_profile": "normal_structural_v1",
+  "runtime_authorization": "development_only_pending_n4_ablation",
+  "selection_principle": "Hard v1 may add only deterministic, text-only, payload-preserving structural compactions to Normal. It must not force a retention target or rank documents by intrinsic Quality.",
+  "selected_initial_candidates": [
+    "stage_c_inline_license_header_candidate",
+    "stage_c_inline_license_comment_block_candidate",
+    "stage_c_repeated_span_template_candidate"
+  ],
+  "candidate_contracts": [
+    {
+      "policy_id": "stage_c_inline_license_header_candidate",
+      "core": "quality",
+      "decision_unit": "prefix comment span",
+      "trigger": "explicit license marker in a contiguous prefix comment header",
+      "non_trigger": "ordinary documentation, code with a header, or a header without explicit license evidence",
+      "postcondition": "residual chunk passes the same minimum payload boundary as Stage B",
+      "trace": ["chunk_uid", "header_sha256", "header_token_proxy", "pre_token_proxy", "post_token_proxy"]
+    },
+    {
+      "policy_id": "stage_c_inline_license_comment_block_candidate",
+      "core": "quality",
+      "decision_unit": "contiguous comment-block span",
+      "trigger": "explicit license marker in a self-contained contiguous comment block",
+      "non_trigger": "ordinary comments, API documentation, or code-bearing comment blocks",
+      "postcondition": "residual chunk passes the same minimum payload boundary as Stage B",
+      "trace": ["chunk_uid", "block_sha256", "block_token_proxy", "pre_token_proxy", "post_token_proxy"]
+    },
+    {
+      "policy_id": "stage_c_repeated_span_template_candidate",
+      "core": "quality",
+      "decision_unit": "exact normalized paragraph span",
+      "trigger": "long exact repeated span with a stable representative occurrence",
+      "non_trigger": "shared short phrases, legitimate API/test matrices, or text whose residual fails payload validity",
+      "postcondition": "only the nonrepresentative span is removed and every residual chunk remains valid",
+      "trace": ["chunk_uid", "span_sha256", "span_occurrence_index", "representative_chunk_uid", "span_token_proxy", "pre_token_proxy", "post_token_proxy"]
+    }
+  ],
+  "excluded_from_hard_v1": [
+    {
+      "policy_id": "stage_c_strengthened_symmetric_near_duplicate_candidate",
+      "reason": "A near-duplicate threshold alone cannot distinguish a small but decisive semantic difference from non-payload variation."
+    },
+    {
+      "policy_id": "stage_c2_model_relative_representative_candidate",
+      "reason": "Known-high-quality reference false positives and proxy evidence do not establish a deterministic removal boundary."
+    },
+    {
+      "policy_id": "stage_c_declared_dependency_copy_candidate",
+      "reason": "Depends on source-backed metadata rather than the domain-general text-only Hard v1 surface."
+    },
+    {
+      "policy_id": "declared_language_parser_candidate",
+      "reason": "Requires a separately versioned complete-artifact adapter and is deferred from the initial domain-general Hard profile."
+    }
+  ],
+  "promotion_requirements": [
+    "positive_false_positive_adversarial_clean_fixtures",
+    "reason_code_and_token_delta",
+    "residual_payload_validity",
+    "representative_or_span_trace",
+    "coverage_invariant",
+    "code_math_general_development_ablation",
+    "benchmark_disjoint_confirmatory_evaluation"
+  ],
+  "claim_boundary": "This inventory defines the candidate scope for a development-only stronger structural profile. It may not be used for production curation or downstream claims until N4 and confirmatory validation close."
+}

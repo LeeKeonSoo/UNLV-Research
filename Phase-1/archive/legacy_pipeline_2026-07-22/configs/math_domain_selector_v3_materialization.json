@@ -1,0 +1,31 @@
+{
+  "schema_version": "math-domain-selector-v3-materialization-v1",
+  "status": "frozen_before_math_selector_v3_stage_c_outcomes",
+  "purpose": "Materialize Math selector v3 as a broad curated pool that preserves long reasoning and worked-solution signal after v2 over-selected short/QA-style content.",
+  "input_materialization_v2": "outputs/math_domain_stage_materialization_v2",
+  "output_dir": "outputs/math_domain_stage_materialization_v3",
+  "seed": 20260707,
+  "stage_b": {
+    "selection_mode": "broader_curated_pool_not_aggressive_downsampling",
+    "retain_all_fallback": true,
+    "excluded_style_buckets": ["bibliographic_review"],
+    "minimum_stage_a_token_retention_fraction": 0.9,
+    "minimum_proof_or_theorem_token_retention_fraction": 0.95,
+    "selector_forbidden_signals": [
+      "held-out math NLL",
+      "GSM8K",
+      "MATH",
+      "Utility",
+      "downstream benchmark outcomes"
+    ]
+  },
+  "natural_budget_arms": [
+    "raw_full_natural",
+    "stageA_full_natural",
+    "retain_all_if_budget_allows",
+    "broader_curated_pool",
+    "curated_math_v3_natural"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Math selector v3 materialization only; no downstream success claim until a new frozen Stage-C run passes."
+}

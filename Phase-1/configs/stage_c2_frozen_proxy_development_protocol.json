@@ -1,0 +1,16 @@
+{
+  "schema_version": "stage-c2-frozen-proxy-development-protocol-v1",
+  "status": "frozen_for_development_not_runtime_active",
+  "proxy_model": "Qwen/Qwen3-4B-Base",
+  "sample_records_per_corpus": 512,
+  "max_length": 256,
+  "semantic_index": "last_hidden_state_lsh",
+  "evidence_thresholds": {
+    "minimum_familiarity": 0.8,
+    "maximum_novelty": 0.2,
+    "maximum_gradient_alignment": 0.05
+  },
+  "corpora": ["code_raw_like", "math_raw_like", "general_text_raw_like"],
+  "forbidden_policy_inputs": ["quality", "source", "domain", "utility", "NLL", "benchmark_outcomes", "target_retention_fraction", "budget"],
+  "promotion_boundary": "A matching three-corpus development protocol only establishes implementation integrity. It does not promote the candidate to active runtime."
+}

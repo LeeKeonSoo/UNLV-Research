@@ -1,0 +1,73 @@
+{
+  "schema_version": "math-domain-block4-acquisition-freeze-v1",
+  "status": "math_domain_block4_acquisition_frozen",
+  "purpose": "Freeze the math-domain raw/reference acquisition sources before Stage-0/A/B materialization and Stage-C math benchmarks.",
+  "claim_boundary": {
+    "block4_claim": "Math-domain candidate pools have been acquired and normalized for curation-stage processing.",
+    "not_yet_claimed": "The math-domain framework improves downstream GSM8K or MATH accuracy."
+  },
+  "utility_scope": "Math benchmark outcomes are Stage-C validation only and are forbidden from Stage-B selector objectives.",
+  "output_dir": "outputs/math_domain_block4",
+  "target_records_per_pool": 512,
+  "raw_mixed_pool": {
+    "dataset_id": "brando/small-open-web-math-dataset-v2",
+    "split": "train",
+    "lineage": "10k shuffled subset of OpenWebMath-style mathematical web text",
+    "role": "raw-like mathematical web corpus with prose, notation, references, and varied formatting"
+  },
+  "known_high_quality_reference_pool": {
+    "dataset_id": "AI-MO/NuminaMath-CoT",
+    "split": "train",
+    "lineage": "curated problem-solution pairs with chain-of-thought style solutions",
+    "role": "high-quality reference context, not a selector oracle"
+  },
+  "stage_c_benchmarks": [
+    {
+      "name": "GSM8K",
+      "dataset_id": "openai/gsm8k",
+      "split": "test",
+      "quarantine_rule": "evaluation-only; benchmark content must not enter Stage-0/A/B candidate pools"
+    },
+    {
+      "name": "MATH",
+      "dataset_id": "hendrycks/competition_math",
+      "split": "test",
+      "quarantine_rule": "evaluation-only; benchmark content must not enter Stage-0/A/B candidate pools"
+    }
+  ],
+  "normalization_contract": {
+    "record_fields": [
+      "record_uid",
+      "pool",
+      "domain",
+      "source_dataset_id",
+      "source_split",
+      "text",
+      "token_proxy",
+      "metadata"
+    ],
+    "domain": "math",
+    "blocked_benchmark_terms": [
+      "gsm8k",
+      "grade school math 8k",
+      "hendrycks",
+      "competition_math",
+      "math-500"
+    ],
+    "minimum_token_proxy": 20
+  },
+  "stage_materialization_status": "pending_after_acquisition",
+  "next_actions": [
+    "Run Stage 0 risk quarantine over raw_mixed_math_pool.jsonl.",
+    "Run Stage A hard gates and chunking over retained math records.",
+    "Run Stage B budgeted selection with Utility still forbidden from the selector objective.",
+    "Materialize equal-token raw, Stage-A random, curated, and reference training arms.",
+    "Only after equal-token arms are frozen, run held-out math NLL, GSM8K, and MATH."
+  ],
+  "forbidden_uses": [
+    "using GSM8K or MATH benchmark content as training candidates",
+    "using GSM8K, MATH, or held-out math NLL outcomes inside Stage-B selector objectives",
+    "treating NuminaMath labels as ground-truth Core metric labels",
+    "claiming math-domain downstream improvement before equal-token fine-tuning and Stage-C evaluation"
+  ]
+}

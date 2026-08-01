@@ -1,0 +1,18 @@
+{
+  "schema_version": "math-open-educational-clean-control-v1-route-audit",
+  "status": "v1_invalid_expected_route_control_preserved_not_reused",
+  "protocol": "configs/math_open_educational_clean_control_protocol_v1.json",
+  "control_artifact_sha256": "86b68c2eb7634430d68447e7e76d701ec186af31543fba93dbE4852607e174a9",
+  "provider_score_artifact_sha256": "68f8850c3c41c1e8a653968a7b98583baacd6dfe242ca911a0b0ca083ec23e42",
+  "failure": {
+    "source_group": "openstax/osbooks-physics",
+    "records": 500,
+    "explicit_math_notation_records": 0,
+    "math_route_cascade_records": 72,
+    "reason": "Physics educational units are not valid expected-route controls for the Math route. Their presence would conflate technical science content with mathematical-content retention."
+  },
+  "decision": "replace_physics_with_explicit_openstax_calculus_in_new_v2_protocol",
+  "membership_retuned_from_provider_score": false,
+  "clarification": "The source was replaced because its declared subject does not match the expected Math route. The scored v1 artifacts remain immutable evidence of the protocol error.",
+  "runtime_activation": false
+}

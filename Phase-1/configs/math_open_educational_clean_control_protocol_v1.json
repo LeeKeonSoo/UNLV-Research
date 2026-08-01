@@ -1,0 +1,76 @@
+{
+  "schema_version": "math-open-educational-clean-control-protocol-v1",
+  "status": "frozen_before_provider_scoring",
+  "role": "source_format_disjoint_false_reject_controls_for_math_positive_evidence",
+  "claim_boundary": "These are public, structured educational controls. They are not human quality labels and are not guaranteed disjoint from every provider's undocumented training text.",
+  "selection_blind_to": [
+    "MathScore",
+    "FineMath",
+    "candidate_provider_scores",
+    "benchmark_results",
+    "target_retention_fraction"
+  ],
+  "selection_rule": {
+    "complete_structural_units_only": true,
+    "minimum_normalized_characters": 256,
+    "maximum_records_per_source_group": 500,
+    "sample_order": "sha256(record_id + normalized_text_sha256)",
+    "cross_source_exact_deduplication": true,
+    "provider_score_may_change_membership": false
+  },
+  "candidate_disjointness": {
+    "candidate_artifact": "D:/UNLV-Research/cross_domain_stress/openwebmath_5m_raw_v1.jsonl",
+    "stable_record_id": "required",
+    "normalized_text_sha256": "required"
+  },
+  "active_sources": [
+    {
+      "source_group": "oscarlevin/discrete-book",
+      "repository": "https://github.com/oscarlevin/discrete-book",
+      "commit": "27cd60ff6a6ef83f9da01697b4bb0230c82bbaa5",
+      "license": "CC-BY-SA-4.0",
+      "root_directory": "discrete-book/source",
+      "format": "pretext_xml",
+      "unit_tags": ["investigation", "example", "exercise", "proof", "definition", "theorem"]
+    },
+    {
+      "source_group": "openstax/osbooks-physics",
+      "repository": "https://github.com/openstax/osbooks-physics",
+      "commit": "dfdfd7a5356ecdd42e504de3df50d9153e33ea49",
+      "license": "CC-BY-4.0",
+      "root_directory": "osbooks-physics/modules",
+      "format": "cnxml",
+      "unit_tags": ["exercise", "note"]
+    },
+    {
+      "source_group": "wojtask/clrs4e-solutions",
+      "repository": "https://github.com/wojtask/clrs4e-solutions",
+      "commit": "5ac5fec2c046ed9253a15fa9ade9375cb0e430b1",
+      "license": "CC-BY-4.0",
+      "root_directory": "clrs4e-solutions",
+      "format": "latex_complete_file",
+      "file_glob": "**/*.tex"
+    }
+  ],
+  "excluded_sources": [
+    {
+      "source_group": "CAHLR/OATutor-Content",
+      "commit": "0b51dedbb978dd08c2850fab686da938a83137e3",
+      "reason": "Latest tree contains Windows-incompatible path characters. It remains excluded until a Git-object materializer is fixture-tested."
+    },
+    {
+      "source_group": "AI-MO/NuminaMath-CoT",
+      "reason": "Synthetic competition-problem content is benchmark-adjacent and is not an appropriate clean-control calibration source."
+    }
+  ],
+  "calibration_gates": {
+    "confidence_level": 0.95,
+    "normal_false_reject_wilson_upper_bound": 0.01,
+    "hard_false_reject_wilson_upper_bound": 0.05,
+    "pooled_source_and_leave_one_source_out_gates_required": true,
+    "no_feasible_profile_action": "math_route_abstains"
+  },
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

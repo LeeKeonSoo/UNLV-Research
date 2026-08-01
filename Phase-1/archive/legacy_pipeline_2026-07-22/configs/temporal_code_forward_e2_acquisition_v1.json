@@ -1,0 +1,171 @@
+{
+  "schema_version": "temporal-code-forward-e2-acquisition-v1",
+  "status": "feasibility_amendment_frozen_before_forward_pilot_execution_outcomes",
+  "revision_reason": "The first outcome-free recipe freeze exposed that broad test-directory membership can select support modules such as tests/models.py or conftest.py. Before execution, task-validity targets are restricted to executable test modules named test_*.py or *_test.py.",
+  "purpose": "Acquire primary temporal executable tasks by validating task semantics and E2 support at collection time instead of recovering execution support later.",
+  "task_validity_contract": {
+    "task_class": "repository_patch",
+    "frozen_test_source": "changed Python test files from the merge commit",
+    "executable_test_path_rule": "Python basename starts with test_ or ends with _test.py; test-support modules alone cannot establish task validity",
+    "merge_requirement": "frozen changed tests pass on the merge commit",
+    "parent_requirement": "the same merge-commit tests fail when overlaid onto the first parent commit",
+    "parent_build_requirement": "parent plus frozen test overlay builds successfully before the expected test failure",
+    "timeouts_are_not_valid_failures": true
+  },
+  "infrastructure_pilot": {
+    "window_start": "2026-06-01",
+    "window_end": "2026-06-14",
+    "repository_source": "existing broad-manifest train repositories only",
+    "maximum_metadata_repositories": 30,
+    "maximum_execution_candidates": 5,
+    "one_pull_request_per_repository": true,
+    "allowed_path_strata": ["code_and_test", "test_only"],
+    "task_reuse_for_development_or_confirmatory": false
+  },
+  "future_primary_acquisition": {
+    "development_window": {
+      "start": "2026-06-15",
+      "end": "2026-08-31",
+      "target_task_count": 542
+    },
+    "confirmatory_window": {
+      "start": "2026-09-01",
+      "end": "2026-11-30",
+      "target_task_count": 541
+    },
+    "repository_disjoint_from_training_required": true,
+    "repository_disjoint_between_development_and_confirmatory": true,
+    "task_count_target_source": "frozen 1083-task primary precision requirement",
+    "shortfall_action": "abstain_and_continue_forward_acquisition"
+  },
+  "development_acquisition_snapshots": {
+    "repository_discovery_rule": "Authenticated GitHub repository search using the frozen allowed-license Python queries; exclude every repository in the existing broad frozen manifest and every benchmark-source repository before task discovery",
+    "maximum_repository_discovery_candidates": 1200,
+    "maximum_repositories_per_snapshot": 200,
+    "maximum_pull_requests_examined_per_repository": 5,
+    "snapshot_available_through_must_not_exceed_run_date": true,
+    "task_selection_rule": "At most one first metadata-eligible code_and_test or test_only merged pull request per repository, using paths and commit identities only",
+    "repository_reuse_across_development_snapshots": "deduplicate by repository identity and pull-request number before any execution outcome",
+    "project_metadata_and_execution_outcomes": "forbidden until the snapshot candidate list is frozen"
+  },
+  "development_accumulation_amendment": {
+    "status": "frozen_after_snapshot_001_metadata_and_before_any_later_snapshot_metadata",
+    "basis": "The pre-existing forward-pilot productivity report estimated 4,336 metadata candidates for the 542-task development target; a 200-repository bounded snapshot was never sufficient as the continuing acquisition frame",
+    "not_justified_by": "snapshot_001_zero_candidate_outcome",
+    "later_snapshot_repository_rule": "scan every eligible fresh repository from the frozen authenticated discovery artifact, up to the pre-frozen 1,200-repository discovery cap",
+    "eligibility_rule_changes": "none",
+    "cadence": "incremental snapshots on later calendar dates through 2026-08-31",
+    "deduplication_keys": ["repository_identity", "pull_request_number", "merge_commit"],
+    "same_repository_multiple_tasks": "forbidden for the primary development aggregate",
+    "shortfall_action": "abstain_and_continue_forward_acquisition"
+  },
+  "development_discovery_capacity_amendment": {
+    "status": "frozen_before_expanded_repository_discovery_or_later_snapshot_task_metadata",
+    "basis": "The frozen one-task-per-repository rule caps the 759-repository frame at 759 metadata candidates and approximately 94 E2 tasks at the pre-existing 0.125 pilot yield, below the frozen 542-task development target",
+    "outcomes_not_used": [
+      "later snapshot task metadata",
+      "later recipe outcomes",
+      "later E2 outcomes",
+      "Utility",
+      "benchmark outcomes"
+    ],
+    "eligibility_rule_changes": "none",
+    "query_rule": "keep the same Python, non-fork, non-archived, pushed-since, stars>=20, and allowlisted-license queries",
+    "per_query": 100,
+    "pages_per_query": 10,
+    "maximum_github_results_per_license_query": 1000,
+    "maximum_repository_discovery_candidates": 5000,
+    "expanded_frame_success_condition": "fresh repository count must be at least the point-estimate development metadata-candidate requirement; otherwise explicitly abstain on structural capacity",
+    "shortfall_action": "expand source coverage under a separately frozen rule or abstain; never weaken task validity or one-task-per-repository"
+  },
+  "development_source_coverage_amendment": {
+    "status": "frozen_after_stars_ge_20_capacity_result_and_before_lower_star_repository_or_task_metadata",
+    "basis": "Exhausting the unchanged stars>=20 GitHub query depth produced 3,552 fresh repositories, below the pre-existing 4,336 point-estimate metadata-candidate requirement",
+    "scientific_rationale": "Repository popularity is not a protocol eligibility requirement and excluding low-star repositories would narrow the intended raw-data operating claim",
+    "task_eligibility_rule_changes": "none",
+    "new_repository_search_strata": [
+      {"minimum_stars": 5, "maximum_stars": 19},
+      {"minimum_stars": 0, "maximum_stars": 4}
+    ],
+    "per_query": 100,
+    "pages_per_query": 10,
+    "deduplicate_across_strata_by": "normalized repository identity",
+    "outcomes_forbidden_before_combined_frame_freeze": [
+      "pull-request path metadata",
+      "project metadata",
+      "recipe outcomes",
+      "E2 outcomes",
+      "Utility",
+      "benchmark outcomes"
+    ],
+    "shortfall_action": "abstain on structural capacity or freeze another source family before its metadata"
+  },
+  "development_operations_contract": {
+    "status": "frozen_before_later_snapshot_task_metadata",
+    "repository_shard_size": 200,
+    "expected_repository_shard_count": 25,
+    "snapshot_artifacts_are_immutable": true,
+    "snapshot_identity": "available_through plus zero-padded shard index",
+    "candidate_ledger_deduplication_keys": ["repository_identity", "pull_request_number", "merge_commit"],
+    "one_task_per_repository": true,
+    "repository_task_choice": "earliest merge timestamp then pull-request number",
+    "recipe_metadata_allowed_after_candidate_ledger_freeze": true,
+    "execution_allowed_after_recipe_freeze": true,
+    "execution_batch_limit": 25,
+    "utility_allowed_after_target_valid_e2_count": 542,
+    "confirmatory_outcomes_forbidden": true
+  },
+  "retrospective_development_contract": {
+    "status": "frozen_before_retrospective_task_metadata",
+    "purpose": "Use already-public post-base-release GitHub pull requests for development task acquisition while preserving future tasks for untouched confirmation",
+    "window_start": "2025-05-01",
+    "window_end": "2026-05-31",
+    "base_model_public_release_date": "2025-04-28",
+    "repository_frame_source": "frozen 5,000-repository fresh frame disjoint from the entire existing broad repository manifest and benchmark-source repositories",
+    "maximum_pull_requests_examined_per_repository": 20,
+    "one_task_per_repository": true,
+    "task_selection_rule": "first strict metadata-eligible code_and_test or test_only task under the frozen GitHub query and path rule",
+    "training_repository_overlap_allowed": false,
+    "future_confirmatory_window_remains_untouched": true,
+    "future_confirmatory_window": {
+      "start": "2026-09-01",
+      "end": "2026-11-30",
+      "target_task_count": 541
+    },
+    "development_target_valid_e2_count": 542,
+    "utility_allowed_after_valid_e2_target_only": true
+  },
+  "selection_uses": [
+    "repository identity",
+    "existing train split for infrastructure-pilot quarantine",
+    "merge timestamp",
+    "merge and first-parent commit identities",
+    "changed file paths",
+    "repository project metadata"
+  ],
+  "selection_forbids": [
+    "pull request title or body",
+    "file content except allowlisted project metadata used to freeze execution recipes",
+    "test execution outcomes before candidate and recipe freeze",
+    "Stage-A outcomes",
+    "Stage-B outcomes",
+    "Utility",
+    "benchmark outcomes",
+    "human or LLM review labels"
+  ],
+  "isolation_contract": {
+    "host_execution_forbidden": true,
+    "test_network": "none",
+    "root_filesystem": "read_only",
+    "capabilities": "drop_all",
+    "no_new_privileges": true,
+    "memory": "4g",
+    "cpus": "2",
+    "pids_limit": 512,
+    "timeout_seconds": 600
+  },
+  "pilot_success_interpretation": "Infrastructure productivity evidence only; pilot tasks are quarantined from development and confirmatory evaluation.",
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Forward E2 task-acquisition contract only; no Utility, curation-benefit, or release claim."
+}

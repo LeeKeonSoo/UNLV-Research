@@ -1,0 +1,20 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "execution_scope": "development",
+  "input": {
+    "candidate_files": ["D:/UNLV-Research/general_raw_like_development_v1/commoncrawl/cc_main_2024_10_00730_approx_1m.jsonl"],
+    "text_fields": ["text"],
+    "defaults": {}
+  },
+  "output_dir": "D:/UNLV-Research/general_raw_like_development_v1/commoncrawl/normal_curation",
+  "stage_a": {"policy": "text_only_v2"},
+  "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
+  "stage_c_selection": {
+    "near_duplicate_compaction": {"candidate_enabled": false, "shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95},
+    "structural_artifact_rules": {"explicit_generated_artifact": true, "license_comment_only_chunk": true, "empty_html_shell": true, "web_chrome_only_chunk": true}
+  },
+  "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
+  "claim_boundary": "Development-only raw Common Crawl WET behavior probe. It cannot establish production safety, downstream utility, benchmark validity, or a final quality policy."
+}

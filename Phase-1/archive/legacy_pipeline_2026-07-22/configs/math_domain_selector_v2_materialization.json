@@ -1,0 +1,59 @@
+{
+  "schema_version": "math-domain-selector-v2-materialization",
+  "status": "frozen_before_math_selector_v2_stage_c_outcomes",
+  "purpose": "Materialize a math-domain selector v2 that preserves learnable raw-like math distribution instead of over-selecting long proof/theorem records.",
+  "input_pools": {
+    "raw_mixed_pool": "outputs/math_domain_block4/raw_mixed_math_pool.jsonl",
+    "known_high_quality_reference_pool": "outputs/math_domain_block4/known_high_quality_math_reference_pool.jsonl"
+  },
+  "output_dir": "outputs/math_domain_stage_materialization_v2",
+  "seed": 20260703,
+  "stage0": {
+    "blocked_benchmark_terms": [
+      "gsm8k",
+      "grade school math 8k",
+      "hendrycks",
+      "competition_math",
+      "math-500"
+    ],
+    "minimum_token_proxy": 20
+  },
+  "stage_a": {
+    "minimum_token_proxy": 30,
+    "minimum_math_signal_count": 2
+  },
+  "stage_b": {
+    "budget_fraction_of_stage_a_tokens": 0.55,
+    "objective": "math_signal_plus_distribution_fit_minus_redundancy_and_long_document_dominance",
+    "style_token_floors": {
+      "math_web_text": 0.3,
+      "qa_math": 0.25
+    },
+    "style_token_caps": {
+      "proof_or_theorem": 0.3,
+      "bibliographic_review": 0.08
+    },
+    "max_record_token_proxy": 2400,
+    "max_single_record_token_share_of_budget": 0.08,
+    "selector_forbidden_signals": [
+      "held-out math NLL",
+      "GSM8K",
+      "MATH",
+      "Utility",
+      "downstream benchmark outcomes"
+    ]
+  },
+  "equal_token_arms": [
+    "raw_random_equal_budget",
+    "stageA_random_equal_budget",
+    "curated_math_v2_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "natural_budget_arms": [
+    "raw_full_natural",
+    "stageA_full_natural",
+    "curated_math_v2_natural"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Math selector v2 materialization only; no math downstream improvement claim."
+}

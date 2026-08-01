@@ -1,0 +1,36 @@
+{
+  "source_name": "the-stack-dedup",
+  "source_uri": "https://huggingface.co/datasets/bigcode/the-stack-dedup",
+  "source_revision": "17cad72c886a2858e08d4c349a00d6466f54df63",
+  "collected_at": "2026-07-27T00:00:00+09:00",
+  "rights": {
+    "status": "allowed",
+    "license": "per-record permissive SPDX allowlist"
+  },
+  "rights_evidence_uri": "https://huggingface.co/datasets/bigcode/the-stack-dedup",
+  "rights_obligations": [
+    "Preserve per-record repository and license provenance.",
+    "Use only records whose upstream license declaration matches the frozen permissive allowlist."
+  ],
+  "pii_context": "repository_code",
+  "text_field": "content",
+  "stable_record_id_field": "hexsha",
+  "source_license_field": "max_stars_repo_licenses",
+  "repository_identity_field": "max_stars_repo_name",
+  "path_field": "max_stars_repo_path",
+  "allowed_source_licenses": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "PSF-2.0", "Unlicense"],
+  "language": {
+    "code": "python",
+    "confidence": 1.0
+  },
+  "partition": {
+    "source_dataset": "bigcode/the-stack-dedup",
+    "content_type": "code"
+  },
+  "collection_admission": {
+    "minimum_bytes": 256,
+    "maximum_bytes": 262144,
+    "excluded_path_fragments": ["/test/", "/tests/", "/benchmark/", "/benchmarks/", "/eval/", "/evaluation/", "/vendor/", "/vendored/", "/node_modules/", "/third_party/", "/generated/", "/dist/", "/build/", "/examples/"]
+  },
+  "source_scope": "External confirmatory Code corpus only. Development record IDs are excluded during collection. Source metadata is never a Core metric, score, or Stage-C selector input."
+}

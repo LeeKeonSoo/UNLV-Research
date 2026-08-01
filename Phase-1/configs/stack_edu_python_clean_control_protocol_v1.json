@@ -1,0 +1,71 @@
+{
+  "schema_version": "stack-edu-python-clean-control-protocol-v1",
+  "status": "preregistered_before_clean_control_scoring",
+  "purpose": "Build provider-training-time-disjoint complete Python clean controls for Stack-Edu threshold calibration.",
+  "provider_training_boundary": {
+    "source_group": "the_stack_v2_swh_graph_snapshot",
+    "snapshot_date": "2023-09-06",
+    "primary_evidence": "https://arxiv.org/abs/2402.19173",
+    "disjoint_rule": "Every clean-control repository must have a GitHub creation timestamp strictly after the provider source snapshot date."
+  },
+  "repository_admission": {
+    "created_after": "2023-09-06T23:59:59Z",
+    "allowed_licenses": ["MIT", "Apache-2.0"],
+    "primary_language": "Python",
+    "archived": false,
+    "required_file_suffix": ".py",
+    "required_record_shape": "complete_source",
+    "required_structural_evidence": ["python_ast_parse_success", "substantive_payload"],
+    "forbidden_selection_inputs": ["Stack-Edu score", "threshold result", "benchmark result", "source popularity", "target retention fraction"]
+  },
+  "repositories": [
+    {
+      "source_group": "microsoft/markitdown",
+      "created_at": "2024-11-13T19:56:40Z",
+      "license": "MIT",
+      "commit": "fd239d5d2be43d9b68329730206b9312c7d5a388"
+    },
+    {
+      "source_group": "openai/openai-agents-python",
+      "created_at": "2025-03-11T03:42:36Z",
+      "license": "MIT",
+      "commit": "c3f1781d56e8f1249a01674f18ba1f3e44a16dce"
+    },
+    {
+      "source_group": "huggingface/smolagents",
+      "created_at": "2024-12-05T11:28:04Z",
+      "license": "Apache-2.0",
+      "commit": "e3a5b8994b301983b91c0325546e9dc82eab8cf0"
+    },
+    {
+      "source_group": "browser-use/browser-use",
+      "created_at": "2024-10-31T16:00:56Z",
+      "license": "MIT",
+      "commit": "f0aa3a8bb03779c71a5aa262d389e3bfe6b77cdc"
+    }
+  ],
+  "file_exclusions": [
+    "git_metadata",
+    "virtual_environments",
+    "build_outputs",
+    "cache_directories",
+    "vendored_dependencies",
+    "generated_files_with_explicit_marker",
+    "empty_or_non_substantive_modules"
+  ],
+  "disjointness": {
+    "candidate_stable_record_id_overlap": 0,
+    "candidate_normalized_text_sha256_overlap": 0,
+    "cross_repository_normalized_text_sha256_overlap": 0
+  },
+  "calibration": {
+    "confidence_level": 0.95,
+    "normal_false_reject_wilson_upper_bound": 0.01,
+    "hard_false_reject_wilson_upper_bound": 0.05,
+    "threshold_candidates": [2.0, 3.0],
+    "leave_one_repository_out_required": true,
+    "target_retention_fraction_used": false,
+    "external_results_visible": false
+  },
+  "runtime_activation": false
+}

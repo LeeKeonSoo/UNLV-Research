@@ -1,0 +1,31 @@
+{
+  "schema_version": "coverage-taxonomy-v1",
+  "status": "audit_active_selection_forbidden",
+  "runtime_implementation": "coverage_taxonomy.py",
+  "authority": "audit_only",
+  "classification": "multi_label_with_unknown",
+  "input": ["chunk_text"],
+  "forbidden_inputs": [
+    "source_identity",
+    "source_tier",
+    "path",
+    "declared_domain",
+    "dataset_identity",
+    "target_mix",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes"
+  ],
+  "axes": {
+    "semantic_domain": ["code", "math", "science", "medicine", "law", "finance_economics", "history_humanities", "general_knowledge", "unknown"],
+    "language_script": ["latin", "hangul", "han", "kana", "cyrillic", "arabic", "devanagari", "unknown"],
+    "format_genre": ["source_code", "dialogue", "question_answer", "table", "list", "formula", "markup", "link_directory", "prose", "unknown"],
+    "content_morphology": ["explanation", "procedure", "reference", "implementation", "argument", "transactional_ui", "unknown"]
+  },
+  "unknown_semantics": "No closed evidence rule fired. Unknown includes unsupported and out-of-taxonomy content; it is not a low-quality label.",
+  "selection_authority": false,
+  "quota_authority": false,
+  "cross_stratum_importance_authority": false,
+  "quality_reject_rescue_authority": false,
+  "validation_fixture": "validation/fixtures/coverage_taxonomy_v1_cases.json"
+}

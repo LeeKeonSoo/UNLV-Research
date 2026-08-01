@@ -1,0 +1,22 @@
+{
+  "schema_version": "policy-card-contract-v1",
+  "purpose": "Minimum evidence required before a Core policy can make or propose a curation decision.",
+  "required_policy_card_fields": [
+    "id",
+    "version",
+    "core",
+    "stage",
+    "hypothesis",
+    "decision_unit",
+    "deployment_scope",
+    "allowed_inputs",
+    "forbidden_inputs",
+    "reason_codes",
+    "negative_conditions",
+    "coverage_impact",
+    "rollback_behavior",
+    "runtime_implementation",
+    "empirical_status"
+  ],
+  "rule": "A policy card without every required field is diagnostic-only and cannot remove or quarantine data. Negative conditions are executable non-trigger boundaries, not human Quality labels."
+}

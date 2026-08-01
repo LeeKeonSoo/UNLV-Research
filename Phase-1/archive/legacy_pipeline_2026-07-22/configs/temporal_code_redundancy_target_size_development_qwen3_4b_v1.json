@@ -1,0 +1,107 @@
+{
+  "schema_version": "temporal-code-redundancy-target-size-development-v1",
+  "status": "frozen_before_target_size_development_outcomes",
+  "purpose": "Rerun the frozen canonical binary redundancy selector path on the target-size Qwen3-4B base model, without changing selector features or using Utility in Stage B.",
+  "source_sha256": {
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\configs\\temporal_code_redundancy_proxy_experiment_qwen25_0p5b_v1.json": "6691597b97b603a745f9232a1b5f06b8a872c9fe12c88cc54297d6a30c818f40",
+    "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\validation\\frozen_contracts\\redundancy_canonical_guardrail_decision_report.json": "043dcdd514a46b654e532ee7892eb2a997277dca39e232598e4ee66802c9daa4"
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main",
+    "snapshot_path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "snapshot_artifacts": {
+      "config.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539\\config.json",
+        "sha256": "304b2545a258d35620f1d4bf46940c0471d9baa00715ff8e77f84c2fca5057c1"
+      },
+      "tokenizer.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539\\tokenizer.json",
+        "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+      },
+      "tokenizer_config.json": {
+        "path": "D:\\UNLV-Research\\hf_cache\\hub\\models--Qwen--Qwen3-4B-Base\\snapshots\\906bfd4b4dc7f14ee4320094d8b41684abff8539\\tokenizer_config.json",
+        "sha256": "3c04ed3ca964ea2f6b2b5faf0dc4d31aec1cb1e8b4bcf63f402d295046b422b5"
+      }
+    }
+  },
+  "training_arms": [
+    "binary_current_equal_budget",
+    "stageA_random_common_disjoint_equal_budget"
+  ],
+  "primary_comparison": {
+    "treatment": "binary_current_equal_budget",
+    "primary_baseline": "stageA_random_common_disjoint_equal_budget",
+    "base_reference": "base_no_update",
+    "utility_scope": "Stage C validation only; Utility is forbidden in selector objectives."
+  },
+  "arms": {
+    "binary_current_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\redundancy_saturation_proxy_arms_v1\\binary_current_equal_budget.jsonl",
+      "sha256": "eda6e470433b6c129511ce643239aef8136a74f51c09e41599eb77fe18d74f84",
+      "role": "canonical_binary_selector"
+    },
+    "stageA_random_common_disjoint_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\redundancy_saturation_proxy_arms_v1\\stageA_random_common_disjoint_equal_budget.jsonl",
+      "sha256": "f419fa0404d87fea53e832f16e2007f363a8bb62a7d1fdd384019f30f953af8d",
+      "role": "common_selector_union_disjoint_stageA_random_baseline"
+    }
+  },
+  "training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 40,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "development_training_seeds": [
+      11,
+      23,
+      37
+    ],
+    "same_seed_set_for_every_arm": true,
+    "exact_train_tokens_per_arm": 327680,
+    "shuffle_training_blocks_per_seed": true
+  },
+  "heldout_nll": {
+    "source_role": "same frozen development code heldout used by the 0.5B redundancy proxy",
+    "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\code_domain_v2_development_qwen3_4b\\heldouts\\development_code_nll_heldout.jsonl",
+    "sha256": "95aa8973a26e469708faf5d1c053cdee023fef1c2c8891547cffe77ba475bdd8",
+    "exact_evaluation_tokens": 65536,
+    "confirmatory_read_forbidden": true
+  },
+  "required_stage_c_evidence": {
+    "target_code_nll": "base plus all treatment/baseline seeds on frozen heldout blocks",
+    "general_text_retention_nll": "required before promotion beyond development",
+    "general_task_retention": "required before promotion beyond development",
+    "evalplus_development": "required before promotion beyond development"
+  },
+  "decision_rule": {
+    "primary_development_metric": "development code heldout mean NLL",
+    "binary_vs_stageA_random_required_absolute_nll_reduction": 0.005,
+    "seed_aggregation": "paired by seeds 11, 23, 37; report every seed and arithmetic mean",
+    "guardrail_failure_action": "reject_target_size_promotion",
+    "missing_required_evidence_action": "abstain"
+  },
+  "forbidden_uses": [
+    "changing Stage-B selector objective using Utility or benchmark outcomes",
+    "reintroducing log_count after the 0.5B futility decision",
+    "using different random baselines per sensitivity arm",
+    "reading untouched confirmatory outcomes before this development decision is frozen"
+  ],
+  "utility_scope": "Stage C validation only; never selector objective.",
+  "confirmatory_outcomes_read": false,
+  "claim_boundary": "Target-size development freeze and block materialization only. This is not a production release, confirmatory result, or paper-level claim."
+}

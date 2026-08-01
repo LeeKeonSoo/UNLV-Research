@@ -1,0 +1,78 @@
+{
+  "schema_version": "general-prose-evidence-bundle-v2",
+  "status": "blocked_source_transfer_not_runtime_active",
+  "decision": "blocked_source_transfer",
+  "protocol": "configs/general_prose_evidence_v2.json",
+  "protocol_sha256": "e39be6b42bc9fd70e1a7a4d38fc404154cce20beeadc583d3fb2df9f8d7e8a55",
+  "provider": {
+    "provider_id": "princeton-nlp/QuRater-1.3B",
+    "revision": "bd61c778c2f42c6e406b7bac8064290ffc183ae1",
+    "training_dataset_revision": "b553523cf6e15b7af6744166ef144e9dc54695f0"
+  },
+  "quality_heads": {
+    "route_confidence": "content-router-v2 closed evidence",
+    "substantive_payload": "QuRater facts_and_trivia native logit",
+    "route_specific_evidence": "QuRater educational_value native logit"
+  },
+  "clean_controls": {
+    "records": 1200,
+    "records_per_source": 400,
+    "source_groups": [
+      "common-pile-arxiv-abstracts-filtered",
+      "common-pile-public-domain-review-filtered",
+      "common-pile-regulations-filtered"
+    ],
+    "provider_training_text_hashes": 499999,
+    "normalized_text_hash_overlap": 0,
+    "validity_gate_applied": true,
+    "router_scope": "exact routed general_prose under content-router-v2"
+  },
+  "strict_calibration": {
+    "required_gate": "pooled_and_each_source_and_leave_one_source_out_and_length_quartile",
+    "normal_bound": 0.01,
+    "hard_bound": 0.05,
+    "normal_selected_profile": null,
+    "hard_selected_profile": null,
+    "q0_thresholds": {
+      "substantive_payload": -5.210821640884684,
+      "route_specific_evidence": -6.656057234402966
+    },
+    "q0_pooled_wilson_upper_bound": 0.002249547670933035,
+    "q0_max_per_source_wilson_upper_bound": 0.006718,
+    "q0_regulations_leave_one_source_out_failures": 266,
+    "q0_regulations_leave_one_source_out_trials": 400,
+    "q0_regulations_leave_one_source_out_wilson_upper_bound": 0.702594,
+    "blocking_observation": "Pooled and in-source calibration hides a severe held-out Regulations shift; no Normal or Hard profile satisfies strict source transfer."
+  },
+  "paired_stress": {
+    "base_records": 450,
+    "format_html_decision_flips": 0,
+    "format_html_trials": 450,
+    "format_html_wilson_upper_bound": 0.00597638684397898,
+    "format_markdown_decision_flips": 1,
+    "format_markdown_trials": 450,
+    "format_markdown_wilson_upper_bound": 0.009898352859204679,
+    "semantic_destruction_both_head_outscore_violations": 4,
+    "semantic_destruction_trials": 450,
+    "semantic_destruction_wilson_upper_bound": 0.01965121037437217,
+    "format_and_adversarial_gate": true
+  },
+  "provider_bias": {
+    "source_topic_length_and_format_measured": true,
+    "social_role_closed": false,
+    "region_closed": false,
+    "language_closed": false,
+    "comprehensive_provider_bias_gate": false
+  },
+  "artifacts": {
+    "collection_report_sha256": "91f1d6a3c71d6f19bfe921c0ade65c8b81eefad956da8f91408ff24e54439827",
+    "clean_controls_sha256": "17d796c1237b767808939bed2dab1b1a2c5868d9b672fde6fb01f27cabe837c4",
+    "stress_fixtures_sha256": "19d7dcc0cef635ee0f592aa33f8b75dedf43a4fb28a572a18cbfb348d8bc8121",
+    "clean_scores_sha256": "b625cad7e0e2c598c0ad50b7c79dcfa6beaa5dd0efedca7a3dcd63e946b8dc3a",
+    "stress_scores_sha256": "1f6c2791e0d4d35161e03040e4f039ed8a4fce3f2e6df5d53045fa140e1a3649",
+    "audit_report_sha256": "cc1ec18f9da9917f198ff6a07f70d435441c29fd519195d7c81dafb417ba7311"
+  },
+  "target_retention_fraction_used": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

@@ -1,0 +1,179 @@
+{
+  "schema_version": "code-domain-confirmatory-protocol-qwen3-4b-v1",
+  "status": "frozen_before_confirmatory_training_outcomes",
+  "purpose": "Bind the promoted development-stage Qwen3-4B code-domain curation recipe to an untouched confirmatory training/evaluation contract.",
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "main"
+  },
+  "source_development_decision": {
+    "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\validation\\code_domain_development_decision_report.json",
+    "status": "development_decision_promote_to_confirmatory",
+    "sha256": "bf133d25035eec3fc9d5f1b0afdd3ed518ce939319c62b7d7f453c6addee9395"
+  },
+  "training_arms": [
+    "base_no_update",
+    "raw_random_equal_budget",
+    "stageA_random_equal_budget",
+    "curated_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "primary_comparison": {
+    "treatment": "curated_equal_budget",
+    "primary_baseline": "stageA_random_equal_budget",
+    "supporting_baselines": [
+      "raw_random_equal_budget",
+      "base_no_update"
+    ],
+    "reference_arm": "known_high_quality_equal_budget"
+  },
+  "confirmatory_training_recipe": {
+    "method": "QLoRA continued pretraining",
+    "quantization": "4-bit NF4 with double quantization",
+    "compute_dtype": "bf16",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer_steps": 8,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "gradient_checkpointing": true,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "common_packed_token_budget": 118784,
+    "training_token_budget_cap": 120191,
+    "confirmatory_training_seeds": [
+      101,
+      131,
+      163,
+      197,
+      239
+    ],
+    "same_seed_set_for_every_arm": true
+  },
+  "training_payloads": {
+    "raw_random_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_training_freeze_v1\\equal_token_arms\\raw_random_equal_budget.jsonl",
+      "sha256": "0f4c579b327ef1ee56f4c7aa9eaa66c55517a67c362c0f2f3c66f1f515579a4d"
+    },
+    "stageA_random_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_training_freeze_v1\\equal_token_arms\\stageA_random_equal_budget.jsonl",
+      "sha256": "1591abcb091bec07e9de282cf350e29f1d325044de3e5ebb1b2e7ce8b190e80e"
+    },
+    "curated_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_training_freeze_v1\\equal_token_arms\\curated_equal_budget.jsonl",
+      "sha256": "a66c700e28883ed30328ef4b0dc6db425a1dfd5696e75816c6cd78065e85e4c1"
+    },
+    "known_high_quality_equal_budget": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_training_freeze_v1\\equal_token_arms\\known_high_quality_equal_budget.jsonl",
+      "sha256": "bdea00945408a59a66190c21005d3204ee086c012ca8fd6d00902191036dff0b"
+    }
+  },
+  "heldout_nll": {
+    "confirmatory_slice_name": "confirmatory_code_nll_heldout",
+    "source_split": "confirmatory",
+    "source_file": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\stage_a_path_stratified_tranche\\confirmatory\\stage_a_pass.jsonl",
+    "frozen_heldout": {
+      "path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\code_domain_confirmatory_qwen3_4b_v1\\heldouts\\confirmatory_code_nll_heldout.jsonl",
+      "sha256": "31efd80ac4d484ff01024d95f1461cce53b4317159ac9dba7dce0ceb36c00711",
+      "source_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\stage_a_path_stratified_tranche\\confirmatory\\stage_a_pass.jsonl",
+      "source_sha256": "fb21f6344721a5109f36a36b72dc3cd02f1763c7035d338bd72a8263668f320b",
+      "source_split": "confirmatory",
+      "selection_rule": "Sort by sha256(seed + ':' + chunk_uid), then take chunks until the token-proxy budget is reached.",
+      "seed": 20260621,
+      "candidate_records": 110,
+      "selected_records": 110,
+      "selected_token_proxy": 61618,
+      "token_proxy_budget": 65536,
+      "allowed_content_types": [
+        "code",
+        "test"
+      ],
+      "content_type_counts": {
+        "code": 64,
+        "test": 46
+      },
+      "repository_count": 5
+    },
+    "metric": "mean_nll",
+    "direction": "lower_is_better"
+  },
+  "primary_success_rule": {
+    "all_conditions_required": true,
+    "conditions": [
+      "all frozen confirmatory training runs complete for every required trained arm and seed",
+      "curated mean NLL is lower than Stage-A-random mean NLL by at least the predeclared absolute margin",
+      "curated mean NLL is lower than raw-random mean NLL",
+      "all Stage-C confirmatory retention guardrails pass",
+      "no confirmatory model outcomes are used to change the selector, margin, seed set, token budget, or guardrail thresholds"
+    ],
+    "primary_metric": "confirmatory_code_nll_heldout mean NLL",
+    "curated_vs_stageA_random_required_absolute_nll_reduction": 0.005,
+    "curated_vs_raw_random_required_direction": "curated mean NLL must be lower than raw-random mean NLL",
+    "seed_aggregation": "paired by the same five frozen confirmatory seeds; report every seed and arithmetic mean",
+    "failure_action": "report negative finding or abstain; do not tune on confirmatory evidence"
+  },
+  "stage_c_guardrails": {
+    "evalplus_confirmatory": {
+      "source_split_plan": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\outputs\\temporal_code_collection\\evalplus_guardrail_split_plan.json",
+      "split_counts": {
+        "HumanEval+/confirmatory": 74,
+        "HumanEval+/development": 90,
+        "MBPP+/confirmatory": 184,
+        "MBPP+/development": 194
+      },
+      "required_split": "confirmatory",
+      "non_inferiority": {
+        "reference_arm": "base_no_update",
+        "maximum_allowed_absolute_regression_per_suite": 0.02,
+        "maximum_allowed_absolute_regression_macro": 0.02,
+        "all_requirements_mandatory": true
+      },
+      "role": "external code retention and transfer guardrail only; never sole primary temporal executable aggregate"
+    },
+    "general_text_nll_retention": {
+      "metric": "external general-text mean NLL",
+      "maximum_allowed_mean_nll_increase": 0.01,
+      "confidence_rule": "one-sided 95% training-seed-level upper confidence bound must not exceed 0.01"
+    },
+    "general_task_retention": {
+      "suites": [
+        "HellaSwag",
+        "ARC-Challenge",
+        "PIQA",
+        "WinoGrande"
+      ],
+      "metric": "accuracy",
+      "maximum_allowed_absolute_regression_per_suite": 0.02,
+      "maximum_allowed_absolute_regression_macro": 0.01
+    },
+    "decision_rule": {
+      "all_guardrails_mandatory": true,
+      "missing_evidence_action": "abstain",
+      "failed_guardrail_action": "reject_release",
+      "development_may_select_recipe": true,
+      "confirmatory_may_not_select_recipe": true
+    }
+  },
+  "forbidden_uses": [
+    "changing common-baseline sensitivity design after confirmatory outcomes",
+    "changing margins after development or confirmatory outcomes",
+    "changing training seeds, optimizer steps, token budget, heldout slice, benchmark split, guardrail margin, or practical effect margin after development outcomes",
+    "inspecting confirmatory outcomes before the development decision is frozen",
+    "reading confirmatory outcomes before the development decision is frozen",
+    "using Utility or benchmark outcomes in Stage B",
+    "using Utility, benchmark outcomes, development outcomes, confirmatory outcomes, or human/LLM review labels in Stage B",
+    "using confirmatory outcomes to select a new recipe",
+    "using different Stage-A baselines for sensitivity arms",
+    "using retention outcomes in Stage B"
+  ],
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Confirmatory protocol freeze only. It authorizes untouched confirmatory training/evaluation but makes no confirmatory, release, or paper claim."
+}

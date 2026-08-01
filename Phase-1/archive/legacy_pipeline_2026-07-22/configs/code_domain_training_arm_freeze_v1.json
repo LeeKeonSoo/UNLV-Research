@@ -1,0 +1,31 @@
+{
+  "schema_version": "code-domain-training-arm-freeze-v1",
+  "status": "frozen_before_training_arm_materialization",
+  "purpose": "Freeze code-domain raw-random, Stage-A-random, curated, and known-high-quality equal-token training arms for Qwen3-4B QLoRA continued-pretraining validation.",
+  "source_tranche": "path_stratified_tranche_v2",
+  "seed": 20260619,
+  "minimum_python_code_token_proxy": 50000,
+  "minimum_equal_arm_token_proxy": 50000,
+  "token_budget_rule": "Use the largest common token-proxy cap that all materialized arms can satisfy, bounded by the curated and disjoint Stage-A-random pools. Raw-random and known-high-quality arms are independently sampled to that cap.",
+  "arms": [
+    "raw_random_equal_budget",
+    "stageA_random_equal_budget",
+    "curated_equal_budget",
+    "known_high_quality_equal_budget"
+  ],
+  "selection_forbids": [
+    "Utility",
+    "benchmark outcomes",
+    "development outcomes",
+    "confirmatory outcomes",
+    "human or LLM review labels"
+  ],
+  "training_payload": {
+    "format": "jsonl",
+    "text_field": "text",
+    "token_count_field": "token_proxy_count",
+    "provenance_required": true
+  },
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Training-arm data freeze only; no target-model training result or Utility claim."
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": "stack-edu-python-development-bundle-v1",
+  "status": "strict_calibration_blocked_not_runtime_active",
+  "route_scope": "complete_source_python_only",
+  "provider_id": "HuggingFaceTB/stack-edu-classifier-python",
+  "provider_revision": "2b36efbd7a00b5db416d7550c5ad42b561355517",
+  "provider_manifest_sha256": "baa8196af4640d78f6e57e2f63793fa509e61ffffcd9eb40920702a3277a3f62",
+  "artifacts": {
+    "candidate_text": "D:/UNLV-Research/positive_quality_v1/development/github_code_10m_language_preserved_v1.jsonl",
+    "candidate_text_sha256": "64049825d4c173b41ee9cf91d38de5de240d87295171ec76687a8f3fbed78c0f",
+    "candidate_scores": "D:/UNLV-Research/positive_quality_v1/development/github_code_10m_stack_edu_python_scores_v1.jsonl",
+    "candidate_scores_sha256": "f368be28cee3919f7fb5a5b65a3b9de7fc22e3d26cb961cce048eebc10801aef",
+    "clean_control_text": "D:/UNLV-Research/positive_quality_v1/clean_controls/code_post_stack_v2_v1/python_clean_controls_v1.jsonl",
+    "clean_control_text_sha256": "7c64b6ec77e91e74cd0aaee5ffb0dc210fd35964c2240bdb2e29fc28a18f2f58",
+    "clean_control_scores": "D:/UNLV-Research/positive_quality_v1/clean_controls/code_post_stack_v2_v1/python_clean_controls_stack_edu_scores_v1.jsonl",
+    "clean_control_scores_sha256": "39117ed166ba498a9955c2632ba7c6ed27b721202c9762b5ef5356a61b944d20",
+    "strict_calibration_report": "configs/stack_edu_python_calibration_report_v1.json",
+    "strict_calibration_report_sha256": "e98a9e716ad534a4bc7fd3c359e3b73c77635e07acb1352fa9687e39e6003323"
+  },
+  "candidate_corpus": {
+    "source_dataset": "codeparrot/github-code",
+    "source_revision": "b5661e6b17396364b2bcf8e68977b0d28e1ebd19",
+    "shuffle_seed": 20260731,
+    "records": 4847,
+    "exact_qwen3_4b_tokens": 10008758,
+    "declared_complete_python_records": 323,
+    "declared_complete_python_tokens": 714283,
+    "python_token_fraction_of_corpus": 0.071366,
+    "provider_scored_records": 279,
+    "provider_scored_tokens": 501400,
+    "provider_scored_fraction_of_python_tokens": 0.701963,
+    "python_parse_failed_abstain_records": 42,
+    "python_non_payload_abstain_records": 2,
+    "out_of_scope_abstain_records": 4524
+  },
+  "provider_score_distribution": {
+    "minimum": 0.681640625,
+    "q25": 1.83203125,
+    "median": 2.16796875,
+    "q75": 2.59375,
+    "maximum": 4.44140625
+  },
+  "published_threshold_candidate_arms": {
+    "minimum_2": {
+      "eligible_records": 173,
+      "eligible_tokens": 321948,
+      "eligible_fraction_of_python_tokens": 0.450729,
+      "eligible_fraction_of_provider_scored_tokens": 0.642098
+    },
+    "minimum_3": {
+      "eligible_records": 30,
+      "eligible_tokens": 72077,
+      "eligible_fraction_of_python_tokens": 0.100908,
+      "eligible_fraction_of_provider_scored_tokens": 0.143751
+    }
+  },
+  "passed_gates": [
+    "source_row_language_preserved",
+    "complete_source_scope_preserved",
+    "provider_revision_frozen",
+    "model_artifact_hash_frozen",
+    "route_parser_payload_and_provider_heads_are_independent",
+    "out_of_scope_languages_abstain",
+    "target_retention_fraction_unused",
+    "external_results_hidden",
+    "provider_training_time_disjoint_clean_controls",
+    "candidate_clean_stable_id_and_normalized_text_hash_disjointness",
+    "source_balanced_and_leave_one_repository_out_calibration_executed"
+  ],
+  "open_gates": [
+    "alternative_code_provider_or_materially_broader_clean_control_evidence",
+    "positive_negative_adversarial_and_format_fixtures",
+    "comment_density_bias_stress",
+    "long_source_truncation_stress",
+    "development_rule_on_off_ablation",
+    "frozen_confirmatory_external_evaluation"
+  ],
+  "strict_calibration": {
+    "clean_controls": 1299,
+    "clean_control_tokens": 3709176,
+    "clean_source_groups": 4,
+    "published_threshold_2_clean_false_reject_records": 338,
+    "published_threshold_3_clean_false_reject_records": 1212,
+    "least_strict_candidate_threshold": 0.701171875,
+    "least_strict_candidate_excluded_records": 1,
+    "least_strict_candidate_excluded_tokens": 21484,
+    "least_strict_pooled_wilson_upper_bound": 0.002122,
+    "least_strict_max_source_wilson_upper_bound": 0.039982,
+    "least_strict_max_leave_one_repository_out_wilson_upper_bound": 0.066065,
+    "normal_selected_profile": null,
+    "hard_selected_profile": null,
+    "conclusion": "Stack-Edu Python does not receive general-code runtime retention authority. Published educational thresholds over-reject post-snapshot production-code controls, while safe lower thresholds fail leave-one-source-out robustness and provide little candidate separation."
+  },
+  "threshold_activation_authority": false,
+  "external_results_visible": false,
+  "runtime_activation": false
+}

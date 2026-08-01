@@ -1,0 +1,42 @@
+{
+  "schema_version": "temporal-code-evalplus-guardrail-split-v1",
+  "status": "frozen_before_model_outcomes",
+  "purpose": "Freeze an E2 external code guardrail independently from the primary temporal executable aggregate.",
+  "source": {
+    "package": "evalplus",
+    "version": "0.3.1",
+    "datasets": ["HumanEval+", "MBPP+"]
+  },
+  "split_rule": {
+    "algorithm": "sha256(dataset_name + ':' + task_id) modulo 100",
+    "development_buckets": [0, 49],
+    "confirmatory_buckets": [50, 99],
+    "task_id_cannot_cross_splits": true
+  },
+  "aggregate": {
+    "per_suite_metric": "pass_at_1_temperature_0",
+    "primary_guardrail_aggregate": "unweighted macro mean of HumanEval+ and MBPP+ pass_at_1",
+    "report_per_suite": true,
+    "report_macro": true,
+    "training_seed_aggregation": "report every seed and the arithmetic mean across the same five frozen seeds"
+  },
+  "non_inferiority": {
+    "reference_arm": "base_no_update",
+    "maximum_allowed_absolute_regression_per_suite": 0.02,
+    "maximum_allowed_absolute_regression_macro": 0.02,
+    "all_requirements_mandatory": true
+  },
+  "comparison_arms": [
+    "base_no_update",
+    "raw_random_equal_token",
+    "common_disjoint_stage_a_random_equal_token",
+    "curated_equal_token"
+  ],
+  "development_training_seeds": [11, 23, 37, 53, 71],
+  "confirmatory_training_seeds": [101, 131, 163, 197, 239],
+  "role": "external code retention and transfer guardrail only; never sole primary temporal executable aggregate",
+  "task_content_training_authorized": false,
+  "confirmatory_outcomes_read": false,
+  "utility_scope": "Stage C validation only; never selector objective",
+  "claim_boundary": "Guardrail split and decision contract only; no model Utility or release claim."
+}
