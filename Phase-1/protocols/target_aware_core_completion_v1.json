@@ -1,0 +1,327 @@
+{
+  "schema_version": "target-aware-core-completion-v1",
+  "status": "block_1_target_contract_frozen",
+  "frozen_at": "2026-08-02",
+  "implementation_authority": "design_contract_only",
+  "baseline": {
+    "commit": "ed87fe87d54d6bec4fb35a806d9c1c9a5141e425",
+    "tag": "conservative-structural-baseline-v1",
+    "fallback_profile": "normal_structural_v1",
+    "fallback_claim": "auditable_conservative_structural_curation_only"
+  },
+  "research_scope": {
+    "framework_role": "curation_between_collected_text_and_lm_training_data",
+    "training_interface": "continued_pretraining",
+    "excluded_training_interfaces": [
+      "supervised_instruction_finetuning",
+      "preference_optimization",
+      "reinforcement_learning"
+    ],
+    "target_population": "general-purpose small language models",
+    "runtime_end": "curated_jsonl_materialization",
+    "external_evaluation_role": "policy_validation_only",
+    "universal_intrinsic_quality_claim": false,
+    "guaranteed_improvement_on_every_corpus_claim": false
+  },
+  "risk_layer_boundary": {
+    "placement": "separate_input_eligibility_layer_before_the_A_B_C_curation_runtime",
+    "not_quality_or_coverage": [
+      "rights_and_license_eligibility",
+      "PII_and_secrets",
+      "known_benchmark_contamination",
+      "declared_poisoning_or_malware_risk"
+    ],
+    "selection_effect": "quarantine_or_release_by_its_own_versioned_contract_only",
+    "source_reputation_as_quality_evidence": false,
+    "reason": "Training eligibility and LM learning value are different decisions and must not compensate for each other."
+  },
+  "target_model": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "architecture": "Qwen3ForCausalLM",
+    "declared_parameter_class": "4B_dense_base",
+    "local_config_max_position_embeddings": 32768,
+    "training_context_length": 2048,
+    "context_scope_note": "This experiment validates 2048-token continued-pretraining blocks, not long-context curation effectiveness.",
+    "config_sha256": "304b2545a258d35620f1d4bf46940c0471d9baa00715ff8e77f84c2fca5057c1",
+    "model_index_sha256": "d6c42883a895dfef5b0080ed2116a1bcd764f558406b98923d675978a1abf29c"
+  },
+  "target_tokenizer": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "tokenizer_json_sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "tokenizer_config_sha256": "3c04ed3ca964ea2f6b2b5faf0dc4d31aec1cb1e8b4bcf63f402d295046b422b5",
+    "vocab_sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+    "merges_sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+    "add_special_tokens": false,
+    "append_eos_per_record": true,
+    "authoritative_token_unit": "target_tokenizer_token"
+  },
+  "quality_reference_model": {
+    "model_id": "Qwen/Qwen3-8B-Base",
+    "revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
+    "role": "stronger_same_family_reference_for_development_excess_loss_evidence",
+    "selection_authority": "none_until_block_5_calibration_and_promotion",
+    "tokenizer_compatibility_basis": "Qwen3 technical report declares the shared Qwen tokenizer across dense family models.",
+    "required_pre_scoring_checks": [
+      "snapshot_materialized_and_hashed",
+      "tokenizer_files_byte_identical_to_target_or_token_ids_proven_identical",
+      "bf16_likelihood_reference_run_available",
+      "any_quantized_approximation_error_bounded_against_bf16_on_frozen_probe"
+    ],
+    "score_unit": "natural_log_loss_per_target_token",
+    "model_cutoff_role": "not_a_temporal_novelty_or_truth_oracle"
+  },
+  "model_provider_boundary": {
+    "framework_hardcodes_qwen": false,
+    "current_experiment_backend": "Qwen3_family",
+    "target_and_reference_are_user_declared_versioned_providers": true,
+    "quality_claim_scope": "Qwen3-4B-Base continued pretraining until another model family independently passes calibration and confirmatory evaluation",
+    "coverage_encoder_is_replaceable": true,
+    "provider_output_alone_may_delete": false
+  },
+  "coverage_encoder": {
+    "model_id": "Qwen/Qwen3-Embedding-0.6B",
+    "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+    "role": "development_candidate_for_semantic_support_and_retrieval_only",
+    "selection_authority": "none_until_block_6_stability_and_bias_gates_pass",
+    "embedding_dimension": 1024,
+    "instruction": "Represent the learnable content and skills in this language-model pretraining unit for semantic coverage auditing.",
+    "normalization": "l2",
+    "required_bias_probes": [
+      "general_prose",
+      "source_code",
+      "mathematics",
+      "technical_documentation",
+      "conversation",
+      "tables_and_structured_text",
+      "multilingual_and_code_switched_text",
+      "short_and_long_units"
+    ]
+  },
+  "temporal_boundary": {
+    "official_model_release": "2025-05",
+    "auditable_pretraining_cutoff": null,
+    "cutoff_status": "not_declared_in_the_official_material_reviewed_for_this_contract",
+    "forbidden_inference": "Do not substitute model release date, local file timestamp, or repository commit date for the pretraining cutoff.",
+    "temporal_new_knowledge_claim_allowed": false,
+    "livecodebench_post_cutoff_claim_allowed": false,
+    "separate_future_protocol_required": "A temporal claim requires a base model with an auditable cutoff, a raw snapshot end, and tasks strictly after both dates."
+  },
+  "quality_evidence_contract": {
+    "latent_target": "expected_marginal_external_risk_reduction_per_target_training_token",
+    "runtime_candidate_features": [
+      "explicit_structural_non_payload_evidence",
+      "target_base_loss_per_token",
+      "reference_loss_per_token",
+      "base_minus_reference_excess_loss",
+      "usable_packed_token_fraction",
+      "coverage_marginal_gain"
+    ],
+    "loss_scoring": {
+      "tokenizer": "target_tokenizer",
+      "context_length": 2048,
+      "add_special_tokens": false,
+      "append_eos_per_record": true,
+      "padding_tokens_scored": false,
+      "first_unconditioned_token_scored": false,
+      "unit": "nats_per_target_token",
+      "primary_precision": "bfloat16",
+      "quantized_loss_use": "development_approximation_only_after_bf16_error_gate"
+    },
+    "combination_rule": "calibrated_gain_with_uncertainty_not_handwritten_weighted_sum",
+    "route_role": "conditioning_and_error_analysis_only",
+    "unknown_mixed_ood_action": "retain_and_report_until_route_specific_evidence_is_validated",
+    "forbidden_runtime_inputs": [
+      "benchmark_outcomes",
+      "Utility",
+      "source_reputation",
+      "source_tier",
+      "human_global_quality_label",
+      "target_retention_fraction",
+      "hidden_token_budget"
+    ]
+  },
+  "coverage_target": {
+    "meaning": "preserve_valid_distinct_potentially_learnable_support_under_selection",
+    "fixed_domain_quota": false,
+    "source_selection_axis": false,
+    "required_views": [
+      "redundancy_family",
+      "content_route",
+      "language_and_script",
+      "format_and_morphology",
+      "stable_semantic_skill_cluster",
+      "unknown_mixed_low_confidence_intersections"
+    ],
+    "hard_invariants": [
+      "final_representative_for_each_compacted_family",
+      "valid_residual_for_each_span_transform",
+      "no_unexplained_stable_cluster_extinction",
+      "no_silent_unknown_mixed_ood_extinction"
+    ],
+    "selection_role": "constraint_and_representative_choice",
+    "forbidden_claim": "rare_content_is_automatically_useful"
+  },
+  "training_recipe": {
+    "method": "QLoRA_continued_pretraining",
+    "dataset_arms": [
+      "base_natural",
+      "normal_natural",
+      "hard_natural"
+    ],
+    "dataset_arm_definitions": {
+      "base_natural": "risk-eligible Validity-passing corpus before Redundancy, Quality, and Coverage subset selection",
+      "normal_natural": "validated high-confidence policies with uncertainty retained and Coverage constraints enforced",
+      "hard_natural": "validated stricter policies or per-token-cost boundary with Coverage constraints enforced"
+    },
+    "untrained_evaluation_reference": "original Qwen3-4B-Base checkpoint; reported separately and not counted as a dataset arm",
+    "primary_comparisons": [
+      "normal_natural_vs_base_natural",
+      "hard_natural_vs_base_natural"
+    ],
+    "supporting_comparisons": [
+      "hard_natural_vs_normal_natural",
+      "every_trained_dataset_arm_vs_untrained_base_model_reference"
+    ],
+    "natural_budget_rule": "Train each materialized arm for one complete deterministic seed-conditioned pass over its own target-tokenized blocks. Never equal-token resample or impose a retained fraction.",
+    "data_order": "seed_conditioned_deterministic_block_permutation_recorded_by_hash",
+    "seeds": [101, 202, 303],
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "optimizer": {
+      "name": "AdamW",
+      "learning_rate": 0.00005,
+      "betas": [0.9, 0.999],
+      "epsilon": 1e-08,
+      "weight_decay": 0.1,
+      "scheduler": "constant",
+      "warmup_steps": 0,
+      "max_grad_norm": 1.0
+    },
+    "quantization": {
+      "load_in_4bit": true,
+      "type": "NF4",
+      "double_quantization": true,
+      "compute_dtype": "bfloat16"
+    },
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear",
+      "task_type": "CAUSAL_LM"
+    },
+    "gradient_checkpointing": true,
+    "packing_tail_rule": "drop_only_final_incomplete_sequence_and_final_incomplete_accumulation_group",
+    "environment_reference": {
+      "python": "3.12.13",
+      "torch": "2.6.0+cu124",
+      "transformers": "5.9.0",
+      "peft": "0.19.1",
+      "bitsandbytes": "0.49.2"
+    }
+  },
+  "capability_panels": {
+    "aggregation": "report_each_panel_and_benchmark_separately_no_universal_scalar",
+    "code_primary": [
+      "humanevalplus",
+      "mbppplus",
+      "bigcodebench_complete",
+      "cruxeval_input_prediction",
+      "cruxeval_output_prediction",
+      "ds1000"
+    ],
+    "math_primary": [
+      "gsm8k_test",
+      "hendrycks_math_test"
+    ],
+    "science_reasoning_guard": [
+      "gpqa_diamond"
+    ],
+    "general_retention": [
+      "mmlu_pro",
+      "bbh",
+      "arc_challenge",
+      "hellaswag"
+    ],
+    "multilingual_retention": [
+      "mgsm",
+      "mmmlu"
+    ],
+    "livecodebench": "blocked_by_unknown_model_cutoff",
+    "minimum_evidence_for_domain_general_downstream_claim": [
+      "independent_code_confirmatory_pass",
+      "independent_math_confirmatory_pass",
+      "independent_general_confirmatory_pass",
+      "science_reasoning_guard_pass",
+      "multilingual_retention_guard_pass"
+    ]
+  },
+  "benchmark_snapshot_state": {
+    "code": {
+      "status": "frozen",
+      "source_protocol": "protocols/code_record_disjoint_confirmatory_evaluation_protocol.json",
+      "source_protocol_sha256_required_at_execution": true,
+      "all_primary_snapshots_have_recorded_sha256": true
+    },
+    "math": {
+      "status": "suite_ids_frozen_snapshot_revisions_pending",
+      "corpus_admission_allowed": false
+    },
+    "general": {
+      "status": "suite_ids_frozen_snapshot_revisions_pending",
+      "corpus_admission_allowed": false
+    },
+    "multilingual": {
+      "status": "suite_ids_frozen_snapshot_revisions_pending",
+      "corpus_admission_allowed": false
+    },
+    "fail_closed_rule": "No development or confirmatory corpus may be admitted for a panel until every benchmark snapshot, evaluator revision, exclusion hash, and task count is frozen."
+  },
+  "split_and_leakage_contract": {
+    "development_and_confirmatory_disjoint_by": [
+      "stable_record_id",
+      "normalized_text_sha256",
+      "source_snapshot",
+      "collection_time_when_auditable"
+    ],
+    "benchmark_exclusion_before_curation": true,
+    "quality_calibration_split": "development_only",
+    "confirmatory_refit_allowed": false,
+    "post_confirmatory_threshold_change_allowed": false,
+    "benchmark_feedback_to_runtime_allowed": false
+  },
+  "acceptance_contract": {
+    "compression_requirement": "Normal and Hard report exact target-token deltas from Base; Hard must not retain more tokens than Normal under the same admitted input, and at least one validated profile must compress noisy or redundant confirmatory scenarios.",
+    "clean_control_requirement": "clean_controls_do_not_exceed_the_preregistered_false_positive_bound",
+    "noninferiority_test": "one-sided 95 percent intervals on seed- and task-paired Normal-minus-Base and Hard-minus-Base differences",
+    "margin_freeze_rule": "Derive each benchmark margin from task resolution and development measurement variability, document it before confirmatory materialization, and never revise it after confirmatory outcomes.",
+    "cross_panel_compensation_allowed": false,
+    "failed_panel_action": "limit_policy_and_claim_scope",
+    "promotion_requires": [
+      "core_behavior_gates",
+      "coverage_invariants",
+      "development_ablation",
+      "frozen_policy_hash",
+      "three_seed_natural_budget_external_evaluation",
+      "general_and_multilingual_retention_guards_for_domain_general_claim"
+    ]
+  },
+  "block_1_decisions": {
+    "target_model_frozen": true,
+    "target_tokenizer_frozen": true,
+    "reference_model_identity_frozen": true,
+    "coverage_encoder_identity_frozen": true,
+    "training_interface_frozen": true,
+    "natural_budget_rule_frozen": true,
+    "seed_set_frozen": true,
+    "base_normal_hard_dataset_arms_frozen": true,
+    "capability_panels_frozen": true,
+    "temporal_claim_boundary_frozen": true,
+    "runtime_implementation_started": false
+  },
+  "next_block": "Block 2 - audit-only corpus profiler"
+}
