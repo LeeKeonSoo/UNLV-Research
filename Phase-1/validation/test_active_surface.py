@@ -160,7 +160,9 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("validation/test_benchmark_snapshot_registry_v1.py")
     expected.add("development_corpus_inventory.py")
     expected.add("development_corpus_inventory_contract.py")
+    expected.add("development_corpus_materialization.py")
     expected.add("scripts/build_development_corpus_inventory_v1.py")
+    expected.add("scripts/materialize_development_corpus_matrix_v1.py")
     expected.add("validation/test_development_corpus_inventory_v1.py")
     actual = {
         path.relative_to(ROOT).as_posix()

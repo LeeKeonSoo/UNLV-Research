@@ -75,7 +75,12 @@ def _source(spec: InventorySourceSpec) -> tuple[InventorySourceEvidence, frozens
     return evidence, frozenset(record_ids), frozenset(text_hashes)
 
 
-def _slices(registry: DevelopmentCorpusInventoryRegistry) -> tuple[InventorySliceEvidence, ...]:
+def _slices(
+    registry: DevelopmentCorpusInventoryRegistry,
+    materialized: tuple[InventorySliceEvidence, ...],
+) -> tuple[InventorySliceEvidence, ...]:
+    if materialized:
+        return materialized
     source_by_role = {(item.domain, item.role): item.source_id for item in registry.sources}
     slices: list[InventorySliceEvidence] = []
     for domain in InventoryDomain:
@@ -97,7 +102,11 @@ def _slices(registry: DevelopmentCorpusInventoryRegistry) -> tuple[InventorySlic
     return tuple(slices)
 
 
-def build_development_corpus_inventory(registry: DevelopmentCorpusInventoryRegistry) -> DevelopmentCorpusInventoryManifest:
+def build_development_corpus_inventory(
+    registry: DevelopmentCorpusInventoryRegistry,
+    materialized: tuple[InventorySliceEvidence, ...] = (),
+    cross_slice_parent_overlap_count: int | None = None,
+) -> DevelopmentCorpusInventoryManifest:
     built = tuple((spec, *_source(spec)) for spec in registry.sources)
     sources = tuple(item[1] for item in built)
     pairs: list[DomainPairEvidence] = []
@@ -107,8 +116,12 @@ def build_development_corpus_inventory(registry: DevelopmentCorpusInventoryRegis
         pairs.append(DomainPairEvidence(domain=domain, clean_raw_record_id_overlap_count=len(clean[2] & raw[2]), clean_raw_normalized_text_overlap_count=len(clean[3] & raw[3])))
     record_overlap = sum(len(left[2] & right[2]) for left, right in combinations(built, 2))
     text_overlap = sum(len(left[3] & right[3]) for left, right in combinations(built, 2))
-    slices = _slices(registry)
-    blockers = ["metamorphic_slices_not_materialized", "benchmark_exclusion_not_run"]
+    slices = _slices(registry, materialized)
+    blockers = ["benchmark_exclusion_not_run"]
+    if any(item.status is SliceStatus.MATERIALIZATION_PENDING for item in slices):
+        blockers.append("metamorphic_slices_not_materialized")
+    elif cross_slice_parent_overlap_count != 0:
+        blockers.append("development_slice_parent_overlap_not_zero")
     if record_overlap or text_overlap:
         blockers.append("development_source_overlap_detected")
     blockers.extend(
@@ -122,6 +135,7 @@ def build_development_corpus_inventory(registry: DevelopmentCorpusInventoryRegis
         "domain_pairs": [item.model_dump(mode="json") for item in pairs],
         "cross_source_record_id_overlap_count": record_overlap,
         "cross_source_normalized_text_overlap_count": text_overlap,
+        "cross_slice_parent_overlap_count": cross_slice_parent_overlap_count,
         "slices": [item.model_dump(mode="json") for item in slices],
         "blocker_codes": sorted(blockers),
     }
@@ -133,6 +147,7 @@ def build_development_corpus_inventory(registry: DevelopmentCorpusInventoryRegis
         domain_pairs=tuple(pairs),
         cross_source_record_id_overlap_count=record_overlap,
         cross_source_normalized_text_overlap_count=text_overlap,
+        cross_slice_parent_overlap_count=cross_slice_parent_overlap_count,
         slices=slices,
         blocker_codes=tuple(sorted(blockers)),
         manifest_sha256=hash_json(payload),

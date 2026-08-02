@@ -66,6 +66,8 @@ class DevelopmentCorpusInventoryRegistry(BaseModel):
     schema_version: Literal["development-corpus-inventory-registry-v1"]
     status: Literal["block-8-inventory-only"]
     normalization: Literal["unicode-nfkc-whitespace-collapse-v1"]
+    output_root: str
+    parent_records_per_slice: PositiveInt
     sources: tuple[InventorySourceSpec, ...]
     confirmatory_references: dict[InventoryDomain, ConfirmatoryReference]
     metamorphic_transformations: dict[str, tuple[str, ...]]
@@ -119,6 +121,22 @@ class InventorySliceEvidence(BaseModel):
     base_source_id: str
     status: SliceStatus
     transformation_ids: tuple[str, ...]
+    artifact_path: str | None = None
+    artifact_sha256: Sha256 | None = None
+    parent_record_ids_sha256: Sha256 | None = None
+    parent_record_count: PositiveInt | None = None
+    materialized_record_count: PositiveInt | None = None
+    unique_fixture_id_count: PositiveInt | None = None
+
+    @model_validator(mode="after")
+    def validate_materialization_evidence(self) -> "InventorySliceEvidence":
+        evidence = (self.artifact_path, self.artifact_sha256, self.parent_record_ids_sha256, self.parent_record_count, self.materialized_record_count, self.unique_fixture_id_count)
+        if self.status is SliceStatus.MATERIALIZED:
+            if any(value is None for value in evidence) or self.materialized_record_count != self.unique_fixture_id_count:
+                raise ValueError("A materialized slice requires complete unique artifact evidence")
+        elif any(value is not None for value in evidence):
+            raise ValueError("A pending or inventoried slice cannot claim materialization evidence")
+        return self
 
 
 class DevelopmentCorpusInventoryManifest(BaseModel):
@@ -130,6 +148,7 @@ class DevelopmentCorpusInventoryManifest(BaseModel):
     domain_pairs: tuple[DomainPairEvidence, ...]
     cross_source_record_id_overlap_count: NonNegativeInt
     cross_source_normalized_text_overlap_count: NonNegativeInt
+    cross_slice_parent_overlap_count: NonNegativeInt | None
     slices: tuple[InventorySliceEvidence, ...]
     blocker_codes: tuple[str, ...]
     manifest_sha256: Sha256
@@ -151,7 +170,7 @@ class DevelopmentCorpusInventoryManifest(BaseModel):
             raise ValueError("Inventory manifest scenario matrix is incomplete")
         if {item.domain for item in self.domain_pairs} != set(InventoryDomain) or len(self.domain_pairs) != len(InventoryDomain):
             raise ValueError("Inventory manifest domain-pair evidence is incomplete")
-        admitted = not self.blocker_codes and all(item.status is not SliceStatus.MATERIALIZATION_PENDING for item in self.slices)
+        admitted = not self.blocker_codes and self.cross_slice_parent_overlap_count == 0 and all(item.status is not SliceStatus.MATERIALIZATION_PENDING for item in self.slices)
         if (self.status is InventoryStatus.ADMITTED) != admitted:
             raise ValueError("Inventory admission status disagrees with blockers or slice materialization")
         payload = {
@@ -160,6 +179,7 @@ class DevelopmentCorpusInventoryManifest(BaseModel):
             "domain_pairs": [item.model_dump(mode="json") for item in self.domain_pairs],
             "cross_source_record_id_overlap_count": self.cross_source_record_id_overlap_count,
             "cross_source_normalized_text_overlap_count": self.cross_source_normalized_text_overlap_count,
+            "cross_slice_parent_overlap_count": self.cross_slice_parent_overlap_count,
             "slices": [item.model_dump(mode="json") for item in self.slices],
             "blocker_codes": list(self.blocker_codes),
         }

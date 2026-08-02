@@ -2,6 +2,8 @@
   "schema_version": "development-corpus-inventory-registry-v1",
   "status": "block-8-inventory-only",
   "normalization": "unicode-nfkc-whitespace-collapse-v1",
+  "output_root": "D:/UNLV-Research/block8_development_matrix_v1",
+  "parent_records_per_slice": 400,
   "sources": [
     {
       "source_id": "code-post-stack-v2-clean-controls-v1",

@@ -638,12 +638,14 @@ No benchmark outcome is present in or consumed by this exclusion artifact.
 The development inventory now pins six real source artifacts: one clean control
 and one raw-like source for each domain. They contain 23,066 unique raw-like
 records and 5,073 unique clean-control records. Every pair across all six
-sources has zero record-ID and canonical-text overlap. The six observed clean and
-mixed-raw slices are inventoried, while nine mechanically derived duplicate,
-malformed, and boilerplate stress slices remain unmaterialized. Math and General
-confirmatory corpus references and corpus-to-benchmark exclusion scans also
-remain pending, so `configs/development_corpus_manifest_v1.json` correctly has
-status `blocked`; file presence alone cannot satisfy preflight. Stored hashes
+sources has zero record-ID and canonical-text overlap. All 15 development
+slices are now materialized on D:, including nine mechanically derived
+duplicate, malformed, and boilerplate stress slices. Each slice uses 400
+parents; the three domain matrices contain 13,200 fixture records in total,
+have zero cross-slice parent overlap, and replay to identical artifact hashes.
+Math and General confirmatory corpus references and corpus-to-benchmark
+exclusion scans remain pending, so `configs/development_corpus_manifest_v1.json`
+correctly has status `blocked`; file presence alone cannot satisfy preflight. Stored hashes
 from older clean-control pipelines disagree with the current canonical
 normalization for 173 records, so Block 8 recomputes all canonical hashes from
 the original text rather than inheriting those values.

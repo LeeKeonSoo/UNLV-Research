@@ -18,7 +18,7 @@ from development_corpus_inventory_contract import load_inventory_registry
 def main() -> int:
     parser = argparse.ArgumentParser(description="Inventory Block 8 development corpus sources without admitting pending slices.")
     parser.add_argument("--registry", type=Path, default=ROOT / "protocols" / "development_corpus_inventory_registry_v1.json")
-    parser.add_argument("--output", type=Path, default=ROOT / "configs" / "development_corpus_manifest_v1.json")
+    parser.add_argument("--output", type=Path, default=ROOT / "validation" / "frozen_contracts" / "development_corpus_source_inventory_v1.json")
     args = parser.parse_args()
     manifest = build_development_corpus_inventory(load_inventory_registry(args.registry))
     args.output.write_text(manifest.model_dump_json(indent=2) + "\n", encoding="utf-8")

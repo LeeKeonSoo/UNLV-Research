@@ -1,7 +1,7 @@
 {
   "schema_version": "development-corpus-inventory-manifest-v1",
   "status": "blocked",
-  "registry_sha256": "969ca520d3caef572dd4df5f28f2d347c6d92db321c9b7f5bc40e6c696142be9",
+  "registry_sha256": "b637645a88a935b20dc49451f799533516f0c8364ab2c0b9a4c3d5d699850c5c",
   "sources": [
     {
       "source_id": "code-post-stack-v2-clean-controls-v1",
@@ -83,6 +83,7 @@
   ],
   "cross_source_record_id_overlap_count": 0,
   "cross_source_normalized_text_overlap_count": 0,
+  "cross_slice_parent_overlap_count": 0,
   "slices": [
     {
       "slice_id": "code-clean",
@@ -90,8 +91,14 @@
       "scenario": "clean",
       "origin": "observed",
       "base_source_id": "code-post-stack-v2-clean-controls-v1",
-      "status": "inventoried",
-      "transformation_ids": []
+      "status": "materialized",
+      "transformation_ids": [],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/code/clean.jsonl",
+      "artifact_sha256": "7c76863252de9aee38329ae655d7c5435cd27c91a536a008e3647caeae580e44",
+      "parent_record_ids_sha256": "3f26f62b5274b5bde24d045049f77b7ec79673b64a6379cffd82f1877453cb74",
+      "parent_record_count": 400,
+      "materialized_record_count": 400,
+      "unique_fixture_id_count": 400
     },
     {
       "slice_id": "code-duplicate_heavy",
@@ -99,11 +106,17 @@
       "scenario": "duplicate_heavy",
       "origin": "metamorphic",
       "base_source_id": "github-code-10m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "exact-copy-family-v1",
         "length-relative-single-span-perturbation-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/code/duplicate_heavy.jsonl",
+      "artifact_sha256": "9a9ac64e79f1a7449d8a7be8e3860b8ce9c097537c234cac152c9504deddbada",
+      "parent_record_ids_sha256": "bcd5c174bd75dcacc988d0c8d8e75675408e3e8a6d6fca94f8d8989b8a6d6b2a",
+      "parent_record_count": 400,
+      "materialized_record_count": 1600,
+      "unique_fixture_id_count": 1600
     },
     {
       "slice_id": "code-malformed",
@@ -111,11 +124,17 @@
       "scenario": "malformed",
       "origin": "metamorphic",
       "base_source_id": "github-code-10m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "utf8-truncation-with-parent-retention-v1",
         "empty-payload-with-parent-retention-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/code/malformed.jsonl",
+      "artifact_sha256": "c1bd995b19156cfb83f006473f066ab09b72c045170f09b7f20e14a4d73d5c79",
+      "parent_record_ids_sha256": "c1bc625f55487cd32cbd333b60fe669b7efdde3d23bf624feafe639f27b8825f",
+      "parent_record_count": 400,
+      "materialized_record_count": 1200,
+      "unique_fixture_id_count": 1200
     },
     {
       "slice_id": "code-boilerplate_heavy",
@@ -123,11 +142,17 @@
       "scenario": "boilerplate_heavy",
       "origin": "metamorphic",
       "base_source_id": "github-code-10m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "explicit-chrome-prefix-suffix-with-residual-identity-v1",
         "repeated-template-span-with-parent-retention-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/code/boilerplate_heavy.jsonl",
+      "artifact_sha256": "342528593822b206bc49fc9d4dc2f96e6ed109c78a80809dc7d801c4ed0b211d",
+      "parent_record_ids_sha256": "805391a25baaae3214b9c1ed9bf2b55e8e17a74b4c7ecaedb37ed185ea0c433a",
+      "parent_record_count": 400,
+      "materialized_record_count": 800,
+      "unique_fixture_id_count": 800
     },
     {
       "slice_id": "code-mixed_raw_like",
@@ -135,8 +160,14 @@
       "scenario": "mixed_raw_like",
       "origin": "observed",
       "base_source_id": "github-code-10m-raw-v1",
-      "status": "inventoried",
-      "transformation_ids": []
+      "status": "materialized",
+      "transformation_ids": [],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/code/mixed_raw_like.jsonl",
+      "artifact_sha256": "eefe0efef7fddb9bfc7dcc06c68a1715dac365b212d84f993326fbfb14cd7632",
+      "parent_record_ids_sha256": "439b0b8d260d79cc2e2dc98ed0b948bcb8519e3174c61a4048d0b39104168f78",
+      "parent_record_count": 400,
+      "materialized_record_count": 400,
+      "unique_fixture_id_count": 400
     },
     {
       "slice_id": "math-clean",
@@ -144,8 +175,14 @@
       "scenario": "clean",
       "origin": "observed",
       "base_source_id": "math-open-educational-clean-controls-v6",
-      "status": "inventoried",
-      "transformation_ids": []
+      "status": "materialized",
+      "transformation_ids": [],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/math/clean.jsonl",
+      "artifact_sha256": "bc65f22b6cc8967c47b5afe7c6289a94fe72f4a0ef61a41bd790d54486fcecb6",
+      "parent_record_ids_sha256": "ea90b5fa553042a39573d92e063903542f4e039f15c6caff757ac50f01c2d030",
+      "parent_record_count": 400,
+      "materialized_record_count": 400,
+      "unique_fixture_id_count": 400
     },
     {
       "slice_id": "math-duplicate_heavy",
@@ -153,11 +190,17 @@
       "scenario": "duplicate_heavy",
       "origin": "metamorphic",
       "base_source_id": "open-web-math-5m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "exact-copy-family-v1",
         "length-relative-single-span-perturbation-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/math/duplicate_heavy.jsonl",
+      "artifact_sha256": "991f222c5fa70ac65358daba591088a8b36ce3a5155c313c00ec8da83457be65",
+      "parent_record_ids_sha256": "7cb03eb9115faeab4823836229fc2c775722c45ed942871d805c96d7e22a7711",
+      "parent_record_count": 400,
+      "materialized_record_count": 1600,
+      "unique_fixture_id_count": 1600
     },
     {
       "slice_id": "math-malformed",
@@ -165,11 +208,17 @@
       "scenario": "malformed",
       "origin": "metamorphic",
       "base_source_id": "open-web-math-5m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "utf8-truncation-with-parent-retention-v1",
         "empty-payload-with-parent-retention-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/math/malformed.jsonl",
+      "artifact_sha256": "7ad0d14e9cb998202a88d7dba0af6cc35b423938a0ee7d9a9d8b8e22ec2de98e",
+      "parent_record_ids_sha256": "3ddcd81d5476eac61e43431b8c6f5192465b0749057566f50d9fe36e05800b53",
+      "parent_record_count": 400,
+      "materialized_record_count": 1200,
+      "unique_fixture_id_count": 1200
     },
     {
       "slice_id": "math-boilerplate_heavy",
@@ -177,11 +226,17 @@
       "scenario": "boilerplate_heavy",
       "origin": "metamorphic",
       "base_source_id": "open-web-math-5m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "explicit-chrome-prefix-suffix-with-residual-identity-v1",
         "repeated-template-span-with-parent-retention-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/math/boilerplate_heavy.jsonl",
+      "artifact_sha256": "30cf1f0ca6912e1a08e7ef926ffb094a649f9308c17142ce82c4f0c0ec213c24",
+      "parent_record_ids_sha256": "580f3e4bbaa23fef3a074a2c08b76ffd8329c243a12fae5f4cd2cf9c6cd7549e",
+      "parent_record_count": 400,
+      "materialized_record_count": 800,
+      "unique_fixture_id_count": 800
     },
     {
       "slice_id": "math-mixed_raw_like",
@@ -189,8 +244,14 @@
       "scenario": "mixed_raw_like",
       "origin": "observed",
       "base_source_id": "open-web-math-5m-raw-v1",
-      "status": "inventoried",
-      "transformation_ids": []
+      "status": "materialized",
+      "transformation_ids": [],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/math/mixed_raw_like.jsonl",
+      "artifact_sha256": "9112bd124124a3246df96847b5e135184bb5eeade051824673e0df58491ce6a3",
+      "parent_record_ids_sha256": "43bd6a9214403f6049e752ac060867326794de3c170454aec37d49af6455124e",
+      "parent_record_count": 400,
+      "materialized_record_count": 400,
+      "unique_fixture_id_count": 400
     },
     {
       "slice_id": "general-clean",
@@ -198,8 +259,14 @@
       "scenario": "clean",
       "origin": "observed",
       "base_source_id": "common-pile-general-clean-controls-v2",
-      "status": "inventoried",
-      "transformation_ids": []
+      "status": "materialized",
+      "transformation_ids": [],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/general/clean.jsonl",
+      "artifact_sha256": "3a611f97b6b7bb8cc67803bdee42d628dddcc351cc70ce4407eb3ff4f0d8a2bc",
+      "parent_record_ids_sha256": "726121fa8794915cad3ea6837c2981fe0a73e8a6e0a81fdce4fbab9c0afc923c",
+      "parent_record_count": 400,
+      "materialized_record_count": 400,
+      "unique_fixture_id_count": 400
     },
     {
       "slice_id": "general-duplicate_heavy",
@@ -207,11 +274,17 @@
       "scenario": "duplicate_heavy",
       "origin": "metamorphic",
       "base_source_id": "redpajama-v2-tail-10m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "exact-copy-family-v1",
         "length-relative-single-span-perturbation-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/general/duplicate_heavy.jsonl",
+      "artifact_sha256": "b0a988254aeb5f0b2928912a14d7594fbdbb81cb7a92c09f98f647c9682d37c8",
+      "parent_record_ids_sha256": "b0f9debae2802cd105dbc1bd755ec69d3c2aea249192fc85203d8a7fbbcad3b8",
+      "parent_record_count": 400,
+      "materialized_record_count": 1600,
+      "unique_fixture_id_count": 1600
     },
     {
       "slice_id": "general-malformed",
@@ -219,11 +292,17 @@
       "scenario": "malformed",
       "origin": "metamorphic",
       "base_source_id": "redpajama-v2-tail-10m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "utf8-truncation-with-parent-retention-v1",
         "empty-payload-with-parent-retention-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/general/malformed.jsonl",
+      "artifact_sha256": "be0f1faa8498cd53bcf60c226e360cba82b04a2e11344f7376de88c4069e930b",
+      "parent_record_ids_sha256": "d97654dfc63af8b81ee16e18099054fc7d4b30811fd48b7c19d14925279f91ff",
+      "parent_record_count": 400,
+      "materialized_record_count": 1200,
+      "unique_fixture_id_count": 1200
     },
     {
       "slice_id": "general-boilerplate_heavy",
@@ -231,11 +310,17 @@
       "scenario": "boilerplate_heavy",
       "origin": "metamorphic",
       "base_source_id": "redpajama-v2-tail-10m-raw-v1",
-      "status": "materialization_pending",
+      "status": "materialized",
       "transformation_ids": [
         "explicit-chrome-prefix-suffix-with-residual-identity-v1",
         "repeated-template-span-with-parent-retention-v1"
-      ]
+      ],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/general/boilerplate_heavy.jsonl",
+      "artifact_sha256": "27452e13932c98738f6a4f1df13ec62c56309a44b3708eabf52059b484fba623",
+      "parent_record_ids_sha256": "0cc2639c6f67af8aeb5b6a66b5732264818c68c1fc7aafbe0d73cd3ba38cd5b9",
+      "parent_record_count": 400,
+      "materialized_record_count": 800,
+      "unique_fixture_id_count": 800
     },
     {
       "slice_id": "general-mixed_raw_like",
@@ -243,17 +328,22 @@
       "scenario": "mixed_raw_like",
       "origin": "observed",
       "base_source_id": "redpajama-v2-tail-10m-raw-v1",
-      "status": "inventoried",
-      "transformation_ids": []
+      "status": "materialized",
+      "transformation_ids": [],
+      "artifact_path": "D:/UNLV-Research/block8_development_matrix_v1/general/mixed_raw_like.jsonl",
+      "artifact_sha256": "d10eef23ebc72e324fc6361154c24b8246ffac322a4bf19033ce1923e4890d0a",
+      "parent_record_ids_sha256": "aee4ba80e6857cc35f0a321ca67539bf529e5bb3c1732cb07213bc851a83b23b",
+      "parent_record_count": 400,
+      "materialized_record_count": 400,
+      "unique_fixture_id_count": 400
     }
   ],
   "blocker_codes": [
     "benchmark_exclusion_not_run",
     "general_confirmatory_reference_not_frozen",
-    "math_confirmatory_reference_not_frozen",
-    "metamorphic_slices_not_materialized"
+    "math_confirmatory_reference_not_frozen"
   ],
-  "manifest_sha256": "348e8ec09f2fa7ac5ee0c21694aaf604e249557381b4fe5010b8bd2385a5b4bc",
+  "manifest_sha256": "791102fe02b0f930ac64aa454a5ebb209a826592f50e63f9bd4dac76bf320a57",
   "benchmark_outcomes_read": false,
   "selector_membership_mutated": false
 }

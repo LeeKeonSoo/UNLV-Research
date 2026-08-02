@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
 
 
 from development_corpus_inventory import build_development_corpus_inventory
+from development_corpus_materialization import materialize_development_corpus_matrix
 from development_corpus_inventory_contract import (
     ConfirmatoryReference,
     DevelopmentCorpusInventoryRegistry,
@@ -24,10 +25,16 @@ from development_corpus_inventory_contract import (
 
 
 def _write(path: Path, uid: str, text: str, stored_hash: str | None = None) -> str:
-    row = {"record_id": uid, "text": text}
-    if stored_hash is not None:
-        row["normalized_text_sha256"] = stored_hash
-    path.write_text(json.dumps(row) + "\n", encoding="utf-8")
+    rows = []
+    for index in range(8):
+        row = {
+            "record_id": f"{uid}-{index}",
+            "text": f"{text} " + " ".join(f"token-{number}" for number in range(24)) + f" {index}",
+        }
+        if stored_hash is not None:
+            row["normalized_text_sha256"] = stored_hash
+        rows.append(json.dumps(row))
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
@@ -53,6 +60,8 @@ def _registry(root: Path) -> DevelopmentCorpusInventoryRegistry:
         schema_version="development-corpus-inventory-registry-v1",
         status="block-8-inventory-only",
         normalization="unicode-nfkc-whitespace-collapse-v1",
+        output_root=str(root / "materialized"),
+        parent_records_per_slice=2,
         sources=tuple(sources),
         confirmatory_references={domain: ConfirmatoryReference.PENDING for domain in InventoryDomain},
         metamorphic_transformations={
@@ -73,11 +82,32 @@ def test_inventory_reports_real_sources_without_admitting_pending_slices() -> No
         assert len(manifest.slices) == 15
         assert all(item.clean_raw_record_id_overlap_count == 0 for item in manifest.domain_pairs)
         assert manifest.cross_source_record_id_overlap_count == 0
-        assert manifest.cross_source_normalized_text_overlap_count == 3
+        assert manifest.cross_source_normalized_text_overlap_count == 24
         assert "development_source_overlap_detected" in manifest.blocker_codes
-        assert sum(item.stored_normalized_hash_mismatch_count for item in manifest.sources) == 3
+        assert sum(item.stored_normalized_hash_mismatch_count for item in manifest.sources) == 24
         assert "metamorphic_slices_not_materialized" in manifest.blocker_codes
         assert manifest.benchmark_outcomes_read is False
+
+
+def test_materialization_builds_all_fifteen_disjoint_slices() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        manifest = materialize_development_corpus_matrix(_registry(Path(directory)))
+        assert len(manifest.slices) == 15
+        assert all(item.status.value == "materialized" for item in manifest.slices)
+        counts = {
+            item.scenario: item.materialized_record_count
+            for item in manifest.slices
+            if item.domain is InventoryDomain.CODE
+        }
+        assert counts == {
+            "clean": 2,
+            "duplicate_heavy": 8,
+            "malformed": 6,
+            "boilerplate_heavy": 4,
+            "mixed_raw_like": 2,
+        }
+        assert "metamorphic_slices_not_materialized" not in manifest.blocker_codes
+        assert manifest.cross_slice_parent_overlap_count == 0
 
 
 def test_source_hash_drift_fails_closed() -> None:
@@ -105,4 +135,5 @@ if __name__ == "__main__":
     test_inventory_reports_real_sources_without_admitting_pending_slices()
     test_source_hash_drift_fails_closed()
     test_repository_registry_is_closed_and_source_metadata_hidden()
+    test_materialization_builds_all_fifteen_disjoint_slices()
     print("[development-corpus-inventory-v1] closed matrix inventory and fail-closed admission: pass")
