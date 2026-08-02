@@ -1,0 +1,56 @@
+{
+  "schema_version": "contrastive-quality-provider-v1",
+  "provider_id": "qwen3-4b-8b-excess-loss-candidate",
+  "lifecycle": "audit_only",
+  "target": {
+    "role": "target",
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "artifact_sha256": null,
+    "precision": "bfloat16",
+    "quantization_validation_artifact_sha256": null
+  },
+  "reference": {
+    "role": "reference",
+    "model_id": "Qwen/Qwen3-8B-Base",
+    "revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
+    "artifact_sha256": null,
+    "precision": "int8",
+    "quantization_validation_artifact_sha256": null
+  },
+  "tokenizer": {
+    "tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "artifact_sha256": null,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "scoring": {
+    "maximum_context_tokens": 2048,
+    "inference_chunk_tokens": 64,
+    "minimum_scored_tokens": 8,
+    "loss_unit": "nats_per_nonpadding_target_token",
+    "entropy_unit": "nats_per_next_token_distribution",
+    "output_evidence": [
+      "target_nll",
+      "reference_nll",
+      "excess_nll",
+      "target_entropy",
+      "reference_entropy"
+    ],
+    "scalar_quality_score_emitted": false,
+    "threshold_decision_emitted": false
+  },
+  "supported_routes": [
+    "code_artifact",
+    "mathematical_content",
+    "general_prose"
+  ],
+  "unknown_mixed_ood_action": "abstain_retain",
+  "weighted_quality_formula_used": false,
+  "benchmark_outcomes_available": false,
+  "utility_available": false,
+  "runtime_authority": false,
+  "direct_deletion_authority": false,
+  "replacement_invalidates_calibration": true
+}

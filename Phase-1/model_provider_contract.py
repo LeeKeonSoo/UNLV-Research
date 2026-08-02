@@ -74,6 +74,8 @@ class ProviderManifest(BaseModel):
     tokenizer_revision: str | None
     normalization: str = Field(min_length=1)
     output_semantics: str = Field(min_length=1)
+    implementation_contract_path: str | None = None
+    implementation_contract_identity_sha256: str | None = Field(default=None, min_length=64, max_length=64)
     supported_routes: tuple[str, ...]
     supported_languages: tuple[str, ...]
     policy_contribution_authority: bool
@@ -102,6 +104,11 @@ class ProviderManifest(BaseModel):
                 raise ProviderContractError("Confirmatory validation requires completed three-seed evidence")
         if self.policy_contribution_authority and self.lifecycle is not ProviderLifecycle.ACTIVE:
             raise ProviderContractError("Only an active provider may contribute to a promoted policy")
+        contract_fields = (self.implementation_contract_path, self.implementation_contract_identity_sha256)
+        if any(value is not None for value in contract_fields) and not all(
+            value is not None for value in contract_fields
+        ):
+            raise ProviderContractError("Provider implementation contract path and identity must be declared together")
         return self
 
     def identity_sha256(self) -> str:
@@ -113,6 +120,8 @@ class ProviderManifest(BaseModel):
             "tokenizer_revision": self.tokenizer_revision,
             "normalization": self.normalization,
             "output_semantics": self.output_semantics,
+            "implementation_contract_path": self.implementation_contract_path,
+            "implementation_contract_identity_sha256": self.implementation_contract_identity_sha256,
         }
         encoded = json.dumps(identity, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode()
         return hashlib.sha256(encoded).hexdigest()

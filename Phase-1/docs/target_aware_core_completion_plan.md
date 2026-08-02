@@ -694,6 +694,23 @@ bins per route, disjoint provider/development/held-out source groups, and one
 common baseline shared by every sensitivity arm and disjoint from every arm.
 No benchmark outcome, Utility value, or fixture result may satisfy this gate.
 
+E3b introduces a replaceable cross-model contrastive evidence provider. Its
+first audit-only pair is Qwen3-4B-Base as the target and Qwen3-8B-Base as the
+reference, but neither model is a framework dependency. The provider contract
+freezes each model ID, revision, precision, tokenizer identity, context rule,
+and output semantics. A user can substitute either model or the complete pair;
+any identity change invalidates inherited scores and calibration.
+
+Target and reference scoring may run on different GPUs or machines. Each emits
+an independently hashed artifact containing the exact token-ID hash, token
+count, mean NLL, and mean predictive entropy for every record. They are joined
+only when provider, scoring-contract, tokenizer, input, record, route, and token
+identities all match. The joined artifact exposes target NLL, reference NLL,
+excess NLL, and both entropies as a tuple. It emits no scalar Quality score and
+no threshold decision. The Qwen reference currently uses an unvalidated int8
+execution candidate, so its observations remain audit-only until a frozen
+precision probe and the E3 causal effect-bin gates pass.
+
 Hard extension selection is an output of this
 Block, so it is deliberately not a preflight prerequisite. Therefore no
 Normal or Hard profile hash has been frozen and Block 9 is not authorized.
