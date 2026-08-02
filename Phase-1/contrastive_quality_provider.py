@@ -39,6 +39,84 @@ class Precision(str, Enum):
     INT4 = "int4"
 
 
+class SnapshotFileEvidence(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    relative_path: str = Field(min_length=1)
+    size_bytes: int = Field(ge=0)
+    sha256: Sha256
+
+
+class FrozenModelSnapshotManifest(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    schema_version: Literal["frozen-model-snapshot-manifest-v1"]
+    model_id: str
+    revision: str
+    files: tuple[SnapshotFileEvidence, ...]
+    artifact_sha256: Sha256
+
+    @model_validator(mode="after")
+    def validate_manifest(self) -> "FrozenModelSnapshotManifest":
+        if not self.files or len({item.relative_path for item in self.files}) != len(self.files):
+            raise ContrastiveProviderError("contrastive_snapshot_file_inventory_invalid")
+        payload = self.model_dump(mode="json", exclude={"artifact_sha256"})
+        if self.artifact_sha256 != hash_json(payload):
+            raise ContrastiveProviderError("contrastive_snapshot_manifest_hash_mismatch")
+        return self
+
+
+@dataclass(frozen=True, slots=True)
+class NativeTokenizerSnapshot:
+    model_id: str
+    revision: str
+    snapshot_path: Path
+
+
+@dataclass(frozen=True, slots=True)
+class TokenizerCompatibilityRequest:
+    target: NativeTokenizerSnapshot
+    reference: NativeTokenizerSnapshot
+    tokenizer_id: str
+    tokenizer_revision: str
+
+
+class TokenizerFileCompatibilityEvidence(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    relative_path: str = Field(min_length=1)
+    target_sha256: Sha256
+    reference_sha256: Sha256
+
+    @model_validator(mode="after")
+    def validate_identical_hashes(self) -> "TokenizerFileCompatibilityEvidence":
+        if self.target_sha256 != self.reference_sha256:
+            raise ContrastiveProviderError(
+                f"contrastive_native_tokenizer_hash_mismatch:{self.relative_path}"
+            )
+        return self
+
+
+class FrozenTokenizerCompatibilityManifest(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    schema_version: Literal["frozen-tokenizer-compatibility-manifest-v1"]
+    target_model_id: str
+    target_revision: str
+    reference_model_id: str
+    reference_revision: str
+    tokenizer_id: str
+    tokenizer_revision: str
+    files: tuple[TokenizerFileCompatibilityEvidence, ...]
+    artifact_sha256: Sha256
+
+    @model_validator(mode="after")
+    def validate_manifest(self) -> "FrozenTokenizerCompatibilityManifest":
+        paths = {item.relative_path for item in self.files}
+        if not {"tokenizer.json", "tokenizer_config.json"} <= paths:
+            raise ContrastiveProviderError("contrastive_native_tokenizer_inventory_incomplete")
+        payload = self.model_dump(mode="json", exclude={"artifact_sha256"})
+        if self.artifact_sha256 != hash_json(payload):
+            raise ContrastiveProviderError("contrastive_tokenizer_compatibility_hash_mismatch")
+        return self
+
+
 class ContrastiveModelSpec(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     role: ModelRole
@@ -371,6 +449,85 @@ def combine_model_score_bundles(
     return ContrastiveEvidenceBundle(evidence_bundle_sha256=hash_json(payload), **payload)
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def build_model_snapshot_manifest(
+    model_id: str,
+    revision: str,
+    snapshot_path: Path,
+) -> FrozenModelSnapshotManifest:
+    if not snapshot_path.is_dir() or snapshot_path.name != revision:
+        raise ContrastiveProviderError("contrastive_snapshot_revision_mismatch")
+    files = tuple(
+        SnapshotFileEvidence(
+            relative_path=path.relative_to(snapshot_path).as_posix(),
+            size_bytes=path.stat().st_size,
+            sha256=_sha256_file(path),
+        )
+        for path in sorted((item for item in snapshot_path.rglob("*") if item.is_file()))
+    )
+    payload = {
+        "schema_version": "frozen-model-snapshot-manifest-v1",
+        "model_id": model_id,
+        "revision": revision,
+        "files": [item.model_dump(mode="json") for item in files],
+    }
+    return FrozenModelSnapshotManifest(artifact_sha256=hash_json(payload), **payload)
+
+
+def _native_tokenizer_files(snapshot_path: Path) -> dict[str, Path]:
+    if not snapshot_path.is_dir():
+        raise ContrastiveProviderError("contrastive_native_tokenizer_snapshot_missing")
+    exact_names = {"added_tokens.json", "merges.txt", "special_tokens_map.json", "vocab.json"}
+    return {
+        path.relative_to(snapshot_path).as_posix(): path
+        for path in snapshot_path.rglob("*")
+        if path.is_file() and (path.name.startswith("tokenizer") or path.name in exact_names)
+    }
+
+
+def build_tokenizer_compatibility_manifest(
+    request: TokenizerCompatibilityRequest,
+) -> FrozenTokenizerCompatibilityManifest:
+    target_files = _native_tokenizer_files(request.target.snapshot_path)
+    reference_files = _native_tokenizer_files(request.reference.snapshot_path)
+    if set(target_files) != set(reference_files):
+        raise ContrastiveProviderError("contrastive_native_tokenizer_inventory_mismatch")
+    evidence: list[TokenizerFileCompatibilityEvidence] = []
+    for relative_path in sorted(target_files):
+        target_sha256 = _sha256_file(target_files[relative_path])
+        reference_sha256 = _sha256_file(reference_files[relative_path])
+        if target_sha256 != reference_sha256:
+            raise ContrastiveProviderError(
+                f"contrastive_native_tokenizer_hash_mismatch:{relative_path}"
+            )
+        evidence.append(
+            TokenizerFileCompatibilityEvidence(
+                relative_path=relative_path,
+                target_sha256=target_sha256,
+                reference_sha256=reference_sha256,
+            )
+        )
+    files = tuple(evidence)
+    payload = {
+        "schema_version": "frozen-tokenizer-compatibility-manifest-v1",
+        "target_model_id": request.target.model_id,
+        "target_revision": request.target.revision,
+        "reference_model_id": request.reference.model_id,
+        "reference_revision": request.reference.revision,
+        "tokenizer_id": request.tokenizer_id,
+        "tokenizer_revision": request.tokenizer_revision,
+        "files": [item.model_dump(mode="json") for item in files],
+    }
+    return FrozenTokenizerCompatibilityManifest(artifact_sha256=hash_json(payload), **payload)
+
+
 def hash_json(payload: JsonValue) -> str:
     encoded = json.dumps(payload, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
@@ -384,10 +541,16 @@ __all__ = [
     "ContrastiveEvidenceBundle",
     "ContrastiveProviderError",
     "ContrastiveQualityProvider",
+    "FrozenModelSnapshotManifest",
+    "FrozenTokenizerCompatibilityManifest",
     "ModelRole",
     "ModelScoreBundle",
     "ModelScoreObservation",
     "TokenScore",
+    "NativeTokenizerSnapshot",
+    "TokenizerCompatibilityRequest",
+    "build_model_snapshot_manifest",
+    "build_tokenizer_compatibility_manifest",
     "combine_model_score_bundles",
     "load_contrastive_provider",
     "score_token_ids",

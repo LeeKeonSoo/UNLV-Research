@@ -1,0 +1,2044 @@
+{
+  "schema_version": "contrastive-quality-audit-v1",
+  "status": "blocked",
+  "provider_id": "qwen3-4b-8b-excess-loss-candidate",
+  "provider_identity_sha256": "7338964eb808b0fd8cac11d1ceffcc6c90a03dafd62d1c8f4572a6ccbf886e0b",
+  "evidence_bundle_sha256": "a329d43ff58ef2d7d15edf8ed8eb9a04a3475a0af77812407b94df574e873dfe",
+  "sample_artifact_sha256": "2e7f620c9eea7fc730cc3eeca8a56a8a8641160b9008145632cd0257eaf8316e",
+  "tokenizer_compatibility_artifact_sha256": "c297f7adc1487b9f8cd41a65fc5aece748dbde2f926498c30d6ad76723bcc870",
+  "sample_record_count": 1650,
+  "scored_record_count": 1500,
+  "omitted_record_count": 150,
+  "omitted_relation_counts": {
+    "empty-payload-v1": 150
+  },
+  "truncated_record_count": 215,
+  "exact_copy_consistency": {
+    "checked_copy_count": 300,
+    "mismatch_count": 0
+  },
+  "route_reports": [
+    {
+      "route": "code_artifact",
+      "sample_record_count": 550,
+      "scored_record_count": 500,
+      "source_group_count": 2,
+      "source_groups": [
+        "code-post-stack-v2-clean-controls-v1",
+        "github-code-10m-raw-v1"
+      ],
+      "scenario_counts": {
+        "boilerplate_heavy": 100,
+        "clean": 50,
+        "duplicate_heavy": 200,
+        "malformed": 150,
+        "mixed_raw_like": 50
+      },
+      "target_nll": {
+        "count": 500,
+        "minimum": 0.08916059027198005,
+        "median": 0.8414258621752072,
+        "mean": 0.933911016965609,
+        "maximum": 3.687800320712003
+      },
+      "reference_nll": {
+        "count": 500,
+        "minimum": 0.08245390615756766,
+        "median": 0.7930354010620317,
+        "mean": 0.8842710533277065,
+        "maximum": 3.4488407135009767
+      },
+      "excess_nll": {
+        "count": 500,
+        "minimum": -0.1579648971557619,
+        "median": 0.04211360444775869,
+        "mean": 0.04963996363790247,
+        "maximum": 0.2623086409135298
+      },
+      "target_entropy": {
+        "count": 500,
+        "minimum": 0.08685344771334999,
+        "median": 0.8381377554858562,
+        "mean": 0.8947987247666209,
+        "maximum": 2.656139373779297
+      },
+      "reference_entropy": {
+        "count": 500,
+        "minimum": 0.0827377498237226,
+        "median": 0.7931415573420904,
+        "mean": 0.8499626091394775,
+        "maximum": 2.737020319158381
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "sample_record_count": 550,
+      "scored_record_count": 500,
+      "source_group_count": 2,
+      "source_groups": [
+        "math-open-educational-clean-controls-v6",
+        "open-web-math-5m-raw-v1"
+      ],
+      "scenario_counts": {
+        "boilerplate_heavy": 100,
+        "clean": 50,
+        "duplicate_heavy": 200,
+        "malformed": 150,
+        "mixed_raw_like": 50
+      },
+      "target_nll": {
+        "count": 500,
+        "minimum": 0.15659786987304689,
+        "median": 1.4143232933532686,
+        "mean": 1.433068092471287,
+        "maximum": 3.884189411745233
+      },
+      "reference_nll": {
+        "count": 500,
+        "minimum": 0.1299432254379073,
+        "median": 1.3102959515003676,
+        "mean": 1.345942508676634,
+        "maximum": 3.645149953741776
+      },
+      "excess_nll": {
+        "count": 500,
+        "minimum": -0.10738543342141549,
+        "median": 0.07939899795026883,
+        "mean": 0.0871255837946532,
+        "maximum": 0.3740826836433653
+      },
+      "target_entropy": {
+        "count": 500,
+        "minimum": 0.16048679368976704,
+        "median": 1.3705341237946365,
+        "mean": 1.4200586584386812,
+        "maximum": 3.7110001413445723
+      },
+      "reference_entropy": {
+        "count": 500,
+        "minimum": 0.15064829048305872,
+        "median": 1.3138578989904408,
+        "mean": 1.337957319074153,
+        "maximum": 3.6464840537623355
+      }
+    },
+    {
+      "route": "general_prose",
+      "sample_record_count": 550,
+      "scored_record_count": 500,
+      "source_group_count": 2,
+      "source_groups": [
+        "common-pile-general-clean-controls-v2",
+        "redpajama-v2-tail-10m-raw-v1"
+      ],
+      "scenario_counts": {
+        "boilerplate_heavy": 100,
+        "clean": 50,
+        "duplicate_heavy": 200,
+        "malformed": 150,
+        "mixed_raw_like": 50
+      },
+      "target_nll": {
+        "count": 500,
+        "minimum": 0.44556099016257594,
+        "median": 2.52478689896433,
+        "mean": 2.5535027703033095,
+        "maximum": 4.748993920918971
+      },
+      "reference_nll": {
+        "count": 500,
+        "minimum": 0.4380992848406085,
+        "median": 2.4209712884243966,
+        "mean": 2.437228331972081,
+        "maximum": 4.560058901749106
+      },
+      "excess_nll": {
+        "count": 500,
+        "minimum": -0.12303019678869909,
+        "median": 0.1042668269230771,
+        "mean": 0.11627443833122898,
+        "maximum": 0.5119189279015204
+      },
+      "target_entropy": {
+        "count": 500,
+        "minimum": 0.4610463241629328,
+        "median": 2.4660185033624824,
+        "mean": 2.468202198383619,
+        "maximum": 4.655368072818024
+      },
+      "reference_entropy": {
+        "count": 500,
+        "minimum": 0.4584169746551737,
+        "median": 2.341161002734002,
+        "mean": 2.3656859757738324,
+        "maximum": 4.534288605455598
+      }
+    }
+  ],
+  "evidence_group_reports": [
+    {
+      "route": "code_artifact",
+      "scenario": "boilerplate_heavy",
+      "relation": "explicit-chrome-wrapper-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.12749175764492912,
+        "median": 0.8237218973944989,
+        "mean": 0.8610379856164622,
+        "maximum": 1.5916320187362594
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.12033207263955852,
+        "median": 0.7869740976471356,
+        "mean": 0.8196947084373656,
+        "maximum": 1.5646244221596262
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.026227136560388553,
+        "median": 0.0328118137461319,
+        "mean": 0.041343277179096596,
+        "maximum": 0.12689934953193815
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.14809379055841293,
+        "median": 0.8481099514549931,
+        "mean": 0.8511249199564669,
+        "maximum": 1.5741757296255507
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.1333983215868735,
+        "median": 0.8181682269391242,
+        "mean": 0.8227528358885742,
+        "maximum": 1.5291839465170705
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "boilerplate_heavy",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.08916059027198005,
+        "median": 0.8122942962030495,
+        "mean": 0.9561383321585933,
+        "maximum": 3.1180856878107246
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.08245390615756766,
+        "median": 0.7849339099395304,
+        "mean": 0.9130763108630995,
+        "maximum": 3.174766193736683
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.0725691921739694,
+        "median": 0.04260721223594438,
+        "mean": 0.0430620212954938,
+        "maximum": 0.23113281249999984
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.10547478605493081,
+        "median": 0.7969957190024674,
+        "mean": 0.8813143897205987,
+        "maximum": 2.465628884055398
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.0827377498237226,
+        "median": 0.7755241883638295,
+        "mean": 0.8457704515215039,
+        "maximum": 2.737020319158381
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "clean",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.4718198533430761,
+        "median": 1.070554271611154,
+        "mean": 1.1544784905074352,
+        "maximum": 3.687800320712003
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.417937160689544,
+        "median": 1.034113686612344,
+        "mean": 1.1061615856442781,
+        "maximum": 3.425491679798473
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.043537169012404675,
+        "median": 0.04421137426594962,
+        "mean": 0.048316904863157074,
+        "maximum": 0.2623086409135298
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.460734090227323,
+        "median": 0.9919389147756302,
+        "mean": 1.0609414854592567,
+        "maximum": 2.238214237173808
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.42592529584903066,
+        "median": 0.9589606607817494,
+        "mean": 1.0179277285959996,
+        "maximum": 2.093627236106179
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-1-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.25214981573475637,
+        "median": 0.8410653833254447,
+        "mean": 0.932841416366749,
+        "maximum": 2.846578025817871
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.2005015672192682,
+        "median": 0.789212585475511,
+        "mean": 0.8818369036169957,
+        "maximum": 3.004542922973633
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.1579648971557619,
+        "median": 0.04287995739512168,
+        "mean": 0.051004512749753254,
+        "maximum": 0.2595642120119126
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.28367103670190386,
+        "median": 0.8596981838380064,
+        "mean": 0.9081040257055386,
+        "maximum": 2.540718650817871
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.22122638989664,
+        "median": 0.8051805725288737,
+        "mean": 0.8575610559558716,
+        "maximum": 2.5259477615356447
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-2-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.25214981573475637,
+        "median": 0.8410653833254447,
+        "mean": 0.932841416366749,
+        "maximum": 2.846578025817871
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.2005015672192682,
+        "median": 0.789212585475511,
+        "mean": 0.8818369036169957,
+        "maximum": 3.004542922973633
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.1579648971557619,
+        "median": 0.04287995739512168,
+        "mean": 0.051004512749753254,
+        "maximum": 0.2595642120119126
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.28367103670190386,
+        "median": 0.8596981838380064,
+        "mean": 0.9081040257055386,
+        "maximum": 2.540718650817871
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.22122638989664,
+        "median": 0.8051805725288737,
+        "mean": 0.8575610559558716,
+        "maximum": 2.5259477615356447
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "duplicate_heavy",
+      "relation": "length-relative-single-token-deletion-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.29439498192466856,
+        "median": 0.9313786197353471,
+        "mean": 1.0040425566054423,
+        "maximum": 3.3336132049560545
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.2587098312692414,
+        "median": 0.8367397757435298,
+        "mean": 0.9548435655987927,
+        "maximum": 3.4488407135009767
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.11522750854492214,
+        "median": 0.04123014513092277,
+        "mean": 0.0491989910066496,
+        "maximum": 0.2581740424746559
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.28631775671975657,
+        "median": 0.8629277839217023,
+        "mean": 0.935824195016067,
+        "maximum": 2.656139373779297
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.2452486188788163,
+        "median": 0.811687557069511,
+        "mean": 0.8853248399847753,
+        "maximum": 2.6811599731445312
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "duplicate_heavy",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.25214981573475637,
+        "median": 0.8410653833254447,
+        "mean": 0.932841416366749,
+        "maximum": 2.846578025817871
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.2005015672192682,
+        "median": 0.789212585475511,
+        "mean": 0.8818369036169957,
+        "maximum": 3.004542922973633
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.1579648971557619,
+        "median": 0.04287995739512168,
+        "mean": 0.051004512749753254,
+        "maximum": 0.2595642120119126
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.28367103670190386,
+        "median": 0.8596981838380064,
+        "mean": 0.9081040257055386,
+        "maximum": 2.540718650817871
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.22122638989664,
+        "median": 0.8051805725288737,
+        "mean": 0.8575610559558716,
+        "maximum": 2.5259477615356447
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "malformed",
+      "relation": "invalid-utf8-tail-replacement-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.18215264929984037,
+        "median": 0.7757293974775974,
+        "mean": 0.8006672062929205,
+        "maximum": 2.4986170876789564
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.15451443014811117,
+        "median": 0.6694029595632485,
+        "mean": 0.7409385381915723,
+        "maximum": 2.4524130233990147
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.00548712158203124,
+        "median": 0.04486601949538893,
+        "mean": 0.05972866810134821,
+        "maximum": 0.26039636400010835
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.18769383834580244,
+        "median": 0.7526235725852886,
+        "mean": 0.7739623108542287,
+        "maximum": 2.330583544200277
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.17061312236483134,
+        "median": 0.6603233087497247,
+        "mean": 0.7306143087907823,
+        "maximum": 2.3270305765086206
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "malformed",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.1799261737752844,
+        "median": 0.7523810191169709,
+        "mean": 0.7888693299470768,
+        "maximum": 2.3616858756188117
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.15451443014811117,
+        "median": 0.6734011215882887,
+        "mean": 0.7341238524975878,
+        "maximum": 2.32587999400526
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.014105065280653917,
+        "median": 0.037454496103017376,
+        "mean": 0.054745477449488975,
+        "maximum": 0.26096209232929857
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.18323031574690424,
+        "median": 0.7437009626428683,
+        "mean": 0.7693613414880826,
+        "maximum": 2.329082224628713
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.16833325770715646,
+        "median": 0.6525077081533335,
+        "mean": 0.72489105419602,
+        "maximum": 2.3263974331393102
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "mixed_raw_like",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.13614982052853233,
+        "median": 0.8688940022392089,
+        "mean": 0.9753520194279113,
+        "maximum": 3.0142728115649935
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.13049863514147306,
+        "median": 0.8243185066898469,
+        "mean": 0.9283612611933806,
+        "maximum": 3.1178933001579123
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.10362048859291884,
+        "median": 0.04038094985010124,
+        "mean": 0.046990758234530625,
+        "maximum": 0.17880499734419275
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.08685344771334999,
+        "median": 0.863118963240045,
+        "mean": 0.9511465280548933,
+        "maximum": 2.3528117727726063
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.08409490083393298,
+        "median": 0.7985726239367642,
+        "mean": 0.8996617045495054,
+        "maximum": 2.5439933614527925
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "boilerplate_heavy",
+      "relation": "explicit-chrome-wrapper-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 1.034237823486328,
+        "median": 2.102625211245674,
+        "mean": 2.0805300798770943,
+        "maximum": 3.050782703218006
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.9293479919433594,
+        "median": 2.048039139148801,
+        "mean": 2.0038206227126265,
+        "maximum": 2.9320886750567827
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": 0.026202453689670557,
+        "median": 0.07492777868475464,
+        "mean": 0.07670945716446752,
+        "maximum": 0.19274448128633725
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 1.0607026672363282,
+        "median": 2.0781764388589883,
+        "mean": 2.0520291426421946,
+        "maximum": 3.093366197476112
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 1.0449504852294922,
+        "median": 1.9986773038560033,
+        "mean": 1.9984870296500767,
+        "maximum": 2.9849311235853304
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "boilerplate_heavy",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 1.1469566082132274,
+        "median": 2.672322696362663,
+        "mean": 2.722946894043421,
+        "maximum": 4.311074630073879
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 1.0953430490395457,
+        "median": 2.5477654188573347,
+        "mean": 2.605750814846809,
+        "maximum": 3.9442244819972827
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": 0.03145865853611984,
+        "median": 0.1098097772269957,
+        "mean": 0.11719607919661103,
+        "maximum": 0.3668501480765962
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 1.0046573914203447,
+        "median": 2.654990830449692,
+        "mean": 2.598496130742524,
+        "maximum": 4.260106625764267
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 1.0115522404306942,
+        "median": 2.558828013695978,
+        "mean": 2.501150855406559,
+        "maximum": 3.8246194590692935
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "clean",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.44556099016257594,
+        "median": 2.437783140294692,
+        "mean": 2.463996752317808,
+        "maximum": 3.8732970132993136
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.4380992848406085,
+        "median": 2.346729266107169,
+        "mean": 2.3377260632330166,
+        "maximum": 3.7196898708453756
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": 0.007461705321967438,
+        "median": 0.12785032703208532,
+        "mean": 0.12627068908479105,
+        "maximum": 0.5119189279015204
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.4610463241629328,
+        "median": 2.4338967126744393,
+        "mean": 2.362126100919392,
+        "maximum": 3.441464462721279
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.4584169746551737,
+        "median": 2.327001870343574,
+        "mean": 2.251776878421679,
+        "maximum": 3.3384552001953125
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-1-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 1.2645212411880493,
+        "median": 2.5126480249624006,
+        "mean": 2.5293406160871275,
+        "maximum": 3.8694305419921875
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 1.0091147422790527,
+        "median": 2.3874167458410174,
+        "mean": 2.409302633127477,
+        "maximum": 3.705431682307546
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.02984898064726149,
+        "median": 0.1013936813404861,
+        "mean": 0.12003798295965039,
+        "maximum": 0.34041908139088095
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 1.1635127067565918,
+        "median": 2.4997336428467873,
+        "mean": 2.4600064871981386,
+        "maximum": 3.711247141768293
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 1.0035876035690308,
+        "median": 2.381293389848495,
+        "mean": 2.3583663704651605,
+        "maximum": 3.712129918540396
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-2-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 1.2645212411880493,
+        "median": 2.5126480249624006,
+        "mean": 2.5293406160871275,
+        "maximum": 3.8694305419921875
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 1.0091147422790527,
+        "median": 2.3874167458410174,
+        "mean": 2.409302633127477,
+        "maximum": 3.705431682307546
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.02984898064726149,
+        "median": 0.1013936813404861,
+        "mean": 0.12003798295965039,
+        "maximum": 0.34041908139088095
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 1.1635127067565918,
+        "median": 2.4997336428467873,
+        "mean": 2.4600064871981386,
+        "maximum": 3.711247141768293
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 1.0035876035690308,
+        "median": 2.381293389848495,
+        "mean": 2.3583663704651605,
+        "maximum": 3.712129918540396
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "duplicate_heavy",
+      "relation": "length-relative-single-token-deletion-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 1.346233642578125,
+        "median": 2.539616982046725,
+        "mean": 2.6140440094221633,
+        "maximum": 4.130565936748798
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 1.0800684814453125,
+        "median": 2.469282102590597,
+        "mean": 2.4949767415621493,
+        "maximum": 3.8288566775438264
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.01580412491508154,
+        "median": 0.109852049078068,
+        "mean": 0.11906726786001437,
+        "maximum": 0.34507477589142654
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 1.18273486328125,
+        "median": 2.540587665487685,
+        "mean": 2.4986068737303437,
+        "maximum": 3.7557413985089556
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.9704075317382812,
+        "median": 2.4272826719744565,
+        "mean": 2.3982846436786533,
+        "maximum": 3.7776124535537345
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "duplicate_heavy",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 1.2645212411880493,
+        "median": 2.5126480249624006,
+        "mean": 2.5293406160871275,
+        "maximum": 3.8694305419921875
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 1.0091147422790527,
+        "median": 2.3874167458410174,
+        "mean": 2.409302633127477,
+        "maximum": 3.705431682307546
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.02984898064726149,
+        "median": 0.1013936813404861,
+        "mean": 0.12003798295965039,
+        "maximum": 0.34041908139088095
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 1.1635127067565918,
+        "median": 2.4997336428467873,
+        "mean": 2.4600064871981386,
+        "maximum": 3.711247141768293
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 1.0035876035690308,
+        "median": 2.381293389848495,
+        "mean": 2.3583663704651605,
+        "maximum": 3.712129918540396
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "malformed",
+      "relation": "invalid-utf8-tail-replacement-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.9444083747359624,
+        "median": 2.6716808396122556,
+        "mean": 2.750084149862235,
+        "maximum": 4.748993920918971
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.8932258631164282,
+        "median": 2.593424522069662,
+        "mean": 2.629050639420819,
+        "maximum": 4.560058901749106
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.0801544189453125,
+        "median": 0.11371898812846193,
+        "mean": 0.12103351044141629,
+        "maximum": 0.3259838207347969
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.858039587079691,
+        "median": 2.5868299483094854,
+        "mean": 2.636400326458029,
+        "maximum": 4.654992850314077
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.8280455131362713,
+        "median": 2.3733255913542672,
+        "mean": 2.5125478009602022,
+        "maximum": 4.533687299595248
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "malformed",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.9318931184240844,
+        "median": 2.6144488943298287,
+        "mean": 2.7042224257650425,
+        "maximum": 4.742227059823495
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.8835120027619923,
+        "median": 2.5281191615272443,
+        "mean": 2.584316228854929,
+        "maximum": 4.554725980919218
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.12303019678869909,
+        "median": 0.11562420132740603,
+        "mean": 0.11990619691011346,
+        "maximum": 0.3021780477987752
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.8567475441929524,
+        "median": 2.585600176389333,
+        "mean": 2.634310977633131,
+        "maximum": 4.655368072818024
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.8276234913818629,
+        "median": 2.3708579638995957,
+        "mean": 2.5092409203968216,
+        "maximum": 4.534288605455598
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "mixed_raw_like",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 1.1034586076685202,
+        "median": 2.5524037386962286,
+        "mean": 2.6111815434839514,
+        "maximum": 4.366472197741997
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 1.0426331088201675,
+        "median": 2.4707987014561485,
+        "mean": 2.4887343097080263,
+        "maximum": 4.026588253858613
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.03200578360721984,
+        "median": 0.10089461668165778,
+        "mean": 0.1224472337759249,
+        "maximum": 0.3398839438833843
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 1.0640525612880034,
+        "median": 2.5072799655163447,
+        "mean": 2.5200329701161595,
+        "maximum": 4.2556651045636436
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 1.0100409503558465,
+        "median": 2.393514399587817,
+        "mean": 2.4102725178288513,
+        "maximum": 3.9866913586128048
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "boilerplate_heavy",
+      "relation": "explicit-chrome-wrapper-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.19671265620048534,
+        "median": 1.4998137952010722,
+        "mean": 1.438625277106002,
+        "maximum": 2.768891498992428
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.18607566591932764,
+        "median": 1.4067884130364132,
+        "mean": 1.3657312573088398,
+        "maximum": 2.6531682464047996
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.01540602695794746,
+        "median": 0.06876074962441736,
+        "mean": 0.0728940197971623,
+        "maximum": 0.20965048413074006
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.20588213813904732,
+        "median": 1.4779262168821021,
+        "mean": 1.4297177805124093,
+        "maximum": 2.689458492038654
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.19492318400768285,
+        "median": 1.411729400026755,
+        "mean": 1.3669141329141157,
+        "maximum": 2.592130287367947
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "boilerplate_heavy",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.15659786987304689,
+        "median": 1.5384117544433629,
+        "mean": 1.5193403789373667,
+        "maximum": 3.884189411745233
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.1519470977783203,
+        "median": 1.4475316875010371,
+        "mean": 1.4327421125382673,
+        "maximum": 3.63413872153072
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.06830498831612708,
+        "median": 0.08227597993698954,
+        "mean": 0.08659826639909946,
+        "maximum": 0.250050690214513
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.16048679368976704,
+        "median": 1.54620900961161,
+        "mean": 1.4956773261518734,
+        "maximum": 3.543053837145789
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.15064829048305872,
+        "median": 1.4579716558383953,
+        "mean": 1.4087253336249963,
+        "maximum": 3.39418159096928
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "clean",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.40627270580762886,
+        "median": 1.1616332468735893,
+        "mean": 1.1393369241032192,
+        "maximum": 2.1866019112723216
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.3479125425987637,
+        "median": 1.0900137311864628,
+        "mean": 1.0503140238377413,
+        "maximum": 2.130877685546875
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.10738543342141549,
+        "median": 0.06781095651177999,
+        "mean": 0.08902290026547799,
+        "maximum": 0.367529756279402
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.4021243517142368,
+        "median": 1.161842859822051,
+        "mean": 1.159792777239429,
+        "maximum": 2.1267316717850533
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.3872479605920536,
+        "median": 1.110285250005875,
+        "mean": 1.067375455651257,
+        "maximum": 2.0407365497789884
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-1-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.38751883592964326,
+        "median": 1.4136826520181351,
+        "mean": 1.4171165528617888,
+        "maximum": 2.7316140567555145
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.37340157766952475,
+        "median": 1.3010864214706024,
+        "mean": 1.3360003864946017,
+        "maximum": 2.670033473594516
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.038083487694416496,
+        "median": 0.07580272179578174,
+        "mean": 0.08111616636718688,
+        "maximum": 0.24215195082313679
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.392252506019432,
+        "median": 1.3311349905697838,
+        "mean": 1.4214007631057493,
+        "maximum": 2.5878307866115198
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.35373809154754626,
+        "median": 1.2783711729447946,
+        "mean": 1.3451147808181303,
+        "maximum": 2.4531857359643077
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-2-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.38751883592964326,
+        "median": 1.4136826520181351,
+        "mean": 1.4171165528617888,
+        "maximum": 2.7316140567555145
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.37340157766952475,
+        "median": 1.3010864214706024,
+        "mean": 1.3360003864946017,
+        "maximum": 2.670033473594516
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.038083487694416496,
+        "median": 0.07580272179578174,
+        "mean": 0.08111616636718688,
+        "maximum": 0.24215195082313679
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.392252506019432,
+        "median": 1.3311349905697838,
+        "mean": 1.4214007631057493,
+        "maximum": 2.5878307866115198
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.35373809154754626,
+        "median": 1.2783711729447946,
+        "mean": 1.3451147808181303,
+        "maximum": 2.4531857359643077
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "duplicate_heavy",
+      "relation": "length-relative-single-token-deletion-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.38751883592964326,
+        "median": 1.433581042945627,
+        "mean": 1.4672701364200769,
+        "maximum": 3.036439208984375
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.37340157766952475,
+        "median": 1.3673049806586746,
+        "mean": 1.3872285667606592,
+        "maximum": 2.915907897949219
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.07063892909458702,
+        "median": 0.079342888015285,
+        "mean": 0.08004156965941764,
+        "maximum": 0.24501306695010994
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.392252506019432,
+        "median": 1.3390131285917808,
+        "mean": 1.4354104859108632,
+        "maximum": 2.647845458984375
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.35373809154754626,
+        "median": 1.2944963448624325,
+        "mean": 1.3581406019759672,
+        "maximum": 2.5266192626953123
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "duplicate_heavy",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.38751883592964326,
+        "median": 1.4136826520181351,
+        "mean": 1.4171165528617888,
+        "maximum": 2.7316140567555145
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.37340157766952475,
+        "median": 1.3010864214706024,
+        "mean": 1.3360003864946017,
+        "maximum": 2.670033473594516
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.038083487694416496,
+        "median": 0.07580272179578174,
+        "mean": 0.08111616636718688,
+        "maximum": 0.24215195082313679
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.392252506019432,
+        "median": 1.3311349905697838,
+        "mean": 1.4214007631057493,
+        "maximum": 2.5878307866115198
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.35373809154754626,
+        "median": 1.2783711729447946,
+        "mean": 1.3451147808181303,
+        "maximum": 2.4531857359643077
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "malformed",
+      "relation": "invalid-utf8-tail-replacement-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.2523530910234832,
+        "median": 1.5076887395506566,
+        "mean": 1.5788619900531284,
+        "maximum": 3.753349545127467
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.1386836391695592,
+        "median": 1.4279455857493932,
+        "mean": 1.4676245780025425,
+        "maximum": 3.645149953741776
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": 0.011864469351012819,
+        "median": 0.09588734614339145,
+        "mean": 0.1112374120505858,
+        "maximum": 0.3740826836433653
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.27270461637347404,
+        "median": 1.451154286106242,
+        "mean": 1.517843706392374,
+        "maximum": 3.6983382375616776
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.15754971773129217,
+        "median": 1.3453931867468876,
+        "mean": 1.4233351970869745,
+        "maximum": 3.6314054790296053
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "malformed",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.2403736521438,
+        "median": 1.5010061114074822,
+        "mean": 1.5487254827169858,
+        "maximum": 3.6678402549342106
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.1299432254379073,
+        "median": 1.4173232709087216,
+        "mean": 1.4389713523997443,
+        "maximum": 3.5647114000822366
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": 0.011394320818470138,
+        "median": 0.09643016974807539,
+        "mean": 0.1097541303172413,
+        "maximum": 0.3740826836433653
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.2716984286114666,
+        "median": 1.4499207532883165,
+        "mean": 1.517726939314268,
+        "maximum": 3.7110001413445723
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.15504696052483008,
+        "median": 1.3456546085445424,
+        "mean": 1.422847390170479,
+        "maximum": 3.6464840537623355
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "mixed_raw_like",
+      "relation": "parent-retained-v1",
+      "scored_record_count": 50,
+      "target_nll": {
+        "count": 50,
+        "minimum": 0.15834220188115936,
+        "median": 1.3578554833709526,
+        "mean": 1.3871710767907262,
+        "maximum": 2.6660564144937715
+      },
+      "reference_nll": {
+        "count": 50,
+        "minimum": 0.1330552020104103,
+        "median": 1.2853523378724252,
+        "mean": 1.3088120364347395,
+        "maximum": 2.580663847818454
+      },
+      "excess_nll": {
+        "count": 50,
+        "minimum": -0.02001776014055534,
+        "median": 0.07037804367348743,
+        "mean": 0.0783590403559869,
+        "maximum": 0.26035068028092745
+      },
+      "target_entropy": {
+        "count": 50,
+        "minimum": 0.2002408993789573,
+        "median": 1.3866010425970945,
+        "mean": 1.3802152795483489,
+        "maximum": 2.666325959101734
+      },
+      "reference_entropy": {
+        "count": 50,
+        "minimum": 0.17694898119159774,
+        "median": 1.295638538653174,
+        "mean": 1.2968907368633484,
+        "maximum": 2.5836956283204078
+      }
+    }
+  ],
+  "relation_delta_reports": [
+    {
+      "route": "code_artifact",
+      "scenario": "boilerplate_heavy",
+      "relation": "explicit-chrome-wrapper-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": -1.57386893494747,
+        "median": 0.00911957887527931,
+        "mean": -0.09510034654213109,
+        "maximum": 0.14160595518169983
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": -1.6765052804846636,
+        "median": 0.016728059253283523,
+        "mean": -0.09338160242573389,
+        "maximum": 0.1379829588674275
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.10423346296806169,
+        "median": -0.0017703719760204517,
+        "mean": -0.0017187441163972108,
+        "maximum": 0.1026363455371937
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -1.0247274197098941,
+        "median": 0.020650999890651944,
+        "mean": -0.030189469764131796,
+        "maximum": 0.22444269408992296
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -1.219967013461102,
+        "median": 0.026032614875909854,
+        "mean": -0.023017615632929783,
+        "maximum": 0.26133566387171014
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-1-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-2-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "duplicate_heavy",
+      "relation": "length-relative-single-token-deletion-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.04056454783205593,
+        "mean": 0.07120114023869326,
+        "maximum": 0.4870351791381835
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.03805102088517742,
+        "mean": 0.07300666198179692,
+        "maximum": 0.44429779052734375
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.07351809960824474,
+        "median": -0.0012341441676726461,
+        "mean": -0.0018055217431036652,
+        "maximum": 0.11298443603515623
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -0.004226881788113923,
+        "median": 0.008611166318328367,
+        "mean": 0.0277201693105283,
+        "maximum": 0.310525390625
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -0.007956894584324026,
+        "median": 0.010077211482913184,
+        "mean": 0.027763784028903685,
+        "maximum": 0.19810769653320315
+      }
+    },
+    {
+      "route": "code_artifact",
+      "scenario": "malformed",
+      "relation": "invalid-utf8-tail-replacement-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": -0.016943885531971126,
+        "median": 0.000024069723310871094,
+        "mean": 0.011797876345843701,
+        "maximum": 0.15886477465286264
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": -0.06740806080913386,
+        "median": 0.0,
+        "mean": 0.006814685693984455,
+        "maximum": 0.15412600441426627
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.009863109990147612,
+        "median": 0.00035538743609248025,
+        "mean": 0.004983190651859245,
+        "maximum": 0.08052866905102585
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -0.012728854799323619,
+        "median": 0.0026833831410100206,
+        "mean": 0.0046009693661462105,
+        "maximum": 0.0342392712678351
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -0.008549186331581637,
+        "median": 0.003281596710976109,
+        "mean": 0.005723254594762266,
+        "maximum": 0.029893594537665158
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "boilerplate_heavy",
+      "relation": "explicit-chrome-wrapper-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": -2.4020038160958386,
+        "median": -0.4458179708893162,
+        "mean": -0.6424168141663265,
+        "maximum": 0.015160840607062243
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": -2.069696473458959,
+        "median": -0.40714975732896985,
+        "mean": -0.6019301921341829,
+        "maximum": 0.010769857565950058
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.3323073426368792,
+        "median": -0.025020685843573642,
+        "mean": -0.0404866220321435,
+        "maximum": 0.008649442527326245
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -2.2830696599043634,
+        "median": -0.3557373870909517,
+        "mean": -0.5464669881003293,
+        "maximum": 0.05604527581598351
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -1.900619363392562,
+        "median": -0.32945236722951077,
+        "mean": -0.5026638257564824,
+        "maximum": 0.03339824479879794
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-1-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-2-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "duplicate_heavy",
+      "relation": "length-relative-single-token-deletion-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": -0.004084093817349199,
+        "median": 0.04114067499868246,
+        "mean": 0.08470339333503601,
+        "maximum": 0.46662397813007894
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": -0.020210792278421152,
+        "median": 0.03864118318108223,
+        "mean": 0.08567410843467202,
+        "maximum": 0.49840365651087826
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.13527666936155214,
+        "median": -0.0001279081399447879,
+        "mean": -0.0009707150996360126,
+        "maximum": 0.0710906982421875
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -0.0140572909651131,
+        "median": 0.02161679596387933,
+        "mean": 0.03860038653220514,
+        "maximum": 0.23861666920619085
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -0.03318007183074956,
+        "median": 0.027939200217893312,
+        "mean": 0.03991827321349291,
+        "maximum": 0.23233592797678426
+      }
+    },
+    {
+      "route": "general_prose",
+      "scenario": "malformed",
+      "relation": "invalid-utf8-tail-replacement-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.02439990933783731,
+        "mean": 0.04586172409719273,
+        "maximum": 0.2688207485207039
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.021467799842273982,
+        "mean": 0.044734410565889914,
+        "maximum": 0.32230092191148074
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.06992889053520157,
+        "median": 0.0010865303202338694,
+        "mean": 0.0011273135313028182,
+        "maximum": 0.04287577784338659
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -0.02707592345120613,
+        "median": 0.0007006844824650749,
+        "mean": 0.0020893488248978076,
+        "maximum": 0.033733496958307185
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -0.019208399170641766,
+        "median": 0.0009741131662183156,
+        "mean": 0.0033068805633805765,
+        "maximum": 0.0758827472555228
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "boilerplate_heavy",
+      "relation": "explicit-chrome-wrapper-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": -1.9115337268855688,
+        "median": -0.028855272077850214,
+        "mean": -0.08071510183136452,
+        "maximum": 0.23437454668395719
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": -1.7062549611019973,
+        "median": -0.02384254742553893,
+        "mean": -0.06701085522942735,
+        "maximum": 0.2171183958181886
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.20527876578357152,
+        "median": -0.006279877429997027,
+        "mean": -0.013704246601937165,
+        "maximum": 0.0839116526519037
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -1.584815070628621,
+        "median": -0.021488286396096234,
+        "mean": -0.06595954563946414,
+        "maximum": 0.2719930078734826
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -1.5218482998330916,
+        "median": -0.0002780084077549372,
+        "mean": -0.04181120071088063,
+        "maximum": 0.2962956161564738
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-1-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "duplicate_heavy",
+      "relation": "exact-copy-2-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.0,
+        "mean": 0.0,
+        "maximum": 0.0
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "duplicate_heavy",
+      "relation": "length-relative-single-token-deletion-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": -0.00914316712432961,
+        "median": 0.02747940825923323,
+        "mean": 0.050153583558288195,
+        "maximum": 0.3048251522288603
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": -0.0036586028937094506,
+        "median": 0.025605004629791317,
+        "mean": 0.05122818026605744,
+        "maximum": 0.35275604611351374
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.07788061574727545,
+        "median": 0.0,
+        "mean": -0.001074596707769241,
+        "maximum": 0.07287758275082235
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -0.0005551008812438862,
+        "median": 0.00802255520017503,
+        "mean": 0.014009722805113766,
+        "maximum": 0.07606051260964897
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -0.0062899354972344446,
+        "median": 0.006987265479152016,
+        "mean": 0.013025821157836624,
+        "maximum": 0.07343352673100467
+      }
+    },
+    {
+      "route": "mathematical_content",
+      "scenario": "malformed",
+      "relation": "invalid-utf8-tail-replacement-v1",
+      "paired_record_count": 50,
+      "target_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.02152031300419266,
+        "mean": 0.03013650733614277,
+        "maximum": 0.24765040956694517
+      },
+      "reference_nll_delta": {
+        "count": 50,
+        "minimum": 0.0,
+        "median": 0.01953563182980389,
+        "mean": 0.02865322560279827,
+        "maximum": 0.17949124040274778
+      },
+      "excess_nll_delta": {
+        "count": 50,
+        "minimum": -0.041328797754453195,
+        "median": 0.0004326447429363056,
+        "mean": 0.0014832817333445042,
+        "maximum": 0.0681591691641974
+      },
+      "target_entropy_delta": {
+        "count": 50,
+        "minimum": -0.012661903782894779,
+        "median": 0.00008433960537357343,
+        "mean": 0.00011676707810607478,
+        "maximum": 0.003914969308035587
+      },
+      "reference_entropy_delta": {
+        "count": 50,
+        "minimum": -0.015284375852893106,
+        "median": 0.00018119785841308467,
+        "mean": 0.0004878069164952592,
+        "maximum": 0.012106170147787143
+      }
+    }
+  ],
+  "blocker_codes": [
+    "reference_quantization_unvalidated",
+    "provider_training_disjointness_unverified",
+    "common_baseline_missing",
+    "insufficient_source_groups:code_artifact",
+    "empirical_effect_bins_missing:code_artifact",
+    "insufficient_source_groups:mathematical_content",
+    "empirical_effect_bins_missing:mathematical_content",
+    "insufficient_source_groups:general_prose",
+    "empirical_effect_bins_missing:general_prose"
+  ],
+  "scalar_quality_score_emitted": false,
+  "threshold_decision_emitted": false,
+  "benchmark_outcomes_read": false,
+  "utility_read": false,
+  "runtime_activation": false,
+  "report_sha256": "d86974720d89984567c5ad5ac79310f4975cc86b08f7b64dea0112ba447df419"
+}

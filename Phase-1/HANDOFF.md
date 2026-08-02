@@ -46,6 +46,16 @@ Current repository facts:
   effect bins exist, and no empirical common-baseline artifact exists. The two
   preflight blockers remain `quality_gate_not_ready` and
   `coverage_gate_not_ready`.
+- E3b now has a replaceable target/reference scorer. Qwen3-4B-Base and
+  Qwen3-8B-Base are the first audit pair, not framework dependencies. Their
+  frozen development run joined 1,500 records with zero mismatch across 300
+  exact copies, and their four native tokenizer files are byte-identical.
+- The E3b result is still blocked and cannot delete data. Boilerplate frequently
+  reduced absolute NLL and entropy, while excess NLL did not provide a stable
+  route-general boundary. The audit records nine blockers: unvalidated int8,
+  unverifiable provider-training disjointness, no common baseline, only two
+  source groups per route, and no empirical effect bins for Code, Math, or
+  General.
 
 ## Resolved Consistency Defects
 

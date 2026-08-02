@@ -32,6 +32,7 @@ override `quality_coverage_formal_definition.md`.
 - `framework_reconsideration_decision.md`
 - `literature_grounded_core_policy_redesign.md`
 - `q5_candidate_discovery_v1.md`
+- `redesign_checkpoint_2026-08-03.md`
 - `r2_static_literal_boundary_decision_v1.md`
 - `repeated_label_block_development_matrix_v1.md`
 

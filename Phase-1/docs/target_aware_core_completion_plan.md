@@ -711,6 +711,34 @@ no threshold decision. The Qwen reference currently uses an unvalidated int8
 execution candidate, so its observations remain audit-only until a frozen
 precision probe and the E3 causal effect-bin gates pass.
 
+The first frozen E3b observation run is recorded in
+`validation/frozen_contracts/contrastive_quality_audit_qwen3_4b_8b_v1.json`.
+It scores 1,500 of 1,650 balanced development records; the 150 omitted records
+are the preregistered empty-payload variants below the eight-token scoring
+minimum. Two independent model arms join on the same sample, route, record,
+token hash, and scored-token count. All 300 exact-copy observations reproduce
+the parent score with zero mismatch. The Qwen3-4B and Qwen3-8B native tokenizer
+files are byte-identical under the frozen compatibility manifest
+`validation/frozen_contracts/qwen3_4b_8b_tokenizer_compatibility_v1.json`.
+
+This run does **not** validate a model-based Quality rule. Mean excess NLL is
+0.0496 for Code, 0.0871 for Math, and 0.1163 for General, but those values are
+descriptive rather than thresholds. Adding the explicit boilerplate wrapper
+often lowers both models' NLL and entropy, while its mean excess-NLL change is
+small and inconsistent across routes. Absolute familiarity therefore risks
+rewarding easy repetitive chrome, and target-reference excess loss has not yet
+shown a stable deletion boundary. No scalar Quality score, rank cutoff, or
+selector decision is emitted.
+
+The frozen audit remains `blocked` on nine explicit conditions: the int8
+reference precision is unvalidated; provider-training disjointness is
+unverified; the empirical common baseline is missing; every required route has
+only two source groups instead of three; and every route has zero causal effect
+bins. The next E3 step must add genuinely independent, preferably post-provider
+release source groups, validate the execution precision, then preregister
+effect-bin arms that share one baseline disjoint from every arm. Contrastive
+observations cannot satisfy those gates by themselves.
+
 Hard extension selection is an output of this
 Block, so it is deliberately not a preflight prerequisite. Therefore no
 Normal or Hard profile hash has been frozen and Block 9 is not authorized.

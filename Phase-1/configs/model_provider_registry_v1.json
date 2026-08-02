@@ -52,12 +52,12 @@
         {
           "model_id": "Qwen/Qwen3-4B-Base",
           "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
-          "artifact_sha256": null
+          "artifact_sha256": "0ced9a0483b9d23d867066beeb48befd650dc1ddf52d10ac6ba465af37f48f4f"
         },
         {
           "model_id": "Qwen/Qwen3-8B-Base",
           "revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
-          "artifact_sha256": null
+          "artifact_sha256": "f10bebfbf6a488b50e864e20b900b98feb83523643c26d446be46d245686d8ac"
         }
       ],
       "tokenizer_id": "Qwen/Qwen3-4B-Base",
@@ -65,7 +65,7 @@
       "normalization": "nats_per_nonpadding_target_token_context_2048",
       "output_semantics": "target_and_reference_nll_excess_nll_and_entropy_evidence_tuple_not_quality_truth",
       "implementation_contract_path": "configs/contrastive_quality_provider_qwen3_4b_8b_v1.json",
-      "implementation_contract_identity_sha256": "05a92e3e219ff46d3d616644bd767d30138adfea62b5c4beced3b81f333d6e95",
+      "implementation_contract_identity_sha256": "7338964eb808b0fd8cac11d1ceffcc6c90a03dafd62d1c8f4572a6ccbf886e0b",
       "supported_routes": ["code_artifact", "mathematical_content", "general_prose"],
       "supported_languages": ["undeclared_until_calibration"],
       "policy_contribution_authority": false,
