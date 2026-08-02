@@ -533,6 +533,23 @@
       "development_selection_preflight.py"
     ],
     "current_preflight_audit": "validation/frozen_contracts/development_selection_v1_current_preflight.json",
+    "development_corpus_inventory": {
+      "registry": "protocols/development_corpus_inventory_registry_v1.json",
+      "manifest": "configs/development_corpus_manifest_v1.json",
+      "registry_sha256": "969ca520d3caef572dd4df5f28f2d347c6d92db321c9b7f5bc40e6c696142be9",
+      "manifest_sha256": "348e8ec09f2fa7ac5ee0c21694aaf604e249557381b4fe5010b8bd2385a5b4bc",
+      "manifest_file_sha256": "9d91255d017da556c0f49bad0d3ed20254ddcdce4a88f477e703d5fa4c708958",
+      "status": "blocked_pending_materialization_exclusion_and_confirmatory_references",
+      "inventoried_sources": 6,
+      "inventoried_observed_slices": 6,
+      "pending_metamorphic_slices": 9,
+      "raw_like_records": 23066,
+      "clean_control_records": 5073,
+      "cross_source_record_id_overlap_count": 0,
+      "cross_source_normalized_text_overlap_count": 0,
+      "canonical_hashes_recomputed_from_text": true,
+      "benchmark_outcomes_read": false
+    },
     "required_domains": [
       "code",
       "math",
@@ -558,7 +575,7 @@
     "current_profiles_frozen": false,
     "current_blockers": [
       "coverage_gate_not_ready",
-      "development_corpus_manifest_missing",
+      "development_corpus_manifest_not_admitted",
       "quality_gate_not_ready",
       "redundancy_gate_not_ready"
     ],

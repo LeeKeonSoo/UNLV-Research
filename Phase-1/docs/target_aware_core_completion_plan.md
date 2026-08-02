@@ -629,12 +629,24 @@ enter the profile freeze.
 The frozen current-state audit is
 `validation/frozen_contracts/development_selection_v1_current_preflight.json`.
 It reports four blockers: Redundancy, Quality, and Coverage empirical gates,
-plus the Code/Math/General development corpus manifest. Math and General
+plus admission of the Code/Math/General development corpus manifest. Math and General
 benchmark-exclusion snapshots are frozen under the hash-pinned registry
 `protocols/math_general_benchmark_snapshot_registry_v1.json`. The frozen
 manifest contains 6,319 Math tasks and 29,757 General tasks and is replay-stable
 at `validation/frozen_contracts/math_general_benchmark_snapshot_manifest_v1.json`.
 No benchmark outcome is present in or consumed by this exclusion artifact.
+The development inventory now pins six real source artifacts: one clean control
+and one raw-like source for each domain. They contain 23,066 unique raw-like
+records and 5,073 unique clean-control records. Every pair across all six
+sources has zero record-ID and canonical-text overlap. The six observed clean and
+mixed-raw slices are inventoried, while nine mechanically derived duplicate,
+malformed, and boilerplate stress slices remain unmaterialized. Math and General
+confirmatory corpus references and corpus-to-benchmark exclusion scans also
+remain pending, so `configs/development_corpus_manifest_v1.json` correctly has
+status `blocked`; file presence alone cannot satisfy preflight. Stored hashes
+from older clean-control pipelines disagree with the current canonical
+normalization for 173 records, so Block 8 recomputes all canonical hashes from
+the original text rather than inheriting those values.
 Hard extension selection is an output of this
 Block, so it is deliberately not a preflight prerequisite. Therefore no
 Normal or Hard profile hash has been frozen and Block 9 is not authorized.

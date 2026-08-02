@@ -8,6 +8,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from benchmark_snapshot_contract import BenchmarkPanel, BenchmarkSnapshotContractError, FrozenBenchmarkRegistry, load_benchmark_snapshot_registry
+from development_corpus_inventory_contract import DevelopmentCorpusInventoryManifest, InventoryStatus, load_inventory_registry
 from development_selection import DevelopmentSelectionStatus, load_development_protocol
 
 
@@ -44,9 +45,24 @@ class _SnapshotPanel(BaseModel):
     general: _SnapshotState
 
 
+class _CorpusInventoryState(BaseModel):
+    model_config = ConfigDict(extra="ignore", frozen=True)
+    registry: str
+    manifest: str
+    registry_sha256: str
+    manifest_sha256: str
+    manifest_file_sha256: str
+
+
+class _BlockEightState(BaseModel):
+    model_config = ConfigDict(extra="ignore", frozen=True)
+    development_corpus_inventory: _CorpusInventoryState
+
+
 class _ProtocolState(BaseModel):
     model_config = ConfigDict(extra="ignore", frozen=True)
     benchmark_snapshot_state: _SnapshotPanel
+    block_8_implementation: _BlockEightState
 
 
 class CurrentDevelopmentPreflight(BaseModel):
@@ -125,7 +141,11 @@ def evaluate_current_development_preflight(root: Path) -> CurrentDevelopmentPref
         )
         if value is not None
     )
-    paths = (*base_paths, *benchmark_paths)
+    inventory_state = protocol.block_8_implementation.development_corpus_inventory
+    corpus_registry_path = root / inventory_state.registry
+    corpus_manifest_path = root / inventory_state.manifest
+    inventory_paths = tuple(path for path in (corpus_registry_path, corpus_manifest_path) if path.is_file())
+    paths = (*base_paths, *benchmark_paths, *inventory_paths)
     blockers: list[str] = []
     if not redundancy.development_ablation_ready:
         blockers.append("redundancy_gate_not_ready")
@@ -139,8 +159,25 @@ def evaluate_current_development_preflight(root: Path) -> CurrentDevelopmentPref
             blockers.append(blocker)
     if _sha256(hard_inventory_path) != development.hard_candidate_inventory_sha256:
         blockers.append("hard_candidate_inventory_hash_mismatch")
-    if not (root / "configs" / "development_corpus_manifest_v1.json").is_file():
+    if not corpus_registry_path.is_file() or not corpus_manifest_path.is_file():
         blockers.append("development_corpus_manifest_missing")
+    else:
+        try:
+            corpus_registry = load_inventory_registry(corpus_registry_path)
+            corpus_manifest = DevelopmentCorpusInventoryManifest.model_validate_json(corpus_manifest_path.read_text(encoding="utf-8"))
+        except ValueError:
+            blockers.append("development_corpus_manifest_invalid")
+        else:
+            identity_valid = (
+                corpus_registry.identity_sha256() == inventory_state.registry_sha256
+                and corpus_manifest.registry_sha256 == inventory_state.registry_sha256
+                and corpus_manifest.manifest_sha256 == inventory_state.manifest_sha256
+                and _sha256(corpus_manifest_path) == inventory_state.manifest_file_sha256
+            )
+            if not identity_valid:
+                blockers.append("development_corpus_manifest_invalid")
+            elif corpus_manifest.status is not InventoryStatus.ADMITTED:
+                blockers.append("development_corpus_manifest_not_admitted")
     evidence = tuple(_sha256(path) for path in paths)
     payload = {"blockers": sorted(blockers), "evidence": evidence}
     manifest = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()

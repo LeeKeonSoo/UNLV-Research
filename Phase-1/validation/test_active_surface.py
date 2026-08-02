@@ -158,6 +158,10 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("benchmark_snapshot_contract.py")
     expected.add("scripts/build_math_general_benchmark_snapshots.py")
     expected.add("validation/test_benchmark_snapshot_registry_v1.py")
+    expected.add("development_corpus_inventory.py")
+    expected.add("development_corpus_inventory_contract.py")
+    expected.add("scripts/build_development_corpus_inventory_v1.py")
+    expected.add("validation/test_development_corpus_inventory_v1.py")
     actual = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*.py")
@@ -214,6 +218,7 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
     expected.add("coverage_engine_v2.json")
     expected.add("joint_selector_profiles_v1.json")
     expected.add("development_selection_v1.json")
+    expected.add("development_corpus_manifest_v1.json")
     expected.update(
         {
             "math_complete_bundle_calibration_v1.json",

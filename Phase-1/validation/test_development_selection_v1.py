@@ -296,7 +296,8 @@ def test_current_repository_preflight_fails_closed() -> None:
     assert report.profiles_frozen is False
     assert "quality_gate_not_ready" in report.blocker_codes
     assert "coverage_gate_not_ready" in report.blocker_codes
-    assert "development_corpus_manifest_missing" in report.blocker_codes
+    assert "development_corpus_manifest_not_admitted" in report.blocker_codes
+    assert "development_corpus_manifest_missing" not in report.blocker_codes
     assert "math_benchmark_snapshot_not_frozen" not in report.blocker_codes
     assert "general_benchmark_snapshot_not_frozen" not in report.blocker_codes
     assert not any("benchmark_snapshot_contract_invalid" in blocker for blocker in report.blocker_codes)

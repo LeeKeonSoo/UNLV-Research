@@ -1,0 +1,259 @@
+{
+  "schema_version": "development-corpus-inventory-manifest-v1",
+  "status": "blocked",
+  "registry_sha256": "969ca520d3caef572dd4df5f28f2d347c6d92db321c9b7f5bc40e6c696142be9",
+  "sources": [
+    {
+      "source_id": "code-post-stack-v2-clean-controls-v1",
+      "domain": "code",
+      "role": "clean_control",
+      "file_sha256": "7c64b6ec77e91e74cd0aaee5ffb0dc210fd35964c2240bdb2e29fc28a18f2f58",
+      "record_count": 1299,
+      "unique_record_id_count": 1299,
+      "unique_normalized_text_count": 1299,
+      "stored_normalized_hash_mismatch_count": 33
+    },
+    {
+      "source_id": "github-code-10m-raw-v1",
+      "domain": "code",
+      "role": "raw_like",
+      "file_sha256": "6ed4bc1f0f492cdd90f98c5417eb7b8ce3ed618c7f3fdef3b15422b50852b590",
+      "record_count": 5134,
+      "unique_record_id_count": 5134,
+      "unique_normalized_text_count": 5134,
+      "stored_normalized_hash_mismatch_count": 0
+    },
+    {
+      "source_id": "math-open-educational-clean-controls-v6",
+      "domain": "math",
+      "role": "clean_control",
+      "file_sha256": "c123ac09b1a203f1bda90618b42ec97d65e2b6418e21751241f1c3c483725d4f",
+      "record_count": 2574,
+      "unique_record_id_count": 2574,
+      "unique_normalized_text_count": 2574,
+      "stored_normalized_hash_mismatch_count": 112
+    },
+    {
+      "source_id": "open-web-math-5m-raw-v1",
+      "domain": "math",
+      "role": "raw_like",
+      "file_sha256": "efcc245f8abff4dac441acb3299a79a76fd83857b9d220dfe2250892e5e0c612",
+      "record_count": 2125,
+      "unique_record_id_count": 2125,
+      "unique_normalized_text_count": 2125,
+      "stored_normalized_hash_mismatch_count": 0
+    },
+    {
+      "source_id": "common-pile-general-clean-controls-v2",
+      "domain": "general",
+      "role": "clean_control",
+      "file_sha256": "17d796c1237b767808939bed2dab1b1a2c5868d9b672fde6fb01f27cabe837c4",
+      "record_count": 1200,
+      "unique_record_id_count": 1200,
+      "unique_normalized_text_count": 1200,
+      "stored_normalized_hash_mismatch_count": 28
+    },
+    {
+      "source_id": "redpajama-v2-tail-10m-raw-v1",
+      "domain": "general",
+      "role": "raw_like",
+      "file_sha256": "f55fd061828910e8741b8cf17af4358a9b14a4004146b5454900ae50f906a7af",
+      "record_count": 15807,
+      "unique_record_id_count": 15807,
+      "unique_normalized_text_count": 15807,
+      "stored_normalized_hash_mismatch_count": 0
+    }
+  ],
+  "domain_pairs": [
+    {
+      "domain": "code",
+      "clean_raw_record_id_overlap_count": 0,
+      "clean_raw_normalized_text_overlap_count": 0
+    },
+    {
+      "domain": "math",
+      "clean_raw_record_id_overlap_count": 0,
+      "clean_raw_normalized_text_overlap_count": 0
+    },
+    {
+      "domain": "general",
+      "clean_raw_record_id_overlap_count": 0,
+      "clean_raw_normalized_text_overlap_count": 0
+    }
+  ],
+  "cross_source_record_id_overlap_count": 0,
+  "cross_source_normalized_text_overlap_count": 0,
+  "slices": [
+    {
+      "slice_id": "code-clean",
+      "domain": "code",
+      "scenario": "clean",
+      "origin": "observed",
+      "base_source_id": "code-post-stack-v2-clean-controls-v1",
+      "status": "inventoried",
+      "transformation_ids": []
+    },
+    {
+      "slice_id": "code-duplicate_heavy",
+      "domain": "code",
+      "scenario": "duplicate_heavy",
+      "origin": "metamorphic",
+      "base_source_id": "github-code-10m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "exact-copy-family-v1",
+        "length-relative-single-span-perturbation-v1"
+      ]
+    },
+    {
+      "slice_id": "code-malformed",
+      "domain": "code",
+      "scenario": "malformed",
+      "origin": "metamorphic",
+      "base_source_id": "github-code-10m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "utf8-truncation-with-parent-retention-v1",
+        "empty-payload-with-parent-retention-v1"
+      ]
+    },
+    {
+      "slice_id": "code-boilerplate_heavy",
+      "domain": "code",
+      "scenario": "boilerplate_heavy",
+      "origin": "metamorphic",
+      "base_source_id": "github-code-10m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "explicit-chrome-prefix-suffix-with-residual-identity-v1",
+        "repeated-template-span-with-parent-retention-v1"
+      ]
+    },
+    {
+      "slice_id": "code-mixed_raw_like",
+      "domain": "code",
+      "scenario": "mixed_raw_like",
+      "origin": "observed",
+      "base_source_id": "github-code-10m-raw-v1",
+      "status": "inventoried",
+      "transformation_ids": []
+    },
+    {
+      "slice_id": "math-clean",
+      "domain": "math",
+      "scenario": "clean",
+      "origin": "observed",
+      "base_source_id": "math-open-educational-clean-controls-v6",
+      "status": "inventoried",
+      "transformation_ids": []
+    },
+    {
+      "slice_id": "math-duplicate_heavy",
+      "domain": "math",
+      "scenario": "duplicate_heavy",
+      "origin": "metamorphic",
+      "base_source_id": "open-web-math-5m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "exact-copy-family-v1",
+        "length-relative-single-span-perturbation-v1"
+      ]
+    },
+    {
+      "slice_id": "math-malformed",
+      "domain": "math",
+      "scenario": "malformed",
+      "origin": "metamorphic",
+      "base_source_id": "open-web-math-5m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "utf8-truncation-with-parent-retention-v1",
+        "empty-payload-with-parent-retention-v1"
+      ]
+    },
+    {
+      "slice_id": "math-boilerplate_heavy",
+      "domain": "math",
+      "scenario": "boilerplate_heavy",
+      "origin": "metamorphic",
+      "base_source_id": "open-web-math-5m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "explicit-chrome-prefix-suffix-with-residual-identity-v1",
+        "repeated-template-span-with-parent-retention-v1"
+      ]
+    },
+    {
+      "slice_id": "math-mixed_raw_like",
+      "domain": "math",
+      "scenario": "mixed_raw_like",
+      "origin": "observed",
+      "base_source_id": "open-web-math-5m-raw-v1",
+      "status": "inventoried",
+      "transformation_ids": []
+    },
+    {
+      "slice_id": "general-clean",
+      "domain": "general",
+      "scenario": "clean",
+      "origin": "observed",
+      "base_source_id": "common-pile-general-clean-controls-v2",
+      "status": "inventoried",
+      "transformation_ids": []
+    },
+    {
+      "slice_id": "general-duplicate_heavy",
+      "domain": "general",
+      "scenario": "duplicate_heavy",
+      "origin": "metamorphic",
+      "base_source_id": "redpajama-v2-tail-10m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "exact-copy-family-v1",
+        "length-relative-single-span-perturbation-v1"
+      ]
+    },
+    {
+      "slice_id": "general-malformed",
+      "domain": "general",
+      "scenario": "malformed",
+      "origin": "metamorphic",
+      "base_source_id": "redpajama-v2-tail-10m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "utf8-truncation-with-parent-retention-v1",
+        "empty-payload-with-parent-retention-v1"
+      ]
+    },
+    {
+      "slice_id": "general-boilerplate_heavy",
+      "domain": "general",
+      "scenario": "boilerplate_heavy",
+      "origin": "metamorphic",
+      "base_source_id": "redpajama-v2-tail-10m-raw-v1",
+      "status": "materialization_pending",
+      "transformation_ids": [
+        "explicit-chrome-prefix-suffix-with-residual-identity-v1",
+        "repeated-template-span-with-parent-retention-v1"
+      ]
+    },
+    {
+      "slice_id": "general-mixed_raw_like",
+      "domain": "general",
+      "scenario": "mixed_raw_like",
+      "origin": "observed",
+      "base_source_id": "redpajama-v2-tail-10m-raw-v1",
+      "status": "inventoried",
+      "transformation_ids": []
+    }
+  ],
+  "blocker_codes": [
+    "benchmark_exclusion_not_run",
+    "general_confirmatory_reference_not_frozen",
+    "math_confirmatory_reference_not_frozen",
+    "metamorphic_slices_not_materialized"
+  ],
+  "manifest_sha256": "348e8ec09f2fa7ac5ee0c21694aaf604e249557381b4fe5010b8bd2385a5b4bc",
+  "benchmark_outcomes_read": false,
+  "selector_membership_mutated": false
+}

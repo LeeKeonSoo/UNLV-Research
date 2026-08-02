@@ -14,7 +14,7 @@
     "profiles_frozen": false,
     "blocker_codes": [
       "coverage_gate_not_ready",
-      "development_corpus_manifest_missing",
+      "development_corpus_manifest_not_admitted",
       "quality_gate_not_ready",
       "redundancy_gate_not_ready"
     ],
@@ -23,12 +23,14 @@
       "061b5c6fba1775e6c1cf6c099184381bd30c75c5fc54c2948cf608a6469cc3ce",
       "61146fafc2572aa2f1a9c770e45d0a71b6eb9c66e434956d92790a3039dacd7a",
       "9de0e4332ff57b1be1cfb1c7351573c044279fd156d11acb3c78b9c6e29a4469",
-      "cdb651d4d2caa8c92180edeee9fe0000eba24717fc2447fd1d82efd0728cf60a",
+      "40c690a391ad5bfe2106a00ce775155eaf0314ca0320982bf114db7ca2672b73",
       "16410272c29f9726142db5a18ba0ed61776629ca839ece2cd9e0c4cf4cb142e3",
       "af2360f00947bf8084d3d252a758aa85e5c5af882fba91ca8c90e30c2e3eb3e7",
-      "a1ca1f797a506564ad4180ab3706fa147433c27af854b50be1d2205be714e35c"
+      "a1ca1f797a506564ad4180ab3706fa147433c27af854b50be1d2205be714e35c",
+      "659174753f50e33f860df6c1295a599a4d748abd985c485fc16582d4c5499915",
+      "9d91255d017da556c0f49bad0d3ed20254ddcdce4a88f477e703d5fa4c708958"
     ],
-    "manifest_sha256": "6bc0b09082c2cfc9ef685bbc1c786eb81cd7050196291332436075aa710b50bb",
+    "manifest_sha256": "c05024cd33e9b39945b902e745cd9de3e2c72e2f03bc22f7317ec1ed117d5651",
     "benchmark_outcomes_read": false,
     "confirmatory_outcomes_read": false
   },

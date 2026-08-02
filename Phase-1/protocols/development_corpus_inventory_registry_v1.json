@@ -1,0 +1,88 @@
+{
+  "schema_version": "development-corpus-inventory-registry-v1",
+  "status": "block-8-inventory-only",
+  "normalization": "unicode-nfkc-whitespace-collapse-v1",
+  "sources": [
+    {
+      "source_id": "code-post-stack-v2-clean-controls-v1",
+      "domain": "code",
+      "role": "clean_control",
+      "path": "D:/UNLV-Research/positive_quality_v1/clean_controls/code_post_stack_v2_v1/python_clean_controls_v1.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "7c64b6ec77e91e74cd0aaee5ffb0dc210fd35964c2240bdb2e29fc28a18f2f58",
+      "selector_visible_source_metadata": false
+    },
+    {
+      "source_id": "github-code-10m-raw-v1",
+      "domain": "code",
+      "role": "raw_like",
+      "path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/github_code_10m.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "6ed4bc1f0f492cdd90f98c5417eb7b8ce3ed618c7f3fdef3b15422b50852b590",
+      "selector_visible_source_metadata": false
+    },
+    {
+      "source_id": "math-open-educational-clean-controls-v6",
+      "domain": "math",
+      "role": "clean_control",
+      "path": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_clean_controls_v6.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "c123ac09b1a203f1bda90618b42ec97d65e2b6418e21751241f1c3c483725d4f",
+      "selector_visible_source_metadata": false
+    },
+    {
+      "source_id": "open-web-math-5m-raw-v1",
+      "domain": "math",
+      "role": "raw_like",
+      "path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/open_web_math_5m.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "efcc245f8abff4dac441acb3299a79a76fd83857b9d220dfe2250892e5e0c612",
+      "selector_visible_source_metadata": false
+    },
+    {
+      "source_id": "common-pile-general-clean-controls-v2",
+      "domain": "general",
+      "role": "clean_control",
+      "path": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+      "id_fields": ["source_group", "source_record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "17d796c1237b767808939bed2dab1b1a2c5868d9b672fde6fb01f27cabe837c4",
+      "selector_visible_source_metadata": false
+    },
+    {
+      "source_id": "redpajama-v2-tail-10m-raw-v1",
+      "domain": "general",
+      "role": "raw_like",
+      "path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/redpajama_v2_tail_10m.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "f55fd061828910e8741b8cf17af4358a9b14a4004146b5454900ae50f906a7af",
+      "selector_visible_source_metadata": false
+    }
+  ],
+  "confirmatory_references": {
+    "code": "frozen",
+    "math": "pending",
+    "general": "pending"
+  },
+  "metamorphic_transformations": {
+    "duplicate_heavy": [
+      "exact-copy-family-v1",
+      "length-relative-single-span-perturbation-v1"
+    ],
+    "malformed": [
+      "utf8-truncation-with-parent-retention-v1",
+      "empty-payload-with-parent-retention-v1"
+    ],
+    "boilerplate_heavy": [
+      "explicit-chrome-prefix-suffix-with-residual-identity-v1",
+      "repeated-template-span-with-parent-retention-v1"
+    ]
+  },
+  "benchmark_outcomes_available": false,
+  "selector_membership_mutation_allowed": false
+}
