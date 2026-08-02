@@ -1,0 +1,220 @@
+{
+  "schema_version": "joint-selector-v1-contract-audit-v1",
+  "fixture_schema_version": "joint-selector-v1-fixture-v1",
+  "contract_fixture_only_not_empirical_evidence": true,
+  "fixture_normal_result": {
+    "profile_name": "normal",
+    "profile_sha256": "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af",
+    "status": "candidate_materialized",
+    "reason_code": "joint_candidate_materialized",
+    "selected_uids": [
+      "a",
+      "c",
+      "d"
+    ],
+    "removal_traces": [
+      {
+        "chunk_uid": "b",
+        "authority_core": "redundancy",
+        "policy_id": "candidate_redundancy_v2",
+        "reason_code": "redundancy_family_nonrepresentative",
+        "representative_chunk_uid": "a",
+        "evidence_artifact_hashes": [
+          "1111111111111111111111111111111111111111111111111111111111111111",
+          "21cd1d291a7b4ffdd59a526f661dd41fdf90b965eaaf1774b9b9a29938da2a7e",
+          "2222222222222222222222222222222222222222222222222222222222222222",
+          "3333333333333333333333333333333333333333333333333333333333333333",
+          "4444444444444444444444444444444444444444444444444444444444444444",
+          "5555555555555555555555555555555555555555555555555555555555555555",
+          "9999999999999999999999999999999999999999999999999999999999999999",
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ]
+      },
+      {
+        "chunk_uid": "e",
+        "authority_core": "quality",
+        "policy_id": "stage_c_calibrated_quality_effect_candidate",
+        "reason_code": "quality_nonpositive_effect_supported",
+        "representative_chunk_uid": null,
+        "evidence_artifact_hashes": [
+          "1111111111111111111111111111111111111111111111111111111111111111",
+          "2222222222222222222222222222222222222222222222222222222222222222",
+          "3333333333333333333333333333333333333333333333333333333333333333",
+          "4444444444444444444444444444444444444444444444444444444444444444",
+          "5555555555555555555555555555555555555555555555555555555555555555"
+        ]
+      }
+    ],
+    "coverage_decision": {
+      "status": "veto_candidate",
+      "reason_code": "coverage_support_veto_candidates_required",
+      "protected_uids": [
+        "a"
+      ],
+      "family_representatives": [
+        {
+          "family_id": "family-ab",
+          "representative_uid": "a",
+          "marginal_gain": 1.7999999999999998,
+          "selection_method": "facility_location_marginal_gain_then_uid"
+        }
+      ],
+      "extinct_before_protection": [],
+      "permitted_extinctions": [],
+      "view_reports": [
+        {
+          "view": "content_route",
+          "target_strata": 1,
+          "proposed_covered_strata": 1,
+          "protected_covered_strata": 1,
+          "proposed_support_recall": 1.0,
+          "protected_support_recall": 1.0,
+          "token_mass_jensen_shannon_divergence": 0.0
+        },
+        {
+          "view": "semantic_skill",
+          "target_strata": 1,
+          "proposed_covered_strata": 1,
+          "protected_covered_strata": 1,
+          "proposed_support_recall": 1.0,
+          "protected_support_recall": 1.0,
+          "token_mass_jensen_shannon_divergence": 0.0
+        }
+      ],
+      "token_report": {
+        "raw_tokens": 150,
+        "proposed_tokens": 70,
+        "protected_tokens": 80,
+        "proposed_retention_ratio": 0.4666666666666667,
+        "protected_retention_ratio": 0.5333333333333333
+      },
+      "nearest_representative_radius": 0.0,
+      "effective_sample_size": 2.4615384615384617,
+      "evidence_artifact_hashes": [
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "21cd1d291a7b4ffdd59a526f661dd41fdf90b965eaaf1774b9b9a29938da2a7e",
+        "2222222222222222222222222222222222222222222222222222222222222222",
+        "3333333333333333333333333333333333333333333333333333333333333333",
+        "4444444444444444444444444444444444444444444444444444444444444444",
+        "5555555555555555555555555555555555555555555555555555555555555555",
+        "9999999999999999999999999999999999999999999999999999999999999999",
+        "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ],
+      "may_mutate_curated_membership": false,
+      "fixed_quota_used": false,
+      "source_identity_used": false,
+      "benchmark_outcomes_read": false,
+      "utility_read": false
+    },
+    "input_sha256": "2512db50359145cc8adac2ce602fe020d3461b5057871100f1112e1c1b2ec891",
+    "manifest_sha256": "e71ff124d5e64a8438a58ee0c507a97193ed1c40fc572c8a6e23eb22c682f13c",
+    "policy_artifact_hashes": [
+      "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af"
+    ],
+    "evidence_artifact_hashes": [
+      "1111111111111111111111111111111111111111111111111111111111111111",
+      "21cd1d291a7b4ffdd59a526f661dd41fdf90b965eaaf1774b9b9a29938da2a7e",
+      "2222222222222222222222222222222222222222222222222222222222222222",
+      "3333333333333333333333333333333333333333333333333333333333333333",
+      "4444444444444444444444444444444444444444444444444444444444444444",
+      "5555555555555555555555555555555555555555555555555555555555555555",
+      "6666666666666666666666666666666666666666666666666666666666666666",
+      "7777777777777777777777777777777777777777777777777777777777777777",
+      "8888888888888888888888888888888888888888888888888888888888888888",
+      "9999999999999999999999999999999999999999999999999999999999999999",
+      "9c39e54120b120102f42724e7fae3696bb656ffb0facbcf536eb3493187cba61",
+      "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    ],
+    "model_provider_identity_hashes": [
+      "1111111111111111111111111111111111111111111111111111111111111111",
+      "21cd1d291a7b4ffdd59a526f661dd41fdf90b965eaaf1774b9b9a29938da2a7e"
+    ],
+    "may_mutate_active_runtime": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "source_identity_read": false,
+    "target_retention_fraction_read": false,
+    "post_run_override_applied": false
+  },
+  "deterministic_replay_passed": true,
+  "fixture_hard_result": {
+    "profile_name": "hard",
+    "profile_sha256": "cdd3306fa2697c27bf49b17481e3e9ca6060824d5f6c2e57b9779f249af7953f",
+    "status": "blocked_retain_base",
+    "reason_code": "joint_hard_extension_not_ready",
+    "selected_uids": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e"
+    ],
+    "removal_traces": [],
+    "coverage_decision": null,
+    "input_sha256": "2512db50359145cc8adac2ce602fe020d3461b5057871100f1112e1c1b2ec891",
+    "manifest_sha256": "fc3539bbee8ecf53aaee7b2bb3f80ca014c55ae1e325c6cbbab7b3a658e1a536",
+    "policy_artifact_hashes": [
+      "cdd3306fa2697c27bf49b17481e3e9ca6060824d5f6c2e57b9779f249af7953f"
+    ],
+    "evidence_artifact_hashes": [
+      "6666666666666666666666666666666666666666666666666666666666666666",
+      "7777777777777777777777777777777777777777777777777777777777777777",
+      "8888888888888888888888888888888888888888888888888888888888888888",
+      "9c39e54120b120102f42724e7fae3696bb656ffb0facbcf536eb3493187cba61"
+    ],
+    "model_provider_identity_hashes": [
+      "1111111111111111111111111111111111111111111111111111111111111111",
+      "21cd1d291a7b4ffdd59a526f661dd41fdf90b965eaaf1774b9b9a29938da2a7e"
+    ],
+    "may_mutate_active_runtime": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "source_identity_read": false,
+    "target_retention_fraction_read": false,
+    "post_run_override_applied": false
+  },
+  "current_semantic_provider_lifecycle": "audit_only",
+  "current_registered_evidence_result": {
+    "profile_name": "normal",
+    "profile_sha256": "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af",
+    "status": "blocked_retain_base",
+    "reason_code": "joint_required_evidence_gate_blocked",
+    "selected_uids": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e"
+    ],
+    "removal_traces": [],
+    "coverage_decision": null,
+    "input_sha256": "f6865a4725e7990c85514f2ad63fe812ec3df955210863b9f525ececd8e26cea",
+    "manifest_sha256": "6da5affcdc760b2534699e6c54211870d8d3272fcbfcb94a28fa6162e47e8cc3",
+    "policy_artifact_hashes": [
+      "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af"
+    ],
+    "evidence_artifact_hashes": [
+      "5431b6195e935a9ea452e9489fcc5554e6a8d5896d9ce85dada4ea6614013bd3",
+      "61146fafc2572aa2f1a9c770e45d0a71b6eb9c66e434956d92790a3039dacd7a",
+      "9de0e4332ff57b1be1cfb1c7351573c044279fd156d11acb3c78b9c6e29a4469",
+      "c93934c3763c1440da9be7cc63612f8294f87799ab2537560f88a2972a92a284"
+    ],
+    "model_provider_identity_hashes": [
+      "1111111111111111111111111111111111111111111111111111111111111111",
+      "1d3de81dda072adb4487acab306b31e1baf82c666e2787fc763f8b33477feecb"
+    ],
+    "may_mutate_active_runtime": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "source_identity_read": false,
+    "target_retention_fraction_read": false,
+    "post_run_override_applied": false
+  },
+  "empirical_runtime_activation": false
+}

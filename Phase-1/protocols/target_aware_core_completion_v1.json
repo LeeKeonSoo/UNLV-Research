@@ -1,6 +1,6 @@
 {
   "schema_version": "target-aware-core-completion-v1",
-  "status": "block_6_coverage_engine_fixture_validated_empirical_gates_blocked",
+  "status": "block_7_joint_selector_contract_validated_runtime_blocked",
   "frozen_at": "2026-08-02",
   "implementation_authority": "design_contract_only",
   "baseline": {
@@ -481,5 +481,36 @@
     "runtime_activation": false,
     "activation_deferred_to": "Block 7 after real Block 5 and Block 6 evidence gates pass"
   },
-  "next_block": "Block 7 - Joint selector and immutable profiles"
+  "block_7_implementation": {
+    "profile_contract": "configs/joint_selector_profiles_v1.json",
+    "implementation": [
+      "joint_selector.py",
+      "joint_selector_contract.py",
+      "joint_selector_gates.py",
+      "joint_selector_manifest.py"
+    ],
+    "contract_audit": "validation/frozen_contracts/joint_selector_v1_contract_audit.json",
+    "base_definition": "validity_passing_universe_before_redundancy_quality_and_coverage_selection",
+    "normal_definition": "typed_redundancy_and_calibrated_quality_rejection_subject_to_coverage_veto",
+    "hard_definition": "normal_plus_one_block_8_frozen_extension",
+    "atomic_failure_action": "discard_complete_candidate_and_retain_base",
+    "gate_derivation": "hash_and_status_from_frozen_redundancy_quality_coverage_configs_only",
+    "deterministic_replay_passed_on_contract_fixture": true,
+    "complete_manifest_hash_emitted": true,
+    "per_removal_core_policy_reason_representative_and_evidence_trace": true,
+    "existing_active_profile_preserved": "normal_structural_v1",
+    "post_run_override_allowed": false,
+    "benchmark_feedback_allowed": false,
+    "source_selection_axis_used": false,
+    "target_retention_fraction_used": false,
+    "contract_fixture_only_not_empirical_evidence": true,
+    "current_frozen_redundancy_gate_ready": false,
+    "current_frozen_quality_gate_ready": false,
+    "current_frozen_coverage_gate_ready": false,
+    "hard_extension_frozen": false,
+    "runtime_activation": false,
+    "current_normal_action": "blocked_retain_base",
+    "current_hard_action": "blocked_retain_base"
+  },
+  "next_block": "Block 8 - Development selection"
 }

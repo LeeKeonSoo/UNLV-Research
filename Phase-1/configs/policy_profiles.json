@@ -1,6 +1,7 @@
 {
   "schema_version": "policy-profiles-v1",
   "purpose": "Declare user-facing Normal/Hard modes separately from archived candidate research without changing the active A-B-C runtime.",
+  "target_aware_candidate_profile_registry": "configs/joint_selector_profiles_v1.json",
   "legacy_profile_aliases": {"text_only_structural_v2": "normal_structural_v1"},
   "profiles": [
     {

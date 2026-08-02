@@ -157,6 +157,22 @@
       "fixed_quota_used": false,
       "source_selection_axis_used": false,
       "benchmark_outcomes_read": false
+    },
+    "candidate_joint_selector_v1": {
+      "runtime_owner": "joint_selector.py",
+      "runtime_activation": false,
+      "orchestration_role": "atomic_evidence_only_combination_not_a_fifth_core",
+      "profile_contract": "configs/joint_selector_profiles_v1.json",
+      "gate_source": "joint_selector_gates.py_reads_frozen_registry_artifacts",
+      "base_action": "materialize_validity_passing_universe",
+      "normal_action": "compact_typed_redundancy_and_calibrated_quality_rejects_subject_to_coverage",
+      "hard_action": "blocked_until_block_8_freezes_one_additional_extension",
+      "missing_gate_action": "discard_complete_candidate_and_retain_base",
+      "existing_active_profile_preserved": "normal_structural_v1",
+      "post_run_override_allowed": false,
+      "benchmark_feedback_allowed": false,
+      "source_selection_axis_used": false,
+      "target_retention_fraction_used": false
     }
   },
   "policies": [

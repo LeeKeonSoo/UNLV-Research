@@ -1,0 +1,51 @@
+{
+  "schema_version": "joint-selector-profiles-v1",
+  "status": "block_7_candidate_contract_runtime_blocked",
+  "runtime_activation": false,
+  "post_run_override_allowed": false,
+  "benchmark_feedback_allowed": false,
+  "source_selection_axis": false,
+  "target_retention_fraction_allowed": false,
+  "hidden_token_budget_allowed": false,
+  "existing_active_profile_preserved": "normal_structural_v1",
+  "profiles": [
+    {
+      "name": "base",
+      "profile_id": "base_target_aware_v1",
+      "status": "contract_runnable_validity_passing_universe",
+      "development_only": true,
+      "required_policy_ids": [],
+      "hard_extension_policy_ids": [],
+      "hard_extension_frozen": false,
+      "requires_hard_extension": false
+    },
+    {
+      "name": "normal",
+      "profile_id": "normal_target_aware_v1",
+      "status": "development_only_empirical_gates_blocked",
+      "development_only": true,
+      "required_policy_ids": [
+        "candidate_redundancy_v2",
+        "stage_c_calibrated_quality_effect_candidate",
+        "stage_c_coverage_support_candidate"
+      ],
+      "hard_extension_policy_ids": [],
+      "hard_extension_frozen": false,
+      "requires_hard_extension": false
+    },
+    {
+      "name": "hard",
+      "profile_id": "hard_target_aware_v1",
+      "status": "blocked_until_block_8_selects_one_frozen_extension",
+      "development_only": true,
+      "required_policy_ids": [
+        "candidate_redundancy_v2",
+        "stage_c_calibrated_quality_effect_candidate",
+        "stage_c_coverage_support_candidate"
+      ],
+      "hard_extension_policy_ids": [],
+      "hard_extension_frozen": false,
+      "requires_hard_extension": true
+    }
+  ]
+}

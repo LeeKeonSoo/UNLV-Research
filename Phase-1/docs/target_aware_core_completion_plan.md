@@ -549,15 +549,45 @@ provider-bias audit is complete. The fixture is a contract test and must not be
 cited as downstream evidence. Therefore the original Block-6 exit criterion
 has not yet been met on real data.
 
-### Block 7 - Joint selector and immutable profiles
+### Block 7 - Joint selector and immutable profiles - CONTRACT COMPLETE, RUNTIME BLOCKED
 
-- preserve the frozen Conservative Structural profile unchanged;
-- implement development-only Normal and Hard target-aware profiles over the
-  same Base input;
-- emit complete policy/evidence/model hashes and per-removal traces;
-- prohibit benchmark, source reputation, target fraction, and post-run override.
+- `joint_selector.py` combines typed Redundancy families, calibrated Quality
+  decisions, and Coverage vetoes in one evidence-only transaction. It is an
+  orchestrator, not a fifth Core;
+- Base is the Validity-passing universe before Redundancy, Quality, and
+  Coverage subset selection;
+- fixture Normal removes calibrated nonpositive Quality candidates and all
+  members of a compactable family provisionally, then commits only after
+  Coverage supplies final representatives and support protection;
+- any missing Redundancy, Quality, or Coverage gate discards the entire
+  candidate and returns Base. There is no partially applied profile;
+- Hard is Normal plus exactly one Block-8 frozen extension. No extension is
+  currently assigned, so Hard fails closed to Base rather than pretending to
+  be stricter;
+- real gate values are derived from the hashes and status fields of the frozen
+  Redundancy, Quality, and Coverage configs. Caller-provided ready flags are
+  marked contract-fixture-only;
+- every result freezes the input, profile, policy, evidence, and provider
+  identities in a deterministic manifest hash. Every removal identifies its
+  owning Core, policy, reason, evidence, and final representative when
+  applicable;
+- benchmark feedback, source identity, target fractions, hidden token budgets,
+  and post-run overrides are absent from the selector contract;
+- `normal_structural_v1` remains the only active user-facing profile. The new
+  Base/Normal/Hard namespace is development-only and cannot mutate the active
+  runtime.
 
-Exit: deterministic replay and policy-leakage tests pass.
+Contract verification: fixture Normal deterministically selects `a,c,d`, links
+`b` to redundancy representative `a`, and removes `e` only through the complete
+calibrated Quality trace. Replay produces the same manifest. The frozen current
+gate loader reports Redundancy, Quality, and Coverage unready, so current Normal
+and Hard both return Base.
+
+Empirical status: **blocked**. This establishes atomicity, replay, leakage
+boundaries, and trace completeness on a constructed fixture. It does not
+establish a Normal or Hard operating point, corpus-scale effectiveness, or
+runtime promotion. Block 8 must select and freeze development operating points
+without confirmatory feedback.
 
 ### Block 8 - Development selection
 
@@ -615,7 +645,7 @@ linked to a frozen evidence bundle.
 10. The paper never claims universal intrinsic Quality or guaranteed
     improvement on every corpus.
 
-## 13. Block 1A Through Block 6 Resolution
+## 13. Block 1A Through Block 7 Resolution
 
 Block 1 froze the target SLM, tokenizer, experiment arms, and capability panels
 in `protocols/target_aware_core_completion_v1.json`. The Qwen excess-loss pair
@@ -642,5 +672,10 @@ Real Quality evidence remains blocked and cannot be borrowed from the fixture.
 Block 6 adds the non-active support engine under
 `configs/coverage_engine_v2.json`; its contract-only audit is
 `validation/frozen_contracts/coverage_engine_v2_contract_audit.json`. Real
-semantic support and provider-bias evidence remain blocked. Block 5 and Block 6
-empirical gates are both required before the Block-7 atomic runtime switch.
+semantic support and provider-bias evidence remain blocked. Block 7 adds the
+non-active atomic selector and profile registry under
+`configs/joint_selector_profiles_v1.json`; its contract-only audit is
+`validation/frozen_contracts/joint_selector_v1_contract_audit.json`. Frozen
+registry gates currently retain Base. Block 8 must select development operating
+points, while Block 5 and Block 6 empirical evidence remains required before
+any runtime promotion.

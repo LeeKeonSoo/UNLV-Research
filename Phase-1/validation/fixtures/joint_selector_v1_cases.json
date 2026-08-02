@@ -1,0 +1,45 @@
+{
+  "schema_version": "joint-selector-v1-fixture-v1",
+  "contract_fixture_only_not_empirical_evidence": true,
+  "chunks": [
+    {"uid": "a", "token_count": 10},
+    {"uid": "b", "token_count": 20},
+    {"uid": "c", "token_count": 30},
+    {"uid": "d", "token_count": 40},
+    {"uid": "e", "token_count": 50}
+  ],
+  "quality_decisions": [
+    {"chunk_uid": "a", "decision": "eligible_keep", "reason_code": "quality_positive_effect_supported", "effect_direction": "supported_positive"},
+    {"chunk_uid": "b", "decision": "abstain_retain", "reason_code": "quality_effect_uncertain", "effect_direction": "uncertain"},
+    {"chunk_uid": "c", "decision": "eligible_keep", "reason_code": "quality_positive_effect_supported", "effect_direction": "supported_positive"},
+    {"chunk_uid": "d", "decision": "abstain_retain", "reason_code": "quality_effect_uncertain", "effect_direction": "uncertain"},
+    {"chunk_uid": "e", "decision": "reject_candidate", "reason_code": "quality_nonpositive_effect_supported", "effect_direction": "supported_nonpositive"}
+  ],
+  "quality_evidence_artifact_hashes": [
+    "1111111111111111111111111111111111111111111111111111111111111111",
+    "2222222222222222222222222222222222222222222222222222222222222222",
+    "3333333333333333333333333333333333333333333333333333333333333333",
+    "4444444444444444444444444444444444444444444444444444444444444444",
+    "5555555555555555555555555555555555555555555555555555555555555555"
+  ],
+  "redundancy_families": [
+    {"family_id": "family-ab", "member_uids": ["a", "b"], "evidence_artifact_sha256": "9999999999999999999999999999999999999999999999999999999999999999"}
+  ],
+  "coverage_strata": [
+    {"stratum_id": "route-main", "view": "content_route", "member_uids": ["a", "b", "c"], "state": "stable", "evidence_artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"},
+    {"stratum_id": "skill-tail", "view": "semantic_skill", "member_uids": ["d", "e"], "state": "stable", "evidence_artifact_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}
+  ],
+  "similarities": [
+    {"left_uid": "a", "right_uid": "b", "similarity": 1.0},
+    {"left_uid": "a", "right_uid": "c", "similarity": 0.1},
+    {"left_uid": "b", "right_uid": "c", "similarity": 0.1},
+    {"left_uid": "c", "right_uid": "d", "similarity": 0.1},
+    {"left_uid": "d", "right_uid": "e", "similarity": 0.2}
+  ],
+  "similarity_artifact_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "joint_gate_artifact_hashes": [
+    "6666666666666666666666666666666666666666666666666666666666666666",
+    "7777777777777777777777777777777777777777777777777777777777777777",
+    "8888888888888888888888888888888888888888888888888888888888888888"
+  ]
+}
