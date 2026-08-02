@@ -110,7 +110,7 @@ def test_registry_separates_routing_precondition_from_two_quality_heads() -> Non
     assert registry["unknown_mixed_ood_action"] == "abstain_retain"
 
 
-def test_candidate_is_linked_to_quality_core_without_runtime_authority() -> None:
+def test_superseded_candidate_is_retired_without_runtime_authority() -> None:
     core_registry = json.loads(CORE_REGISTRY.read_text(encoding="utf-8"))
     policy_cards = json.loads(POLICY_CARDS.read_text(encoding="utf-8"))
     policies = {policy["id"]: policy for policy in core_registry["policies"]}
@@ -118,10 +118,10 @@ def test_candidate_is_linked_to_quality_core_without_runtime_authority() -> None
 
     candidate = policies["stage_c_route_conditioned_quality_candidate"]
     assert candidate["core"] == "quality"
-    assert candidate["status"] == "candidate"
-    assert candidate["runtime_authorization"] == "none_candidate_cannot_select_or_remove"
+    assert candidate["status"] == "retired"
+    assert candidate["runtime_authorization"] == "none_retired_cannot_select_or_remove"
     assert cards[candidate["policy_card_id"]]["empirical_status"] == (
-        "candidate_adapter_validated_all_routes_abstain_missing_or_indeterminate_evidence_not_runtime_active"
+        "retired_superseded_by_stage_c_calibrated_quality_effect_candidate"
     )
     assert cards[candidate["policy_card_id"]]["evidence_gate"] == (
         "configs/quality_route_evidence_gate_v2.json"
@@ -136,5 +136,5 @@ if __name__ == "__main__":
     test_fixture_matrix_enforces_routing_precondition_and_two_quality_heads()
     test_negative_outcome_requires_a_named_boundary()
     test_registry_separates_routing_precondition_from_two_quality_heads()
-    test_candidate_is_linked_to_quality_core_without_runtime_authority()
+    test_superseded_candidate_is_retired_without_runtime_authority()
     print("[route-conditioned-quality-v2] routing precondition and two-head boundary: pass")

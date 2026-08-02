@@ -1,6 +1,6 @@
 {
   "schema_version": "target-aware-core-completion-v1",
-  "status": "block_4_redundancy_v2_fixture_validated_candidate",
+  "status": "block_5_quality_engine_fixture_validated_empirical_gates_blocked",
   "frozen_at": "2026-08-02",
   "implementation_authority": "design_contract_only",
   "baseline": {
@@ -409,5 +409,46 @@
     "runtime_activation": false,
     "activation_deferred_to": "Block 7 atomic joint-selector migration"
   },
-  "next_block": "Block 5 - Quality evidence engine"
+  "block_5_implementation": {
+    "contract": "configs/quality_effect_engine_v2.json",
+    "implementation": "quality_effect_engine.py",
+    "contract_audit": "validation/frozen_contracts/quality_effect_engine_v2_contract_audit.json",
+    "latent_target": "expected_marginal_external_risk_reduction_per_target_training_token",
+    "calibration_method": "sample_weighted_isotonic_regression_over_preregistered_rule_on_off_bin_effects",
+    "minimum_ordered_bins_per_route": 3,
+    "effect_unit": "risk_reduction_per_target_token",
+    "metric_identity_frozen": true,
+    "all_sensitivity_arms_share_one_common_baseline": true,
+    "common_baseline_disjoint_from_all_bin_arms": true,
+    "direction_boundary": {
+      "supported_nonpositive": "development_and_heldout_upper_bounds_are_both_nonpositive",
+      "supported_positive": "development_and_heldout_lower_bounds_are_both_positive",
+      "uncertain": "all_other_interval_configurations"
+    },
+    "contract_fixture_routes": [
+      "general_prose",
+      "code_artifact"
+    ],
+    "contract_fixture_bins": 6,
+    "contract_fixture_only_not_empirical_evidence": true,
+    "provider_replacement_invalidates_calibration": true,
+    "current_registered_quality_provider_lifecycle": "audit_only",
+    "registered_route_gate_status": {
+      "general_prose": "blocked_source_transfer",
+      "code_artifact": "blocked_source_transfer",
+      "mathematical_content": "blocked_source_transfer",
+      "technical_documentation": "missing",
+      "conversation": "missing",
+      "instruction": "missing",
+      "table_structured_data": "missing"
+    },
+    "all_real_routes_empirically_ready": false,
+    "current_model_based_quality_action": "abstain_retain",
+    "weighted_quality_formula_used": false,
+    "target_retention_fraction_used": false,
+    "benchmark_outcomes_available_to_runtime": false,
+    "runtime_activation": false,
+    "activation_deferred_to": "Block 7 after real Block 5 evidence and Block 6 Coverage gates pass"
+  },
+  "next_block": "Block 6 - Coverage engine"
 }

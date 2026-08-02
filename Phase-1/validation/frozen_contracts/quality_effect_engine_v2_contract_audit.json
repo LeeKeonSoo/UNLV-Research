@@ -1,0 +1,97 @@
+{
+  "schema_version": "quality-effect-engine-v2-contract-audit-v1",
+  "fixture_schema_version": "quality-effect-engine-fixture-v1",
+  "contract_fixture_only_not_empirical_evidence": true,
+  "calibration_report": {
+    "provider_id": "fixture-quality-provider",
+    "provider_identity_sha256": "41cb1dc0fa006cc70f8df0bb45a77d4176192079adef5fd5294c69759f0c8601",
+    "effect_metric_id": "fixture-marginal-risk-reduction-v1",
+    "effect_metric_artifact_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "common_baseline_artifact_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "bins": [
+      {
+        "route": "code_artifact",
+        "bin_id": "code-low",
+        "bin_order": 0,
+        "fitted_development_effect": -0.03,
+        "direction": "supported_nonpositive",
+        "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      {
+        "route": "code_artifact",
+        "bin_id": "code-mid",
+        "bin_order": 1,
+        "fitted_development_effect": 0.005,
+        "direction": "uncertain",
+        "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      {
+        "route": "code_artifact",
+        "bin_id": "code-high",
+        "bin_order": 2,
+        "fitted_development_effect": 0.04,
+        "direction": "supported_positive",
+        "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      {
+        "route": "general_prose",
+        "bin_id": "general-low",
+        "bin_order": 0,
+        "fitted_development_effect": -0.04,
+        "direction": "supported_nonpositive",
+        "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      {
+        "route": "general_prose",
+        "bin_id": "general-mid",
+        "bin_order": 1,
+        "fitted_development_effect": 0.0,
+        "direction": "uncertain",
+        "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      {
+        "route": "general_prose",
+        "bin_id": "general-high",
+        "bin_order": 2,
+        "fitted_development_effect": 0.05000000000000001,
+        "direction": "supported_positive",
+        "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      }
+    ],
+    "failed_gates": [],
+    "passed": true,
+    "weighted_quality_formula_used": false,
+    "target_retention_fraction_used": false,
+    "benchmark_outcomes_used": false,
+    "calibration_method": "sample_weighted_isotonic_bin_effects",
+    "effect_unit": "risk_reduction_per_target_token"
+  },
+  "fixture_active_provider_decisions": [
+    {
+      "bin_id": "general-low",
+      "decision": "reject_candidate",
+      "reason_code": "quality_nonpositive_effect_supported",
+      "may_mutate_curated_membership": false
+    },
+    {
+      "bin_id": "general-mid",
+      "decision": "abstain_retain",
+      "reason_code": "quality_effect_uncertain",
+      "may_mutate_curated_membership": false
+    },
+    {
+      "bin_id": "general-high",
+      "decision": "eligible_keep",
+      "reason_code": "quality_positive_effect_supported",
+      "may_mutate_curated_membership": false
+    }
+  ],
+  "current_registered_quality_provider_lifecycle": "audit_only",
+  "current_registered_provider_decision": {
+    "bin_id": "general-low",
+    "decision": "abstain_retain",
+    "reason_code": "quality_provider_not_active",
+    "may_mutate_curated_membership": false
+  },
+  "empirical_runtime_activation": false
+}

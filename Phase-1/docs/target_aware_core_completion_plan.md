@@ -462,16 +462,55 @@ relation cases match their expected type. This is a fixture-validated candidate,
 not an active runtime replacement; corpus-scale retrieval recall, representative
 survival, and external confirmation remain promotion gates.
 
-### Block 5 - Quality evidence engine
+### Block 5 - Quality evidence engine - ENGINE COMPLETE, EMPIRICALLY BLOCKED
 
-- compare provider-independent evidence with optional registered model-provider
-  candidates; no specific model pair is mandatory;
-- build evidence bins and low-cost development ablations;
-- calibrate gain and uncertainty without a global handwritten formula;
-- retain mixed, unknown, and OOD cases by explicit state.
+- `quality_effect_engine.py` consumes preregistered evidence-bin IDs and
+  measured rule-on/off marginal effects rather than an intrinsic document
+  Quality score;
+- the earlier categorical two-head candidate
+  `stage_c_route_conditioned_quality_candidate` is retired. Its fixtures remain
+  as historical boundary tests, but it has no promotion path without measured
+  marginal-effect calibration;
+- development bin effects are fit with sample-weighted isotonic regression.
+  Sample counts are statistical weights, not hand-authored feature weights;
+- every calibrated route requires at least three preregistered ordered bins,
+  and a provider may contribute only to routes declared in its frozen manifest;
+- every sensitivity arm shares one frozen common baseline that is disjoint from
+  all evidence-bin arms. The metric ID, effect unit, baseline hash, and metric
+  artifact hash are frozen together, so different baselines or metrics cannot
+  masquerade as one calibration;
+- an evidence bin is `supported_nonpositive` only when both development and
+  held-out upper confidence bounds are nonpositive, and `supported_positive`
+  only when both lower bounds are positive. Every other bin is uncertain and
+  retained;
+- provider-training, development, and held-out source groups must be disjoint;
+  source groups enforce experimental split integrity only and are never runtime
+  Quality evidence;
+  confirmatory results must remain hidden; provider-bias and route-holdout
+  stress gates must pass; held-out effects must be monotonic and contain the
+  fitted development effects;
+- a provider identity change invalidates calibration. Only an `active` Quality
+  provider with policy-contribution authority can supply candidate evidence,
+  and even then the Block-5 decision cannot mutate the curated dataset before
+  the Block-6 Coverage veto and Block-7 joint selector exist;
+- provider-independent explicit structural negative rules remain a separate
+  evidence layer. They are not converted into model scores;
+- mixed, unknown, OOD, missing-bin, failed-calibration, and inactive-provider
+  cases all return `abstain_retain`.
 
-Exit: held-out score bins predict measured marginal effect monotonically within
-their confidence bounds; failed routes remain unsupported rather than borrowed.
+Engine verification: a clearly marked non-empirical contract fixture covers
+two routes and six negative/uncertain/positive bins. It verifies calibration,
+identity, leakage, held-out monotonicity, interval, and lifecycle behavior. The
+frozen audit also proves that the currently registered Quality provider is
+`audit_only` and therefore returns `abstain_retain` even on a fixture negative
+bin.
+
+Empirical status: **blocked**. General, Code, and Math remain blocked on strict
+source transfer; Technical Documentation, Conversation, Instruction, and Table
+routes have no complete evidence. Therefore the Block-5 engine is implemented,
+but the original exit criterion has not been met on real data and no
+model-based Quality policy is active. The fixture must never be cited as
+downstream evidence.
 
 ### Block 6 - Coverage engine
 
@@ -548,7 +587,7 @@ linked to a frozen evidence bundle.
 10. The paper never claims universal intrinsic Quality or guaranteed
     improvement on every corpus.
 
-## 13. Block 1A Through Block 4 Resolution
+## 13. Block 1A Through Block 5 Resolution
 
 Block 1 froze the target SLM, tokenizer, experiment arms, and capability panels
 in `protocols/target_aware_core_completion_v1.json`. The Qwen excess-loss pair
@@ -567,6 +606,10 @@ clean controls, and per-reason uncertainty report are implemented. The evidence
 bundle is `validation/frozen_contracts/validity_v2_behavior_audit.json`. Block 4
 implements the non-active typed relation graph under
 `configs/redundancy_v2.json`; its evidence bundle is
-`validation/frozen_contracts/redundancy_v2_behavior_audit.json`. Block 5 may now
-implement the Quality evidence engine. Block 7 remains responsible for the
-atomic runtime switch.
+`validation/frozen_contracts/redundancy_v2_behavior_audit.json`. Block 5 adds
+the non-active uncertainty-aware engine under
+`configs/quality_effect_engine_v2.json`; its contract-only audit is
+`validation/frozen_contracts/quality_effect_engine_v2_contract_audit.json`.
+Real Quality evidence remains blocked and cannot be borrowed from the fixture.
+Block 6 may implement Coverage independently, while real Block-5 empirical
+gates remain required before the Block-7 atomic runtime switch.

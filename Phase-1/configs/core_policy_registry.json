@@ -54,6 +54,7 @@
         "stage_a_risk_quarantine",
         "stage_a_b_validity_recovery_candidate",
         "stage_c_route_conditioned_quality_candidate",
+        "stage_c_calibrated_quality_effect_candidate",
         "stage_c_declared_dependency_copy_candidate",
         "stage_c_explicit_error_navigation_only_candidate",
         "stage_c_url_directory_only_candidate"
@@ -96,6 +97,7 @@
     "candidate_route_conditioned_quality_v2": {
       "runtime_owner": "route_conditioned_quality.py",
       "runtime_activation": false,
+      "status": "superseded_by_candidate_quality_effect_engine_v2",
       "evidence_gate": "configs/quality_route_evidence_gate_v2.json",
       "candidate_evidence_adapter": "route_quality_evidence_candidates.py",
       "candidate_evidence_registry": "configs/route_quality_evidence_candidates_v1.json",
@@ -121,6 +123,21 @@
       },
       "weighted_score_used": false,
       "benchmark_outcomes_read": false
+    },
+    "candidate_quality_effect_engine_v2": {
+      "runtime_owner": "quality_effect_engine.py",
+      "runtime_activation": false,
+      "contract": "configs/quality_effect_engine_v2.json",
+      "calibration_method": "sample_weighted_isotonic_bin_effects",
+      "effect_boundary": "development_and_heldout_confidence_intervals_relative_to_zero",
+      "provider_output_alone_may_delete": false,
+      "provider_replacement_invalidates_calibration": true,
+      "unknown_mixed_ood_action": "abstain_retain",
+      "current_provider_lifecycle": "audit_only",
+      "all_registered_routes_empirically_ready": false,
+      "weighted_score_used": false,
+      "target_retention_fraction_used": false,
+      "benchmark_outcomes_read": false
     }
   },
   "policies": [
@@ -129,8 +146,8 @@
       "version": "0.2.0",
       "core": "quality",
       "stage": "Stage C",
-      "status": "candidate",
-      "activation_state": "candidate",
+      "status": "retired",
+      "activation_state": "retired",
       "reason_codes": [
         "quality_both_evidence_heads_passed",
         "quality_calibrated_negative_boundary",
@@ -156,8 +173,47 @@
         "development_ablation_pre_registered",
         "confirmatory_evaluation_without_runtime_feedback"
       ],
-      "runtime_authorization": "none_candidate_cannot_select_or_remove",
+      "runtime_authorization": "none_retired_cannot_select_or_remove",
       "coverage_impact_validation": "required_before_promotion_by_route_and_unknown_mixed_ood_status"
+    },
+    {
+      "id": "stage_c_calibrated_quality_effect_candidate",
+      "version": "0.1.0",
+      "policy_card_id": "stage_c_calibrated_quality_effect_candidate",
+      "core": "quality",
+      "stage": "Stage C",
+      "status": "candidate",
+      "activation_state": "block_5_engine_fixture_validated_empirical_gates_blocked",
+      "reason_codes": [
+        "quality_nonpositive_effect_supported",
+        "quality_positive_effect_supported",
+        "quality_effect_uncertain",
+        "quality_route_uncertain",
+        "quality_provider_not_active",
+        "quality_calibration_gates_failed",
+        "quality_provider_identity_mismatch",
+        "quality_provider_route_unsupported",
+        "quality_evidence_bin_missing"
+      ],
+      "required_metadata": [],
+      "fixture": "validation/test_quality_effect_engine_v2.py",
+      "runtime_implementation": [
+        "quality_effect_engine.py",
+        "quality_effect_calibration.py",
+        "model_provider_contract.py"
+      ],
+      "scope": "candidate-only uncertainty-aware Quality evidence from preregistered rule-on-off bin effects; current providers and routes remain empirically blocked",
+      "blocking_conditions": [
+        "real_rule_on_off_bin_effects_measured",
+        "one_disjoint_common_baseline_shared_by_all_sensitivity_arms",
+        "all_split_and_provider_identity_gates_pass",
+        "heldout_monotonicity_and_interval_calibration_pass",
+        "quality_provider_reaches_active_lifecycle",
+        "coverage_veto_and_representative_selection_available",
+        "confirmatory_evaluation_without_runtime_feedback"
+      ],
+      "runtime_authorization": "none_candidate_cannot_select_or_remove",
+      "coverage_impact_validation": "required_before_promotion; nonpositive effect evidence cannot bypass Coverage"
     },
     {
       "id": "stage_a_b_validity_recovery_candidate",

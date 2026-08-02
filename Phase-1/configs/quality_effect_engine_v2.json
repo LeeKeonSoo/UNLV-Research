@@ -1,0 +1,57 @@
+{
+  "schema_version": "quality-effect-engine-v2",
+  "status": "block_5_engine_fixture_validated_empirical_gates_blocked",
+  "runtime_activation": false,
+  "runtime_authority": "none_candidate_cannot_select_or_remove",
+  "supersedes_policy_candidate": "stage_c_route_conditioned_quality_candidate",
+  "supersedes_historical_contracts": [
+    "configs/positive_quality_evidence_v1.json",
+    "configs/positive_quality_coverage_contract_v1.json"
+  ],
+  "supersession_reason": "categorical heads without measured marginal-effect calibration cannot authorize a Quality direction",
+  "quality_target": "expected_marginal_external_risk_reduction_per_target_training_token",
+  "runtime_observation": "frozen_provider_evidence_bin_id_only",
+  "calibration_method": "sample_weighted_isotonic_regression_over_preregistered_rule_on_off_bin_effects",
+  "minimum_ordered_bins_per_route": 3,
+  "effect_unit": "risk_reduction_per_target_token",
+  "effect_metric_contract": "every run declares one frozen metric ID and artifact hash; different metrics cannot share calibration",
+  "common_baseline_contract": "all rule-on-off sensitivity arms share one frozen baseline that is disjoint from every evidence-bin arm",
+  "handwritten_weighted_quality_formula": false,
+  "target_retention_fraction_used": false,
+  "benchmark_outcomes_available_to_runtime": false,
+  "bin_effect_classification": {
+    "supported_nonpositive": "development_and_heldout_upper_bounds_are_both_nonpositive",
+    "supported_positive": "development_and_heldout_lower_bounds_are_both_positive",
+    "uncertain": "all_other_interval_configurations"
+  },
+  "required_calibration_gates": [
+    "provider_development_and_heldout_source_groups_disjoint",
+    "all_arms_share_one_common_baseline",
+    "common_baseline_disjoint_from_all_bin_arms",
+    "external_confirmatory_results_hidden",
+    "provider_bias_stress_passed",
+    "route_holdout_stress_passed",
+    "provider_declares_support_for_the_observed_route",
+    "heldout_bin_effects_monotonic",
+    "isotonic_development_fit_inside_heldout_intervals"
+  ],
+  "source_group_role": "experimental_split_disjointness_audit_only_never_runtime_quality_evidence",
+  "provider_output_alone_may_delete": false,
+  "provider_replacement_invalidates_calibration": true,
+  "unknown_mixed_ood_action": "abstain_retain",
+  "uncertain_bin_action": "abstain_retain",
+  "explicit_structural_negative_layer": "separate_existing_typed_policy_evidence_outside_this_engine",
+  "current_quality_provider_state": "audit_only",
+  "registered_route_gate_status": {
+    "general_prose": "blocked_source_transfer",
+    "code_artifact": "blocked_source_transfer",
+    "mathematical_content": "blocked_source_transfer",
+    "technical_documentation": "missing",
+    "conversation": "missing",
+    "instruction": "missing",
+    "table_structured_data": "missing"
+  },
+  "all_registered_routes_empirically_ready": false,
+  "current_runtime_result": "all_model_based_quality_observations_abstain_retain",
+  "activation_deferred_to": "Block 7 atomic joint-selector migration after Block 5 empirical gates and Block 6 Coverage gates pass"
+}

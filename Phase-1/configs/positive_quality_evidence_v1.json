@@ -1,6 +1,7 @@
 {
   "schema_version": "positive-quality-evidence-v1",
-  "status": "candidate_only_not_stage_c_active",
+  "status": "historical_threshold_candidate_superseded_not_stage_c_active",
+  "superseded_by": "configs/quality_effect_engine_v2.json",
   "implementation": "positive_quality_evidence.py",
   "decision_unit": "stage_b_pass_chunk",
   "routes": [

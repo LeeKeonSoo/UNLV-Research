@@ -62,9 +62,67 @@
         "route_conditioned_quality.py",
         "route_quality_evidence_candidates.py"
       ],
-      "empirical_status": "candidate_adapter_validated_all_routes_abstain_missing_or_indeterminate_evidence_not_runtime_active",
+      "empirical_status": "retired_superseded_by_stage_c_calibrated_quality_effect_candidate",
       "evidence_gate": "configs/quality_route_evidence_gate_v2.json",
       "candidate_evidence_registry": "configs/route_quality_evidence_candidates_v1.json"
+    },
+    {
+      "id": "stage_c_calibrated_quality_effect_candidate",
+      "version": "0.1.0",
+      "core": "quality",
+      "stage": "Stage C",
+      "hypothesis": "A provider evidence bin may support retention or non-selection only when preregistered rule-on-off measurements reproduce the same effect direction on disjoint development and held-out data with explicit uncertainty.",
+      "decision_unit": "distinct Validity-passing chunk mapped to one frozen provider evidence bin",
+      "deployment_scope": "candidate-only registered Quality providers and routes with completed calibration gates",
+      "allowed_inputs": [
+        "chunk identifier",
+        "routing state and routed content route",
+        "frozen provider identity",
+        "frozen evidence-bin identifier",
+        "frozen bin-effect calibration artifact"
+      ],
+      "forbidden_inputs": [
+        "source identity as Quality evidence",
+        "source reputation",
+        "dataset identity",
+        "path",
+        "intrinsic_quality_score",
+        "human global quality label",
+        "Utility",
+        "NLL",
+        "benchmark outcomes",
+        "target retention fraction",
+        "global weighted Quality score"
+      ],
+      "reason_codes": [
+        "quality_nonpositive_effect_supported",
+        "quality_positive_effect_supported",
+        "quality_effect_uncertain",
+        "quality_route_uncertain",
+        "quality_provider_not_active",
+        "quality_calibration_gates_failed",
+        "quality_provider_identity_mismatch",
+        "quality_provider_route_unsupported",
+        "quality_evidence_bin_missing"
+      ],
+      "negative_conditions": [
+        "audit-only calibrated development or confirmatory providers abstain",
+        "mixed unknown and out-of-distribution routes abstain",
+        "a provider identity change invalidates inherited calibration",
+        "a provider cannot contribute evidence to an unsupported route",
+        "sensitivity arms with different or overlapping baselines invalidate calibration",
+        "a bin with either interval crossing zero abstains",
+        "held-out nonmonotonicity or interval mismatch blocks the complete calibration",
+        "provider output without policy-level causal evidence cannot reject"
+      ],
+      "coverage_impact": "candidate nonpositive decisions remain non-mutating until Coverage can veto support extinction and choose representatives",
+      "rollback_behavior": "discard the provider calibration and return every model-based Quality observation to abstain-retain",
+      "runtime_implementation": [
+        "quality_effect_engine.py",
+        "quality_effect_calibration.py",
+        "model_provider_contract.py"
+      ],
+      "empirical_status": "engine_contract_fixture_validated_all_real_routes_and_providers_blocked_not_runtime_active"
     },
     {
       "id": "stage_a_b_validity_recovery_candidate",

@@ -20,7 +20,8 @@ def test_contract_is_frozen_but_not_runtime_active() -> None:
     contract = load_contract()
 
     assert contract["schema_version"] == "positive-quality-coverage-contract-v1"
-    assert contract["status"] == "design_frozen_not_runtime_active"
+    assert contract["status"] == "historical_superseded_not_runtime_active"
+    assert contract["superseded_by"] == "configs/quality_effect_engine_v2.json"
     assert contract["runtime_activation"] is False
     assert contract["current_runtime_contract"] == "configs/curation_contract.json"
 
@@ -56,7 +57,7 @@ def test_quality_evidence_artifact_is_frozen_and_candidate_only() -> None:
     assert artifact["config"] == "configs/positive_quality_evidence_v1.json"
     assert artifact["implementation"] == "positive_quality_evidence.py"
     assert artifact["provider_registry"] == "configs/positive_quality_provider_registry_v1.json"
-    assert artifact["status"] == "candidate_only_not_stage_c_active"
+    assert artifact["status"] == "historical_superseded_not_stage_c_active"
     assert artifact["provider_scores_are_frozen_before_selection"] is True
     assert artifact["missing_or_invalid_evidence_action"] == "abstain"
     assert artifact["global_weighted_score_allowed"] is False

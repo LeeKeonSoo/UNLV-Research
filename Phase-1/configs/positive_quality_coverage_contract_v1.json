@@ -1,6 +1,7 @@
 {
   "schema_version": "positive-quality-coverage-contract-v1",
-  "status": "design_frozen_not_runtime_active",
+  "status": "historical_superseded_not_runtime_active",
+  "superseded_by": "configs/quality_effect_engine_v2.json",
   "runtime_activation": false,
   "current_runtime_contract": "configs/curation_contract.json",
   "purpose": "Freeze the next Quality and Coverage contract before changing the active A-B-C runtime.",
@@ -41,7 +42,7 @@
       "config": "configs/positive_quality_evidence_v1.json",
       "implementation": "positive_quality_evidence.py",
       "provider_registry": "configs/positive_quality_provider_registry_v1.json",
-      "status": "candidate_only_not_stage_c_active",
+      "status": "historical_superseded_not_stage_c_active",
       "provider_scores_are_frozen_before_selection": true,
       "missing_or_invalid_evidence_action": "abstain",
       "global_weighted_score_allowed": false

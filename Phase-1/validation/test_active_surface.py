@@ -134,6 +134,10 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("redundancy_v2_audit.py")
     expected.add("scripts/build_redundancy_v2_audit.py")
     expected.add("validation/test_redundancy_v2.py")
+    expected.add("quality_effect_engine.py")
+    expected.add("quality_effect_calibration.py")
+    expected.add("scripts/build_quality_effect_engine_v2_audit.py")
+    expected.add("validation/test_quality_effect_engine_v2.py")
     actual = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*.py")
@@ -186,6 +190,7 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
     expected.add("corpus_profiler_contract_v1.json")
     expected.add("validity_v2.json")
     expected.add("redundancy_v2.json")
+    expected.add("quality_effect_engine_v2.json")
     expected.update(
         {
             "math_complete_bundle_calibration_v1.json",

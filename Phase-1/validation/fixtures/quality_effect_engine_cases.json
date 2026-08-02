@@ -1,0 +1,54 @@
+{
+  "schema_version": "quality-effect-engine-fixture-v1",
+  "contract_fixture_only_not_empirical_evidence": true,
+  "effect_metric_id": "fixture-marginal-risk-reduction-v1",
+  "effect_metric_artifact_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "common_baseline_artifact_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "provider_training_source_groups": ["provider-training"],
+  "development_source_groups": ["development-a", "development-b"],
+  "heldout_source_groups": ["heldout-a", "heldout-b"],
+  "bins": [
+    {
+      "route": "general_prose",
+      "bin_id": "general-low",
+      "bin_order": 0,
+      "development": {"point": -0.04, "lower": -0.06, "upper": -0.02, "samples": 12},
+      "heldout": {"point": -0.035, "lower": -0.055, "upper": -0.015, "samples": 9}
+    },
+    {
+      "route": "general_prose",
+      "bin_id": "general-mid",
+      "bin_order": 1,
+      "development": {"point": 0.0, "lower": -0.02, "upper": 0.02, "samples": 12},
+      "heldout": {"point": 0.005, "lower": -0.02, "upper": 0.025, "samples": 9}
+    },
+    {
+      "route": "general_prose",
+      "bin_id": "general-high",
+      "bin_order": 2,
+      "development": {"point": 0.05, "lower": 0.03, "upper": 0.07, "samples": 12},
+      "heldout": {"point": 0.045, "lower": 0.025, "upper": 0.07, "samples": 9}
+    },
+    {
+      "route": "code_artifact",
+      "bin_id": "code-low",
+      "bin_order": 0,
+      "development": {"point": -0.03, "lower": -0.05, "upper": -0.01, "samples": 12},
+      "heldout": {"point": -0.025, "lower": -0.045, "upper": -0.005, "samples": 9}
+    },
+    {
+      "route": "code_artifact",
+      "bin_id": "code-mid",
+      "bin_order": 1,
+      "development": {"point": 0.005, "lower": -0.015, "upper": 0.025, "samples": 12},
+      "heldout": {"point": 0.01, "lower": -0.01, "upper": 0.03, "samples": 9}
+    },
+    {
+      "route": "code_artifact",
+      "bin_id": "code-high",
+      "bin_order": 2,
+      "development": {"point": 0.04, "lower": 0.02, "upper": 0.06, "samples": 12},
+      "heldout": {"point": 0.035, "lower": 0.015, "upper": 0.06, "samples": 9}
+    }
+  ]
+}
