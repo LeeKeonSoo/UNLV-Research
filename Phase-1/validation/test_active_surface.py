@@ -176,6 +176,10 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("development_redundancy_gate_contract.py")
     expected.add("scripts/build_development_redundancy_gate_v1.py")
     expected.add("validation/test_development_redundancy_gate_v1.py")
+    expected.add("development_quality_gate.py")
+    expected.add("development_quality_gate_contract.py")
+    expected.add("scripts/build_development_quality_gate_v1.py")
+    expected.add("validation/test_development_quality_gate_v1.py")
     actual = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*.py")

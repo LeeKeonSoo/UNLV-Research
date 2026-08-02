@@ -588,6 +588,30 @@
       "utility_read": false,
       "runtime_activation": false
     },
+    "development_quality_gate": {
+      "status": "blocked_empirical_effects_missing",
+      "registry": "protocols/development_quality_gate_registry_v1.json",
+      "registry_sha256": "f0e11ea85fd785dcfd41a9b07cb8ffbb7124711169301ba24f28b8aa1bf0c988",
+      "registry_file_sha256": "f86a4ddd865af1c85ba2120f73d485dc5a00ca15b0a722cd5961d7a319d90fff",
+      "report": "validation/frozen_contracts/development_quality_gate_report_v1.json",
+      "report_sha256": "7eff4ae5b7f07f73cee714e266daa60aca2f90dc1f587512ee40b5e727e5d2ba",
+      "report_file_sha256": "9707cdc1877eddeffaa0a88e30be1ee69676c917d198030abe7b724cde090a60",
+      "required_domains": [
+        "code",
+        "math",
+        "general"
+      ],
+      "route_evidence_ready": 0,
+      "route_evidence_required": 3,
+      "empirical_effect_bins": 0,
+      "minimum_effect_bins_per_route": 3,
+      "active_quality_provider": false,
+      "common_baseline_empirically_verified": false,
+      "contract_fixture_excluded": true,
+      "benchmark_outcomes_read": false,
+      "utility_read": false,
+      "runtime_activation": false
+    },
     "required_domains": [
       "code",
       "math",
@@ -618,5 +642,5 @@
     "contract_fixture_only_not_empirical_evidence": true,
     "runtime_activation": false
   },
-  "next_block": "Block 8 E3 - close the empirical Quality gate"
+  "next_block": "Block 8 E3b - generate source-disjoint Quality effect bins with one disjoint common baseline"
 }

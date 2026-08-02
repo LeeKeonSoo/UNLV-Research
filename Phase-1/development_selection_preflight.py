@@ -19,6 +19,11 @@ from development_redundancy_gate_contract import (
     RedundancyGateStatus,
     load_redundancy_gate_registry,
 )
+from development_quality_gate_contract import (
+    DevelopmentQualityGateReport,
+    QualityGateStatus,
+    load_quality_gate_registry,
+)
 from development_selection import DevelopmentSelectionStatus, load_development_protocol
 
 
@@ -35,6 +40,13 @@ class _RedundancyState(BaseModel):
 
 class _QualityState(BaseModel):
     model_config = ConfigDict(extra="ignore", frozen=True)
+    development_ablation_ready: bool
+    development_gate_registry: str
+    development_gate_registry_sha256: str
+    development_gate_registry_file_sha256: str
+    development_gate_report: str
+    development_gate_report_sha256: str
+    development_gate_report_file_sha256: str
     all_registered_routes_empirically_ready: bool
 
 
@@ -171,6 +183,41 @@ def _redundancy_blocker(root: Path, state: _RedundancyState) -> tuple[str | None
     return None, evidence_paths
 
 
+def _quality_blocker(root: Path, state: _QualityState) -> tuple[str | None, tuple[Path, ...]]:
+    registry_path = root / state.development_gate_registry
+    report_path = root / state.development_gate_report
+    evidence_paths = tuple(path for path in (registry_path, report_path) if path.is_file())
+    if not registry_path.is_file() or not report_path.is_file():
+        return "quality_gate_evidence_invalid", evidence_paths
+    try:
+        registry = load_quality_gate_registry(registry_path)
+        report = DevelopmentQualityGateReport.model_validate_json(report_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return "quality_gate_evidence_invalid", evidence_paths
+    identity_valid = (
+        registry.identity_sha256() == state.development_gate_registry_sha256
+        and _sha256(registry_path) == state.development_gate_registry_file_sha256
+        and report.registry_sha256 == state.development_gate_registry_sha256
+        and report.report_sha256 == state.development_gate_report_sha256
+        and _sha256(report_path) == state.development_gate_report_file_sha256
+    )
+    evidence_passed = (
+        report.status is QualityGateStatus.PASSED
+        and not report.blocker_codes
+        and report.matrix_complete
+        and report.contract_fixture_excluded
+        and report.provider_active
+        and report.empirical_effect_calibration_complete
+        and report.common_baseline_empirically_verified
+    )
+    declared_ready = state.development_ablation_ready and state.all_registered_routes_empirically_ready
+    if not identity_valid or declared_ready != evidence_passed:
+        return "quality_gate_evidence_invalid", evidence_paths
+    if not evidence_passed:
+        return "quality_gate_not_ready", evidence_paths
+    return None, evidence_paths
+
+
 def evaluate_current_development_preflight(root: Path) -> CurrentDevelopmentPreflight:
     development_path = root / "configs" / "development_selection_v1.json"
     development = load_development_protocol(development_path)
@@ -206,12 +253,13 @@ def evaluate_current_development_preflight(root: Path) -> CurrentDevelopmentPref
         if path.is_file()
     )
     redundancy_blocker, redundancy_paths = _redundancy_blocker(root, redundancy)
-    paths = (*base_paths, *benchmark_paths, *inventory_paths, *redundancy_paths)
+    quality_blocker, quality_paths = _quality_blocker(root, quality)
+    paths = (*base_paths, *benchmark_paths, *inventory_paths, *redundancy_paths, *quality_paths)
     blockers: list[str] = []
     if redundancy_blocker is not None:
         blockers.append(redundancy_blocker)
-    if not quality.all_registered_routes_empirically_ready:
-        blockers.append("quality_gate_not_ready")
+    if quality_blocker is not None:
+        blockers.append(quality_blocker)
     if not coverage.all_required_views_empirically_ready:
         blockers.append("coverage_gate_not_ready")
     for panel_name, panel in (("code", protocol.benchmark_snapshot_state.code), ("math", protocol.benchmark_snapshot_state.math), ("general", protocol.benchmark_snapshot_state.general)):

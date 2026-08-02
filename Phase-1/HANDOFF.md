@@ -39,8 +39,13 @@ Current repository facts:
   families and 2,400/2,400 exact copies were recovered with zero clean-control,
   perturbation, or cross-parent safe merge. Near, containment, and repeated-span
   relations remain candidate-only, and runtime activation remains false.
-- The development preflight now has two blockers: `quality_gate_not_ready` and
-  `coverage_gate_not_ready`. E3 is the next authorized Block 8 task.
+- The development preflight now hash-verifies the E3 Quality registry and
+  report rather than trusting a readiness boolean. The evidence boundary is
+  implemented, but the empirical gate remains blocked: Code, Math, and General
+  route transfer are not ready, no active Quality provider exists, no measured
+  effect bins exist, and no empirical common-baseline artifact exists. The two
+  preflight blockers remain `quality_gate_not_ready` and
+  `coverage_gate_not_ready`.
 
 ## Resolved Consistency Defects
 

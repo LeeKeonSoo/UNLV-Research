@@ -1,0 +1,72 @@
+{
+  "schema_version": "development-quality-gate-report-v1",
+  "status": "blocked",
+  "registry_sha256": "f0e11ea85fd785dcfd41a9b07cb8ffbb7124711169301ba24f28b8aa1bf0c988",
+  "inventory_manifest_sha256": "afa602be20683e81bf93743bb9b8a805f2e4c2df1c695367a437a68a46461eb6",
+  "inventory_manifest_file_sha256": "dc127ec72ecd64b16d74b6352118e0ac7079284b3ff501ab08dc29c9280b2310",
+  "routes": [
+    {
+      "domain": "code",
+      "route": "code_artifact",
+      "route_gate_decision": "blocked_source_transfer",
+      "route_evidence_ready": false,
+      "provider_id": null,
+      "provider_lifecycle": null,
+      "provider_policy_contribution_authority": false,
+      "effect_calibration_artifact": null,
+      "empirical_effect_bin_count": 0,
+      "calibration_passed": false,
+      "blocker_codes": [
+        "quality_route_not_evidence_ready:code"
+      ]
+    },
+    {
+      "domain": "math",
+      "route": "mathematical_content",
+      "route_gate_decision": "blocked_source_transfer",
+      "route_evidence_ready": false,
+      "provider_id": null,
+      "provider_lifecycle": null,
+      "provider_policy_contribution_authority": false,
+      "effect_calibration_artifact": null,
+      "empirical_effect_bin_count": 0,
+      "calibration_passed": false,
+      "blocker_codes": [
+        "quality_route_not_evidence_ready:math"
+      ]
+    },
+    {
+      "domain": "general",
+      "route": "general_prose",
+      "route_gate_decision": "blocked_source_transfer",
+      "route_evidence_ready": false,
+      "provider_id": null,
+      "provider_lifecycle": null,
+      "provider_policy_contribution_authority": false,
+      "effect_calibration_artifact": null,
+      "empirical_effect_bin_count": 0,
+      "calibration_passed": false,
+      "blocker_codes": [
+        "quality_route_not_evidence_ready:general"
+      ]
+    }
+  ],
+  "matrix_complete": true,
+  "contract_fixture_excluded": true,
+  "provider_active": false,
+  "empirical_effect_calibration_complete": false,
+  "common_baseline_empirically_verified": false,
+  "blocker_codes": [
+    "quality_empirical_common_baseline_missing",
+    "quality_empirical_effect_calibration_missing",
+    "quality_provider_not_active",
+    "quality_route_not_evidence_ready:code",
+    "quality_route_not_evidence_ready:general",
+    "quality_route_not_evidence_ready:math"
+  ],
+  "report_sha256": "7eff4ae5b7f07f73cee714e266daa60aca2f90dc1f587512ee40b5e727e5d2ba",
+  "runtime_activation": false,
+  "benchmark_outcomes_read": false,
+  "utility_read": false,
+  "selector_membership_mutated": false
+}

@@ -674,6 +674,26 @@ evidence. Only exact and formatting equivalence receive safe-family authority;
 representative selection remains deferred to Coverage, and no benchmark, Utility,
 or source reputation entered the gate.
 
+E3 now has a hash-pinned empirical evidence boundary under
+`protocols/development_quality_gate_registry_v1.json` and
+`validation/frozen_contracts/development_quality_gate_report_v1.json`. The gate
+replays the admitted Code/Math/General matrix, the frozen route-transfer
+evidence, the provider registry, and the contract-only fixture. The fixture is
+explicitly excluded from empirical authority. Preflight independently verifies
+the registry identity, file hashes, report identity, and report status; changing
+the old `all_registered_routes_empirically_ready` boolean cannot promote
+Quality.
+
+The current E3 result is **blocked**, not passed. All three required routes are
+`blocked_source_transfer`; the registered Quality provider is `audit_only`;
+there are zero empirical effect bins for Code, Math, and General; and no common
+baseline artifact has been measured. The report therefore emits six explicit
+blockers. Closing E3 requires one frozen provider per required route, or one
+provider with declared support for all three, at least three ordered effect
+bins per route, disjoint provider/development/held-out source groups, and one
+common baseline shared by every sensitivity arm and disjoint from every arm.
+No benchmark outcome, Utility value, or fixture result may satisfy this gate.
+
 Hard extension selection is an output of this
 Block, so it is deliberately not a preflight prerequisite. Therefore no
 Normal or Hard profile hash has been frozen and Block 9 is not authorized.

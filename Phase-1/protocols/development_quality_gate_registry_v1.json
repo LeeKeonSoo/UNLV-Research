@@ -1,0 +1,39 @@
+{
+  "schema_version": "development-quality-gate-registry-v1",
+  "status": "e3-frozen-quality-inputs",
+  "inventory_manifest_path": "configs/development_corpus_manifest_v1.json",
+  "inventory_manifest_sha256": "afa602be20683e81bf93743bb9b8a805f2e4c2df1c695367a437a68a46461eb6",
+  "inventory_manifest_file_sha256": "dc127ec72ecd64b16d74b6352118e0ac7079284b3ff501ab08dc29c9280b2310",
+  "route_evidence_gate_path": "configs/quality_route_evidence_gate_v2.json",
+  "route_evidence_gate_file_sha256": "a2b0b88ab32ea4a95b3350aeaf89b76071465c1dfd6e20df805cff0197075acb",
+  "provider_registry_path": "configs/model_provider_registry_v1.json",
+  "provider_registry_file_sha256": "ebdab394353623a7145b5f9cf882b2a9782913807e89da8b6d53310255b39576",
+  "contract_fixture_path": "validation/frozen_contracts/quality_effect_engine_v2_contract_audit.json",
+  "contract_fixture_file_sha256": "8600f210ecdfaae7f6289307545867408605da5eeee4b6f0cf4af8978dee9f87",
+  "required_domains": [
+    "code",
+    "math",
+    "general"
+  ],
+  "required_routes": [
+    {
+      "domain": "code",
+      "route": "code_artifact"
+    },
+    {
+      "domain": "math",
+      "route": "mathematical_content"
+    },
+    {
+      "domain": "general",
+      "route": "general_prose"
+    }
+  ],
+  "empirical_effect_bundles": [],
+  "minimum_ordered_bins_per_route": 3,
+  "common_baseline_artifact_sha256": null,
+  "contract_fixture_may_satisfy_empirical_gate": false,
+  "benchmark_outcomes_available": false,
+  "utility_available": false,
+  "selector_membership_mutation_allowed": false
+}
