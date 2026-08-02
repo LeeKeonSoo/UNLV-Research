@@ -1,0 +1,103 @@
+{
+  "schema_version": "coverage-engine-v2-contract-audit-v1",
+  "fixture_schema_version": "coverage-engine-v2-fixture-v1",
+  "contract_fixture_only_not_empirical_evidence": true,
+  "fixture_active_provider_decision": {
+    "status": "veto_candidate",
+    "reason_code": "coverage_support_veto_candidates_required",
+    "protected_uids": [
+      "a",
+      "d"
+    ],
+    "family_representatives": [
+      {
+        "family_id": "family-ab",
+        "representative_uid": "a",
+        "marginal_gain": 1.8,
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      }
+    ],
+    "extinct_before_protection": [
+      "skill-tail",
+      "uncertain-mixed"
+    ],
+    "permitted_extinctions": [],
+    "view_reports": [
+      {
+        "view": "content_route",
+        "target_strata": 1,
+        "proposed_covered_strata": 1,
+        "protected_covered_strata": 1,
+        "proposed_support_recall": 1.0,
+        "protected_support_recall": 1.0,
+        "token_mass_jensen_shannon_divergence": 0.0
+      },
+      {
+        "view": "semantic_skill",
+        "target_strata": 1,
+        "proposed_covered_strata": 0,
+        "protected_covered_strata": 1,
+        "proposed_support_recall": 0.0,
+        "protected_support_recall": 1.0,
+        "token_mass_jensen_shannon_divergence": 0.0
+      },
+      {
+        "view": "uncertain_intersection",
+        "target_strata": 1,
+        "proposed_covered_strata": 0,
+        "protected_covered_strata": 1,
+        "proposed_support_recall": 0.0,
+        "protected_support_recall": 1.0,
+        "token_mass_jensen_shannon_divergence": 0.0
+      }
+    ],
+    "token_report": {
+      "raw_tokens": 150,
+      "proposed_tokens": 30,
+      "protected_tokens": 80,
+      "proposed_retention_ratio": 0.2,
+      "protected_retention_ratio": 0.5333333333333333
+    },
+    "nearest_representative_radius": 0.5,
+    "effective_sample_size": 2.4615384615384617,
+    "evidence_artifact_hashes": [
+      "21cd1d291a7b4ffdd59a526f661dd41fdf90b965eaaf1774b9b9a29938da2a7e",
+      "9999999999999999999999999999999999999999999999999999999999999999",
+      "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    ],
+    "may_mutate_curated_membership": false,
+    "fixed_quota_used": false,
+    "source_identity_used": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false
+  },
+  "current_registered_semantic_provider_lifecycle": "audit_only",
+  "current_registered_provider_decision": {
+    "status": "abstain",
+    "reason_code": "coverage_semantic_provider_not_active",
+    "protected_uids": [],
+    "family_representatives": [],
+    "extinct_before_protection": [],
+    "permitted_extinctions": [],
+    "view_reports": [],
+    "token_report": {
+      "raw_tokens": 150,
+      "proposed_tokens": 30,
+      "protected_tokens": 30,
+      "proposed_retention_ratio": 0.2,
+      "protected_retention_ratio": 0.2
+    },
+    "nearest_representative_radius": 1.0,
+    "effective_sample_size": 1.0,
+    "evidence_artifact_hashes": [],
+    "may_mutate_curated_membership": false,
+    "fixed_quota_used": false,
+    "source_identity_used": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false
+  },
+  "empirical_runtime_activation": false
+}

@@ -125,6 +125,60 @@
       "empirical_status": "engine_contract_fixture_validated_all_real_routes_and_providers_blocked_not_runtime_active"
     },
     {
+      "id": "stage_c_coverage_support_candidate",
+      "version": "0.1.0",
+      "core": "coverage",
+      "stage": "Stage C",
+      "hypothesis": "A proposed subset must preserve at least one eligible representative for every supported stable or uncertain stratum, while redundancy-family representatives should maximize frozen facility-location support.",
+      "decision_unit": "proposed subset over one frozen Validity-passing universe",
+      "deployment_scope": "candidate-only frozen support strata and semantic-provider evidence",
+      "allowed_inputs": [
+        "chunk identifier and tokenizer-count token mass",
+        "proposed survivor identifiers",
+        "typed redundancy families",
+        "stable support and uncertain intersection strata",
+        "frozen pairwise semantic similarities",
+        "independent typed Validity evidence or complete five-hash calibrated negative-Quality trace",
+        "frozen semantic-provider identity"
+      ],
+      "forbidden_inputs": [
+        "source identity",
+        "source reputation",
+        "dataset identity",
+        "domain quota",
+        "target mix",
+        "rarity as Quality",
+        "intrinsic Quality score",
+        "Utility",
+        "NLL",
+        "benchmark outcomes",
+        "target retention fraction"
+      ],
+      "reason_codes": [
+        "coverage_support_veto_candidates_required",
+        "coverage_constraints_satisfied",
+        "coverage_provider_role_mismatch",
+        "coverage_semantic_provider_not_active",
+        "coverage_semantic_provider_identity_mismatch"
+      ],
+      "negative_conditions": [
+        "an audit-only or identity-mismatched semantic provider abstains",
+        "a provider output cannot directly remove a chunk",
+        "all-member independent exclusion evidence permits but does not require stratum extinction",
+        "fixed quotas and source metadata cannot alter protection",
+        "a single scalar cannot replace the vector Coverage report"
+      ],
+      "coverage_impact": "emits nonmutating veto candidates, family representatives, support recall, token shift, divergence, radius, and effective sample size",
+      "rollback_behavior": "discard semantic candidate evidence and retain the existing active representative-linkage materialization invariant",
+      "runtime_implementation": [
+        "coverage_engine.py",
+        "coverage_contract.py",
+        "coverage_metrics.py",
+        "model_provider_contract.py"
+      ],
+      "empirical_status": "engine_contract_fixture_validated_real_semantic_provider_and_stable_cluster_evidence_blocked_not_runtime_active"
+    },
+    {
       "id": "stage_a_b_validity_recovery_candidate",
       "version": "0.2.0",
       "core": "validity",

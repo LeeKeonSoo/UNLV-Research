@@ -1,6 +1,6 @@
 {
   "schema_version": "target-aware-core-completion-v1",
-  "status": "block_5_quality_engine_fixture_validated_empirical_gates_blocked",
+  "status": "block_6_coverage_engine_fixture_validated_empirical_gates_blocked",
   "frozen_at": "2026-08-02",
   "implementation_authority": "design_contract_only",
   "baseline": {
@@ -450,5 +450,36 @@
     "runtime_activation": false,
     "activation_deferred_to": "Block 7 after real Block 5 evidence and Block 6 Coverage gates pass"
   },
-  "next_block": "Block 6 - Coverage engine"
+  "block_6_implementation": {
+    "contract": "configs/coverage_engine_v2.json",
+    "implementation": [
+      "coverage_engine.py",
+      "coverage_contract.py",
+      "coverage_metrics.py"
+    ],
+    "contract_audit": "validation/frozen_contracts/coverage_engine_v2_contract_audit.json",
+    "definition": "preserve_support_of_valid_distinct_potentially_learnable_content_under_subset_selection",
+    "required_views": [
+      "redundancy_family",
+      "content_route",
+      "language_script",
+      "format_morphology",
+      "semantic_skill",
+      "uncertain_intersection"
+    ],
+    "representative_objective": "facility_location_marginal_support_gain",
+    "tie_break": "lexicographically_smallest_chunk_uid",
+    "extinction_exception": "all_members_have_independent_typed_validity_evidence_or_canonical_calibrated_quality_nonpositive_decisions_with_complete_five_hash_traces",
+    "single_coverage_score_used": false,
+    "fixed_domain_quota_used": false,
+    "source_selection_axis_used": false,
+    "contract_fixture_only_not_empirical_evidence": true,
+    "current_registered_semantic_provider_lifecycle": "audit_only",
+    "real_stable_cluster_evidence_ready": false,
+    "provider_bias_audit_ready": false,
+    "current_coverage_candidate_action": "abstain_existing_materialization_invariant_remains_active",
+    "runtime_activation": false,
+    "activation_deferred_to": "Block 7 after real Block 5 and Block 6 evidence gates pass"
+  },
+  "next_block": "Block 7 - Joint selector and immutable profiles"
 }

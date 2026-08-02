@@ -55,6 +55,7 @@
         "stage_a_b_validity_recovery_candidate",
         "stage_c_route_conditioned_quality_candidate",
         "stage_c_calibrated_quality_effect_candidate",
+        "stage_c_coverage_support_candidate",
         "stage_c_declared_dependency_copy_candidate",
         "stage_c_explicit_error_navigation_only_candidate",
         "stage_c_url_directory_only_candidate"
@@ -138,6 +139,24 @@
       "weighted_score_used": false,
       "target_retention_fraction_used": false,
       "benchmark_outcomes_read": false
+    },
+    "candidate_coverage_engine_v2": {
+      "runtime_owner": "coverage_engine.py",
+      "runtime_activation": false,
+      "contract": "configs/coverage_engine_v2.json",
+      "selection_role": "nonmutating_veto_and_representative_proposals",
+      "representative_objective": "facility_location_marginal_support_gain",
+      "hard_invariants": [
+        "one_final_representative_per_nonexcluded_family",
+        "no_unexplained_stable_support_extinction",
+        "no_silent_uncertain_support_extinction"
+      ],
+      "current_semantic_provider_lifecycle": "audit_only",
+      "all_required_views_empirically_ready": false,
+      "single_coverage_score_used": false,
+      "fixed_quota_used": false,
+      "source_selection_axis_used": false,
+      "benchmark_outcomes_read": false
     }
   },
   "policies": [
@@ -214,6 +233,40 @@
       ],
       "runtime_authorization": "none_candidate_cannot_select_or_remove",
       "coverage_impact_validation": "required_before_promotion; nonpositive effect evidence cannot bypass Coverage"
+    },
+    {
+      "id": "stage_c_coverage_support_candidate",
+      "version": "0.1.0",
+      "policy_card_id": "stage_c_coverage_support_candidate",
+      "core": "coverage",
+      "stage": "Stage C",
+      "status": "candidate",
+      "activation_state": "block_6_engine_fixture_validated_empirical_gates_blocked",
+      "reason_codes": [
+        "coverage_support_veto_candidates_required",
+        "coverage_constraints_satisfied",
+        "coverage_provider_role_mismatch",
+        "coverage_semantic_provider_not_active",
+        "coverage_semantic_provider_identity_mismatch"
+      ],
+      "required_metadata": [],
+      "fixture": "validation/test_coverage_engine_v2.py",
+      "runtime_implementation": [
+        "coverage_engine.py",
+        "coverage_contract.py",
+        "coverage_metrics.py",
+        "model_provider_contract.py"
+      ],
+      "scope": "candidate-only support-extinction veto and facility-location representative proposal; existing active materialization invariant remains unchanged",
+      "blocking_conditions": [
+        "real_stable_semantic_skill_strata_available",
+        "semantic_provider_bias_and_cluster_stability_audits_pass",
+        "all_required_support_views_have_frozen_evidence",
+        "quality_and_redundancy_evidence_available_to_joint_selector",
+        "deterministic_replay_and_policy_leakage_tests_pass"
+      ],
+      "runtime_authorization": "none_candidate_cannot_mutate_membership",
+      "coverage_impact_validation": "fixture vector report only; real corpus support recall and extinction evidence missing"
     },
     {
       "id": "stage_a_b_validity_recovery_candidate",

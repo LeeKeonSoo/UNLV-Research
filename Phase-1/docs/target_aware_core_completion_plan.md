@@ -512,14 +512,42 @@ but the original exit criterion has not been met on real data and no
 model-based Quality policy is active. The fixture must never be cited as
 downstream evidence.
 
-### Block 6 - Coverage engine
+### Block 6 - Coverage engine - ENGINE COMPLETE, EMPIRICALLY BLOCKED
 
-- implement frozen semantic/skill support views and stability tests;
-- add facility-location gain, extinction guards, representative choice, and
-  vector reports;
-- stress test encoder and cluster bias.
+- `coverage_engine.py` accepts a frozen Validity-passing universe, a proposed
+  survivor set, typed redundancy families, support strata, pairwise semantic
+  similarities, and independent member-level exclusions;
+- every nonexcluded redundancy family receives a deterministic representative.
+  Selection maximizes facility-location marginal support gain and resolves
+  exact ties by chunk UID;
+- stable support and unknown/mixed/OOD intersections cannot reach zero
+  survivors. The engine emits the minimum representative protection as a
+  nonmutating veto candidate;
+- extinction is permitted only when every member has independent typed
+  `validity_invalid` evidence or the canonical calibrated
+  `quality_supported_nonpositive` decision with its complete five-hash trace;
+- reports remain vectors: support recall by view, token-mass shift,
+  Jensen-Shannon divergence, extinct strata, nearest-representative radius,
+  effective sample size, and family linkage. There is no overall Coverage
+  score;
+- source identity, source reputation, fixed domain quota, target mix, rarity,
+  Utility, NLL, benchmark results, and retention fractions are absent from the
+  decision contract;
+- the existing active `stage_c_coverage_guard` remains the materialization
+  invariant. The new `stage_c_coverage_support_candidate` cannot mutate corpus
+  membership before Block 7.
 
-Exit: no unexplained stable-support extinction, orphan family, or residual loss.
+Engine verification: the non-empirical fixture verifies family representative
+choice, stable and uncertain extinction protection, all-member exclusion,
+partial exclusion, identity mismatch, malformed universes, and vector metrics.
+Its frozen audit shows that the registered Qwen semantic provider is
+`audit_only`, so real requests abstain.
+
+Empirical status: **blocked**. No frozen corpus-scale stable semantic clusters,
+bootstrap stability evidence, or multilingual/Code/Math/table/short-text
+provider-bias audit is complete. The fixture is a contract test and must not be
+cited as downstream evidence. Therefore the original Block-6 exit criterion
+has not yet been met on real data.
 
 ### Block 7 - Joint selector and immutable profiles
 
@@ -587,7 +615,7 @@ linked to a frozen evidence bundle.
 10. The paper never claims universal intrinsic Quality or guaranteed
     improvement on every corpus.
 
-## 13. Block 1A Through Block 5 Resolution
+## 13. Block 1A Through Block 6 Resolution
 
 Block 1 froze the target SLM, tokenizer, experiment arms, and capability panels
 in `protocols/target_aware_core_completion_v1.json`. The Qwen excess-loss pair
@@ -611,5 +639,8 @@ the non-active uncertainty-aware engine under
 `configs/quality_effect_engine_v2.json`; its contract-only audit is
 `validation/frozen_contracts/quality_effect_engine_v2_contract_audit.json`.
 Real Quality evidence remains blocked and cannot be borrowed from the fixture.
-Block 6 may implement Coverage independently, while real Block-5 empirical
-gates remain required before the Block-7 atomic runtime switch.
+Block 6 adds the non-active support engine under
+`configs/coverage_engine_v2.json`; its contract-only audit is
+`validation/frozen_contracts/coverage_engine_v2_contract_audit.json`. Real
+semantic support and provider-bias evidence remain blocked. Block 5 and Block 6
+empirical gates are both required before the Block-7 atomic runtime switch.

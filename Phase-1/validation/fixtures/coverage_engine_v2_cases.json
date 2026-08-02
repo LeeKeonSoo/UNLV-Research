@@ -1,0 +1,29 @@
+{
+  "schema_version": "coverage-engine-v2-fixture-v1",
+  "contract_fixture_only_not_empirical_evidence": true,
+  "chunks": [
+    {"uid": "a", "token_count": 10},
+    {"uid": "b", "token_count": 20},
+    {"uid": "c", "token_count": 30},
+    {"uid": "d", "token_count": 40},
+    {"uid": "e", "token_count": 50}
+  ],
+  "proposed_survivors": ["c"],
+  "strata": [
+    {"stratum_id": "route-main", "view": "content_route", "member_uids": ["a", "b", "c"], "state": "stable", "evidence_artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"},
+    {"stratum_id": "skill-tail", "view": "semantic_skill", "member_uids": ["d", "e"], "state": "stable", "evidence_artifact_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
+    {"stratum_id": "uncertain-mixed", "view": "uncertain_intersection", "member_uids": ["a", "b"], "state": "uncertain", "evidence_artifact_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+  ],
+  "redundancy_families": [
+    {"family_id": "family-ab", "member_uids": ["a", "b"], "evidence_artifact_sha256": "9999999999999999999999999999999999999999999999999999999999999999"}
+  ],
+  "similarities": [
+    {"left_uid": "a", "right_uid": "b", "similarity": 1.0},
+    {"left_uid": "a", "right_uid": "c", "similarity": 0.1},
+    {"left_uid": "b", "right_uid": "c", "similarity": 0.1},
+    {"left_uid": "c", "right_uid": "d", "similarity": 0.1},
+    {"left_uid": "c", "right_uid": "e", "similarity": 0.5},
+    {"left_uid": "d", "right_uid": "e", "similarity": 0.2}
+  ],
+  "similarity_artifact_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+}
