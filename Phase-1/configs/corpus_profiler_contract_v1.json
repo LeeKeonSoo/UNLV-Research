@@ -1,0 +1,51 @@
+{
+  "schema_version": "audit-only-corpus-profiler-contract-v1",
+  "status": "block_2_implemented",
+  "implementation": "corpus_profiler.py",
+  "cli": "scripts/profile_corpus_audit_only.py",
+  "provider_registry": "configs/model_provider_registry_v1.json",
+  "input_contract": {
+    "format": "jsonl",
+    "text_field_rule": "exactly_one_declared_text_field_per_record",
+    "corpus_identity": "absolute_path_plus_sha256_plus_byte_and_record_count"
+  },
+  "measurements": [
+    "record_byte_character_line_and_paragraph_counts",
+    "fixed_character_length_histogram",
+    "whitespace_token_proxy",
+    "optional_exact_frozen_tokenizer_count",
+    "normalized_exact_duplicate_opportunity",
+    "route_status_and_confidence_incidence",
+    "content_format_structural_state_language_script_and_semantic_domain_incidence",
+    "registered_provider_lifecycle_state"
+  ],
+  "not_yet_measured": [
+    "near_duplicate_relation_opportunity",
+    "semantic_cluster_stability",
+    "model_based_quality_evidence"
+  ],
+  "authority": "measurement_only",
+  "selection_authority": false,
+  "forbidden_actions": [
+    "rank_records",
+    "select_records",
+    "remove_records",
+    "write_curated_dataset",
+    "execute_model_provider_scores",
+    "assign_quality_labels",
+    "enforce_domain_or_source_quota"
+  ],
+  "required_invariants": {
+    "records_read_equals_records_accounted": true,
+    "records_selected": null,
+    "records_removed": 0,
+    "output_dataset_written": false,
+    "ranking_emitted": false
+  },
+  "token_count_boundary": {
+    "structural_audit_without_tokenizer_allowed": true,
+    "release_profile_requires_exact_frozen_target_tokenizer": true,
+    "whitespace_proxy_may_replace_exact_count": false
+  },
+  "bounded_memory_strategy": "stream_jsonl_use_sqlite_for_digest_counts_and_fixed_histograms_for_lengths"
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": "target-aware-core-completion-v1",
-  "status": "block_1_target_contract_frozen",
+  "status": "block_2_provider_contract_and_audit_profiler_implemented",
   "frozen_at": "2026-08-02",
   "implementation_authority": "design_contract_only",
   "baseline": {
@@ -58,11 +58,11 @@
     "append_eos_per_record": true,
     "authoritative_token_unit": "target_tokenizer_token"
   },
-  "quality_reference_model": {
+  "optional_quality_provider_candidate": {
     "model_id": "Qwen/Qwen3-8B-Base",
     "revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
-    "role": "stronger_same_family_reference_for_development_excess_loss_evidence",
-    "selection_authority": "none_until_block_5_calibration_and_promotion",
+    "role": "optional_same_family_excess_loss_probe_not_default_quality_definition",
+    "selection_authority": "none_and_audit_only_until_independent_calibration_development_validation_confirmatory_validation_and_policy_promotion",
     "tokenizer_compatibility_basis": "Qwen3 technical report declares the shared Qwen tokenizer across dense family models.",
     "required_pre_scoring_checks": [
       "snapshot_materialized_and_hashed",
@@ -71,24 +71,36 @@
       "any_quantized_approximation_error_bounded_against_bf16_on_frozen_probe"
     ],
     "score_unit": "natural_log_loss_per_target_token",
-    "model_cutoff_role": "not_a_temporal_novelty_or_truth_oracle"
+    "model_cutoff_role": "not_a_temporal_novelty_or_truth_oracle",
+    "framework_required": false,
+    "provider_registry_entry": "qwen3-4b-8b-excess-loss-candidate"
   },
   "model_provider_boundary": {
     "framework_hardcodes_qwen": false,
     "current_experiment_backend": "Qwen3_family",
-    "target_and_reference_are_user_declared_versioned_providers": true,
-    "quality_claim_scope": "Qwen3-4B-Base continued pretraining until another model family independently passes calibration and confirmatory evaluation",
-    "coverage_encoder_is_replaceable": true,
-    "provider_output_alone_may_delete": false
+    "provider_registry": "configs/model_provider_registry_v1.json",
+    "provider_roles": [
+      "quality",
+      "semantic",
+      "diagnostic_validity",
+      "content_router"
+    ],
+    "all_model_providers_are_replaceable": true,
+    "replacement_invalidates_inherited_calibration": true,
+    "new_or_changed_provider_starts_as": "audit_only",
+    "provider_output_alone_may_delete": false,
+    "qwen_candidates_are_framework_requirements": false
   },
-  "coverage_encoder": {
+  "optional_semantic_provider_candidate": {
     "model_id": "Qwen/Qwen3-Embedding-0.6B",
     "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
-    "role": "development_candidate_for_semantic_support_and_retrieval_only",
+    "role": "optional_development_candidate_for_semantic_support_and_retrieval_only",
     "selection_authority": "none_until_block_6_stability_and_bias_gates_pass",
     "embedding_dimension": 1024,
     "instruction": "Represent the learnable content and skills in this language-model pretraining unit for semantic coverage auditing.",
     "normalization": "l2",
+    "framework_required": false,
+    "provider_registry_entry": "qwen3-embedding-0.6b-semantic-candidate",
     "required_bias_probes": [
       "general_prose",
       "source_code",
@@ -111,14 +123,15 @@
   },
   "quality_evidence_contract": {
     "latent_target": "expected_marginal_external_risk_reduction_per_target_training_token",
-    "runtime_candidate_features": [
-      "explicit_structural_non_payload_evidence",
+    "provider_independent_candidate_features": [
+      "explicit_structural_non_payload_evidence"
+    ],
+    "optional_audit_only_model_features": [
       "target_base_loss_per_token",
       "reference_loss_per_token",
-      "base_minus_reference_excess_loss",
-      "usable_packed_token_fraction",
-      "coverage_marginal_gain"
+      "base_minus_reference_excess_loss"
     ],
+    "active_model_based_features": [],
     "loss_scoring": {
       "tokenizer": "target_tokenizer",
       "context_length": 2048,
@@ -130,7 +143,7 @@
       "primary_precision": "bfloat16",
       "quantized_loss_use": "development_approximation_only_after_bf16_error_gate"
     },
-    "combination_rule": "calibrated_gain_with_uncertainty_not_handwritten_weighted_sum",
+    "combination_rule": "no_model_feature_enters_selection_until_its_provider_and_owning_policy_complete_the_full_promotion_lifecycle",
     "route_role": "conditioning_and_error_analysis_only",
     "unknown_mixed_ood_action": "retain_and_report_until_route_specific_evidence_is_validated",
     "forbidden_runtime_inputs": [
@@ -313,8 +326,8 @@
   "block_1_decisions": {
     "target_model_frozen": true,
     "target_tokenizer_frozen": true,
-    "reference_model_identity_frozen": true,
-    "coverage_encoder_identity_frozen": true,
+    "optional_reference_candidate_identity_frozen": true,
+    "optional_semantic_candidate_identity_frozen": true,
     "training_interface_frozen": true,
     "natural_budget_rule_frozen": true,
     "seed_set_frozen": true,
@@ -323,5 +336,15 @@
     "temporal_claim_boundary_frozen": true,
     "runtime_implementation_started": false
   },
-  "next_block": "Block 2 - audit-only corpus profiler"
+  "block_2_implementation": {
+    "provider_registry": "configs/model_provider_registry_v1.json",
+    "provider_contract_implementation": "model_provider_contract.py",
+    "profiler_contract": "configs/corpus_profiler_contract_v1.json",
+    "profiler_implementation": "corpus_profiler.py",
+    "profiler_cli": "scripts/profile_corpus_audit_only.py",
+    "selection_authority": false,
+    "model_provider_outputs_executed": false,
+    "exact_target_token_count_available_when_frozen_tokenizer_is_declared": true
+  },
+  "next_block": "Block 3 - Validity v2"
 }

@@ -1,0 +1,98 @@
+{
+  "schema_version": "model-provider-registry-v1",
+  "status": "block_2_audit_only",
+  "framework_model_agnostic": true,
+  "replacement_rule": "Any change to provider artifacts, revision, tokenizer, normalization, or output semantics resets that provider to audit_only and invalidates inherited calibration.",
+  "slots": {
+    "quality": {
+      "role": "quality",
+      "allowed_effect": "candidate_evidence_only_after_independent_policy_promotion",
+      "provider_output_alone_may_delete": false
+    },
+    "semantic": {
+      "role": "semantic",
+      "allowed_effect": "redundancy_retrieval_and_coverage_support_proposal_only",
+      "provider_output_alone_may_delete": false
+    },
+    "diagnostic_validity": {
+      "role": "diagnostic_validity",
+      "allowed_effect": "quarantine_or_audit_signal_only",
+      "provider_output_alone_may_delete": false
+    },
+    "content_router": {
+      "role": "content_router",
+      "allowed_effect": "observable_metadata_and_policy_dispatch_only",
+      "provider_output_alone_may_delete": false
+    }
+  },
+  "providers": [
+    {
+      "provider_id": "content-router-v2-deterministic",
+      "role": "content_router",
+      "provider_type": "deterministic",
+      "lifecycle": "audit_only",
+      "artifacts": [],
+      "tokenizer_id": null,
+      "tokenizer_revision": null,
+      "normalization": "closed_text_evidence_rules_v2",
+      "output_semantics": "multi_label_route_and_observable_axis_metadata",
+      "supported_routes": ["all_with_unknown_mixed_and_ood"],
+      "supported_languages": ["script_taxonomy_v1"],
+      "policy_contribution_authority": false,
+      "direct_deletion_authority": false,
+      "calibration": null,
+      "validation": null
+    },
+    {
+      "provider_id": "qwen3-4b-8b-excess-loss-candidate",
+      "role": "quality",
+      "provider_type": "composite_model",
+      "lifecycle": "audit_only",
+      "artifacts": [
+        {
+          "model_id": "Qwen/Qwen3-4B-Base",
+          "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+          "artifact_sha256": null
+        },
+        {
+          "model_id": "Qwen/Qwen3-8B-Base",
+          "revision": "49e3418fbbbca6ecbdf9608b4d22e5a407081db4",
+          "artifact_sha256": null
+        }
+      ],
+      "tokenizer_id": "Qwen/Qwen3-4B-Base",
+      "tokenizer_revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+      "normalization": "nats_per_nonpadding_target_token_context_2048",
+      "output_semantics": "base_minus_reference_excess_loss_candidate_not_quality_truth",
+      "supported_routes": ["development_probe_only"],
+      "supported_languages": ["undeclared_until_calibration"],
+      "policy_contribution_authority": false,
+      "direct_deletion_authority": false,
+      "calibration": null,
+      "validation": null
+    },
+    {
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "role": "semantic",
+      "provider_type": "model",
+      "lifecycle": "audit_only",
+      "artifacts": [
+        {
+          "model_id": "Qwen/Qwen3-Embedding-0.6B",
+          "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+          "artifact_sha256": null
+        }
+      ],
+      "tokenizer_id": "Qwen/Qwen3-Embedding-0.6B",
+      "tokenizer_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+      "normalization": "l2_normalized_1024d_embedding",
+      "output_semantics": "semantic_neighborhood_and_support_candidate",
+      "supported_routes": ["development_probe_only"],
+      "supported_languages": ["undeclared_until_bias_audit"],
+      "policy_contribution_authority": false,
+      "direct_deletion_authority": false,
+      "calibration": null,
+      "validation": null
+    }
+  ]
+}

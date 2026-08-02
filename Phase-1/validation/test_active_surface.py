@@ -120,6 +120,11 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("validation/test_route_quality_evidence_candidates_v1.py")
     expected.add("validation/core_behavior_contracts.py")
     expected.add("validation/core_behavior_executors.py")
+    expected.add("model_provider_contract.py")
+    expected.add("corpus_profiler.py")
+    expected.add("scripts/profile_corpus_audit_only.py")
+    expected.add("validation/test_model_provider_contract_v1.py")
+    expected.add("validation/test_corpus_profiler_audit_only_v1.py")
     actual = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*.py")
@@ -168,6 +173,8 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
     expected.add("stack_edu_python_calibration_report_v1.json")
     expected.add("math_positive_provider_manifest_v1.json")
     expected.add("math_positive_development_bundle_v1.json")
+    expected.add("model_provider_registry_v1.json")
+    expected.add("corpus_profiler_contract_v1.json")
     expected.update(
         {
             "math_complete_bundle_calibration_v1.json",

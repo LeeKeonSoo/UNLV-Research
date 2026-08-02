@@ -17,17 +17,19 @@ this study.
 | Role | Frozen artifact | Revision |
 | --- | --- | --- |
 | Target model and tokenizer | `Qwen/Qwen3-4B-Base` | `906bfd4b4dc7f14ee4320094d8b41684abff8539` |
-| Quality reference candidate | `Qwen/Qwen3-8B-Base` | `49e3418fbbbca6ecbdf9608b4d22e5a407081db4` |
-| Coverage encoder candidate | `Qwen/Qwen3-Embedding-0.6B` | `97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3` |
+| Optional Quality probe | `Qwen/Qwen3-8B-Base` | `49e3418fbbbca6ecbdf9608b4d22e5a407081db4` |
+| Optional semantic provider | `Qwen/Qwen3-Embedding-0.6B` | `97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3` |
 
-The reference model and encoder are frozen candidates, not active runtime
-authorities. Their snapshots, compatibility, precision error, calibration, and
-bias gates must pass in Blocks 5 and 6.
+These are optional audit-only candidates, not default Core definitions or
+active runtime authorities. Their snapshots, compatibility, precision error,
+calibration, development validation, and confirmatory validation must pass
+before either can contribute to a promoted policy.
 
 Qwen is the frozen backend for this experiment, not a framework dependency.
-The target LM, stronger reference LM, and semantic encoder are versioned
-provider slots. A different model family can replace them, but its Quality
-calibration and confirmatory evidence cannot be inherited from Qwen.
+Quality, semantic support, diagnostic Validity, and routing are versioned
+provider slots. A user may replace a provider, but any change to its artifact,
+revision, tokenizer, normalization, or output semantics resets it to
+`audit_only`; calibration and confirmatory evidence cannot be inherited.
 
 ## Why These Models
 
@@ -35,8 +37,9 @@ The Qwen3 technical report describes a shared Qwen tokenizer across the dense
 family and reports the 8B base model as a larger member of the same architecture
 family. That makes 8B a controlled stronger-reference candidate for measuring
 what the 4B target does not yet model well. The reference is not a truth oracle:
-base-minus-reference excess loss becomes deletion evidence only after
-development calibration and external policy validation.
+base-minus-reference excess loss remains an optional hypothesis. It has no
+deletion authority unless its provider and a separately reason-coded policy
+complete the full promotion lifecycle.
 
 Qwen3-Embedding-0.6B is small enough for corpus-scale use and its official
 release targets multilingual, code, retrieval, classification, and clustering
@@ -54,24 +57,26 @@ Primary sources:
 ## Quality Target
 
 Quality is expected marginal external-risk reduction per target-model training
-token. It is not a universal document label. The first estimator may observe:
+token. It is not a universal document label. Provider-independent structural
+evidence may be studied directly. Model evidence may be registered only as an
+optional candidate, including:
 
 1. closed structural non-payload evidence;
 2. Qwen3-4B base loss per target token;
 3. Qwen3-8B reference loss over the same token IDs;
 4. base-minus-reference excess loss;
-5. usable packed-token fraction;
-6. Coverage marginal gain.
+5. explicit uncertainty and unsupported-scope state.
 
 High target-model loss by itself is ambiguous. It may mean useful novelty or
 irreducible corruption. Positive excess loss is also only a candidate signal:
 it says the larger same-family model predicts the content better, not that the
 content will improve every downstream capability.
 
-Loss scoring is fixed to the target tokenizer, 2,048-token context, EOS per
-record, no special-token injection, and nats per non-padding target token.
-Primary likelihood evidence is bfloat16. Quantized scores may be used only if a
-frozen probe bounds their error against bfloat16.
+If that optional loss provider is executed, scoring is fixed to the target
+tokenizer, 2,048-token context, EOS per record, no special-token injection, and
+nats per non-padding target token. Primary likelihood evidence is bfloat16.
+Quantized scores may be used only if a frozen probe bounds their error against
+bfloat16. None of these settings makes the provider mandatory.
 
 ## Coverage Target
 
@@ -154,12 +159,16 @@ contract, but none of those fields is Quality or Coverage evidence. The Valid
 Raw training arm therefore means risk-eligible, Validity-passing raw payload;
 it does not mean the uninspected bytes collected from a source.
 
-## Block 1 Exit
+## Block 1A And Block 2 Exit
 
-The model, tokenizer, reference identity, Coverage encoder identity, training
+The target model and tokenizer, optional candidate identities, training
 interface, Base/Normal/Hard dataset arms, natural-budget rule, seeds, capability
-panels, and temporal claim boundary are now fixed. No target-aware runtime
-policy has been implemented.
+panels, provider replacement lifecycle, and temporal claim boundary are fixed.
+No target-aware selection policy has been activated.
 
-Block 2 may now implement an audit-only corpus profiler. It must emit
-measurements and hashes without selecting, ranking, or deleting any record.
+Block 2 implements an audit-only corpus profiler. It emits input hashes,
+streaming size statistics, exact-duplicate opportunities, deterministic routing
+incidence, optional exact tokenizer counts, and provider lifecycle state. It
+cannot execute provider scores, select, rank, delete, or write a curated
+dataset. The machine contracts are `configs/model_provider_registry_v1.json`
+and `configs/corpus_profiler_contract_v1.json`.

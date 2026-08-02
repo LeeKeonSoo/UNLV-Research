@@ -238,11 +238,11 @@ Quality evidence is deliberately non-compensatory by layer:
 
 1. **Explicit negative payload:** generated-control artifacts, empty shells,
    control-only chrome, and other closed structural proofs.
-2. **Model-relative learnability:** target-base loss, stronger-reference loss,
-   and excess loss normalized to a common unit. High base loss alone is not
-   good; high loss for both models may indicate irreducible noise. Positive
-   base-minus-reference excess is a candidate signal that the reference can
-   model content the target base has not mastered.
+2. **Optional model-relative learnability probe:** a registered provider may
+   expose target-base loss, stronger-reference loss, and excess loss normalized
+   to a common unit. This is one replaceable audit hypothesis, not the default
+   Quality definition. A changed provider restarts at `audit_only`, and its
+   output alone never deletes data.
 3. **Training-interface fit:** usable tokens after packing, context completeness,
    and nontruncated payload.
 4. **Policy-level causal evidence:** rule-on/off proxy training and disjoint
@@ -385,20 +385,27 @@ before confirmatory evaluation. Benchmarks never enter a corpus-selection run.
 Exit: one immutable target-model experiment contract and zero ambiguous terms.
 
 Frozen artifact: `protocols/target_aware_core_completion_v1.json`. The target
-is Qwen3-4B-Base continued pretraining, the stronger-reference candidate is
-Qwen3-8B-Base, the Coverage encoder candidate is Qwen3-Embedding-0.6B, and the
-seed set is `101/202/303`. The model cutoff remains explicitly unknown, so
-temporal-new-knowledge and post-cutoff LiveCodeBench claims remain blocked.
+is Qwen3-4B-Base continued pretraining. Qwen3-8B-Base and
+Qwen3-Embedding-0.6B are optional audit-only provider candidates, not framework
+requirements. The seed set is `101/202/303`. The model cutoff remains explicitly
+unknown, so temporal-new-knowledge and post-cutoff LiveCodeBench claims remain
+blocked.
 
-### Block 2 - Audit-only corpus profiler
+### Block 2 - Audit-only corpus profiler - COMPLETE
 
-- implement all Dataset measurements in Section 3;
-- produce exact tokenizer counts, opportunity rates, route/cluster uncertainty,
-  and no selection decisions;
-- validate deterministic hashes and bounded memory use.
+- provider lifecycle and replacement gates are implemented in
+  `model_provider_contract.py`;
+- the generic JSONL profiler is implemented in `corpus_profiler.py` with the
+  CLI `scripts/profile_corpus_audit_only.py`;
+- it reports input hashes, bounded-memory size statistics, optional exact
+  tokenizer counts, exact-duplicate opportunities, routing incidence, and
+  unsupported measurements;
+- it emits no rank, selection, deletion, provider score, or curated dataset.
 
-Exit: the same profiler runs unchanged on Code, Math, General, multilingual,
-and mixed corpora.
+Exit: the same text-field-driven profiler runs unchanged on Code, Math,
+General, multilingual, and mixed JSONL corpora. Near-duplicate opportunity,
+semantic-cluster stability, and model-based Quality remain explicitly
+unavailable until their later Blocks; Block 2 does not pretend otherwise.
 
 ### Block 3 - Validity v2
 
@@ -421,7 +428,8 @@ and representative-survival gates.
 
 ### Block 5 - Quality evidence engine
 
-- implement frozen base/reference scoring and common-unit normalization;
+- compare provider-independent evidence with optional registered model-provider
+  candidates; no specific model pair is mandatory;
 - build evidence bins and low-cost development ablations;
 - calibrate gain and uncertainty without a global handwritten formula;
 - retain mixed, unknown, and OOD cases by explicit state.
@@ -504,14 +512,15 @@ linked to a frozen evidence bundle.
 10. The paper never claims universal intrinsic Quality or guaranteed
     improvement on every corpus.
 
-## 13. Block 1 Resolution
+## 13. Block 1A And Block 2 Resolution
 
-Block 1 froze the target SLM and tokenizer, the stronger-reference candidate,
-the Coverage encoder candidate, and the capability panels in
-`protocols/target_aware_core_completion_v1.json`. The model's auditable
-pretraining cutoff remains unknown by explicit contract, so temporal-new-data
-claims and post-cutoff LiveCodeBench use remain disabled.
+Block 1 froze the target SLM, tokenizer, experiment arms, and capability panels
+in `protocols/target_aware_core_completion_v1.json`. The Qwen excess-loss pair
+and embedding model are optional provider candidates. The framework now has a
+common provider registry with fail-closed replacement semantics: any identity
+change invalidates inherited calibration and begins again at `audit_only`.
 
-Block 2 is now authorized to implement an audit-only corpus profiler. It may
-measure the characteristics in Section 3, but it may not rank, select, delete,
-or change the frozen Conservative Structural runtime.
+Block 2 is implemented under `configs/corpus_profiler_contract_v1.json`. The
+profiler measures corpus structure without ranking, selecting, deleting,
+executing provider scores, or changing the frozen Conservative Structural
+runtime. Block 3 may now implement Validity v2.
