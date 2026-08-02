@@ -1,0 +1,25 @@
+{
+  "schema_version": "framework-runtime-bridge-v1",
+  "status": "runtime_integrated_block_7",
+  "framework_manifest_path": "configs/curation_framework_v1.json",
+  "framework_manifest_sha256": "4e37a9c0212ad115014e8e247ba405fb766ea3dbefe374a493283a6b31372062",
+  "object_registry_path": "configs/framework_objects_v1.json",
+  "object_registry_sha256": "31429135439611d1a4384b074e224f82b24b15dd058ab73f0c77f17664ec5a0b",
+  "profile_registry_path": "configs/framework_profiles_v1.json",
+  "profile_registry_sha256": "ce62fb638b319401c0b28a05d647403905d69c8e0a5ad8fdb2e0c8cb6d69d6c9",
+  "legacy_kernel_path": "run_curation.py",
+  "legacy_kernel_sha256": "b4061d63ea4b7c130c63171b5e40403810a23be42b7199dffb450592e13d501c",
+  "legacy_policy_mappings": [
+    {
+      "legacy_policy_id": "stage_c_symmetric_near_duplicate",
+      "v1_policy_id": "redundancy.symmetric_near_duplicate_candidate",
+      "disposition": "legacy_compatibility_only"
+    }
+  ],
+  "blocked_v1_policy_ids": [
+    "redundancy.symmetric_near_duplicate_candidate",
+    "quality.contrastive_alignment_candidate"
+  ],
+  "new_v1_policy_activation": false,
+  "curated_output_equivalence_required": true
+}

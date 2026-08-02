@@ -63,7 +63,7 @@ class ProfileRegistry(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: Literal["framework-profiles-v1"]
-    status: Literal["design_only_until_block_7"]
+    status: Literal["runtime_integrated_block_7"]
     framework_manifest_sha256: Sha256
     object_registry_sha256: Sha256
     policy_lifecycles: tuple[PolicyLifecycleSnapshot, ...]

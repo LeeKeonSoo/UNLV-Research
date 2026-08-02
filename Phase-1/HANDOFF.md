@@ -21,6 +21,13 @@ Current repository facts:
 
 - The public framework boundary is corpus input to curated dataset plus an
   auditable decision trace.
+- Block 7 now loads and hash-verifies the central framework manifest, typed
+  object registry, profile registry, runtime bridge, and Stage permissions at
+  the start of every materialization. Each run emits four authorization tickets
+  for Validity, Redundancy, Quality, and Coverage.
+- The selector kernel still executes the frozen legacy-compatible Normal/Hard
+  behavior. No blocked v1 Policy was promoted by the bridge, and both new v1
+  profiles remain release-disabled.
 - Continued pretraining, NLL, and benchmark execution are external validation.
 - Runtime must not read Utility, benchmark results, source reputation, domain
   quotas, or a forced token budget.
@@ -117,12 +124,12 @@ current config/protocol JSON parses with GPU and network use disabled.
 ## Next Authorized Work
 
 Follow `docs/framework_research_contract_v1.md` for redesign decisions. The
-redesign foundation through Block 6 is now implemented: one root manifest,
-typed Core-Metric-Policy-Method-Provider objects, Stage input permissions, a
-blocked three-role contrastive Quality protocol, and release-disabled
-Normal/Hard composition with retained-set monotonicity. These files remain
-design-only and do not alter the observed runtime.
+redesign foundation through Block 7 is implemented. The production entry point
+consumes the root manifest, typed Core-Metric-Policy-Method-Provider objects,
+Stage permissions, and the compatibility bridge before it reads corpus input.
+The bridge preserves the frozen selector output and does not activate blocked
+v1 policies.
 
-The next authorized work is Block 7: refactor the existing runtime to consume
-the new objects and permissions without changing frozen policy behavior. Do not
-promote the blocked near-duplicate or contrastive policies during that refactor.
+The next authorized work is Block 8: complete fixture, behavior, provenance,
+fail-closed, and output-equivalence validation. Near-duplicate and contrastive
+Quality remain blocked pending Block 9 development calibration and ablation.

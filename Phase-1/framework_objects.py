@@ -127,7 +127,7 @@ class ObjectRegistry(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: Literal["framework-objects-v1"]
-    status: Literal["design_only_until_block_7"]
+    status: Literal["runtime_integrated_block_7"]
     framework_manifest_path: str = Field(min_length=1)
     framework_manifest_sha256: Sha256
     methods: tuple[MethodSpec, ...] = Field(min_length=1)

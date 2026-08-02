@@ -7,7 +7,7 @@
   "required": ["schema_version", "activation", "research_contract", "hierarchy", "cores", "stages", "runtime_forbidden_inputs", "profile_contract", "threshold_provenance", "registry_references", "legacy_runtime_references", "external_evaluation"],
   "properties": {
     "schema_version": {"const": "curation-framework-v1"},
-    "activation": {"const": "design_only_until_block_7"},
+    "activation": {"const": "runtime_integrated_block_7"},
     "research_contract": {
       "type": "object",
       "additionalProperties": false,

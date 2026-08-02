@@ -30,7 +30,7 @@ def test_manifest_roots_the_frozen_research_contract() -> None:
     # Then: the manifest is rooted in the exact frozen contract bytes.
     assert contract["sha256"] == observed
     assert manifest["schema_version"] == "curation-framework-v1"
-    assert manifest["activation"] == "design_only_until_block_7"
+    assert manifest["activation"] == "runtime_integrated_block_7"
 
 
 def test_manifest_declares_the_complete_core_and_stage_boundary() -> None:

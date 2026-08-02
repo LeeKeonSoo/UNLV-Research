@@ -11,6 +11,14 @@ from typing import Any
 
 from composition_audit import annotate_record, annotate_records, build_composition_audit
 from curation_artifacts import load_json, save_json, sha256_file
+from framework_objects import CoreId, StageId
+from framework_runtime_bridge import (
+    RuntimeStageRequest,
+    RuntimeStageTicket,
+    authorize_runtime_stage,
+    build_foundation_report,
+    load_runtime_foundation,
+)
 from general_web_span_compaction import build_plan as build_web_span_plan
 from general_web_span_compaction import materialize_candidate_plan as materialize_web_span_plan
 from hard_structural_runtime import apply_development_hard_policies
@@ -30,6 +38,11 @@ STAGE_B_POLICY_REASON_CODES = {
 }
 USER_FACING_MODE_PROFILES = {"normal": "normal_structural_v1", "hard": "hard_structural_v1"}
 POLICY_FINGERPRINT_CONFIGS = (
+    "configs/curation_framework_v1.json",
+    "configs/framework_objects_v1.json",
+    "configs/framework_profiles_v1.json",
+    "configs/framework_runtime_bridge_v1.json",
+    "configs/contrastive_quality_protocol_v2.json",
     "configs/curation_contract.json",
     "configs/core_policy_registry.json",
     "configs/policy_cards.json",
@@ -37,6 +50,10 @@ POLICY_FINGERPRINT_CONFIGS = (
 )
 POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "run_curation.py",
+    "framework_objects.py",
+    "framework_profiles.py",
+    "framework_runtime_bridge.py",
+    "stage_permissions.py",
     "hard_structural_runtime.py",
     "inline_license_header_compaction.py",
     "inline_license_comment_block_compaction.py",
@@ -553,6 +570,9 @@ def _coverage_impact_audit(
 
 
 def materialize(config_path: Path) -> JsonMap:
+    root = Path(__file__).resolve().parent
+    foundation = load_runtime_foundation(root)
+    stage_tickets: list[RuntimeStageTicket] = []
     config = load_config(config_path)
     execution_scope = str(config.get("execution_scope") or "production")
     mode = resolve_curation_mode(
@@ -572,6 +592,21 @@ def materialize(config_path: Path) -> JsonMap:
         for records, source in zip(raw_records_by_source, source_specs, strict=True)
         for candidate in adapt_raw_records(records, source)
     )
+    stage_tickets.append(
+        authorize_runtime_stage(
+            foundation,
+            RuntimeStageRequest(
+                stage_id=StageId.STAGE_A,
+                core_id=CoreId.VALIDITY,
+                supplied_categories=(
+                    "raw_text",
+                    "declared_input_contract",
+                    "deterministic_normalized_text",
+                    "stable_identifiers",
+                ),
+            ),
+        )
+    )
     stage_a_settings = effective_policy["stage_a"]
     stage_a_policy = str(stage_a_settings["policy"])
     processed = annotate_records(
@@ -584,6 +619,22 @@ def materialize(config_path: Path) -> JsonMap:
         **effective_policy["stage_b"],
         "max_chunk_chars": int(config["stage_b"]["max_chunk_chars"]),
     }
+    stage_tickets.append(
+        authorize_runtime_stage(
+            foundation,
+            RuntimeStageRequest(
+                stage_id=StageId.STAGE_B,
+                core_id=CoreId.REDUNDANCY,
+                supplied_categories=(
+                    "stage_a_survivors",
+                    "deterministic_normalized_text",
+                    "stable_identifiers",
+                    "runtime_local_structural_evidence",
+                    "prior_stage_reason_codes",
+                ),
+            ),
+        )
+    )
     passed, rejected = _stage_b_chunks(
         released,
         stage_b_policy,
@@ -610,6 +661,22 @@ def materialize(config_path: Path) -> JsonMap:
         hard_transformations = hard_runtime_audit["transformations"]
         span_transformations.extend(hard_transformations)
     stage_c_selection = effective_policy["stage_c_selection"]
+    stage_tickets.append(
+        authorize_runtime_stage(
+            foundation,
+            RuntimeStageRequest(
+                stage_id=StageId.STAGE_B,
+                core_id=CoreId.QUALITY,
+                supplied_categories=(
+                    "stage_a_survivors",
+                    "deterministic_normalized_text",
+                    "stable_identifiers",
+                    "runtime_local_structural_evidence",
+                    "prior_stage_reason_codes",
+                ),
+            ),
+        )
+    )
     candidate_quality_rules = validate_quality_candidate_scope(stage_c_selection, execution_scope)
     quality_candidate_runtime_audit: JsonMap | None = None
     if "web_control_and_url_directory_span_candidate" in candidate_quality_rules:
@@ -634,6 +701,21 @@ def materialize(config_path: Path) -> JsonMap:
                 row["stage_c_quality_candidate_transformations"] = traces
         span_transformations.extend(quality_candidate_transformations)
     selected, not_selected, selection_audit = select_chunks(passed, stage_c_selection)
+    stage_tickets.append(
+        authorize_runtime_stage(
+            foundation,
+            RuntimeStageRequest(
+                stage_id=StageId.STAGE_C,
+                core_id=CoreId.COVERAGE,
+                supplied_categories=(
+                    "stage_b_survivors",
+                    "typed_removal_proposals",
+                    "representative_links",
+                    "prior_stage_reason_codes",
+                ),
+            ),
+        )
+    )
     paths = {
         "stage_a_release": output_dir / "stage_a_release_candidates.jsonl",
         "stage_a_quarantine": output_dir / "stage_a_quarantined_candidates.jsonl",
@@ -686,6 +768,10 @@ def materialize(config_path: Path) -> JsonMap:
             "external_evaluation": "not_started",
         },
         "curation_mode": mode,
+        "framework_runtime": build_foundation_report(
+            foundation,
+            tuple(stage_tickets),
+        ).model_dump(mode="json"),
         "effective_policy_manifest": {
             "profile_id": mode["profile_id"],
             "profile_status": mode["profile_status"],

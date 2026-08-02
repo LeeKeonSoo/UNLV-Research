@@ -159,7 +159,27 @@ def main() -> int:
         assert "stage_c_curated_whitespace_token_proxy" in report["summary"]
         assert "stage_c_curated_token_proxy" not in report["summary"]
         assert report["pretraining_audit"]["status"] == "benchmark_exclusion_complete"
+        foundation = report["framework_runtime"]
+        assert foundation["schema_version"] == "framework-runtime-foundation-report-v1"
+        assert foundation["bridge_status"] == "runtime_integrated_block_7"
+        assert foundation["new_v1_policy_activation"] is False
+        assert foundation["blocked_v1_policy_ids"] == [
+            "redundancy.symmetric_near_duplicate_candidate",
+            "quality.contrastive_alignment_candidate",
+        ]
+        assert [
+            (ticket["stage_id"], ticket["core_id"])
+            for ticket in foundation["stage_tickets"]
+        ] == [
+            ("stage_a", "validity"),
+            ("stage_b", "redundancy"),
+            ("stage_b", "quality"),
+            ("stage_c", "coverage"),
+        ]
         assert set(report["policy_fingerprint"]["runtime_modules"]) == {
+            "framework_objects.py",
+            "framework_profiles.py",
+            "framework_runtime_bridge.py",
             "hard_structural_runtime.py",
             "general_web_span_compaction.py",
             "ingestion/input_adapter.py",
@@ -172,6 +192,7 @@ def main() -> int:
             "run_curation.py",
             "span_level_template_compaction.py",
             "stage_c_selection.py",
+            "stage_permissions.py",
         }
         assert len(report["policy_fingerprint"]["runtime_modules"]["run_curation.py"]) == 64
         assert (output_dir / "stage_c_curated_chunks.jsonl").is_file()

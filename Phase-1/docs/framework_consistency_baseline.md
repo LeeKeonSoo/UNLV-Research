@@ -1,6 +1,6 @@
 # Framework Consistency Baseline
 
-Status: observed baseline before runtime redesign
+Status: observed baseline plus Block 7 compatibility integration
 Frozen on: 2026-08-01
 Authority: this file is the sole status index during the consistency reset
 
@@ -45,6 +45,21 @@ The public architecture retains four conceptual Cores:
 The runtime may not read Utility, NLL, benchmark outcomes, a target retention
 fraction, or an implicit token budget. The framework does not currently provide
 a universal intrinsic Quality score.
+
+## Block 7 Runtime Integration
+
+As of 2026-08-03, `run_curation.py` validates the redesign foundation before
+reading corpus input. The preflight verifies the central manifest, typed object
+registry, profile registry, compatibility bridge, legacy kernel, and Stage
+permission identities. The run then records authorization tickets for Stage-A
+Validity, Stage-B Redundancy, Stage-B Quality, and Stage-C Coverage.
+
+This is an integration transition, not Policy promotion. The frozen selector
+kernel remains behavior-compatible, both new v1 profiles are release-disabled,
+and the near-duplicate and contrastive v1 policies remain `blocked`. Legacy
+near-duplicate execution is explicitly reported as compatibility-only and must
+be promoted or retired through development evidence rather than inherited by
+the new profile.
 
 ## Observed Runtime
 

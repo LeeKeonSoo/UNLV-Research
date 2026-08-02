@@ -10,8 +10,9 @@ framework version. Its schema is
 `schemas/curation_framework_v1.schema.json`. It is design-only until Block 7;
 `framework_objects_v1.json`, `contrastive_quality_protocol_v2.json`, and
 `framework_profiles_v1.json` implement its typed registries. They are not
-runtime activation: both new profiles remain release-disabled until Policy
-promotion and the Block 7 runtime transition are complete.
+Policy promotion: Block 7 integrates their identity and Stage permissions into
+the runtime, while both new profiles remain release-disabled until their Policy
+gates close.
 
 ## Runtime Contracts
 

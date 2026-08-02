@@ -1,14 +1,15 @@
 {
   "schema_version": "framework-objects-v1",
-  "status": "design_only_until_block_7",
+  "status": "runtime_integrated_block_7",
   "framework_manifest_path": "configs/curation_framework_v1.json",
-  "framework_manifest_sha256": "7051acd584aec4303adce07c3cbad5b38e6edb54f3b8b86c058d486d3e26f194",
+  "framework_manifest_sha256": "4e37a9c0212ad115014e8e247ba405fb766ea3dbefe374a493283a6b31372062",
   "methods": [
     {"id": "validity.candidate_processing", "version": "v1", "implementation_path": "ingestion/candidate_processing.py", "implementation_sha256": "9178cd02a69e020959bf803d4998e37be8cdc11d1606937ec33536038e69e3d0", "deterministic": true},
-    {"id": "redundancy.current_runtime", "version": "v1", "implementation_path": "run_curation.py", "implementation_sha256": "637c2836e83728883edc0e906aaa466d1e634046ee937f594fadae91187a1ac6", "deterministic": true},
+    {"id": "redundancy.current_runtime", "version": "v1", "implementation_path": "run_curation.py", "implementation_sha256": "b4061d63ea4b7c130c63171b5e40403810a23be42b7199dffb450592e13d501c", "deterministic": true},
     {"id": "quality.retention_contract", "version": "v1", "implementation_path": "quality_retention.py", "implementation_sha256": "1bf11fcede83dc9e50f317551bd6e72f235c9c82c2713126699285992fe6cc33", "deterministic": true},
     {"id": "coverage.materialization_contract", "version": "v1", "implementation_path": "coverage_contract.py", "implementation_sha256": "d8ba5c0ee46c5350c4b7f6ac6d851d5c448e2a76a4a7d3a00295ec192f0e33fe", "deterministic": true},
-    {"id": "quality.contrastive_gap", "version": "v2", "implementation_path": "contrastive_quality_contract.py", "implementation_sha256": "c687d54c414d90a6c72af5fa38db6e41bbb2e71115e207aec6c4688321a80032", "deterministic": false}
+    {"id": "quality.contrastive_gap", "version": "v2", "implementation_path": "contrastive_quality_contract.py", "implementation_sha256": "c687d54c414d90a6c72af5fa38db6e41bbb2e71115e207aec6c4688321a80032", "deterministic": false},
+    {"id": "framework.runtime_bridge", "version": "v1", "implementation_path": "framework_runtime_bridge.py", "implementation_sha256": "e423adaf8c82a59d72e61cbc9fcb9c65977eec0f5a5a1aebc0486d47dfe9faf5", "deterministic": true}
   ],
   "metrics": [
     {"id": "validity.closed_failure", "core_id": "validity", "method_id": "validity.candidate_processing", "unit": "typed_failure_code", "semantics": "closed observable input-contract failure", "provider_id": "deterministic.current_runtime", "threshold": null},
