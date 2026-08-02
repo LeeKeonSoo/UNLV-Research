@@ -2,6 +2,7 @@
   "schema_version": "redundancy-v2-contract-v1",
   "status": "block_4_fixture_validated_candidate",
   "runtime_activation": false,
+  "development_ablation_ready": false,
   "runtime_authority": "none_candidate_cannot_select_transform_or_remove",
   "single_global_similarity_threshold": false,
   "relations": [

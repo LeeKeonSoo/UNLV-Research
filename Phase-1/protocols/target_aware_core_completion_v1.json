@@ -406,6 +406,7 @@
     "candidate_only_relation_cases": 4,
     "observed_relation_mismatches": 0,
     "representative_selection": "deferred_to_stage_c_quality_and_coverage",
+    "development_ablation_ready": false,
     "runtime_activation": false,
     "activation_deferred_to": "Block 7 atomic joint-selector migration"
   },
@@ -512,5 +513,47 @@
     "current_normal_action": "blocked_retain_base",
     "current_hard_action": "blocked_retain_base"
   },
-  "next_block": "Block 8 - Development selection"
+  "block_8_implementation": {
+    "status": "contract_complete_empirical_selection_blocked",
+    "contract": "configs/development_selection_v1.json",
+    "implementation": [
+      "development_selection.py",
+      "development_selection_preflight.py"
+    ],
+    "current_preflight_audit": "validation/frozen_contracts/development_selection_v1_current_preflight.json",
+    "required_domains": [
+      "code",
+      "math",
+      "general"
+    ],
+    "required_scenarios": [
+      "clean",
+      "duplicate_heavy",
+      "malformed",
+      "boilerplate_heavy",
+      "mixed_raw_like"
+    ],
+    "clean_control_false_positive_rule": "one_sided_wilson_upper_bound_at_95_percent_must_not_exceed_0.01",
+    "hard_candidate_inventory": "configs/hard_policy_inventory_v1.json",
+    "hard_candidate_inventory_sha256": "16410272c29f9726142db5a18ba0ed61776629ca839ece2cd9e0c4cf4cb142e3",
+    "common_baseline_sensitivity_contract": "all_arms_share_one_baseline_disjoint_from_every_sensitivity_arm_and_development_heldout_effect_arms_are_disjoint",
+    "selection_geometry": "pareto_frontier_over_natural_tokens_development_gain_lcb_coverage_divergence_with_hard_constraints",
+    "weighted_core_formula_used": false,
+    "benchmark_feedback_allowed": false,
+    "confirmatory_feedback_allowed": false,
+    "normal_selection_rule": "maximize_gain_lcb_then_minimize_tokens_on_pareto_frontier",
+    "hard_selection_rule": "minimize_tokens_then_maximize_gain_lcb_on_pareto_frontier",
+    "current_profiles_frozen": false,
+    "current_blockers": [
+      "coverage_gate_not_ready",
+      "development_corpus_manifest_missing",
+      "general_benchmark_snapshot_not_frozen",
+      "math_benchmark_snapshot_not_frozen",
+      "quality_gate_not_ready",
+      "redundancy_gate_not_ready"
+    ],
+    "contract_fixture_only_not_empirical_evidence": true,
+    "runtime_activation": false
+  },
+  "next_block": "Block 8 - close empirical development blockers and freeze Normal/Hard"
 }

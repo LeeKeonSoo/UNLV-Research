@@ -1,0 +1,36 @@
+{
+  "schema_version": "development-selection-v1",
+  "status": "block_8_development_only_fail_closed",
+  "required_domains": [
+    "code",
+    "math",
+    "general"
+  ],
+  "required_scenarios": [
+    "clean",
+    "duplicate_heavy",
+    "malformed",
+    "boilerplate_heavy",
+    "mixed_raw_like"
+  ],
+  "one_sided_confidence_z": 1.6448536269514722,
+  "maximum_clean_false_positive_upper_bound": 0.01,
+  "clean_control_bound_role": "preregistered_engineering_risk_tolerance_not_universal_empirical_constant",
+  "normal_selection_rule": "maximize_gain_lcb_then_minimize_tokens_on_pareto_frontier",
+  "hard_selection_rule": "minimize_tokens_then_maximize_gain_lcb_on_pareto_frontier",
+  "development_corpus_manifest": "configs/development_corpus_manifest_v1.json",
+  "hard_candidate_inventory": "configs/hard_policy_inventory_v1.json",
+  "hard_candidate_inventory_sha256": "16410272c29f9726142db5a18ba0ed61776629ca839ece2cd9e0c4cf4cb142e3",
+  "hard_extension_candidate_ids": [
+    "stage_c_inline_license_header_candidate",
+    "stage_c_inline_license_comment_block_candidate",
+    "stage_c_repeated_span_template_candidate"
+  ],
+  "benchmark_outcomes_available_to_selector": false,
+  "confirmatory_outcomes_available_to_selector": false,
+  "source_reputation_available_to_selector": false,
+  "target_retention_fraction_allowed": false,
+  "hidden_token_budget_allowed": false,
+  "weighted_core_formula_allowed": false,
+  "post_run_override_allowed": false
+}

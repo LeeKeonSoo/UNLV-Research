@@ -601,6 +601,39 @@ without confirmatory feedback.
 Exit: one frozen Normal profile, one frozen Hard profile, their immutable
 hashes, and no result-dependent tuning path remain.
 
+Contract status: **complete; empirical exit blocked**. The typed contract is
+`configs/development_selection_v1.json`; the selector and current-state
+preflight are `development_selection.py` and
+`development_selection_preflight.py`. They enforce the complete 3-domain by
+5-scenario matrix, benchmark exclusion, confirmatory disjointness, complete
+removal traces, zero unexplained support extinction, a one-sided 95% Wilson
+clean-control false-positive upper bound of at most 1%, and nonnegative
+development-effect lower bounds. Every arm must share one metric artifact and
+the same baseline, that baseline must be disjoint from every sensitivity arm,
+and development and held-out effect arms must also be disjoint. This preserves
+the common-baseline correction made during Utility debugging. These are hard
+constraints, not terms in a weighted score.
+The 1% bound is a preregistered engineering risk tolerance for this experiment,
+not a universal constant claimed by the framework.
+
+Among eligible Pareto points, Normal maximizes the preregistered development
+gain lower bound before minimizing natural tokens. Hard minimizes natural
+tokens before maximizing that lower bound. Both use Coverage divergence as a
+Pareto coordinate, never a scalar Core score. Benchmark and confirmatory
+outcomes, source reputation, retention targets, hidden budgets, and post-run
+overrides are structurally absent from the contract.
+Hard can select only one candidate registered in the hash-pinned
+`configs/hard_policy_inventory_v1.json`; an arbitrary policy identifier cannot
+enter the profile freeze.
+
+The frozen current-state audit is
+`validation/frozen_contracts/development_selection_v1_current_preflight.json`.
+It reports six blockers: Redundancy, Quality, and Coverage empirical gates;
+the Code/Math/General development corpus manifest; frozen Math and General
+benchmark-exclusion snapshots. Hard extension selection is an output of this
+Block, so it is deliberately not a preflight prerequisite. Therefore no
+Normal or Hard profile hash has been frozen and Block 9 is not authorized.
+
 ### Block 9 - Confirmatory external evaluation
 
 - materialize Base, Normal, and Hard dataset arms;
@@ -645,7 +678,7 @@ linked to a frozen evidence bundle.
 10. The paper never claims universal intrinsic Quality or guaranteed
     improvement on every corpus.
 
-## 13. Block 1A Through Block 7 Resolution
+## 13. Block 1A Through Block 8 Resolution
 
 Block 1 froze the target SLM, tokenizer, experiment arms, and capability panels
 in `protocols/target_aware_core_completion_v1.json`. The Qwen excess-loss pair
@@ -678,4 +711,9 @@ non-active atomic selector and profile registry under
 `validation/frozen_contracts/joint_selector_v1_contract_audit.json`. Frozen
 registry gates currently retain Base. Block 8 must select development operating
 points, while Block 5 and Block 6 empirical evidence remains required before
-any runtime promotion.
+any runtime promotion. Block 8 now has a fail-closed typed selection and
+preflight implementation under `configs/development_selection_v1.json`. Its
+mechanics pass deterministic contract tests, but the current audit reports
+six unresolved empirical prerequisites. This is a Block 8 implementation
+milestone, not a profile-selection result; Base remains the only target-aware
+materialization authorized by the new selector namespace.

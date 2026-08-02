@@ -1,6 +1,6 @@
 {
   "schema_version": "joint-selector-profiles-v1",
-  "status": "block_7_candidate_contract_runtime_blocked",
+  "status": "block_8_development_selection_empirical_blocked",
   "runtime_activation": false,
   "post_run_override_allowed": false,
   "benchmark_feedback_allowed": false,
@@ -22,7 +22,7 @@
     {
       "name": "normal",
       "profile_id": "normal_target_aware_v1",
-      "status": "development_only_empirical_gates_blocked",
+      "status": "development_only_block_8_empirical_gates_blocked",
       "development_only": true,
       "required_policy_ids": [
         "candidate_redundancy_v2",
@@ -36,7 +36,7 @@
     {
       "name": "hard",
       "profile_id": "hard_target_aware_v1",
-      "status": "blocked_until_block_8_selects_one_frozen_extension",
+      "status": "blocked_until_block_8_closes_empirical_gates_and_freezes_one_extension",
       "development_only": true,
       "required_policy_ids": [
         "candidate_redundancy_v2",

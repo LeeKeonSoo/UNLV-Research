@@ -149,6 +149,11 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("joint_selector.py")
     expected.add("scripts/build_joint_selector_v1_audit.py")
     expected.add("validation/test_joint_selector_v1.py")
+    expected.add("development_selection.py")
+    expected.add("development_selection_contract.py")
+    expected.add("development_selection_preflight.py")
+    expected.add("scripts/build_development_selection_v1_audit.py")
+    expected.add("validation/test_development_selection_v1.py")
     actual = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*.py")
@@ -204,6 +209,7 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
     expected.add("quality_effect_engine_v2.json")
     expected.add("coverage_engine_v2.json")
     expected.add("joint_selector_profiles_v1.json")
+    expected.add("development_selection_v1.json")
     expected.update(
         {
             "math_complete_bundle_calibration_v1.json",

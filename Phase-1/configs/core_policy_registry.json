@@ -173,6 +173,26 @@
       "benchmark_feedback_allowed": false,
       "source_selection_axis_used": false,
       "target_retention_fraction_used": false
+    },
+    "candidate_development_selection_v1": {
+      "runtime_owner": "development_selection.py",
+      "runtime_activation": false,
+      "orchestration_role": "development_only_profile_freeze_not_a_fifth_core",
+      "contract": "configs/development_selection_v1.json",
+      "current_preflight_audit": "validation/frozen_contracts/development_selection_v1_current_preflight.json",
+      "required_matrix": "code_math_general_by_clean_duplicate_malformed_boilerplate_mixed",
+      "selection_geometry": "pareto_frontier_without_weighted_core_formula",
+      "normal_rule": "maximize_gain_lcb_then_minimize_tokens_on_pareto_frontier",
+      "hard_rule": "minimize_tokens_then_maximize_gain_lcb_on_pareto_frontier",
+      "hard_candidate_inventory": "configs/hard_policy_inventory_v1.json",
+      "effect_contract": "all_arms_share_one_disjoint_common_baseline_and_one_metric_artifact",
+      "current_status": "blocked_six_empirical_prerequisites",
+      "profiles_frozen": false,
+      "benchmark_feedback_allowed": false,
+      "confirmatory_feedback_allowed": false,
+      "source_reputation_used": false,
+      "target_retention_fraction_used": false,
+      "post_run_override_allowed": false
     }
   },
   "policies": [

@@ -4,7 +4,7 @@
   "contract_fixture_only_not_empirical_evidence": true,
   "fixture_normal_result": {
     "profile_name": "normal",
-    "profile_sha256": "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af",
+    "profile_sha256": "760ea4a780bd4d360146af3a26684a9749134bcbaa8934c0cd811c4cbb33598c",
     "status": "candidate_materialized",
     "reason_code": "joint_candidate_materialized",
     "selected_uids": [
@@ -111,9 +111,9 @@
       "utility_read": false
     },
     "input_sha256": "2512db50359145cc8adac2ce602fe020d3461b5057871100f1112e1c1b2ec891",
-    "manifest_sha256": "e71ff124d5e64a8438a58ee0c507a97193ed1c40fc572c8a6e23eb22c682f13c",
+    "manifest_sha256": "63521c02822fa57efe1d1968d6a66f269cded58f605076712360774e8d985a9a",
     "policy_artifact_hashes": [
-      "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af"
+      "760ea4a780bd4d360146af3a26684a9749134bcbaa8934c0cd811c4cbb33598c"
     ],
     "evidence_artifact_hashes": [
       "1111111111111111111111111111111111111111111111111111111111111111",
@@ -145,7 +145,7 @@
   "deterministic_replay_passed": true,
   "fixture_hard_result": {
     "profile_name": "hard",
-    "profile_sha256": "cdd3306fa2697c27bf49b17481e3e9ca6060824d5f6c2e57b9779f249af7953f",
+    "profile_sha256": "904460eaddde268447210d74c2c423f43331f3362620fc7e1fef4d0a0a250f96",
     "status": "blocked_retain_base",
     "reason_code": "joint_hard_extension_not_ready",
     "selected_uids": [
@@ -158,9 +158,9 @@
     "removal_traces": [],
     "coverage_decision": null,
     "input_sha256": "2512db50359145cc8adac2ce602fe020d3461b5057871100f1112e1c1b2ec891",
-    "manifest_sha256": "fc3539bbee8ecf53aaee7b2bb3f80ca014c55ae1e325c6cbbab7b3a658e1a536",
+    "manifest_sha256": "98951ac00860c0640157c6432786e76db9e28140382446d4ae86c7386a15b146",
     "policy_artifact_hashes": [
-      "cdd3306fa2697c27bf49b17481e3e9ca6060824d5f6c2e57b9779f249af7953f"
+      "904460eaddde268447210d74c2c423f43331f3362620fc7e1fef4d0a0a250f96"
     ],
     "evidence_artifact_hashes": [
       "6666666666666666666666666666666666666666666666666666666666666666",
@@ -182,7 +182,7 @@
   "current_semantic_provider_lifecycle": "audit_only",
   "current_registered_evidence_result": {
     "profile_name": "normal",
-    "profile_sha256": "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af",
+    "profile_sha256": "760ea4a780bd4d360146af3a26684a9749134bcbaa8934c0cd811c4cbb33598c",
     "status": "blocked_retain_base",
     "reason_code": "joint_required_evidence_gate_blocked",
     "selected_uids": [
@@ -195,15 +195,15 @@
     "removal_traces": [],
     "coverage_decision": null,
     "input_sha256": "f6865a4725e7990c85514f2ad63fe812ec3df955210863b9f525ececd8e26cea",
-    "manifest_sha256": "6da5affcdc760b2534699e6c54211870d8d3272fcbfcb94a28fa6162e47e8cc3",
+    "manifest_sha256": "446066dc8fc13750274372a1fc7e628d36e04c58160b8d7262dd7dfa130e4891",
     "policy_artifact_hashes": [
-      "c650a82b2ae4fd9095780f56b5bbc887a9464e653977a239b6571aab0268e5af"
+      "760ea4a780bd4d360146af3a26684a9749134bcbaa8934c0cd811c4cbb33598c"
     ],
     "evidence_artifact_hashes": [
-      "5431b6195e935a9ea452e9489fcc5554e6a8d5896d9ce85dada4ea6614013bd3",
+      "061b5c6fba1775e6c1cf6c099184381bd30c75c5fc54c2948cf608a6469cc3ce",
       "61146fafc2572aa2f1a9c770e45d0a71b6eb9c66e434956d92790a3039dacd7a",
       "9de0e4332ff57b1be1cfb1c7351573c044279fd156d11acb3c78b9c6e29a4469",
-      "c93934c3763c1440da9be7cc63612f8294f87799ab2537560f88a2972a92a284"
+      "f21edba28e9fbd90c388cf940c7e7cf1df5ccea2ee8b1ce9b45d927dd28e004e"
     ],
     "model_provider_identity_hashes": [
       "1111111111111111111111111111111111111111111111111111111111111111",
