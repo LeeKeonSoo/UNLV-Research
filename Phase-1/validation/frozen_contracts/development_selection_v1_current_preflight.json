@@ -14,24 +14,25 @@
     "profiles_frozen": false,
     "blocker_codes": [
       "coverage_gate_not_ready",
-      "quality_gate_not_ready",
-      "redundancy_gate_not_ready"
+      "quality_gate_not_ready"
     ],
     "evidence_artifact_hashes": [
       "b5a926901cd26aaa34399263ef46410211c75e6f0a6ec1409eac7c96d0750a3a",
-      "061b5c6fba1775e6c1cf6c099184381bd30c75c5fc54c2948cf608a6469cc3ce",
+      "063100af695703884b9ccf65d72f9cfbaf2631a0d12f34dd5946a95dac2c6d61",
       "61146fafc2572aa2f1a9c770e45d0a71b6eb9c66e434956d92790a3039dacd7a",
       "9de0e4332ff57b1be1cfb1c7351573c044279fd156d11acb3c78b9c6e29a4469",
-      "bfeebe8a24b221d22a79f82aee386abc9fcf6e6180cf650135691f72f83ff9f7",
+      "f1ec52ffa8c756045fb9b638d72e1f2ed90f927444ee8ee6f10b595262429db3",
       "16410272c29f9726142db5a18ba0ed61776629ca839ece2cd9e0c4cf4cb142e3",
       "af2360f00947bf8084d3d252a758aa85e5c5af882fba91ca8c90e30c2e3eb3e7",
       "a1ca1f797a506564ad4180ab3706fa147433c27af854b50be1d2205be714e35c",
       "01b54f57fb485abad461daf9cdae2d70f4ed18cabc0f41e4b3897fefd47cdb5e",
       "dc127ec72ecd64b16d74b6352118e0ac7079284b3ff501ab08dc29c9280b2310",
       "47b34f93c0a6a398afc610cb023d354bb7ad607ac87bc9b68e710caad4a1cd2b",
-      "f105a757e9618461f84dca773caf88b5705b456c53578cde4b9df32f5ed0b9c3"
+      "f105a757e9618461f84dca773caf88b5705b456c53578cde4b9df32f5ed0b9c3",
+      "23a5a70f474db1a6db7b5d939645b249801c96541c49dfb75849f12194bbdc33",
+      "a00c22653532794d2ebef4789549a7d56273a4aee290552bfc0337c32cf41ba5"
     ],
-    "manifest_sha256": "13231c0fde4658d5f922f399a726d726397f518a47b032bd32e79802d070eecd",
+    "manifest_sha256": "bef5c3a0650e258d1cdf34b51f00223e277c297560eee09cf82929d420c22baa",
     "benchmark_outcomes_read": false,
     "confirmatory_outcomes_read": false
   },

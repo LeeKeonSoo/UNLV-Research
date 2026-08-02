@@ -1,0 +1,55 @@
+{
+  "schema_version": "development-redundancy-gate-registry-v1",
+  "status": "e2-frozen-redundancy-inputs",
+  "inventory_manifest_path": "configs/development_corpus_manifest_v1.json",
+  "inventory_manifest_sha256": "afa602be20683e81bf93743bb9b8a805f2e4c2df1c695367a437a68a46461eb6",
+  "inventory_manifest_file_sha256": "dc127ec72ecd64b16d74b6352118e0ac7079284b3ff501ab08dc29c9280b2310",
+  "required_domains": [
+    "code",
+    "math",
+    "general"
+  ],
+  "required_scenarios": [
+    "clean",
+    "duplicate_heavy",
+    "malformed",
+    "boilerplate_heavy",
+    "mixed_raw_like"
+  ],
+  "safe_family_relations": [
+    "exact_equivalent",
+    "formatting_equivalent"
+  ],
+  "candidate_only_relations": [
+    "near_substitute",
+    "contained_payload",
+    "superset_payload",
+    "repeated_span",
+    "semantic_duplicate_candidate"
+  ],
+  "parent_relation": "parent-retained-v1",
+  "exact_copy_relations": [
+    "exact-copy-1-v1",
+    "exact-copy-2-v1"
+  ],
+  "perturbation_relation": "length-relative-single-token-deletion-v1",
+  "upstream_owned_relations": [
+    "empty-payload-v1",
+    "invalid-utf8-tail-replacement-v1"
+  ],
+  "settings": {
+    "short_exact_only_max_tokens": 32,
+    "near_min_tokens": 64,
+    "near_max_changed_ratio": 0.02,
+    "near_max_changed_tokens": 4,
+    "containment_min_tokens": 12,
+    "repeated_span_min_lexical_tokens": 12,
+    "complementary_overlap_floor": 0.18
+  },
+  "confidence_level": 0.95,
+  "maximum_clean_false_merge_upper_bound": 0.01,
+  "maximum_perturbation_safe_merge_upper_bound": 0.01,
+  "benchmark_outcomes_available": false,
+  "utility_available": false,
+  "selector_membership_mutation_allowed": false
+}

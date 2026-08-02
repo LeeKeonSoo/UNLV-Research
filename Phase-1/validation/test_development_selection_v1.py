@@ -287,14 +287,16 @@ def test_benchmark_feedback_is_not_a_parseable_selector_input() -> None:
         raise AssertionError("Benchmark feedback entered the development selector contract")
 
 
-def test_current_repository_preflight_fails_closed() -> None:
-    # Given the current frozen registry has no empirical Quality/Coverage gates.
+def test_current_repository_preflight_accepts_e2_redundancy_evidence() -> None:
+    # Given E1 admission and E2 Redundancy evidence are frozen while Quality/Coverage remain pending.
     report = evaluate_current_development_preflight(ROOT)
 
-    # When readiness is evaluated, then Block 8 remains explicit and unfrozen.
+    # When readiness is evaluated, then only the unresolved empirical Core gates remain.
     assert report.status is DevelopmentSelectionStatus.BLOCKED
     assert report.profiles_frozen is False
-    assert {"quality_gate_not_ready", "coverage_gate_not_ready", "redundancy_gate_not_ready"}.issubset(report.blocker_codes)
+    assert set(report.blocker_codes) == {"quality_gate_not_ready", "coverage_gate_not_ready"}
+    assert "redundancy_gate_not_ready" not in report.blocker_codes
+    assert "redundancy_gate_evidence_invalid" not in report.blocker_codes
     assert "development_corpus_manifest_not_admitted" not in report.blocker_codes
     assert "development_corpus_manifest_missing" not in report.blocker_codes
     assert "math_benchmark_snapshot_not_frozen" not in report.blocker_codes
@@ -311,5 +313,5 @@ if __name__ == "__main__":
     test_unregistered_hard_extension_is_rejected()
     test_protocol_loader_rejects_hard_inventory_hash_drift()
     test_benchmark_feedback_is_not_a_parseable_selector_input()
-    test_current_repository_preflight_fails_closed()
+    test_current_repository_preflight_accepts_e2_redundancy_evidence()
     print("[development-selection-v1] admission, Pareto freeze, and fail-closed preflight: pass")

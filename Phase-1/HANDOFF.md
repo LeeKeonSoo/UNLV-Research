@@ -31,6 +31,17 @@ Current repository facts:
   residual-payload loss aborts output.
 - Candidate and historical files must not be described as active policy.
 
+## Block 8 Evidence Status
+
+- E1 corpus admission is complete: Code, Math, and General development sources
+  are benchmark-excluded and disjoint from frozen confirmatory references.
+- E2 Redundancy behavior evidence is complete: 1,200/1,200 injected exact
+  families and 2,400/2,400 exact copies were recovered with zero clean-control,
+  perturbation, or cross-parent safe merge. Near, containment, and repeated-span
+  relations remain candidate-only, and runtime activation remains false.
+- The development preflight now has two blockers: `quality_gate_not_ready` and
+  `coverage_gate_not_ready`. E3 is the next authorized Block 8 task.
+
 ## Resolved Consistency Defects
 
 The baseline tracks `C-01` through `C-14`. The implementation pass resolved:

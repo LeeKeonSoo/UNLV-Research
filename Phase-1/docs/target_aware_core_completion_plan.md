@@ -580,8 +580,10 @@ has not yet been met on real data.
 Contract verification: fixture Normal deterministically selects `a,c,d`, links
 `b` to redundancy representative `a`, and removes `e` only through the complete
 calibrated Quality trace. Replay produces the same manifest. The frozen current
-gate loader reports Redundancy, Quality, and Coverage unready, so current Normal
-and Hard both return Base.
+development preflight now accepts the E2 Redundancy evidence, while Quality and
+Coverage remain unready. The joint runtime gate intentionally keeps Redundancy
+inactive until the complete atomic profile can be frozen, so current Normal and
+Hard both return Base.
 
 Empirical status: **blocked**. This establishes atomicity, replay, leakage
 boundaries, and trace completeness on a constructed fixture. It does not
@@ -628,7 +630,7 @@ enter the profile freeze.
 
 The frozen current-state audit is
 `validation/frozen_contracts/development_selection_v1_current_preflight.json`.
-It reports three blockers: the Redundancy, Quality, and Coverage empirical gates.
+It reports two blockers: the Quality and Coverage empirical gates.
 The Code/Math/General development corpus manifest passed E1 admission. Math and General
 benchmark-exclusion snapshots are frozen under the hash-pinned registry
 `protocols/math_general_benchmark_snapshot_registry_v1.json`. The frozen
@@ -656,6 +658,22 @@ alone cannot satisfy admission. Stored hashes
 from older clean-control pipelines disagree with the current canonical
 normalization for 173 records, so Block 8 recomputes all canonical hashes from
 the original text rather than inheriting those values.
+
+E2 closes the empirical Redundancy behavior gate without activating the runtime.
+The hash-pinned registry and report are
+`protocols/development_redundancy_gate_registry_v1.json` and
+`validation/frozen_contracts/development_redundancy_gate_report_v1.json`.
+Across Code, Math, and General, all 1,200 injected exact families and all 2,400
+exact copies were recovered with zero cross-parent family. None of 1,200 clean
+controls or 1,200 single-token perturbations entered a safe family; the one-sided
+95% Wilson upper bound is 0.00225 for each zero-error rate, below the frozen 0.01
+tolerance. Of the perturbations, 860 were surfaced as candidate-only near,
+containment, or repeated-span relations. The remaining 340 were retained because
+the short-document or substantive-difference guards did not supply sufficient
+evidence. Only exact and formatting equivalence receive safe-family authority;
+representative selection remains deferred to Coverage, and no benchmark, Utility,
+or source reputation entered the gate.
+
 Hard extension selection is an output of this
 Block, so it is deliberately not a preflight prerequisite. Therefore no
 Normal or Hard profile hash has been frozen and Block 9 is not authorized.
@@ -741,7 +759,8 @@ any runtime promotion. Block 8 now has a fail-closed typed selection and
 preflight implementation under `configs/development_selection_v1.json`. Its
 mechanics pass deterministic contract tests, and Math/General exclusion
 snapshots now pass revision, source-file, task-count, and manifest-hash replay
-checks. The current audit reports four unresolved empirical prerequisites.
+checks. E1 corpus admission and E2 Redundancy evidence pass; the current audit
+reports two unresolved empirical prerequisites, Quality and Coverage.
 This is a Block 8 implementation
 milestone, not a profile-selection result; Base remains the only target-aware
 materialization authorized by the new selector namespace.

@@ -1,8 +1,14 @@
 {
   "schema_version": "redundancy-v2-contract-v1",
-  "status": "block_4_fixture_validated_candidate",
+  "status": "block_8_e2_development_gate_passed_candidate",
   "runtime_activation": false,
-  "development_ablation_ready": false,
+  "development_ablation_ready": true,
+  "development_gate_registry": "protocols/development_redundancy_gate_registry_v1.json",
+  "development_gate_registry_sha256": "eb27475d77414f36173448d44c9e53871e5c22195d265890be024f7af43b1c41",
+  "development_gate_registry_file_sha256": "23a5a70f474db1a6db7b5d939645b249801c96541c49dfb75849f12194bbdc33",
+  "development_gate_report": "validation/frozen_contracts/development_redundancy_gate_report_v1.json",
+  "development_gate_report_sha256": "5d9d99d117f4f88bb1fca2e34f52d3444b53c52e9db8e2f979895d1700f00e51",
+  "development_gate_report_file_sha256": "a00c22653532794d2ebef4789549a7d56273a4aee290552bfc0337c32cf41ba5",
   "runtime_authority": "none_candidate_cannot_select_transform_or_remove",
   "single_global_similarity_threshold": false,
   "relations": [
@@ -71,5 +77,5 @@
     "target_retention_fraction",
     "hidden_token_budget"
   ],
-  "activation_deferred_to": "Block 7 atomic joint-selector migration"
+  "activation_deferred_to": "Block 8 joint-profile freeze after Quality and Coverage gates"
 }

@@ -418,9 +418,9 @@
     "candidate_only_relation_cases": 4,
     "observed_relation_mismatches": 0,
     "representative_selection": "deferred_to_stage_c_quality_and_coverage",
-    "development_ablation_ready": false,
+    "development_ablation_ready": true,
     "runtime_activation": false,
-    "activation_deferred_to": "Block 7 atomic joint-selector migration"
+    "activation_deferred_to": "Block 8 joint-profile freeze after Quality and Coverage gates"
   },
   "block_5_implementation": {
     "contract": "configs/quality_effect_engine_v2.json",
@@ -526,7 +526,7 @@
     "current_hard_action": "blocked_retain_base"
   },
   "block_8_implementation": {
-    "status": "contract_complete_empirical_selection_blocked",
+    "status": "e1_admission_and_e2_redundancy_complete_quality_coverage_blocked",
     "contract": "configs/development_selection_v1.json",
     "implementation": [
       "development_selection.py",
@@ -559,6 +559,35 @@
       "canonical_hashes_recomputed_from_text": true,
       "benchmark_outcomes_read": false
     },
+    "development_redundancy_gate": {
+      "status": "passed_without_runtime_activation",
+      "registry": "protocols/development_redundancy_gate_registry_v1.json",
+      "registry_sha256": "eb27475d77414f36173448d44c9e53871e5c22195d265890be024f7af43b1c41",
+      "registry_file_sha256": "23a5a70f474db1a6db7b5d939645b249801c96541c49dfb75849f12194bbdc33",
+      "report": "validation/frozen_contracts/development_redundancy_gate_report_v1.json",
+      "report_sha256": "5d9d99d117f4f88bb1fca2e34f52d3444b53c52e9db8e2f979895d1700f00e51",
+      "report_file_sha256": "a00c22653532794d2ebef4789549a7d56273a4aee290552bfc0337c32cf41ba5",
+      "expected_exact_families": 1200,
+      "recovered_exact_families": 1200,
+      "expected_exact_copies": 2400,
+      "linked_exact_copies": 2400,
+      "clean_control_records": 1200,
+      "clean_false_merged_records": 0,
+      "clean_false_merge_one_sided_95pct_upper_bound": 0.002249547670933035,
+      "single_token_perturbation_records": 1200,
+      "single_token_perturbation_safe_merges": 0,
+      "single_token_perturbation_candidate_relations": 860,
+      "cross_parent_safe_families": 0,
+      "safe_family_authority": [
+        "exact_equivalent",
+        "formatting_equivalent"
+      ],
+      "near_containment_repeated_span_authority": "candidate_only",
+      "representative_selection": "deferred_to_coverage",
+      "benchmark_outcomes_read": false,
+      "utility_read": false,
+      "runtime_activation": false
+    },
     "required_domains": [
       "code",
       "math",
@@ -584,11 +613,10 @@
     "current_profiles_frozen": false,
     "current_blockers": [
       "coverage_gate_not_ready",
-      "quality_gate_not_ready",
-      "redundancy_gate_not_ready"
+      "quality_gate_not_ready"
     ],
     "contract_fixture_only_not_empirical_evidence": true,
     "runtime_activation": false
   },
-  "next_block": "Block 8 - close empirical development blockers and freeze Normal/Hard"
+  "next_block": "Block 8 E3 - close the empirical Quality gate"
 }
