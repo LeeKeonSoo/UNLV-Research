@@ -1,0 +1,36 @@
+{
+  "schema_version": "validity-v2-fixtures",
+  "cases": [
+    {"id":"clean_prose","role":"clean_control","fields":{"text":"A complete explanatory document states its claim and supporting context."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_code","role":"clean_control","fields":{"text":"def add(left, right):\n    return left + right\nimport math"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_math","role":"clean_control","fields":{"text":"\\begin{proof}\nThe matrix equation follows from the lemma.\n\\end{proof}"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_korean","role":"clean_control","fields":{"text":"이 문서는 완전한 한국어 설명을 포함합니다. 두 번째 문장은 맥락을 보충합니다."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_chinese","role":"clean_control","fields":{"text":"这个文档包含完整的解释。第二句话补充了必要的上下文。"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_arabic","role":"clean_control","fields":{"text":"تحتوي هذه الوثيقة على شرح كامل وسياق إضافي مفيد."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_table","role":"clean_control","fields":{"text":"| name | value |\n| --- | --- |\n| alpha | 1 |"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_dialogue","role":"clean_control","fields":{"text":"Ava: Are you ready?\nBen: Yes, I am ready.\nAva: Let us begin."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_instruction","role":"clean_control","fields":{"text":"Step 1: Open the file.\nStep 2: Verify the checksum.\nStep 3: Record the result."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_json","role":"clean_control","fields":{"text":"{\"name\": \"alpha\", \"items\": [1, 2, 3]}"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"malformed_json_like_snippet_is_not_invalid","role":"clean_control","fields":{"text":"Example fragment: {\"name\": value, ... omitted ...}"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"clean_snippet","role":"clean_control","fields":{"text":"[snippet] return transform(value)"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"math_angle_notation","role":"clean_control","fields":{"text":"For every i<j and vector v<R, the relation remains meaningful."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"excess_latex_closer","role":"clean_control","fields":{"text":"\\end{input}\nA closing construct alone does not prove truncation."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"inline_markdown_ticks","role":"clean_control","fields":{"text":"Use `value` and `result` as inline identifiers in this explanation."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"comparison_symbols","role":"clean_control","fields":{"text":"When x < y and y > 0, the comparison remains ordinary prose."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"escaped_control_literal","role":"clean_control","fields":{"text":"The source string \\x00 names a null byte without containing one."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"short_payload","role":"clean_control","fields":{"text":"x = 1"},"expected_status":"valid","expected_action":"pass"},
+    {"id":"emoji_payload","role":"clean_control","fields":{"text":"Status markers such as ✅ can carry interpretable context."},"expected_status":"valid","expected_action":"pass"},
+    {"id":"url_list_payload","role":"clean_control","fields":{"text":"References:\nhttps://example.org/a\nhttps://example.org/b\nhttps://example.org/c"},"expected_status":"valid","expected_action":"pass"},
+
+    {"id":"cp1252_repair","role":"positive","fields":{"text":"The bird\u0092s wing remains visible."},"expected_status":"valid_after_reversible_repair","expected_action":"repair","expected_reason":"validity_cp1252_punctuation_repaired"},
+    {"id":"control_with_payload","role":"positive","fields":{"text":"A useful statement contains an embedded null\u0000character."},"expected_status":"quarantine","expected_action":"quarantine","expected_reason":"validity_forbidden_control_character"},
+    {"id":"replacement_burst","role":"positive","fields":{"text":"A useful sentence has damaged bytes ��� in its payload."},"expected_status":"quarantine","expected_action":"quarantine","expected_reason":"validity_unicode_replacement_burst"},
+    {"id":"dangling_fence","role":"positive","fields":{"text":"```text\nA useful payload has no closing source context."},"expected_status":"quarantine","expected_action":"quarantine","expected_reason":"validity_dangling_markdown_fence"},
+    {"id":"chunk_boundary_fence","role":"positive","fields":{"text":"```text\nA useful payload continues in the source record."},"source_record_text":"```text\nA useful payload continues in the source record.\n```","expected_status":"valid_after_reversible_repair","expected_action":"rechunk","expected_reason":"validity_chunk_boundary_structural_split"},
+    {"id":"unclosed_latex","role":"positive","fields":{"text":"\\begin{proof}\nThe claim remains useful but incomplete."},"expected_status":"quarantine","expected_action":"quarantine","expected_reason":"validity_unclosed_latex_environment"},
+    {"id":"trailing_delimiter_damage","role":"positive","fields":{"text":"A derivation stops unexpectedly ((("},"expected_status":"quarantine","expected_action":"quarantine","expected_reason":"validity_trailing_delimiter_damage"},
+    {"id":"empty_payload","role":"positive","fields":{"text":"   \n\t"},"expected_status":"invalid","expected_action":"reject","expected_reason":"validity_payload_absence_after_recovery"},
+    {"id":"control_only_payload","role":"positive","fields":{"text":"\u0000\u0001 �"},"expected_status":"invalid","expected_action":"reject","expected_reason":"validity_payload_absence_after_recovery"},
+    {"id":"ambiguous_text_fields","role":"positive","fields":{"text":"first payload","content":"second payload"},"expected_status":"invalid","expected_action":"reject","expected_reason":"validity_ambiguous_text_fields"}
+  ]
+}

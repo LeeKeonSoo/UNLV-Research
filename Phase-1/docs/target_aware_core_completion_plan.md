@@ -407,13 +407,27 @@ General, multilingual, and mixed JSONL corpora. Near-duplicate opportunity,
 semantic-cluster stability, and model-based Quality remain explicitly
 unavailable until their later Blocks; Block 2 does not pretend otherwise.
 
-### Block 3 - Validity v2
+### Block 3 - Validity v2 - COMPLETE AS CANDIDATE
 
-- implement the closed four-way decision and reversible repairs;
-- build cross-domain positive, negative, metamorphic, and adversarial fixtures;
-- publish per-reason error bounds and quarantine traces.
+- `validity_v2.py` implements the closed `valid`,
+  `valid_after_reversible_repair`, `quarantine`, and `invalid` states while
+  preserving the existing repair/rechunk/quarantine/reject action order;
+- raw bytes use only the declared encoding, UTF-8 BOM removal is traced as a
+  reversible repair, undecodable ambiguous payload is quarantined, and only
+  registered binary magic or control-only bytes are invalid; no fractional
+  binary threshold is introduced;
+- shortness, parser failure without a declared complete-artifact contract,
+  snippets, unknown formats, and source identity remain non-triggers;
+- the frozen audit covers 20 cross-domain clean controls and 10 positive cases,
+  plus direct byte-boundary and repair-idempotence tests;
+- observed clean false positives are `0/20` with a one-sided 95% Wilson upper
+  bound of `0.1192`; observed positive false negatives are `0/10`.
 
-Exit: all hard gates meet preregistered clean-control false-positive bounds.
+Exit: the preregistered clean-control fixture gate passes. Per-reason positive
+sample sizes remain small and their wide confidence bounds are published rather
+than hidden. The candidate has no active runtime authority; atomic Stage A/B
+activation remains deferred to Block 7 after rechunk and quarantine
+materialization are connected.
 
 ### Block 4 - Redundancy v2
 
@@ -512,7 +526,7 @@ linked to a frozen evidence bundle.
 10. The paper never claims universal intrinsic Quality or guaranteed
     improvement on every corpus.
 
-## 13. Block 1A And Block 2 Resolution
+## 13. Block 1A Through Block 3 Resolution
 
 Block 1 froze the target SLM, tokenizer, experiment arms, and capability panels
 in `protocols/target_aware_core_completion_v1.json`. The Qwen excess-loss pair
@@ -523,4 +537,11 @@ change invalidates inherited calibration and begins again at `audit_only`.
 Block 2 is implemented under `configs/corpus_profiler_contract_v1.json`. The
 profiler measures corpus structure without ranking, selecting, deleting,
 executing provider scores, or changing the frozen Conservative Structural
-runtime. Block 3 may now implement Validity v2.
+runtime.
+
+Block 3 is frozen as a non-active candidate under `configs/validity_v2.json`.
+Its four-state behavior, reversible trace, byte-decoding boundary, cross-domain
+clean controls, and per-reason uncertainty report are implemented. The evidence
+bundle is `validation/frozen_contracts/validity_v2_behavior_audit.json`. Block 4
+may now implement Redundancy v2; Block 7 remains responsible for the atomic
+runtime switch.

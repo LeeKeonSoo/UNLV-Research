@@ -1,0 +1,80 @@
+{
+  "schema_version": "validity-v2",
+  "status": "block_3_fixture_validated_candidate",
+  "runtime_activation": false,
+  "core": "validity",
+  "implementation": "validity_v2.py",
+  "behavior_audit": "validity_v2_audit.py",
+  "behavior_audit_builder": "scripts/build_validity_v2_audit.py",
+  "behavior_audit_output": "validation/frozen_contracts/validity_v2_behavior_audit.json",
+  "fixture": "validation/fixtures/validity_v2_cases.json",
+  "stages": ["Stage A", "Stage B"],
+  "states": ["valid", "valid_after_reversible_repair", "quarantine", "invalid"],
+  "actions": ["pass", "repair", "rechunk", "quarantine", "reject"],
+  "action_order": "repair_then_rechunk_then_quarantine_then_reject",
+  "reject_boundary": "no_interpretable_text_control_only_bytes_or_registered_binary_magic",
+  "quarantine_boundary": "payload_may_exist_but_declared_decoding_or_closed_structural_integrity_is_unresolved",
+  "rechunk_boundary": "chunk_has_closed_structural_defect_and_immutable_source_record_is_complete_under_the_same_guard",
+  "repairs": [
+    "contextual_cp1252_punctuation",
+    "declared_utf8_bom_removal"
+  ],
+  "hard_invalid_reasons": [
+    "validity_missing_text_field",
+    "validity_ambiguous_text_fields",
+    "validity_payload_absence_after_recovery",
+    "validity_binary_payload"
+  ],
+  "binary_boundary": {
+    "registered_magic": ["PNG", "ELF", "PE_MZ", "ZIP", "GIF87a", "GIF89a", "JPEG", "PDF"],
+    "control_only_payload": "no_ascii_printable_or_non_ascii_byte_exists",
+    "fractional_binary_threshold_used": false,
+    "unrecognized_or_ambiguous_bytes": "quarantine"
+  },
+  "quarantine_reasons": [
+    "validity_declared_decoding_failed",
+    "validity_forbidden_control_character",
+    "validity_unicode_replacement_burst",
+    "validity_unclosed_latex_environment",
+    "validity_unclosed_explicit_xml_tag",
+    "validity_dangling_markdown_fence",
+    "validity_trailing_delimiter_damage"
+  ],
+  "non_triggers": [
+    "shortness",
+    "parser_failure_without_declared_complete_artifact_contract",
+    "snippet_or_partial_file_status",
+    "unknown_format_or_language",
+    "mathematical_angle_notation",
+    "excess_structural_closer",
+    "source_identity_or_reputation"
+  ],
+  "provider_outputs_allowed": false,
+  "forbidden_inputs": [
+    "source_identity",
+    "source_tier",
+    "domain_importance",
+    "Quality_score",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes",
+    "target_retention_fraction"
+  ],
+  "trace_requirements": [
+    "immutable_original_text_fields_or_raw_bytes",
+    "original_field_hashes",
+    "original_bytes_sha256_when_applicable",
+    "recovered_sha256",
+    "source_record_sha256_when_rechunking",
+    "reason_codes",
+    "reversible_transformation_trace"
+  ],
+  "fixture_gate": {
+    "minimum_cross_domain_clean_controls": 20,
+    "maximum_observed_clean_false_positives": 0,
+    "maximum_one_sided_95pct_clean_false_positive_upper_bound": 0.15,
+    "maximum_observed_positive_false_negatives": 0,
+    "per_reason_uncertainty_report_required": true
+  },
+  "activation_boundary": "Block_3_completion_does_not_modify_active_runtime; atomic activation_is_deferred_to_joint_selector_Block_7"
+}

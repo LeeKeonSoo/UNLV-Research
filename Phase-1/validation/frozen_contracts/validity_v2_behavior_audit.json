@@ -1,0 +1,729 @@
+{
+  "schema_version": "validity-v2-behavior-audit-v1",
+  "fixture_schema_version": "validity-v2-fixtures",
+  "clean_control_count": 20,
+  "clean_false_positive_count": 0,
+  "clean_false_positive_upper_bound": 0.11915783736096437,
+  "positive_count": 10,
+  "positive_false_negative_count": 0,
+  "positive_false_negative_upper_bound": 0.21294197008340682,
+  "per_reason": [
+    {
+      "reason_code": "validity_ambiguous_text_fields",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    },
+    {
+      "reason_code": "validity_chunk_boundary_structural_split",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    },
+    {
+      "reason_code": "validity_cp1252_punctuation_repaired",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    },
+    {
+      "reason_code": "validity_dangling_markdown_fence",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    },
+    {
+      "reason_code": "validity_forbidden_control_character",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    },
+    {
+      "reason_code": "validity_payload_absence_after_recovery",
+      "positive_trials": 2,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.5749693909936534
+    },
+    {
+      "reason_code": "validity_trailing_delimiter_damage",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    },
+    {
+      "reason_code": "validity_unclosed_latex_environment",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    },
+    {
+      "reason_code": "validity_unicode_replacement_burst",
+      "positive_trials": 1,
+      "false_negatives": 0,
+      "false_negative_upper_bound": 0.7301340512159457
+    }
+  ],
+  "case_results": [
+    {
+      "case_id": "clean_prose",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "997f61800b21730acfe2ffae3e8f833c951f039d1ebc10f41ec2bf730088fcf9"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "997f61800b21730acfe2ffae3e8f833c951f039d1ebc10f41ec2bf730088fcf9",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_code",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "02ff1204b9fdf1bef6a791e31841a2b9d846f9095bc33cd4e32f4032cfd70d46"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "02ff1204b9fdf1bef6a791e31841a2b9d846f9095bc33cd4e32f4032cfd70d46",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_math",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "f1aaface6efda7e63d7676e4ee47cd4f3509e0bae35a390d72a1c788bfc11cc1"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "f1aaface6efda7e63d7676e4ee47cd4f3509e0bae35a390d72a1c788bfc11cc1",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_korean",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "778f7e9038a097bc70ed69fdeaf486f051cd66cc3c6ebbde2aa0ec2638f3ec6f"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "778f7e9038a097bc70ed69fdeaf486f051cd66cc3c6ebbde2aa0ec2638f3ec6f",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_chinese",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "56e31ebe14fc108ee85d61deae30ecc6fd9104367b42ed5958a4e26018d10508"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "56e31ebe14fc108ee85d61deae30ecc6fd9104367b42ed5958a4e26018d10508",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_arabic",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "38dfbe30cc148e5e9c1cdb01dddbec7a95e42da8e50c4ce34f9beb8a6e507cdc"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "38dfbe30cc148e5e9c1cdb01dddbec7a95e42da8e50c4ce34f9beb8a6e507cdc",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_table",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "a8a38902fd07a9354aa85c8e63db266416c882926ee65e3128d31588ef9a6b53"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "a8a38902fd07a9354aa85c8e63db266416c882926ee65e3128d31588ef9a6b53",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_dialogue",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "481ed6bab9f4c68d997afc8c606ac3d54df5589d8c2d9bd466dc373e4a35d5d5"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "481ed6bab9f4c68d997afc8c606ac3d54df5589d8c2d9bd466dc373e4a35d5d5",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_instruction",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "9bd754afb2e6cec4b572ef18578c43ff6cf9ddca90d023d2ddfaa8ba56bb04c2"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "9bd754afb2e6cec4b572ef18578c43ff6cf9ddca90d023d2ddfaa8ba56bb04c2",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_json",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "7488c59627135c8d056b3e262214f00a96301c7d37e6392aa4ba6b14b00b242f"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "7488c59627135c8d056b3e262214f00a96301c7d37e6392aa4ba6b14b00b242f",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "malformed_json_like_snippet_is_not_invalid",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "66129ea3a1af45ac662bbbee5d63785cfc67fdc41b129ca2f3159d38b4c6aad2"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "66129ea3a1af45ac662bbbee5d63785cfc67fdc41b129ca2f3159d38b4c6aad2",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "clean_snippet",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "8c438e5c425ce551c529b4b1d4dd2ad9f0e58d468f25aac99d533cd5c00f75cc"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "8c438e5c425ce551c529b4b1d4dd2ad9f0e58d468f25aac99d533cd5c00f75cc",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "math_angle_notation",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "bb89178e63ff599e00dfed79f9d954d57bc3bf3da33128c9fc98b83bc95507ee"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "bb89178e63ff599e00dfed79f9d954d57bc3bf3da33128c9fc98b83bc95507ee",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "excess_latex_closer",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "2d937144443b88825a9c58df3ec0098632dea778d8eeea1981d23185a4dc0d76"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "2d937144443b88825a9c58df3ec0098632dea778d8eeea1981d23185a4dc0d76",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "inline_markdown_ticks",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "41bf765ee7473954ea49b451fbf11a72141afc69e0b2a6f66a1a7006406f1c79"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "41bf765ee7473954ea49b451fbf11a72141afc69e0b2a6f66a1a7006406f1c79",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "comparison_symbols",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "240e41ea1ecd1de5ce55f9d98f8b33c9b273bd3d344bed539c4f37f7898b1e04"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "240e41ea1ecd1de5ce55f9d98f8b33c9b273bd3d344bed539c4f37f7898b1e04",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "escaped_control_literal",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "db1fc02334019be963d4bd5ad71763a8adb0bb4a08f33f397b365546df9b1d8e"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "db1fc02334019be963d4bd5ad71763a8adb0bb4a08f33f397b365546df9b1d8e",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "short_payload",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "8ff436def1451285599a1b1ad70800493b8dcafde2912e1a38345633054e4c26"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "8ff436def1451285599a1b1ad70800493b8dcafde2912e1a38345633054e4c26",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "emoji_payload",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "ec9ccc20d50f2dda452bf385ebf1421e2d0ab662a3c00813df298942e34dc2ef"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "ec9ccc20d50f2dda452bf385ebf1421e2d0ab662a3c00813df298942e34dc2ef",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "url_list_payload",
+      "role": "clean_control",
+      "expected_status": "valid",
+      "observed_status": "valid",
+      "expected_action": "pass",
+      "observed_action": "pass",
+      "expected_reason": null,
+      "observed_reasons": [],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "76f48ea4bc6700b38f1530e369aa6b257dd0bea268e4e3849c2acc4e7e3346f7"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "76f48ea4bc6700b38f1530e369aa6b257dd0bea268e4e3849c2acc4e7e3346f7",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "cp1252_repair",
+      "role": "positive",
+      "expected_status": "valid_after_reversible_repair",
+      "observed_status": "valid_after_reversible_repair",
+      "expected_action": "repair",
+      "observed_action": "repair",
+      "expected_reason": "validity_cp1252_punctuation_repaired",
+      "observed_reasons": [
+        "validity_cp1252_punctuation_repaired"
+      ],
+      "transformation_codes": [
+        "cp1252_c1_0092_to_2019"
+      ],
+      "original_field_hashes": [
+        [
+          "text",
+          "6e0872c8ab29fb7d97194ed39a623bc3df9427d8eab9bb157cbd07dc1421e017"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "bca71eb17b4703bf3c57bcacc09a865479896ca97b2af53138e38fb95ef1564e",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "control_with_payload",
+      "role": "positive",
+      "expected_status": "quarantine",
+      "observed_status": "quarantine",
+      "expected_action": "quarantine",
+      "observed_action": "quarantine",
+      "expected_reason": "validity_forbidden_control_character",
+      "observed_reasons": [
+        "validity_forbidden_control_character"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "57dde8931e92048b300cc6a1e7fc737499969f5f7978a82aa8b369c2242888ea"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "57dde8931e92048b300cc6a1e7fc737499969f5f7978a82aa8b369c2242888ea",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "replacement_burst",
+      "role": "positive",
+      "expected_status": "quarantine",
+      "observed_status": "quarantine",
+      "expected_action": "quarantine",
+      "observed_action": "quarantine",
+      "expected_reason": "validity_unicode_replacement_burst",
+      "observed_reasons": [
+        "validity_unicode_replacement_burst"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "1b02f213aec46f12a2ed2cf98b6cb4deb465ff60f8bf26e65b86965beb4bc45c"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "1b02f213aec46f12a2ed2cf98b6cb4deb465ff60f8bf26e65b86965beb4bc45c",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "dangling_fence",
+      "role": "positive",
+      "expected_status": "quarantine",
+      "observed_status": "quarantine",
+      "expected_action": "quarantine",
+      "observed_action": "quarantine",
+      "expected_reason": "validity_dangling_markdown_fence",
+      "observed_reasons": [
+        "validity_dangling_markdown_fence"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "315e31a62ca6ec518470092afedcbb07c6f98a8eff3740d2bc4148efb126f849"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "315e31a62ca6ec518470092afedcbb07c6f98a8eff3740d2bc4148efb126f849",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "chunk_boundary_fence",
+      "role": "positive",
+      "expected_status": "valid_after_reversible_repair",
+      "observed_status": "valid_after_reversible_repair",
+      "expected_action": "rechunk",
+      "observed_action": "rechunk",
+      "expected_reason": "validity_chunk_boundary_structural_split",
+      "observed_reasons": [
+        "validity_dangling_markdown_fence",
+        "validity_chunk_boundary_structural_split"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "dd1f630538c60ad9e3aa5dab458ff5b5191a37e7122ee6ca3ee24d70618a868f"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "dd1f630538c60ad9e3aa5dab458ff5b5191a37e7122ee6ca3ee24d70618a868f",
+      "source_record_sha256": "c80989b519e87ea7ba32cb21b8eac269b2eeccea9794753d8156af35d55fbcfd",
+      "passed": true
+    },
+    {
+      "case_id": "unclosed_latex",
+      "role": "positive",
+      "expected_status": "quarantine",
+      "observed_status": "quarantine",
+      "expected_action": "quarantine",
+      "observed_action": "quarantine",
+      "expected_reason": "validity_unclosed_latex_environment",
+      "observed_reasons": [
+        "validity_unclosed_latex_environment"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "21e1e7345f3c569265628cb3d266790cfe8db6938644d3216635bcf3a96768ad"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "21e1e7345f3c569265628cb3d266790cfe8db6938644d3216635bcf3a96768ad",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "trailing_delimiter_damage",
+      "role": "positive",
+      "expected_status": "quarantine",
+      "observed_status": "quarantine",
+      "expected_action": "quarantine",
+      "observed_action": "quarantine",
+      "expected_reason": "validity_trailing_delimiter_damage",
+      "observed_reasons": [
+        "validity_trailing_delimiter_damage"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "723839bcce7100373ad9e405b45e40220117b0d00c2af1e3170e5c116e8e0802"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "723839bcce7100373ad9e405b45e40220117b0d00c2af1e3170e5c116e8e0802",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "empty_payload",
+      "role": "positive",
+      "expected_status": "invalid",
+      "observed_status": "invalid",
+      "expected_action": "reject",
+      "observed_action": "reject",
+      "expected_reason": "validity_payload_absence_after_recovery",
+      "observed_reasons": [
+        "validity_payload_absence_after_recovery"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "792fee090ff922a54f1babb30c0dfefcdf684dba0657ed08a7663fa2e11138c6"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "792fee090ff922a54f1babb30c0dfefcdf684dba0657ed08a7663fa2e11138c6",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "control_only_payload",
+      "role": "positive",
+      "expected_status": "invalid",
+      "observed_status": "invalid",
+      "expected_action": "reject",
+      "observed_action": "reject",
+      "expected_reason": "validity_payload_absence_after_recovery",
+      "observed_reasons": [
+        "validity_payload_absence_after_recovery"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "ff15f978f7fad665cb2c81d1a65a2f442724ab7037800ff554ded22845ed9058"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "ff15f978f7fad665cb2c81d1a65a2f442724ab7037800ff554ded22845ed9058",
+      "source_record_sha256": null,
+      "passed": true
+    },
+    {
+      "case_id": "ambiguous_text_fields",
+      "role": "positive",
+      "expected_status": "invalid",
+      "observed_status": "invalid",
+      "expected_action": "reject",
+      "observed_action": "reject",
+      "expected_reason": "validity_ambiguous_text_fields",
+      "observed_reasons": [
+        "validity_ambiguous_text_fields"
+      ],
+      "transformation_codes": [],
+      "original_field_hashes": [
+        [
+          "text",
+          "bdaddc7127911b7a4d96de6f704ac24eea1357ec52d7249750e88d2baddd14d9"
+        ],
+        [
+          "content",
+          "969e6ff862080fc76166b4f8eb362588b21d8e946c93a649ce8da91d1ab5e1ad"
+        ]
+      ],
+      "original_bytes_sha256": null,
+      "recovered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_record_sha256": null,
+      "passed": true
+    }
+  ],
+  "confidence_level": 0.95,
+  "passed": true,
+  "authority": "fixture_behavior_audit_only",
+  "runtime_activation": false
+}

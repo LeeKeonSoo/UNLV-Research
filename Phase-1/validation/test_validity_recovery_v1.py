@@ -85,7 +85,7 @@ def test_candidate_is_linked_to_core_registry_and_policy_card() -> None:
     assert candidate["runtime_authorization"] == "none_candidate_cannot_quarantine_or_reject"
     assert candidate["policy_card_id"] == card["id"]
     assert "validity_recovery.py" in candidate["runtime_implementation"]
-    assert card["empirical_status"] == "fixture_validated_candidate_not_runtime_active"
+    assert card["empirical_status"] == "block_3_cross_domain_fixture_and_uncertainty_audit_passed_candidate_not_runtime_active"
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 {
   "schema_version": "target-aware-core-completion-v1",
-  "status": "block_2_provider_contract_and_audit_profiler_implemented",
+  "status": "block_3_validity_v2_fixture_validated_candidate",
   "frozen_at": "2026-08-02",
   "implementation_authority": "design_contract_only",
   "baseline": {
@@ -346,5 +346,21 @@
     "model_provider_outputs_executed": false,
     "exact_target_token_count_available_when_frozen_tokenizer_is_declared": true
   },
-  "next_block": "Block 3 - Validity v2"
+  "block_3_implementation": {
+    "contract": "configs/validity_v2.json",
+    "implementation": "validity_v2.py",
+    "behavior_audit": "validity_v2_audit.py",
+    "states": [
+      "valid",
+      "valid_after_reversible_repair",
+      "quarantine",
+      "invalid"
+    ],
+    "cross_domain_clean_controls": 20,
+    "observed_clean_false_positives": 0,
+    "observed_positive_false_negatives": 0,
+    "runtime_activation": false,
+    "activation_deferred_to": "Block 7 atomic joint-selector migration"
+  },
+  "next_block": "Block 4 - Redundancy v2"
 }

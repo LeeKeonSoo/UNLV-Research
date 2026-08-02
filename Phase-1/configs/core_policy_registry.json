@@ -161,12 +161,17 @@
     },
     {
       "id": "stage_a_b_validity_recovery_candidate",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "core": "validity",
       "stage": "Stage A/B",
       "status": "candidate",
-      "activation_state": "candidate",
+      "activation_state": "block_3_fixture_validated_candidate",
       "reason_codes": [
+        "validity_missing_text_field",
+        "validity_ambiguous_text_fields",
+        "validity_binary_payload",
+        "validity_declared_decoding_failed",
+        "validity_utf8_bom_repaired",
         "validity_cp1252_punctuation_repaired",
         "validity_payload_absence_after_recovery",
         "validity_forbidden_control_character",
@@ -182,16 +187,17 @@
         "immutable_source_record_text"
       ],
       "policy_card_id": "stage_a_b_validity_recovery_candidate",
-      "fixture": "validation/test_validity_recovery_v1.py",
+      "fixture": "validation/test_validity_v2.py",
       "runtime_implementation": [
+        "validity_v2.py",
+        "validity_v2_audit.py",
         "validity_recovery.py",
         "explicit_structural_coherence.py"
       ],
-      "scope": "text-only deterministic recovery and disposition with optional immutable source-record context for chunk-boundary diagnosis",
+      "scope": "cross-domain four-state Validity with deterministic repair, raw-byte decoding boundary, and optional immutable source-record context for chunk-boundary diagnosis",
       "blocking_conditions": [
         "rechunk_materializer_preserves_source_payload",
         "quarantine_and_reject_artifacts_are_separate",
-        "reason_code_impact_audit_complete",
         "active_stage_a_contract_migration_is_atomic"
       ],
       "runtime_authorization": "none_candidate_cannot_quarantine_or_reject",

@@ -68,14 +68,14 @@
     },
     {
       "id": "stage_a_b_validity_recovery_candidate",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "core": "validity",
       "stage": "Stage A/B",
       "hypothesis": "Closed integrity evidence should trigger deterministic repair or context-preserving rechunking before quarantine, and rejection should require absence of interpretable payload after recovery.",
       "decision_unit": "chunk_with_optional_immutable_source_record",
       "deployment_scope": "all text inputs under the registered explicit structural guard",
       "allowed_inputs": [
-        "chunk text",
+        "exactly one declared text field or raw bytes with declared encoding",
         "optional immutable source-record text"
       ],
       "forbidden_inputs": [
@@ -92,6 +92,11 @@
         "target retention fraction"
       ],
       "reason_codes": [
+        "validity_missing_text_field",
+        "validity_ambiguous_text_fields",
+        "validity_binary_payload",
+        "validity_declared_decoding_failed",
+        "validity_utf8_bom_repaired",
         "validity_cp1252_punctuation_repaired",
         "validity_payload_absence_after_recovery",
         "validity_forbidden_control_character",
@@ -112,10 +117,12 @@
       "coverage_impact": "no selection authority; repair and rechunk preserve original text hashes, while quarantine and reject remain separate dispositions",
       "rollback_behavior": "preserve the immutable original and disable candidate recovery without altering the active Stage-A output",
       "runtime_implementation": [
+        "validity_v2.py",
+        "validity_v2_audit.py",
         "validity_recovery.py",
         "explicit_structural_coherence.py"
       ],
-      "empirical_status": "fixture_validated_candidate_not_runtime_active"
+      "empirical_status": "block_3_cross_domain_fixture_and_uncertainty_audit_passed_candidate_not_runtime_active"
     },
     {
       "id": "stage_a_provenance_contract",
