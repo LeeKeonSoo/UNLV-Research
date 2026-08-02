@@ -3,6 +3,14 @@
 This directory contains several classes of JSON artifacts. File presence alone
 does not grant runtime authority.
 
+## Redesign Root
+
+`curation_framework_v1.json` is the single machine-readable root for the next
+framework version. Its schema is
+`schemas/curation_framework_v1.schema.json`. It is design-only until Block 7;
+referenced registries that do not yet exist are forward declarations, not
+runtime activation.
+
 ## Runtime Contracts
 
 The runtime contract surface is anchored by:

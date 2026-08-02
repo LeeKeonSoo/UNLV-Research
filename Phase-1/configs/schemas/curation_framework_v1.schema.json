@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unlv-research.local/schemas/curation-framework-v1.json",
+  "title": "Curation Framework v1 Root Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "activation", "research_contract", "hierarchy", "cores", "stages", "runtime_forbidden_inputs", "profile_contract", "threshold_provenance", "registry_references", "legacy_runtime_references", "external_evaluation"],
+  "properties": {
+    "schema_version": {"const": "curation-framework-v1"},
+    "activation": {"const": "design_only_until_block_7"},
+    "research_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "hierarchy": {"const": ["core", "metric", "policy", "method"]},
+    "cores": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/$defs/core"}},
+    "stages": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/stage"}},
+    "runtime_forbidden_inputs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "profile_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public_profiles", "retained_set_invariant", "fixed_retention_fraction_allowed", "maximum_token_budget_allowed", "hard_requires_independently_promoted_policies"],
+      "properties": {
+        "public_profiles": {"const": ["normal", "hard"]},
+        "retained_set_invariant": {"const": "hard_subset_or_equal_normal"},
+        "fixed_retention_fraction_allowed": {"const": false},
+        "maximum_token_budget_allowed": {"const": false},
+        "hard_requires_independently_promoted_policies": {"const": true}
+      }
+    },
+    "threshold_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_fields", "missing_field_action"],
+      "properties": {
+        "required_fields": {"type": "array", "minItems": 15, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "missing_field_action": {"const": "abstain_retain"}
+      }
+    },
+    "registry_references": {"$ref": "#/$defs/pathMap"},
+    "legacy_runtime_references": {"$ref": "#/$defs/pathMap"},
+    "external_evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_stage", "selector_visible", "data_arms", "natural_token_budget", "seeds", "equal_token_primary", "common_sensitivity_baseline_required", "development_confirmatory_disjoint"],
+      "properties": {
+        "runtime_stage": {"const": false},
+        "selector_visible": {"const": false},
+        "data_arms": {"const": ["base_stage_a", "normal", "hard"]},
+        "natural_token_budget": {"const": true},
+        "seeds": {"const": [101, 202, 303]},
+        "equal_token_primary": {"const": false},
+        "common_sensitivity_baseline_required": {"const": true},
+        "development_confirmatory_disjoint": {"const": true}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "core": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "stage_ids", "question", "authority", "may_delete", "may_veto_materialization"],
+      "properties": {
+        "id": {"enum": ["validity", "redundancy", "quality", "coverage"]},
+        "stage_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["stage_a", "stage_b", "stage_c"]}},
+        "question": {"type": "string", "minLength": 1},
+        "authority": {"type": "string", "minLength": 1},
+        "may_delete": {"type": "boolean"},
+        "may_veto_materialization": {"type": "boolean"}
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "position", "scope", "core_ids", "allowed_input_categories", "forbidden_input_categories"],
+      "properties": {
+        "id": {"enum": ["stage_a", "stage_b", "stage_c"]},
+        "position": {"type": "integer", "minimum": 1, "maximum": 3},
+        "scope": {"type": "string", "minLength": 1},
+        "core_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["validity", "redundancy", "quality", "coverage"]}},
+        "allowed_input_categories": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "forbidden_input_categories": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "pathMap": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}}
+  }
+}

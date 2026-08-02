@@ -1,0 +1,102 @@
+{
+  "schema_version": "curation-framework-v1",
+  "activation": "design_only_until_block_7",
+  "research_contract": {
+    "path": "docs/framework_research_contract_v1.md",
+    "sha256": "d2e8eb8caba14a349207e441409a79712ad8e9a733c6dd9e3135b0cabbb5335f"
+  },
+  "hierarchy": ["core", "metric", "policy", "method"],
+  "cores": [
+    {
+      "id": "validity",
+      "stage_ids": ["stage_a"],
+      "question": "Can the unit be interpreted and trained on under the declared input contract without inventing or destroying payload?",
+      "authority": "quarantine_or_remove_by_closed_observable_failure",
+      "may_delete": true,
+      "may_veto_materialization": false
+    },
+    {
+      "id": "redundancy",
+      "stage_ids": ["stage_b"],
+      "question": "Is the same training information already represented by another reproducibly linked family member?",
+      "authority": "propose_nonrepresentative_family_member_removal",
+      "may_delete": true,
+      "may_veto_materialization": false
+    },
+    {
+      "id": "quality",
+      "stage_ids": ["stage_b"],
+      "question": "Is there validated evidence that removing this valid nonredundant unit better serves the declared LM training interface?",
+      "authority": "propose_rejection_or_retention_from_promoted_typed_evidence",
+      "may_delete": true,
+      "may_veto_materialization": false
+    },
+    {
+      "id": "coverage",
+      "stage_ids": ["stage_c"],
+      "question": "Did combined removals erase valid support without an authorized explanation?",
+      "authority": "verify_representative_survival_and_veto_unexplained_support_loss",
+      "may_delete": false,
+      "may_veto_materialization": true
+    }
+  ],
+  "stages": [
+    {
+      "id": "stage_a",
+      "position": 1,
+      "scope": "record_and_chunk_hard_gate",
+      "core_ids": ["validity"],
+      "allowed_input_categories": ["raw_text", "declared_input_contract", "deterministic_normalized_text", "stable_identifiers"],
+      "forbidden_input_categories": ["utility", "nll", "benchmark_outcomes", "target_retention_fraction", "maximum_token_budget", "source_reputation", "source_tier", "domain_quota", "confirmatory_outcomes"]
+    },
+    {
+      "id": "stage_b",
+      "position": 2,
+      "scope": "family_and_payload_decisions",
+      "core_ids": ["redundancy", "quality"],
+      "allowed_input_categories": ["stage_a_survivors", "deterministic_normalized_text", "stable_identifiers", "runtime_local_structural_evidence", "promoted_frozen_model_evidence", "prior_stage_reason_codes"],
+      "forbidden_input_categories": ["utility", "nll", "benchmark_outcomes", "target_retention_fraction", "maximum_token_budget", "source_reputation", "source_tier", "domain_quota", "confirmatory_outcomes"]
+    },
+    {
+      "id": "stage_c",
+      "position": 3,
+      "scope": "coverage_and_final_materialization",
+      "core_ids": ["coverage"],
+      "allowed_input_categories": ["stage_b_survivors", "typed_removal_proposals", "representative_links", "promoted_coverage_taxonomy", "prior_stage_reason_codes"],
+      "forbidden_input_categories": ["utility", "nll", "benchmark_outcomes", "target_retention_fraction", "maximum_token_budget", "source_reputation", "source_tier", "domain_quota", "confirmatory_outcomes", "new_quality_score", "new_ranking_objective", "quota_based_restoration"]
+    }
+  ],
+  "runtime_forbidden_inputs": ["utility", "nll", "benchmark_outcomes", "target_retention_fraction", "maximum_token_budget", "source_reputation", "source_tier", "domain_quota", "confirmatory_outcomes", "unversioned_human_quality_judgment"],
+  "profile_contract": {
+    "public_profiles": ["normal", "hard"],
+    "retained_set_invariant": "hard_subset_or_equal_normal",
+    "fixed_retention_fraction_allowed": false,
+    "maximum_token_budget_allowed": false,
+    "hard_requires_independently_promoted_policies": true
+  },
+  "threshold_provenance": {
+    "required_fields": ["value", "unit", "comparison_direction", "derivation_procedure", "development_corpus_sha256", "sample_count", "supported_routes", "provider_identity_sha256", "tokenizer_identity_sha256", "uncertainty_procedure", "fixture_artifact_sha256", "ablation_artifact_sha256", "external_evidence_sha256", "lifecycle", "invalidation_conditions"],
+    "missing_field_action": "abstain_retain"
+  },
+  "registry_references": {
+    "object_registry": "configs/framework_objects_v1.json",
+    "contrastive_protocol": "configs/contrastive_quality_protocol_v2.json",
+    "profile_composition": "configs/framework_profiles_v1.json"
+  },
+  "legacy_runtime_references": {
+    "observed_runtime_contract": "configs/curation_contract.json",
+    "observed_policy_registry": "configs/core_policy_registry.json",
+    "observed_policy_profiles": "configs/policy_profiles.json",
+    "observed_provider_registry": "configs/model_provider_registry_v1.json"
+  },
+  "external_evaluation": {
+    "runtime_stage": false,
+    "selector_visible": false,
+    "data_arms": ["base_stage_a", "normal", "hard"],
+    "natural_token_budget": true,
+    "seeds": [101, 202, 303],
+    "equal_token_primary": false,
+    "common_sensitivity_baseline_required": true,
+    "development_confirmatory_disjoint": true
+  }
+}
