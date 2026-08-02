@@ -1,0 +1,214 @@
+{
+  "schema_version": "development-corpus-admission-report-v1",
+  "status": "admitted",
+  "registry_sha256": "70eadec643430410749a6cd35b730d8489f9ef732e2ab73834544f121db73dec",
+  "benchmark_artifacts": [
+    {
+      "benchmark_id": "humanevalplus",
+      "domain": "code",
+      "file_sha256": "0253db8ef88bac8d0a5c2cf0aeacfd6b7fbcb70e6a970f964d15f6ef6a671ab7",
+      "eligible_segment_count": 6451
+    },
+    {
+      "benchmark_id": "mbppplus",
+      "domain": "code",
+      "file_sha256": "a974c2a2dead676280944907358c6c503501e5e297a34adf850927020ecd4612",
+      "eligible_segment_count": 1829
+    },
+    {
+      "benchmark_id": "livecodebench_code_generation_lite",
+      "domain": "code",
+      "file_sha256": "1aab81d420bc00b8013fa937cdc9131bfa14d6c9cb4574547d10e9946b6dfac8",
+      "eligible_segment_count": 2109
+    },
+    {
+      "benchmark_id": "bigcodebench_complete",
+      "domain": "code",
+      "file_sha256": "bf81252e1dc9dd68a2e9388df6eb7d601bb53bc9c8d7057e32024a804586ac6c",
+      "eligible_segment_count": 3415
+    },
+    {
+      "benchmark_id": "cruxeval_input_prediction",
+      "domain": "code",
+      "file_sha256": "c2ac026dce30e8e0e049a297f990cfd1f0276bc8929da81171c5a9894112b1d2",
+      "eligible_segment_count": 1116
+    },
+    {
+      "benchmark_id": "cruxeval_output_prediction",
+      "domain": "code",
+      "file_sha256": "f935a53abc5f2a3588ac0fa0b39dd4178addc9ad99ec2ce3e12acb03f9c9a0b7",
+      "eligible_segment_count": 1116
+    },
+    {
+      "benchmark_id": "ds1000",
+      "domain": "code",
+      "file_sha256": "e2a1a1d7a4ac5f1bb2c9b9179162eff54d95a98d17a085190dbc5079ad60a78a",
+      "eligible_segment_count": 2718
+    },
+    {
+      "benchmark_id": "gsm8k",
+      "domain": "math",
+      "file_sha256": "e53aa7ecdb7f4b3e3cd45b541bbd75f89f951903f9f2c9f57d51ab8aa82a82ce",
+      "eligible_segment_count": 2638
+    },
+    {
+      "benchmark_id": "hendrycks_math",
+      "domain": "math",
+      "file_sha256": "2d51488b8c551dbb5690784f25bbe281dc1a1787dcdd4f3f528b695a3ae89f23",
+      "eligible_segment_count": 9799
+    },
+    {
+      "benchmark_id": "mmlu_pro",
+      "domain": "general",
+      "file_sha256": "046839651e3869b61db9f5e2ca9bab9f4bfe899dd008fc0a2a10c96318b5ff16",
+      "eligible_segment_count": 46743
+    },
+    {
+      "benchmark_id": "bbh",
+      "domain": "general",
+      "file_sha256": "06a079ab9e6663412d5d718db438e494d69c4e745f7cc0db30687e1b7daf493a",
+      "eligible_segment_count": 6537
+    },
+    {
+      "benchmark_id": "arc_challenge",
+      "domain": "general",
+      "file_sha256": "159782c0617df3123e272c1965b16ec86e43c6b2c1a19d42806894d553ac0601",
+      "eligible_segment_count": 2549
+    },
+    {
+      "benchmark_id": "hellaswag",
+      "domain": "general",
+      "file_sha256": "81fe2068a6b0c7b0e43636b278b9d4fd2741e1a690ff3feb2c8deda4c41b6864",
+      "eligible_segment_count": 47070
+    }
+  ],
+  "corpus_scans": [
+    {
+      "reference_id": "code-post-stack-v2-clean-controls-v1",
+      "domain": "code",
+      "role": "development",
+      "record_count": 1299,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "github-code-10m-raw-v1",
+      "domain": "code",
+      "role": "development",
+      "record_count": 5134,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "math-open-educational-clean-controls-v6",
+      "domain": "math",
+      "role": "development",
+      "record_count": 2574,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "open-web-math-5m-raw-v1",
+      "domain": "math",
+      "role": "development",
+      "record_count": 2125,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "common-pile-general-clean-controls-v2",
+      "domain": "general",
+      "role": "development",
+      "record_count": 1200,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "redpajama-v2-tail-10m-raw-v1",
+      "domain": "general",
+      "role": "development",
+      "record_count": 15807,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "code-the-stack-dedup-confirmatory-v1",
+      "domain": "code",
+      "role": "confirmatory",
+      "record_count": 15087,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "math-small-open-web-math-v2-confirmatory-v1",
+      "domain": "math",
+      "role": "confirmatory",
+      "record_count": 4291,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    },
+    {
+      "reference_id": "general-fineweb-cc-main-2024-10-confirmatory-v1",
+      "domain": "general",
+      "role": "confirmatory",
+      "record_count": 1373,
+      "exact_text_match_count": 0,
+      "segment_containment_match_count": 0,
+      "contaminated_record_count": 0
+    }
+  ],
+  "confirmatory_references": [
+    {
+      "domain": "code",
+      "reference_id": "code-the-stack-dedup-confirmatory-v1",
+      "source_group_id": "bigcode-the-stack-dedup-confirmatory",
+      "source_snapshot_id": "sha256-304a48480d181aa77b341cd4f99ddd58b7cf5bb9e6e823eabf3fb5daa47a6fbc",
+      "file_sha256": "304a48480d181aa77b341cd4f99ddd58b7cf5bb9e6e823eabf3fb5daa47a6fbc",
+      "record_count": 15087,
+      "development_record_id_overlap_count": 0,
+      "development_normalized_text_overlap_count": 0
+    },
+    {
+      "domain": "math",
+      "reference_id": "math-small-open-web-math-v2-confirmatory-v1",
+      "source_group_id": "brando-small-open-web-math-dataset-v2",
+      "source_snapshot_id": "benchmark-clean-view-sha256-95f0decca4fd5a2e9f9f86615442d322c46ca0742e3d98d635d865342b1aef81",
+      "file_sha256": "95f0decca4fd5a2e9f9f86615442d322c46ca0742e3d98d635d865342b1aef81",
+      "record_count": 4291,
+      "development_record_id_overlap_count": 0,
+      "development_normalized_text_overlap_count": 0
+    },
+    {
+      "domain": "general",
+      "reference_id": "general-fineweb-cc-main-2024-10-confirmatory-v1",
+      "source_group_id": "huggingfacefw-fineweb-cc-main-2024-10",
+      "source_snapshot_id": "sha256-a12879dfbf29a4b8184ce0824a5886dbbf8a3e3a281349e2488c3d40ee7462f1",
+      "file_sha256": "a12879dfbf29a4b8184ce0824a5886dbbf8a3e3a281349e2488c3d40ee7462f1",
+      "record_count": 1373,
+      "development_record_id_overlap_count": 0,
+      "development_normalized_text_overlap_count": 0
+    }
+  ],
+  "contamination_matches": [],
+  "benchmark_exclusion_complete": true,
+  "frozen_confirmatory_domains": [
+    "code",
+    "math",
+    "general"
+  ],
+  "total_benchmark_contaminated_record_count": 0,
+  "total_confirmatory_development_record_id_overlap_count": 0,
+  "total_confirmatory_development_text_overlap_count": 0,
+  "blocker_codes": [],
+  "report_sha256": "50869330ac6b6b828b623eca9f9a1d0dc16dab10761aaa4493dd2309732afd3b",
+  "benchmark_outcomes_read": false,
+  "selector_membership_mutated": false
+}

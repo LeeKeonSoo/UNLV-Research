@@ -1,7 +1,7 @@
 {
   "schema_version": "development-corpus-inventory-manifest-v1",
-  "status": "blocked",
-  "registry_sha256": "b637645a88a935b20dc49451f799533516f0c8364ab2c0b9a4c3d5d699850c5c",
+  "status": "admitted",
+  "registry_sha256": "2b1d3d7e6ef42b890c8ee926f5c629dae080665d496f1531e39ee1cd8cf08a15",
   "sources": [
     {
       "source_id": "code-post-stack-v2-clean-controls-v1",
@@ -338,12 +338,15 @@
       "unique_fixture_id_count": 400
     }
   ],
-  "blocker_codes": [
-    "benchmark_exclusion_not_run",
-    "general_confirmatory_reference_not_frozen",
-    "math_confirmatory_reference_not_frozen"
+  "blocker_codes": [],
+  "admission_report_sha256": "50869330ac6b6b828b623eca9f9a1d0dc16dab10761aaa4493dd2309732afd3b",
+  "benchmark_exclusion_complete": true,
+  "frozen_confirmatory_domains": [
+    "code",
+    "math",
+    "general"
   ],
-  "manifest_sha256": "791102fe02b0f930ac64aa454a5ebb209a826592f50e63f9bd4dac76bf320a57",
+  "manifest_sha256": "afa602be20683e81bf93743bb9b8a805f2e4c2df1c695367a437a68a46461eb6",
   "benchmark_outcomes_read": false,
   "selector_membership_mutated": false
 }

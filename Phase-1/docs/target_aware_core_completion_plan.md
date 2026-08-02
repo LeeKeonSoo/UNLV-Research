@@ -628,8 +628,8 @@ enter the profile freeze.
 
 The frozen current-state audit is
 `validation/frozen_contracts/development_selection_v1_current_preflight.json`.
-It reports four blockers: Redundancy, Quality, and Coverage empirical gates,
-plus admission of the Code/Math/General development corpus manifest. Math and General
+It reports three blockers: the Redundancy, Quality, and Coverage empirical gates.
+The Code/Math/General development corpus manifest passed E1 admission. Math and General
 benchmark-exclusion snapshots are frozen under the hash-pinned registry
 `protocols/math_general_benchmark_snapshot_registry_v1.json`. The frozen
 manifest contains 6,319 Math tasks and 29,757 General tasks and is replay-stable
@@ -643,9 +643,16 @@ slices are now materialized on D:, including nine mechanically derived
 duplicate, malformed, and boilerplate stress slices. Each slice uses 400
 parents; the three domain matrices contain 13,200 fixture records in total,
 have zero cross-slice parent overlap, and replay to identical artifact hashes.
-Math and General confirmatory corpus references and corpus-to-benchmark
-exclusion scans remain pending, so `configs/development_corpus_manifest_v1.json`
-correctly has status `blocked`; file presence alone cannot satisfy preflight. Stored hashes
+E1 scans all six development sources and three source-group-disjoint confirmatory
+references against 13 frozen Code, Math, and General benchmark artifacts. Exact-text
+evidence starts at eight lexical tokens; containment requires at least 13 lexical
+tokens to avoid treating generic short test strings as task contamination. One
+Hendrycks MATH-identical record was removed from the Math confirmatory view with
+the original hash and excluded record ID preserved in its evidence artifact. The
+replayed audit reports zero benchmark-contaminated records, zero confirmatory-to-
+development record/text overlap, and no benchmark outcomes read. Therefore
+`configs/development_corpus_manifest_v1.json` now has status `admitted`; file presence
+alone cannot satisfy admission. Stored hashes
 from older clean-control pipelines disagree with the current canonical
 normalization for 173 records, so Block 8 recomputes all canonical hashes from
 the original text rather than inheriting those values.

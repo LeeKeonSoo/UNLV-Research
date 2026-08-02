@@ -13,10 +13,14 @@ if str(ROOT) not in sys.path:
 
 
 from development_corpus_inventory import build_development_corpus_inventory
-from development_corpus_materialization import materialize_development_corpus_matrix
+from development_corpus_materialization import (
+    materialize_development_corpus_matrix,
+    reuse_materialized_development_corpus_matrix,
+)
 from development_corpus_inventory_contract import (
     ConfirmatoryReference,
     DevelopmentCorpusInventoryRegistry,
+    InventoryAdmissionEvidence,
     InventoryDomain,
     InventorySourceSpec,
     InventoryStatus,
@@ -110,6 +114,47 @@ def test_materialization_builds_all_fifteen_disjoint_slices() -> None:
         assert manifest.cross_slice_parent_overlap_count == 0
 
 
+def test_authenticated_admission_evidence_replaces_declaration_blockers() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        registry = _registry(Path(directory)).model_copy(
+            update={"confirmatory_references": {domain: ConfirmatoryReference.FROZEN for domain in InventoryDomain}}
+        )
+        admission = InventoryAdmissionEvidence(
+            report_sha256="1" * 64,
+            benchmark_exclusion_complete=True,
+            frozen_confirmatory_domains=tuple(InventoryDomain),
+            blocker_codes=(),
+        )
+        manifest = materialize_development_corpus_matrix(registry, admission)
+        assert "benchmark_exclusion_not_run" not in manifest.blocker_codes
+        assert all(not code.endswith("confirmatory_reference_not_frozen") for code in manifest.blocker_codes)
+        assert manifest.admission_report_sha256 == "1" * 64
+        assert manifest.benchmark_exclusion_complete is True
+
+
+def test_reuse_verifies_materialized_artifacts_before_admission() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        registry = _registry(Path(directory)).model_copy(
+            update={"confirmatory_references": {domain: ConfirmatoryReference.FROZEN for domain in InventoryDomain}}
+        )
+        previous = materialize_development_corpus_matrix(registry)
+        admission = InventoryAdmissionEvidence(
+            report_sha256="2" * 64,
+            benchmark_exclusion_complete=True,
+            frozen_confirmatory_domains=tuple(InventoryDomain),
+            blocker_codes=(),
+        )
+        reused = reuse_materialized_development_corpus_matrix(registry, previous, admission)
+        assert reused.admission_report_sha256 == "2" * 64
+        Path(previous.slices[0].artifact_path or "").write_text("drift\n", encoding="utf-8")
+        try:
+            reuse_materialized_development_corpus_matrix(registry, previous, admission)
+        except ValueError as error:
+            assert str(error).startswith("development_slice_hash_mismatch:")
+        else:
+            raise AssertionError("A drifted materialized slice entered admission")
+
+
 def test_source_hash_drift_fails_closed() -> None:
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
@@ -136,4 +181,6 @@ if __name__ == "__main__":
     test_source_hash_drift_fails_closed()
     test_repository_registry_is_closed_and_source_metadata_hidden()
     test_materialization_builds_all_fifteen_disjoint_slices()
+    test_authenticated_admission_evidence_replaces_declaration_blockers()
+    test_reuse_verifies_materialized_artifacts_before_admission()
     print("[development-corpus-inventory-v1] closed matrix inventory and fail-closed admission: pass")

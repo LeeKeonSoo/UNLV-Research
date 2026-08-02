@@ -10,7 +10,10 @@ from development_corpus_inventory import build_development_corpus_inventory
 from development_corpus_inventory_contract import (
     DevelopmentCorpusInventoryManifest,
     DevelopmentCorpusInventoryRegistry,
+    DevelopmentCorpusInventoryError,
     InventoryDomain,
+    InventoryAdmissionEvidence,
+    InventoryBuildEvidence,
     InventorySliceEvidence,
     InventorySourceSpec,
     ScenarioOrigin,
@@ -44,7 +47,7 @@ def _source_rows(spec: InventorySourceSpec) -> tuple[tuple[str, str], ...]:
             uid = "::".join(str(row[field]) for field in spec.id_fields)
             text = row[spec.text_field]
             if not isinstance(text, str):
-                raise ValueError(f"development_materialization_text_invalid:{spec.source_id}")
+                raise DevelopmentCorpusInventoryError(f"development_materialization_text_invalid:{spec.source_id}")
             rows.append((uid, text))
     return tuple(rows)
 
@@ -128,7 +131,10 @@ def _write_slice(
     )
 
 
-def materialize_development_corpus_matrix(registry: DevelopmentCorpusInventoryRegistry) -> DevelopmentCorpusInventoryManifest:
+def materialize_development_corpus_matrix(
+    registry: DevelopmentCorpusInventoryRegistry,
+    admission: InventoryAdmissionEvidence | None = None,
+) -> DevelopmentCorpusInventoryManifest:
     root = Path(registry.output_root)
     source_map = {(item.domain, item.role): item for item in registry.sources}
     evidence: list[InventorySliceEvidence] = []
@@ -141,7 +147,7 @@ def materialize_development_corpus_matrix(registry: DevelopmentCorpusInventoryRe
         clean = _order(_source_rows(clean_spec), 5)[:count]
         raw = _order(_source_rows(raw_spec), 20)
         if len(clean) < count or len(raw) < count * 4:
-            raise ValueError(f"development_materialization_source_too_small:{domain.value}")
+            raise DevelopmentCorpusInventoryError(f"development_materialization_source_too_small:{domain.value}")
         groups = {
             "duplicate_heavy": raw[:count],
             "malformed": raw[count:count * 2],
@@ -160,7 +166,32 @@ def materialize_development_corpus_matrix(registry: DevelopmentCorpusInventoryRe
             transformations = registry.metamorphic_transformations.get(scenario, ())
             item = _write_slice(root / domain.value / f"{scenario}.jsonl", slice_id, scenario, parents, origin, transformations)
             evidence.append(item.model_copy(update={"base_source_id": source_id}))
-    return build_development_corpus_inventory(registry, tuple(evidence), parent_overlap)
+    build_evidence = InventoryBuildEvidence(
+        materialized_slices=tuple(evidence),
+        cross_slice_parent_overlap_count=parent_overlap,
+        admission=admission,
+    )
+    return build_development_corpus_inventory(registry, build_evidence)
 
 
-__all__ = ["materialize_development_corpus_matrix"]
+def reuse_materialized_development_corpus_matrix(
+    registry: DevelopmentCorpusInventoryRegistry,
+    previous: DevelopmentCorpusInventoryManifest,
+    admission: InventoryAdmissionEvidence,
+) -> DevelopmentCorpusInventoryManifest:
+    for item in previous.slices:
+        if item.status is not SliceStatus.MATERIALIZED or item.artifact_path is None or item.artifact_sha256 is None:
+            raise DevelopmentCorpusInventoryError(f"development_slice_not_materialized:{item.slice_id}")
+        if _sha256_file(Path(item.artifact_path)) != item.artifact_sha256:
+            raise DevelopmentCorpusInventoryError(f"development_slice_hash_mismatch:{item.slice_id}")
+    if previous.cross_slice_parent_overlap_count is None:
+        raise DevelopmentCorpusInventoryError("development_slice_parent_overlap_not_measured")
+    evidence = InventoryBuildEvidence(
+        materialized_slices=previous.slices,
+        cross_slice_parent_overlap_count=previous.cross_slice_parent_overlap_count,
+        admission=admission,
+    )
+    return build_development_corpus_inventory(registry, evidence)
+
+
+__all__ = ["materialize_development_corpus_matrix", "reuse_materialized_development_corpus_matrix"]

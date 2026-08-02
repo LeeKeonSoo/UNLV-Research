@@ -11,8 +11,10 @@ from development_corpus_inventory_contract import (
     ConfirmatoryReference,
     DevelopmentCorpusInventoryManifest,
     DevelopmentCorpusInventoryRegistry,
+    DevelopmentCorpusInventoryError,
     DomainPairEvidence,
     InventoryDomain,
+    InventoryBuildEvidence,
     InventorySliceEvidence,
     InventorySourceEvidence,
     InventorySourceSpec,
@@ -40,7 +42,7 @@ def _source(spec: InventorySourceSpec) -> tuple[InventorySourceEvidence, frozens
     path = Path(spec.path)
     actual_sha256 = _file_sha256(path)
     if actual_sha256 != spec.expected_file_sha256:
-        raise ValueError(f"development_source_hash_mismatch:{spec.source_id}")
+        raise DevelopmentCorpusInventoryError(f"development_source_hash_mismatch:{spec.source_id}")
     record_ids: set[str] = set()
     text_hashes: set[str] = set()
     mismatches = 0
@@ -54,14 +56,14 @@ def _source(spec: InventorySourceSpec) -> tuple[InventorySourceEvidence, frozens
             record_id = "::".join(str(row[field]) for field in spec.id_fields)
             text = row[spec.text_field]
             if not record_id or not isinstance(text, str) or not text:
-                raise ValueError(f"development_source_record_invalid:{spec.source_id}:{count}")
+                raise DevelopmentCorpusInventoryError(f"development_source_record_invalid:{spec.source_id}:{count}")
             normalized_hash = hashlib.sha256(_normalize(text).encode()).hexdigest()
             stored_hash = row.get("normalized_text_sha256")
             mismatches += int(stored_hash is not None and stored_hash != normalized_hash)
             record_ids.add(record_id)
             text_hashes.add(normalized_hash)
     if count != len(record_ids) or count != len(text_hashes):
-        raise ValueError(f"development_source_identity_not_unique:{spec.source_id}")
+        raise DevelopmentCorpusInventoryError(f"development_source_identity_not_unique:{spec.source_id}")
     evidence = InventorySourceEvidence(
         source_id=spec.source_id,
         domain=spec.domain,
@@ -104,9 +106,11 @@ def _slices(
 
 def build_development_corpus_inventory(
     registry: DevelopmentCorpusInventoryRegistry,
-    materialized: tuple[InventorySliceEvidence, ...] = (),
-    cross_slice_parent_overlap_count: int | None = None,
+    evidence: InventoryBuildEvidence | None = None,
 ) -> DevelopmentCorpusInventoryManifest:
+    materialized = evidence.materialized_slices if evidence is not None else ()
+    cross_slice_parent_overlap_count = evidence.cross_slice_parent_overlap_count if evidence is not None else None
+    admission = evidence.admission if evidence is not None else None
     built = tuple((spec, *_source(spec)) for spec in registry.sources)
     sources = tuple(item[1] for item in built)
     pairs: list[DomainPairEvidence] = []
@@ -117,7 +121,11 @@ def build_development_corpus_inventory(
     record_overlap = sum(len(left[2] & right[2]) for left, right in combinations(built, 2))
     text_overlap = sum(len(left[3] & right[3]) for left, right in combinations(built, 2))
     slices = _slices(registry, materialized)
-    blockers = ["benchmark_exclusion_not_run"]
+    benchmark_complete = admission is not None and admission.benchmark_exclusion_complete
+    frozen_domains = admission.frozen_confirmatory_domains if admission is not None else ()
+    blockers = list(admission.blocker_codes) if admission is not None else []
+    if not benchmark_complete:
+        blockers.append("benchmark_exclusion_not_run")
     if any(item.status is SliceStatus.MATERIALIZATION_PENDING for item in slices):
         blockers.append("metamorphic_slices_not_materialized")
     elif cross_slice_parent_overlap_count != 0:
@@ -127,7 +135,7 @@ def build_development_corpus_inventory(
     blockers.extend(
         f"{domain.value}_confirmatory_reference_not_frozen"
         for domain, state in registry.confirmatory_references.items()
-        if state is not ConfirmatoryReference.FROZEN
+        if state is not ConfirmatoryReference.FROZEN or domain not in frozen_domains
     )
     payload = {
         "registry_sha256": registry.identity_sha256(),
@@ -138,6 +146,9 @@ def build_development_corpus_inventory(
         "cross_slice_parent_overlap_count": cross_slice_parent_overlap_count,
         "slices": [item.model_dump(mode="json") for item in slices],
         "blocker_codes": sorted(blockers),
+        "admission_report_sha256": admission.report_sha256 if admission is not None else None,
+        "benchmark_exclusion_complete": benchmark_complete,
+        "frozen_confirmatory_domains": [item.value for item in frozen_domains],
     }
     return DevelopmentCorpusInventoryManifest(
         schema_version="development-corpus-inventory-manifest-v1",
@@ -150,6 +161,9 @@ def build_development_corpus_inventory(
         cross_slice_parent_overlap_count=cross_slice_parent_overlap_count,
         slices=slices,
         blocker_codes=tuple(sorted(blockers)),
+        admission_report_sha256=admission.report_sha256 if admission is not None else None,
+        benchmark_exclusion_complete=benchmark_complete,
+        frozen_confirmatory_domains=frozen_domains,
         manifest_sha256=hash_json(payload),
     )
 

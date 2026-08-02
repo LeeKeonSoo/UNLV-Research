@@ -1,0 +1,143 @@
+{
+  "schema_version": "development-corpus-admission-registry-v1",
+  "status": "e1-frozen-admission-inputs",
+  "normalization": "unicode-nfkc-casefold-whitespace-token-v1",
+  "minimum_exact_segment_lexical_tokens": 8,
+  "minimum_containment_segment_lexical_tokens": 13,
+  "development_sources": [
+    {
+      "reference_id": "code-post-stack-v2-clean-controls-v1",
+      "domain": "code",
+      "source_group_id": "code-post-stack-v2-clean-controls",
+      "source_snapshot_id": "local-snapshot-20260801",
+      "path": "D:/UNLV-Research/positive_quality_v1/clean_controls/code_post_stack_v2_v1/python_clean_controls_v1.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "7c64b6ec77e91e74cd0aaee5ffb0dc210fd35964c2240bdb2e29fc28a18f2f58",
+      "expected_record_count": 1299,
+      "selector_visible_source_metadata": false
+    },
+    {
+      "reference_id": "github-code-10m-raw-v1",
+      "domain": "code",
+      "source_group_id": "github-code-10m-raw",
+      "source_snapshot_id": "local-snapshot-20260731",
+      "path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/github_code_10m.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "6ed4bc1f0f492cdd90f98c5417eb7b8ce3ed618c7f3fdef3b15422b50852b590",
+      "expected_record_count": 5134,
+      "selector_visible_source_metadata": false
+    },
+    {
+      "reference_id": "math-open-educational-clean-controls-v6",
+      "domain": "math",
+      "source_group_id": "math-open-educational-clean-controls",
+      "source_snapshot_id": "local-snapshot-v6-20260801",
+      "path": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_clean_controls_v6.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "c123ac09b1a203f1bda90618b42ec97d65e2b6418e21751241f1c3c483725d4f",
+      "expected_record_count": 2574,
+      "selector_visible_source_metadata": false
+    },
+    {
+      "reference_id": "open-web-math-5m-raw-v1",
+      "domain": "math",
+      "source_group_id": "open-web-math-open-web-math",
+      "source_snapshot_id": "local-snapshot-20260731",
+      "path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/open_web_math_5m.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "efcc245f8abff4dac441acb3299a79a76fd83857b9d220dfe2250892e5e0c612",
+      "expected_record_count": 2125,
+      "selector_visible_source_metadata": false
+    },
+    {
+      "reference_id": "common-pile-general-clean-controls-v2",
+      "domain": "general",
+      "source_group_id": "common-pile-general-clean-controls",
+      "source_snapshot_id": "local-snapshot-v2-20260801",
+      "path": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+      "id_fields": ["source_group", "source_record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "17d796c1237b767808939bed2dab1b1a2c5868d9b672fde6fb01f27cabe837c4",
+      "expected_record_count": 1200,
+      "selector_visible_source_metadata": false
+    },
+    {
+      "reference_id": "redpajama-v2-tail-10m-raw-v1",
+      "domain": "general",
+      "source_group_id": "togethercomputer-redpajama-data-v2-tail",
+      "source_snapshot_id": "local-snapshot-20260731",
+      "path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/redpajama_v2_tail_10m.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "f55fd061828910e8741b8cf17af4358a9b14a4004146b5454900ae50f906a7af",
+      "expected_record_count": 15807,
+      "selector_visible_source_metadata": false
+    }
+  ],
+  "confirmatory_references": [
+    {
+      "reference_id": "code-the-stack-dedup-confirmatory-v1",
+      "domain": "code",
+      "source_group_id": "bigcode-the-stack-dedup-confirmatory",
+      "source_snapshot_id": "sha256-304a48480d181aa77b341cd4f99ddd58b7cf5bb9e6e823eabf3fb5daa47a6fbc",
+      "path": "D:/UNLV-Research/code_confirmatory_v1/raw_candidates.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "304a48480d181aa77b341cd4f99ddd58b7cf5bb9e6e823eabf3fb5daa47a6fbc",
+      "expected_record_count": 15087,
+      "selector_visible_source_metadata": false
+    },
+    {
+      "reference_id": "math-small-open-web-math-v2-confirmatory-v1",
+      "domain": "math",
+      "source_group_id": "brando-small-open-web-math-dataset-v2",
+      "source_snapshot_id": "benchmark-clean-view-sha256-95f0decca4fd5a2e9f9f86615442d322c46ca0742e3d98d635d865342b1aef81",
+      "path": "D:/UNLV-Research/block8_confirmatory_references_v1/math_small_open_web_math_v2_benchmark_clean_v1.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "95f0decca4fd5a2e9f9f86615442d322c46ca0742e3d98d635d865342b1aef81",
+      "expected_record_count": 4291,
+      "selector_visible_source_metadata": false,
+      "filter_lineage": {
+        "source_path": "D:/UNLV-Research/cross_domain_stress/math_5m_legacy_current_input_v1.jsonl",
+        "source_sha256": "fd54398d777b752b42aeeea892b73e88cce46bb4f6a04181a39395d9aa8079cb",
+        "evidence_path": "D:/UNLV-Research/block8_confirmatory_references_v1/math_small_open_web_math_v2_benchmark_clean_v1.evidence.json",
+        "evidence_sha256": "9d06f4019d8742b3429721f0f9fbbc54be8132e9c3a09ba0a5b9a04738322a86",
+        "removed_record_count": 1
+      }
+    },
+    {
+      "reference_id": "general-fineweb-cc-main-2024-10-confirmatory-v1",
+      "domain": "general",
+      "source_group_id": "huggingfacefw-fineweb-cc-main-2024-10",
+      "source_snapshot_id": "sha256-a12879dfbf29a4b8184ce0824a5886dbbf8a3e3a281349e2488c3d40ee7462f1",
+      "path": "D:/UNLV-Research/general_raw_like_development_v1/fineweb_cc_main_2024_10_approx_1m.jsonl",
+      "id_fields": ["record_id"],
+      "text_field": "text",
+      "expected_file_sha256": "a12879dfbf29a4b8184ce0824a5886dbbf8a3e3a281349e2488c3d40ee7462f1",
+      "expected_record_count": 1373,
+      "selector_visible_source_metadata": false
+    }
+  ],
+  "benchmark_artifacts": [
+    {"benchmark_id": "humanevalplus", "domain": "code", "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots/humanevalplus.json", "expected_file_sha256": "0253db8ef88bac8d0a5c2cf0aeacfd6b7fbcb70e6a970f964d15f6ef6a671ab7", "artifact_format": "json"},
+    {"benchmark_id": "mbppplus", "domain": "code", "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots/mbppplus.json", "expected_file_sha256": "a974c2a2dead676280944907358c6c503501e5e297a34adf850927020ecd4612", "artifact_format": "json"},
+    {"benchmark_id": "livecodebench_code_generation_lite", "domain": "code", "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/livecodebench_code_generation_lite.json", "expected_file_sha256": "1aab81d420bc00b8013fa937cdc9131bfa14d6c9cb4574547d10e9946b6dfac8", "artifact_format": "json"},
+    {"benchmark_id": "bigcodebench_complete", "domain": "code", "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/bigcodebench_complete.json", "expected_file_sha256": "bf81252e1dc9dd68a2e9388df6eb7d601bb53bc9c8d7057e32024a804586ac6c", "artifact_format": "json"},
+    {"benchmark_id": "cruxeval_input_prediction", "domain": "code", "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/cruxeval_input_prediction.json", "expected_file_sha256": "c2ac026dce30e8e0e049a297f990cfd1f0276bc8929da81171c5a9894112b1d2", "artifact_format": "json"},
+    {"benchmark_id": "cruxeval_output_prediction", "domain": "code", "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/cruxeval_output_prediction.json", "expected_file_sha256": "f935a53abc5f2a3588ac0fa0b39dd4178addc9ad99ec2ce3e12acb03f9c9a0b7", "artifact_format": "json"},
+    {"benchmark_id": "ds1000", "domain": "code", "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_snapshots_v2/ds1000.json", "expected_file_sha256": "e2a1a1d7a4ac5f1bb2c9b9179162eff54d95a98d17a085190dbc5079ad60a78a", "artifact_format": "json"},
+    {"benchmark_id": "gsm8k", "domain": "math", "path": "D:/UNLV-Research/benchmark_snapshots_v1/math_general/gsm8k.jsonl", "expected_file_sha256": "e53aa7ecdb7f4b3e3cd45b541bbd75f89f951903f9f2c9f57d51ab8aa82a82ce", "artifact_format": "jsonl"},
+    {"benchmark_id": "hendrycks_math", "domain": "math", "path": "D:/UNLV-Research/benchmark_snapshots_v1/math_general/hendrycks_math.jsonl", "expected_file_sha256": "2d51488b8c551dbb5690784f25bbe281dc1a1787dcdd4f3f528b695a3ae89f23", "artifact_format": "jsonl"},
+    {"benchmark_id": "mmlu_pro", "domain": "general", "path": "D:/UNLV-Research/benchmark_snapshots_v1/math_general/mmlu_pro.jsonl", "expected_file_sha256": "046839651e3869b61db9f5e2ca9bab9f4bfe899dd008fc0a2a10c96318b5ff16", "artifact_format": "jsonl"},
+    {"benchmark_id": "bbh", "domain": "general", "path": "D:/UNLV-Research/benchmark_snapshots_v1/math_general/bbh.jsonl", "expected_file_sha256": "06a079ab9e6663412d5d718db438e494d69c4e745f7cc0db30687e1b7daf493a", "artifact_format": "jsonl"},
+    {"benchmark_id": "arc_challenge", "domain": "general", "path": "D:/UNLV-Research/benchmark_snapshots_v1/math_general/arc_challenge.jsonl", "expected_file_sha256": "159782c0617df3123e272c1965b16ec86e43c6b2c1a19d42806894d553ac0601", "artifact_format": "jsonl"},
+    {"benchmark_id": "hellaswag", "domain": "general", "path": "D:/UNLV-Research/benchmark_snapshots_v1/math_general/hellaswag.jsonl", "expected_file_sha256": "81fe2068a6b0c7b0e43636b278b9d4fd2741e1a690ff3feb2c8deda4c41b6864", "artifact_format": "jsonl"}
+  ],
+  "benchmark_outcomes_available": false,
+  "selector_membership_mutation_allowed": false
+}

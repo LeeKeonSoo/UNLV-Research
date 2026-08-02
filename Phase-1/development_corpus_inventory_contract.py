@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Annotated, Literal
@@ -15,6 +16,14 @@ Sha256 = Annotated[str, StringConstraints(pattern=SHA256_RE.pattern)]
 PositiveInt = Annotated[int, Field(gt=0)]
 NonNegativeInt = Annotated[int, Field(ge=0)]
 type JsonValue = str | int | bool | None | list[JsonValue] | tuple[JsonValue, ...] | dict[str, JsonValue]
+
+
+@dataclass(frozen=True, slots=True)
+class DevelopmentCorpusInventoryError(ValueError):
+    reason_code: str
+
+    def __str__(self) -> str:
+        return self.reason_code
 
 
 class InventoryDomain(str, Enum):
@@ -49,6 +58,22 @@ class InventoryStatus(str, Enum):
     BLOCKED = "blocked"
 
 
+class InventoryAdmissionEvidence(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    report_sha256: Sha256
+    benchmark_exclusion_complete: bool
+    frozen_confirmatory_domains: tuple[InventoryDomain, ...]
+    blocker_codes: tuple[str, ...]
+
+    @model_validator(mode="after")
+    def validate_domain_evidence(self) -> "InventoryAdmissionEvidence":
+        if len(self.frozen_confirmatory_domains) != len(set(self.frozen_confirmatory_domains)):
+            raise DevelopmentCorpusInventoryError("frozen_confirmatory_domains_not_unique")
+        if self.benchmark_exclusion_complete and "benchmark_contamination_detected" in self.blocker_codes:
+            raise DevelopmentCorpusInventoryError("benchmark_completion_evidence_mismatch")
+        return self
+
+
 class InventorySourceSpec(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     source_id: str
@@ -79,14 +104,14 @@ class DevelopmentCorpusInventoryRegistry(BaseModel):
         expected = {(domain, role) for domain in InventoryDomain for role in SourceRole}
         observed = {(item.domain, item.role) for item in self.sources}
         if observed != expected or len(self.sources) != len(expected):
-            raise ValueError("Exactly one clean-control and raw-like source is required per domain")
+            raise DevelopmentCorpusInventoryError("inventory_source_matrix_incomplete")
         if len({item.source_id for item in self.sources}) != len(self.sources):
-            raise ValueError("Inventory source IDs must be unique")
+            raise DevelopmentCorpusInventoryError("inventory_source_ids_not_unique")
         if set(self.confirmatory_references) != set(InventoryDomain):
-            raise ValueError("Every domain requires an explicit confirmatory reference state")
+            raise DevelopmentCorpusInventoryError("confirmatory_reference_state_incomplete")
         expected_transformations = {"duplicate_heavy", "malformed", "boilerplate_heavy"}
         if set(self.metamorphic_transformations) != expected_transformations or any(not value for value in self.metamorphic_transformations.values()):
-            raise ValueError("All three metamorphic scenarios require frozen transformation IDs")
+            raise DevelopmentCorpusInventoryError("metamorphic_transformations_incomplete")
         return self
 
     def identity_sha256(self) -> str:
@@ -133,10 +158,17 @@ class InventorySliceEvidence(BaseModel):
         evidence = (self.artifact_path, self.artifact_sha256, self.parent_record_ids_sha256, self.parent_record_count, self.materialized_record_count, self.unique_fixture_id_count)
         if self.status is SliceStatus.MATERIALIZED:
             if any(value is None for value in evidence) or self.materialized_record_count != self.unique_fixture_id_count:
-                raise ValueError("A materialized slice requires complete unique artifact evidence")
+                raise DevelopmentCorpusInventoryError("materialized_slice_evidence_incomplete")
         elif any(value is not None for value in evidence):
-            raise ValueError("A pending or inventoried slice cannot claim materialization evidence")
+            raise DevelopmentCorpusInventoryError("nonmaterialized_slice_claims_evidence")
         return self
+
+
+class InventoryBuildEvidence(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    materialized_slices: tuple[InventorySliceEvidence, ...]
+    cross_slice_parent_overlap_count: NonNegativeInt
+    admission: InventoryAdmissionEvidence | None = None
 
 
 class DevelopmentCorpusInventoryManifest(BaseModel):
@@ -151,6 +183,9 @@ class DevelopmentCorpusInventoryManifest(BaseModel):
     cross_slice_parent_overlap_count: NonNegativeInt | None
     slices: tuple[InventorySliceEvidence, ...]
     blocker_codes: tuple[str, ...]
+    admission_report_sha256: Sha256 | None = None
+    benchmark_exclusion_complete: bool = False
+    frozen_confirmatory_domains: tuple[InventoryDomain, ...] = ()
     manifest_sha256: Sha256
     benchmark_outcomes_read: Literal[False] = False
     selector_membership_mutated: Literal[False] = False
@@ -165,14 +200,15 @@ class DevelopmentCorpusInventoryManifest(BaseModel):
             for scenario in ("clean", "duplicate_heavy", "malformed", "boilerplate_heavy", "mixed_raw_like")
         }
         if source_pairs != expected_source_pairs or len(self.sources) != len(expected_source_pairs):
-            raise ValueError("Inventory manifest source matrix is incomplete")
+            raise DevelopmentCorpusInventoryError("inventory_manifest_source_matrix_incomplete")
         if {item.slice_id for item in self.slices} != expected_slices or len(self.slices) != len(expected_slices):
-            raise ValueError("Inventory manifest scenario matrix is incomplete")
+            raise DevelopmentCorpusInventoryError("inventory_manifest_scenario_matrix_incomplete")
         if {item.domain for item in self.domain_pairs} != set(InventoryDomain) or len(self.domain_pairs) != len(InventoryDomain):
-            raise ValueError("Inventory manifest domain-pair evidence is incomplete")
-        admitted = not self.blocker_codes and self.cross_slice_parent_overlap_count == 0 and all(item.status is not SliceStatus.MATERIALIZATION_PENDING for item in self.slices)
+            raise DevelopmentCorpusInventoryError("inventory_manifest_domain_pair_evidence_incomplete")
+        admission_complete = self.benchmark_exclusion_complete and set(self.frozen_confirmatory_domains) == set(InventoryDomain)
+        admitted = not self.blocker_codes and admission_complete and self.admission_report_sha256 is not None and self.cross_slice_parent_overlap_count == 0 and all(item.status is not SliceStatus.MATERIALIZATION_PENDING for item in self.slices)
         if (self.status is InventoryStatus.ADMITTED) != admitted:
-            raise ValueError("Inventory admission status disagrees with blockers or slice materialization")
+            raise DevelopmentCorpusInventoryError("inventory_admission_status_evidence_mismatch")
         payload = {
             "registry_sha256": self.registry_sha256,
             "sources": [item.model_dump(mode="json") for item in self.sources],
@@ -182,9 +218,19 @@ class DevelopmentCorpusInventoryManifest(BaseModel):
             "cross_slice_parent_overlap_count": self.cross_slice_parent_overlap_count,
             "slices": [item.model_dump(mode="json") for item in self.slices],
             "blocker_codes": list(self.blocker_codes),
+            "admission_report_sha256": self.admission_report_sha256,
+            "benchmark_exclusion_complete": self.benchmark_exclusion_complete,
+            "frozen_confirmatory_domains": [item.value for item in self.frozen_confirmatory_domains],
         }
         if self.manifest_sha256 != hash_json(payload):
-            raise ValueError("Inventory manifest hash does not reproduce")
+            legacy_payload = {
+                key: value
+                for key, value in payload.items()
+                if key not in {"admission_report_sha256", "benchmark_exclusion_complete", "frozen_confirmatory_domains"}
+            }
+            legacy_state = self.admission_report_sha256 is None and not self.benchmark_exclusion_complete and not self.frozen_confirmatory_domains
+            if not legacy_state or self.manifest_sha256 != hash_json(legacy_payload):
+                raise DevelopmentCorpusInventoryError("inventory_manifest_hash_mismatch")
         return self
 
 
@@ -198,9 +244,9 @@ def load_inventory_registry(path: Path) -> DevelopmentCorpusInventoryRegistry:
 
 
 __all__ = [
-    "ConfirmatoryReference", "DevelopmentCorpusInventoryManifest",
+    "ConfirmatoryReference", "DevelopmentCorpusInventoryError", "DevelopmentCorpusInventoryManifest",
     "DevelopmentCorpusInventoryRegistry", "DomainPairEvidence", "InventoryDomain",
-    "InventorySliceEvidence", "InventorySourceEvidence", "InventorySourceSpec", "InventoryStatus",
+    "InventoryAdmissionEvidence", "InventoryBuildEvidence", "InventorySliceEvidence", "InventorySourceEvidence", "InventorySourceSpec", "InventoryStatus",
     "ScenarioOrigin", "SliceStatus", "SourceRole", "hash_json",
     "load_inventory_registry",
 ]

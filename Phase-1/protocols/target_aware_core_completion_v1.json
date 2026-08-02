@@ -536,10 +536,16 @@
     "development_corpus_inventory": {
       "registry": "protocols/development_corpus_inventory_registry_v1.json",
       "manifest": "configs/development_corpus_manifest_v1.json",
-      "registry_sha256": "b637645a88a935b20dc49451f799533516f0c8364ab2c0b9a4c3d5d699850c5c",
-      "manifest_sha256": "791102fe02b0f930ac64aa454a5ebb209a826592f50e63f9bd4dac76bf320a57",
-      "manifest_file_sha256": "a5dfa7b81cfa30c6f6062b81c0c1b7b103405d6d9024222b52b7a9e263aebc6e",
-      "status": "blocked_pending_exclusion_and_confirmatory_references",
+      "registry_sha256": "2b1d3d7e6ef42b890c8ee926f5c629dae080665d496f1531e39ee1cd8cf08a15",
+      "manifest_sha256": "afa602be20683e81bf93743bb9b8a805f2e4c2df1c695367a437a68a46461eb6",
+      "manifest_file_sha256": "dc127ec72ecd64b16d74b6352118e0ac7079284b3ff501ab08dc29c9280b2310",
+      "admission_registry": "protocols/development_corpus_admission_registry_v1.json",
+      "admission_registry_sha256": "70eadec643430410749a6cd35b730d8489f9ef732e2ab73834544f121db73dec",
+      "admission_registry_file_sha256": "47b34f93c0a6a398afc610cb023d354bb7ad607ac87bc9b68e710caad4a1cd2b",
+      "admission_report": "validation/frozen_contracts/development_corpus_admission_report_v1.json",
+      "admission_report_sha256": "50869330ac6b6b828b623eca9f9a1d0dc16dab10761aaa4493dd2309732afd3b",
+      "admission_report_file_sha256": "f105a757e9618461f84dca773caf88b5705b456c53578cde4b9df32f5ed0b9c3",
+      "status": "admitted_after_e1_benchmark_exclusion_and_confirmatory_disjointness",
       "inventoried_sources": 6,
       "inventoried_observed_slices": 6,
       "materialized_metamorphic_slices": 9,
@@ -578,7 +584,6 @@
     "current_profiles_frozen": false,
     "current_blockers": [
       "coverage_gate_not_ready",
-      "development_corpus_manifest_not_admitted",
       "quality_gate_not_ready",
       "redundancy_gate_not_ready"
     ],

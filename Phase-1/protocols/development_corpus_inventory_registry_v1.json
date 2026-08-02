@@ -68,8 +68,8 @@
   ],
   "confirmatory_references": {
     "code": "frozen",
-    "math": "pending",
-    "general": "pending"
+    "math": "frozen",
+    "general": "frozen"
   },
   "metamorphic_transformations": {
     "duplicate_heavy": [

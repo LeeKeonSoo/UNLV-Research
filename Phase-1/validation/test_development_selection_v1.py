@@ -281,8 +281,8 @@ def test_benchmark_feedback_is_not_a_parseable_selector_input() -> None:
     payload["benchmark_results"] = {"humanevalplus": 0.9}
     try:
         type(protocol).model_validate(payload)
-    except ValidationError:
-        pass
+    except ValidationError as error:
+        assert error.error_count() == 1
     else:
         raise AssertionError("Benchmark feedback entered the development selector contract")
 
@@ -294,9 +294,8 @@ def test_current_repository_preflight_fails_closed() -> None:
     # When readiness is evaluated, then Block 8 remains explicit and unfrozen.
     assert report.status is DevelopmentSelectionStatus.BLOCKED
     assert report.profiles_frozen is False
-    assert "quality_gate_not_ready" in report.blocker_codes
-    assert "coverage_gate_not_ready" in report.blocker_codes
-    assert "development_corpus_manifest_not_admitted" in report.blocker_codes
+    assert {"quality_gate_not_ready", "coverage_gate_not_ready", "redundancy_gate_not_ready"}.issubset(report.blocker_codes)
+    assert "development_corpus_manifest_not_admitted" not in report.blocker_codes
     assert "development_corpus_manifest_missing" not in report.blocker_codes
     assert "math_benchmark_snapshot_not_frozen" not in report.blocker_codes
     assert "general_benchmark_snapshot_not_frozen" not in report.blocker_codes

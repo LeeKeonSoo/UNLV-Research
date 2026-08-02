@@ -8,6 +8,11 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from benchmark_snapshot_contract import BenchmarkPanel, BenchmarkSnapshotContractError, FrozenBenchmarkRegistry, load_benchmark_snapshot_registry
+from development_corpus_admission_contract import (
+    AdmissionStatus,
+    DevelopmentCorpusAdmissionReport,
+    load_admission_registry,
+)
 from development_corpus_inventory_contract import DevelopmentCorpusInventoryManifest, InventoryStatus, load_inventory_registry
 from development_selection import DevelopmentSelectionStatus, load_development_protocol
 
@@ -52,6 +57,12 @@ class _CorpusInventoryState(BaseModel):
     registry_sha256: str
     manifest_sha256: str
     manifest_file_sha256: str
+    admission_registry: str
+    admission_registry_sha256: str
+    admission_registry_file_sha256: str
+    admission_report: str
+    admission_report_sha256: str
+    admission_report_file_sha256: str
 
 
 class _BlockEightState(BaseModel):
@@ -144,7 +155,13 @@ def evaluate_current_development_preflight(root: Path) -> CurrentDevelopmentPref
     inventory_state = protocol.block_8_implementation.development_corpus_inventory
     corpus_registry_path = root / inventory_state.registry
     corpus_manifest_path = root / inventory_state.manifest
-    inventory_paths = tuple(path for path in (corpus_registry_path, corpus_manifest_path) if path.is_file())
+    admission_registry_path = root / inventory_state.admission_registry
+    admission_report_path = root / inventory_state.admission_report
+    inventory_paths = tuple(
+        path
+        for path in (corpus_registry_path, corpus_manifest_path, admission_registry_path, admission_report_path)
+        if path.is_file()
+    )
     paths = (*base_paths, *benchmark_paths, *inventory_paths)
     blockers: list[str] = []
     if not redundancy.development_ablation_ready:
@@ -159,12 +176,17 @@ def evaluate_current_development_preflight(root: Path) -> CurrentDevelopmentPref
             blockers.append(blocker)
     if _sha256(hard_inventory_path) != development.hard_candidate_inventory_sha256:
         blockers.append("hard_candidate_inventory_hash_mismatch")
-    if not corpus_registry_path.is_file() or not corpus_manifest_path.is_file():
+    if not all(
+        path.is_file()
+        for path in (corpus_registry_path, corpus_manifest_path, admission_registry_path, admission_report_path)
+    ):
         blockers.append("development_corpus_manifest_missing")
     else:
         try:
             corpus_registry = load_inventory_registry(corpus_registry_path)
             corpus_manifest = DevelopmentCorpusInventoryManifest.model_validate_json(corpus_manifest_path.read_text(encoding="utf-8"))
+            admission_registry = load_admission_registry(admission_registry_path)
+            admission_report = DevelopmentCorpusAdmissionReport.model_validate_json(admission_report_path.read_text(encoding="utf-8"))
         except ValueError:
             blockers.append("development_corpus_manifest_invalid")
         else:
@@ -173,10 +195,21 @@ def evaluate_current_development_preflight(root: Path) -> CurrentDevelopmentPref
                 and corpus_manifest.registry_sha256 == inventory_state.registry_sha256
                 and corpus_manifest.manifest_sha256 == inventory_state.manifest_sha256
                 and _sha256(corpus_manifest_path) == inventory_state.manifest_file_sha256
+                and admission_registry.identity_sha256() == inventory_state.admission_registry_sha256
+                and _sha256(admission_registry_path) == inventory_state.admission_registry_file_sha256
+                and admission_report.registry_sha256 == inventory_state.admission_registry_sha256
+                and admission_report.report_sha256 == inventory_state.admission_report_sha256
+                and _sha256(admission_report_path) == inventory_state.admission_report_file_sha256
+                and corpus_manifest.admission_report_sha256 == admission_report.report_sha256
             )
             if not identity_valid:
                 blockers.append("development_corpus_manifest_invalid")
-            elif corpus_manifest.status is not InventoryStatus.ADMITTED:
+            elif (
+                corpus_manifest.status is not InventoryStatus.ADMITTED
+                or admission_report.status is not AdmissionStatus.ADMITTED
+                or not admission_report.benchmark_exclusion_complete
+                or admission_report.blocker_codes
+            ):
                 blockers.append("development_corpus_manifest_not_admitted")
     evidence = tuple(_sha256(path) for path in paths)
     payload = {"blockers": sorted(blockers), "evidence": evidence}
