@@ -669,6 +669,57 @@
       "empirical_status": "candidate_fixture_validated_not_runtime_active"
     },
     {
+      "id": "stage_c_typed_redundancy_relation_v2_candidate",
+      "version": "0.1.0",
+      "core": "redundancy",
+      "stage": "Stage C",
+      "hypothesis": "Redundancy must be represented as typed relations because exact equivalence, small substitutions, containment, repeated spans, semantic neighbors, and complementary records do not share one deletion authority.",
+      "decision_unit": "candidate pair, typed relation edge, and equivalence family",
+      "deployment_scope": "candidate-only cross-domain relation construction after Validity",
+      "allowed_inputs": [
+        "chunk text",
+        "stable chunk identifier",
+        "runtime-local lexical and structural normalization",
+        "optional registered semantic-neighbor candidate flag"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_identity",
+        "source_tier",
+        "domain_quota",
+        "composition"
+      ],
+      "reason_codes": [
+        "redundancy_exact_equivalent",
+        "redundancy_formatting_equivalent",
+        "redundancy_near_substitute",
+        "redundancy_contained_payload",
+        "redundancy_superset_payload",
+        "redundancy_repeated_span",
+        "redundancy_semantic_duplicate_candidate",
+        "redundancy_related_complementary"
+      ],
+      "negative_conditions": [
+        "short changed records are never near-substitute families",
+        "trailing whitespace, indentation, internal spacing, and line-structure changes are not formatting equivalence",
+        "numeric constants, operators, negation, answer labels, API signatures, named entities, and code identifiers are substantive differences",
+        "near, containment, repeated-span, and semantic edges do not receive record-deletion authority",
+        "independent implementations and complementary explanations remain"
+      ],
+      "coverage_impact": "only exact and narrowly bounded formatting equivalence form safe families; final representative choice is deferred to Stage C Quality and Coverage",
+      "rollback_behavior": "discard the candidate graph and preserve the active structural runtime unchanged",
+      "runtime_implementation": [
+        "redundancy_v2.py",
+        "redundancy_v2_retrieval.py"
+      ],
+      "empirical_status": "candidate_fixture_validated_not_runtime_active"
+    },
+    {
       "id": "stage_c_repeated_label_block_candidate",
       "version": "0.1.0",
       "core": "redundancy",

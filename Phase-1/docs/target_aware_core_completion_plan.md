@@ -429,16 +429,38 @@ than hidden. The candidate has no active runtime authority; atomic Stage A/B
 activation remains deferred to Block 7 after rechunk and quarantine
 materialization are connected.
 
-### Block 4 - Redundancy v2
+### Block 4 - Redundancy v2 - COMPLETE AS CANDIDATE
 
-- implement typed relation retrieval, classification, family graph, and span
-  compaction;
-- replace the single-threshold assumption with length- and difference-aware
-  policies;
-- defer final representative choice to Stage C.
+- `redundancy_v2.py` implements typed exact, formatting, near-substitute,
+  containment, repeated-span, semantic-candidate, complementary, and distinct
+  relations rather than reducing all pairs to one similarity scalar;
+- `redundancy_v2_retrieval.py` supplies exact/formatting digests, exact
+  containment-window and repeated-span digests, and deterministic MinHash/LSH
+  candidate retrieval;
+- short units remain exact-only, while longer near-substitute candidates must
+  satisfy both absolute and relative changed-token limits;
+- numeric constants, mathematical operators, negation, answer labels, API
+  signatures, named entities, and code identifiers are substantive-difference
+  guards and therefore cannot create a safe family edge;
+- only exact equivalence and narrowly proven formatting equivalence are safe
+  transitive family edges. Formatting normalization is limited to line-ending
+  encoding and one terminal newline; trailing whitespace, indentation,
+  internal spacing, and line structure remain semantic. Near, containment,
+  repeated-span, and semantic relations remain candidate-only, with no
+  record-deletion authority;
+- existing repeated-span materialization remains span-level and requires a
+  valid residual. The v2 graph does not silently convert that evidence into a
+  whole-record deletion;
+- final representative selection is deliberately unset until Stage C can use
+  Quality evidence and Coverage constraints.
 
-Exit: each relation passes independent precision, false-positive, family-link,
-and representative-survival gates.
+Exit: the frozen behavior audit reports `0/22` safe-family false negatives and
+`0/22` safe-family false positives across Code, Math, General, multilingual,
+JSON, tables, conversation, instruction, and technical text. Their one-sided
+95% Wilson upper bounds are both `0.1095`. All four candidate-only
+relation cases match their expected type. This is a fixture-validated candidate,
+not an active runtime replacement; corpus-scale retrieval recall, representative
+survival, and external confirmation remain promotion gates.
 
 ### Block 5 - Quality evidence engine
 
@@ -526,7 +548,7 @@ linked to a frozen evidence bundle.
 10. The paper never claims universal intrinsic Quality or guaranteed
     improvement on every corpus.
 
-## 13. Block 1A Through Block 3 Resolution
+## 13. Block 1A Through Block 4 Resolution
 
 Block 1 froze the target SLM, tokenizer, experiment arms, and capability panels
 in `protocols/target_aware_core_completion_v1.json`. The Qwen excess-loss pair
@@ -543,5 +565,8 @@ Block 3 is frozen as a non-active candidate under `configs/validity_v2.json`.
 Its four-state behavior, reversible trace, byte-decoding boundary, cross-domain
 clean controls, and per-reason uncertainty report are implemented. The evidence
 bundle is `validation/frozen_contracts/validity_v2_behavior_audit.json`. Block 4
-may now implement Redundancy v2; Block 7 remains responsible for the atomic
-runtime switch.
+implements the non-active typed relation graph under
+`configs/redundancy_v2.json`; its evidence bundle is
+`validation/frozen_contracts/redundancy_v2_behavior_audit.json`. Block 5 may now
+implement the Quality evidence engine. Block 7 remains responsible for the
+atomic runtime switch.

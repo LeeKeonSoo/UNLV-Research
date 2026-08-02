@@ -1,6 +1,6 @@
 {
   "schema_version": "target-aware-core-completion-v1",
-  "status": "block_3_validity_v2_fixture_validated_candidate",
+  "status": "block_4_redundancy_v2_fixture_validated_candidate",
   "frozen_at": "2026-08-02",
   "implementation_authority": "design_contract_only",
   "baseline": {
@@ -362,5 +362,52 @@
     "runtime_activation": false,
     "activation_deferred_to": "Block 7 atomic joint-selector migration"
   },
-  "next_block": "Block 4 - Redundancy v2"
+  "block_4_implementation": {
+    "contract": "configs/redundancy_v2.json",
+    "relation_engine": "redundancy_v2.py",
+    "candidate_retrieval": "redundancy_v2_retrieval.py",
+    "behavior_audit": "redundancy_v2_audit.py",
+    "relations": [
+      "exact_equivalent",
+      "formatting_equivalent",
+      "near_substitute",
+      "contained_payload",
+      "superset_payload",
+      "repeated_span",
+      "semantic_duplicate_candidate",
+      "related_complementary",
+      "distinct"
+    ],
+    "safe_family_relations": [
+      "exact_equivalent",
+      "formatting_equivalent"
+    ],
+    "single_global_similarity_threshold": false,
+    "candidate_retrieval_methods": [
+      "exact_digest",
+      "formatting_digest",
+      "exact_containment_window_digest",
+      "repeated_paragraph_digest",
+      "minhash_lsh"
+    ],
+    "substantive_difference_guards": [
+      "numeric_constant_changed",
+      "operator_changed",
+      "negation_changed",
+      "answer_label_changed",
+      "api_signature_changed",
+      "code_identifier_or_keyword_changed",
+      "named_entity_candidate_changed"
+    ],
+    "safe_family_positive_cases": 22,
+    "observed_safe_family_false_negatives": 0,
+    "retain_control_cases": 22,
+    "observed_safe_family_false_positives": 0,
+    "candidate_only_relation_cases": 4,
+    "observed_relation_mismatches": 0,
+    "representative_selection": "deferred_to_stage_c_quality_and_coverage",
+    "runtime_activation": false,
+    "activation_deferred_to": "Block 7 atomic joint-selector migration"
+  },
+  "next_block": "Block 5 - Quality evidence engine"
 }

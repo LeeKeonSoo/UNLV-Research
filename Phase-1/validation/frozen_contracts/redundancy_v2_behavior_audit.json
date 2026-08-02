@@ -1,0 +1,745 @@
+{
+  "schema_version": "redundancy-v2-behavior-audit-v1",
+  "fixture_schema_version": "redundancy-v2-fixture-v1",
+  "safe_family_positive_count": 22,
+  "safe_family_false_negative_count": 0,
+  "safe_family_false_negative_upper_bound": 0.10951159439671891,
+  "retain_control_count": 22,
+  "retain_safe_family_false_positive_count": 0,
+  "retain_safe_family_false_positive_upper_bound": 0.10951159439671891,
+  "candidate_only_count": 4,
+  "relation_mismatch_count": 0,
+  "case_results": [
+    {
+      "case_id": "exact_multilingual",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "formatting_general",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "short_single_word_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.16666666666666666,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "long_non_substantive_substitution",
+      "role": "candidate_only",
+      "expected_relation": "near_substitute",
+      "observed_relation": "near_substitute",
+      "reason_code": "redundancy_near_substitute",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.0136986301369863,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "long_numeric_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "numeric_constant_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.014925373134328358,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "code_identifier_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "api_signature_changed",
+        "code_identifier_or_keyword_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.058823529411764705,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "math_operator_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "operator_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.041666666666666664,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "negation_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "negation_changed"
+      ],
+      "changed_left_count": 0,
+      "changed_right_count": 1,
+      "changed_ratio": 0.06666666666666667,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "answer_label_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "answer_label_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.08333333333333333,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "api_signature_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "api_signature_changed"
+      ],
+      "changed_left_count": 2,
+      "changed_right_count": 2,
+      "changed_ratio": 0.09523809523809523,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "contained_payload",
+      "role": "candidate_only",
+      "expected_relation": "contained_payload",
+      "observed_relation": "contained_payload",
+      "reason_code": "redundancy_contained_payload",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "named_entity_candidate_changed"
+      ],
+      "changed_left_count": 0,
+      "changed_right_count": 10,
+      "changed_ratio": 0.43478260869565216,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "repeated_span",
+      "role": "candidate_only",
+      "expected_relation": "repeated_span",
+      "observed_relation": "repeated_span",
+      "reason_code": "redundancy_repeated_span",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "named_entity_candidate_changed"
+      ],
+      "changed_left_count": 5,
+      "changed_right_count": 4,
+      "changed_ratio": 0.1282051282051282,
+      "repeated_span_hashes": [
+        "ecaf97de15d67713ec728a4d9b9621c5a64775ae2c7d26f0662a12948c0adb02"
+      ],
+      "passed": true
+    },
+    {
+      "case_id": "independent_implementations",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "api_signature_changed",
+        "code_identifier_or_keyword_changed",
+        "numeric_constant_changed",
+        "operator_changed"
+      ],
+      "changed_left_count": 12,
+      "changed_right_count": 31,
+      "changed_ratio": 1.1481481481481481,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "semantic_candidate_without_lexical_proof",
+      "role": "candidate_only",
+      "expected_relation": "semantic_duplicate_candidate",
+      "observed_relation": "semantic_duplicate_candidate",
+      "reason_code": "redundancy_semantic_duplicate_candidate",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "answer_label_changed",
+        "named_entity_candidate_changed"
+      ],
+      "changed_left_count": 12,
+      "changed_right_count": 9,
+      "changed_ratio": 1.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "json_boolean_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "code_identifier_or_keyword_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.06666666666666667,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "table_cell_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "numeric_constant_changed"
+      ],
+      "changed_left_count": 2,
+      "changed_right_count": 2,
+      "changed_ratio": 0.2,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "date_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "numeric_constant_changed"
+      ],
+      "changed_left_count": 2,
+      "changed_right_count": 2,
+      "changed_ratio": 0.13333333333333333,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "code_string_literal_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "api_signature_changed",
+        "code_identifier_or_keyword_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.1111111111111111,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "code_class_name_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "code_identifier_or_keyword_changed",
+        "named_entity_candidate_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.25,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "named_entity_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "named_entity_candidate_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.1111111111111111,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "multilingual_fact_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.14285714285714285,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "equation_exponent_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "numeric_constant_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.07692307692307693,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "shell_flag_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "operator_changed"
+      ],
+      "changed_left_count": 3,
+      "changed_right_count": 1,
+      "changed_ratio": 0.2727272727272727,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "api_return_type_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "api_signature_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.05263157894736842,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "test_expected_value_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "numeric_constant_changed"
+      ],
+      "changed_left_count": 1,
+      "changed_right_count": 1,
+      "changed_ratio": 0.14285714285714285,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "instruction_scope_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [
+        "negation_changed"
+      ],
+      "changed_left_count": 3,
+      "changed_right_count": 3,
+      "changed_ratio": 0.3333333333333333,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "python_indentation_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "markdown_hard_break_change",
+      "role": "retain_control",
+      "expected_relation": "related_complementary",
+      "observed_relation": "related_complementary",
+      "reason_code": "redundancy_related_complementary",
+      "safe_family_edge": false,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_0",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_0",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_1",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_1",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_2",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_2",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_3",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_3",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_4",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_4",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_5",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_5",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_6",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_6",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_7",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_7",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_8",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_8",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_exact_9",
+      "role": "safe_family_positive",
+      "expected_relation": "exact_equivalent",
+      "observed_relation": "exact_equivalent",
+      "reason_code": "redundancy_exact_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [
+        "a87ce253d870a57d99836c7d92ff67a1d477a5c7ac313493cd2132e1f81fdb79"
+      ],
+      "passed": true
+    },
+    {
+      "case_id": "metamorphic_formatting_9",
+      "role": "safe_family_positive",
+      "expected_relation": "formatting_equivalent",
+      "observed_relation": "formatting_equivalent",
+      "reason_code": "redundancy_formatting_equivalent",
+      "safe_family_edge": true,
+      "substantive_difference_codes": [],
+      "changed_left_count": 0,
+      "changed_right_count": 0,
+      "changed_ratio": 0.0,
+      "repeated_span_hashes": [
+        "a87ce253d870a57d99836c7d92ff67a1d477a5c7ac313493cd2132e1f81fdb79"
+      ],
+      "passed": true
+    }
+  ],
+  "confidence_level": 0.95,
+  "passed": true,
+  "authority": "fixture_behavior_audit_only",
+  "runtime_activation": false
+}

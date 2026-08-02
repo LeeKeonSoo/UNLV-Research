@@ -288,6 +288,41 @@
       "coverage_impact_validation": "required_before_promotion"
     },
     {
+      "id": "stage_c_typed_redundancy_relation_v2_candidate",
+      "version": "0.1.0",
+      "policy_card_id": "stage_c_typed_redundancy_relation_v2_candidate",
+      "core": "redundancy",
+      "stage": "Stage C",
+      "status": "candidate",
+      "activation_state": "candidate",
+      "reason_codes": [
+        "redundancy_exact_equivalent",
+        "redundancy_formatting_equivalent",
+        "redundancy_near_substitute",
+        "redundancy_contained_payload",
+        "redundancy_superset_payload",
+        "redundancy_repeated_span",
+        "redundancy_semantic_duplicate_candidate",
+        "redundancy_related_complementary"
+      ],
+      "required_metadata": [],
+      "fixture": "validation/test_redundancy_v2.py",
+      "runtime_implementation": [
+        "redundancy_v2.py",
+        "redundancy_v2_retrieval.py"
+      ],
+      "scope": "candidate-only typed relation graph with length-sensitive lexical differences, substantive-difference guards, and deferred representative selection",
+      "blocking_conditions": [
+        "cross_domain_fixture_behavior_audit_passed",
+        "development_retrieval_recall_measured",
+        "span_residual_contract_reused",
+        "quality_and_coverage_representative_selector_available",
+        "confirmatory_evaluation_without_runtime_feedback"
+      ],
+      "runtime_authorization": "none_candidate_cannot_select_transform_or_remove",
+      "coverage_impact_validation": "safe families require a final Stage-C survivor; other relation types cannot be silently unioned"
+    },
+    {
       "id": "stage_c_strengthened_symmetric_near_duplicate_candidate",
       "version": "0.1.0",
       "core": "redundancy",

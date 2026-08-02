@@ -1,0 +1,74 @@
+{
+  "schema_version": "redundancy-v2-contract-v1",
+  "status": "block_4_fixture_validated_candidate",
+  "runtime_activation": false,
+  "runtime_authority": "none_candidate_cannot_select_transform_or_remove",
+  "single_global_similarity_threshold": false,
+  "relations": [
+    "exact_equivalent",
+    "formatting_equivalent",
+    "near_substitute",
+    "contained_payload",
+    "superset_payload",
+    "repeated_span",
+    "semantic_duplicate_candidate",
+    "related_complementary",
+    "distinct"
+  ],
+  "safe_family_relations": [
+    "exact_equivalent",
+    "formatting_equivalent"
+  ],
+  "formatting_equivalence_boundary": "line_ending_encoding_and_one_terminal_newline_only; trailing whitespace, indentation, internal spacing, and line structure are preserved",
+  "candidate_only_relations": [
+    "near_substitute",
+    "contained_payload",
+    "superset_payload",
+    "repeated_span",
+    "semantic_duplicate_candidate"
+  ],
+  "mandatory_retain_relation": "related_complementary",
+  "length_policy": {
+    "short_exact_only_max_tokens": 32,
+    "near_min_tokens": 64,
+    "near_max_changed_ratio": 0.02,
+    "near_max_changed_tokens": 4
+  },
+  "substantive_difference_guards": [
+    "numeric_constant_changed",
+    "operator_changed",
+    "negation_changed",
+    "answer_label_changed",
+    "api_signature_changed",
+    "code_identifier_or_keyword_changed",
+    "named_entity_candidate_changed"
+  ],
+  "retrieval": {
+    "exact_and_formatting_digest": true,
+    "repeated_paragraph_digest": true,
+    "exact_containment_window_digest": true,
+    "minhash_lsh_candidate_only": true,
+    "retrieval_min_tokens": 24,
+    "shingle_size": 5,
+    "signature_size": 32,
+    "bands": 8
+  },
+  "family_contract": {
+    "silent_transitive_near_duplicate_union": false,
+    "safe_union_relations_only": true,
+    "every_future_removal_requires_final_survivor_link": true
+  },
+  "representative_selection": "deferred_to_stage_c_quality_and_coverage",
+  "repeated_span_action": "exact_line_structure_preserving_span_candidate_only_with_valid_residual",
+  "forbidden_inputs": [
+    "benchmark_outcomes",
+    "Utility",
+    "NLL",
+    "source_reputation",
+    "source_tier",
+    "domain_quota",
+    "target_retention_fraction",
+    "hidden_token_budget"
+  ],
+  "activation_deferred_to": "Block 7 atomic joint-selector migration"
+}
