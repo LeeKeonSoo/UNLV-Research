@@ -1,0 +1,278 @@
+{
+  "schema_version": "frozen-benchmark-snapshot-registry-v1",
+  "status": "frozen_for_development_corpus_exclusion",
+  "source_registry_sha256": "2388be20a272a74d289dc893100782bcec7f54b49c0ec6474d8b5933c5bcca5c",
+  "snapshots": [
+    {
+      "benchmark_id": "gsm8k",
+      "panel": "math",
+      "repository_id": "openai/gsm8k",
+      "revision": "740312add88f781978c0658806c59bc2815b9866",
+      "declared_split": "main/test",
+      "source_files": [
+        {
+          "relative_path": "datasets--openai--gsm8k/snapshots/740312add88f781978c0658806c59bc2815b9866/main/test-00000-of-00001.parquet",
+          "sha256": "ee7b8da9e381df27b9e3f7758a159ab2bdaa4dbaa910546cbbc47e0cb44e4f59",
+          "row_count": 1319
+        }
+      ],
+      "task_count": 1319,
+      "unique_text_hash_count": 1319,
+      "canonical_snapshot_filename": "gsm8k.jsonl",
+      "canonical_snapshot_sha256": "e53aa7ecdb7f4b3e3cd45b541bbd75f89f951903f9f2c9f57d51ab8aa82a82ce"
+    },
+    {
+      "benchmark_id": "hendrycks_math",
+      "panel": "math",
+      "repository_id": "EleutherAI/hendrycks_math",
+      "revision": "21a5633873b6a120296cce3e2df9d5550074f4a3",
+      "declared_split": "all_subjects/test",
+      "source_files": [
+        {
+          "relative_path": "datasets--EleutherAI--hendrycks_math/snapshots/21a5633873b6a120296cce3e2df9d5550074f4a3/algebra/test-00000-of-00001.parquet",
+          "sha256": "0e04a850dac9cfc758eac0c80afd2d0cc65e29ea72f916c8ac1045b12af937f5",
+          "row_count": 1187
+        },
+        {
+          "relative_path": "datasets--EleutherAI--hendrycks_math/snapshots/21a5633873b6a120296cce3e2df9d5550074f4a3/counting_and_probability/test-00000-of-00001.parquet",
+          "sha256": "c324818949c75a6227c0328a8499d58023cbbf6757cfc1736f5ab24cc8d87966",
+          "row_count": 474
+        },
+        {
+          "relative_path": "datasets--EleutherAI--hendrycks_math/snapshots/21a5633873b6a120296cce3e2df9d5550074f4a3/geometry/test-00000-of-00001.parquet",
+          "sha256": "98720f3a8134ad9784fd8951195245264495df03ffc5c9485a9a54ff5ae2431a",
+          "row_count": 479
+        },
+        {
+          "relative_path": "datasets--EleutherAI--hendrycks_math/snapshots/21a5633873b6a120296cce3e2df9d5550074f4a3/intermediate_algebra/test-00000-of-00001.parquet",
+          "sha256": "e859f72486c951c2017da880541ca729940eaa986b0364eb23e238983df9bfeb",
+          "row_count": 903
+        },
+        {
+          "relative_path": "datasets--EleutherAI--hendrycks_math/snapshots/21a5633873b6a120296cce3e2df9d5550074f4a3/number_theory/test-00000-of-00001.parquet",
+          "sha256": "ba156c9c9fa2040836ba12135fd964e6e67d6bccd8c469ec4a3ad941f8f6fbe9",
+          "row_count": 540
+        },
+        {
+          "relative_path": "datasets--EleutherAI--hendrycks_math/snapshots/21a5633873b6a120296cce3e2df9d5550074f4a3/prealgebra/test-00000-of-00001.parquet",
+          "sha256": "301e5d8ade5c7b5038032532e498bdc9dca799e7f1061a63f2e7d980803240cc",
+          "row_count": 871
+        },
+        {
+          "relative_path": "datasets--EleutherAI--hendrycks_math/snapshots/21a5633873b6a120296cce3e2df9d5550074f4a3/precalculus/test-00000-of-00001.parquet",
+          "sha256": "da37474ba3761ae5727af3844a7ba963a735bd6a14c65e6137593669a4fe3b9c",
+          "row_count": 546
+        }
+      ],
+      "task_count": 5000,
+      "unique_text_hash_count": 5000,
+      "canonical_snapshot_filename": "hendrycks_math.jsonl",
+      "canonical_snapshot_sha256": "2d51488b8c551dbb5690784f25bbe281dc1a1787dcdd4f3f528b695a3ae89f23"
+    },
+    {
+      "benchmark_id": "mmlu_pro",
+      "panel": "general",
+      "repository_id": "TIGER-Lab/MMLU-Pro",
+      "revision": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+      "declared_split": "test",
+      "source_files": [
+        {
+          "relative_path": "datasets--TIGER-Lab--MMLU-Pro/snapshots/b189ec765aa7ed75c8acfea42df31fdae71f97be/data/test-00000-of-00001.parquet",
+          "sha256": "0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8",
+          "row_count": 12032
+        }
+      ],
+      "task_count": 12032,
+      "unique_text_hash_count": 12032,
+      "canonical_snapshot_filename": "mmlu_pro.jsonl",
+      "canonical_snapshot_sha256": "046839651e3869b61db9f5e2ca9bab9f4bfe899dd008fc0a2a10c96318b5ff16"
+    },
+    {
+      "benchmark_id": "bbh",
+      "panel": "general",
+      "repository_id": "lukaemon/bbh",
+      "revision": "982bb89fd79532a8ac676a61fc42eb1aeec63f99",
+      "declared_split": "all_tasks/test",
+      "source_files": [
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/boolean_expressions/test-00000-of-00001.parquet",
+          "sha256": "c5de3d5c30fecdee9fdd6348f4fb324f64be8597f28e9d60d4e647e06df28b27",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/causal_judgement/test-00000-of-00001.parquet",
+          "sha256": "787b07b98aaaaeda52da57852a61fa89fa136d7026008e3f4958293384949de3",
+          "row_count": 187
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/date_understanding/test-00000-of-00001.parquet",
+          "sha256": "886b90d48cc66c87d26c36d64ef8119523b2021aa02dcc78ea326d7595440e1f",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/disambiguation_qa/test-00000-of-00001.parquet",
+          "sha256": "94f25b514de46673114f229eea71a88b22f5777fc852f4b71ccb0291fd65b0de",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/dyck_languages/test-00000-of-00001.parquet",
+          "sha256": "041cf145093a075070392bb267f580d3035b5faa922a72c9a58cf70de295982b",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/formal_fallacies/test-00000-of-00001.parquet",
+          "sha256": "dc98f32c2cb21deceb67dae775dcd6de03ba8c067ac280f43f7dd8973fcc807c",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/geometric_shapes/test-00000-of-00001.parquet",
+          "sha256": "83cf995f268296d0c510502f879932419f2d6a2ff1a0574746b15c53e9348967",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/hyperbaton/test-00000-of-00001.parquet",
+          "sha256": "e231956d054f3bfa868482348e9c089d41239cc5a1aafe4e1b08a6fcbd0474c7",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/logical_deduction_five_objects/test-00000-of-00001.parquet",
+          "sha256": "413dd1a9abdaeffa6ec7869c21914050f0604adec94048c60071b80889189a8e",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/logical_deduction_seven_objects/test-00000-of-00001.parquet",
+          "sha256": "50912eb454be853c03409555f5aae43ff3a0bad1775ee29c13f917bee972105a",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/logical_deduction_three_objects/test-00000-of-00001.parquet",
+          "sha256": "69666640c655c70e4ee6628dd2475e911981b0e828e43ac69bbb9d8144144586",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/movie_recommendation/test-00000-of-00001.parquet",
+          "sha256": "bc9e7238d45633dd1fd17ca6bef47fe07f1b709e8d1539c7002c2e7da0add4fe",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/multistep_arithmetic_two/test-00000-of-00001.parquet",
+          "sha256": "4f7194caf79b38fce0db1a6aa42541692d4f5e2cbbd199dd68cb6901c69b1e85",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/navigate/test-00000-of-00001.parquet",
+          "sha256": "ea2c81b9b19321c0183f2c4b2d59197af01c08d41247105183733b2cfbad3658",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/object_counting/test-00000-of-00001.parquet",
+          "sha256": "81f3549f01589125e5d7bee1f5a261a0611c418c1b3bee6b9bc25136b5915fc0",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/penguins_in_a_table/test-00000-of-00001.parquet",
+          "sha256": "ac7e9c4b868eda0aefcbad9b6e0f3a9f6a8f22b47e413858599f899e28a61ffd",
+          "row_count": 146
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/reasoning_about_colored_objects/test-00000-of-00001.parquet",
+          "sha256": "5c93a11b4ced66cc2afe4cd1348a36666eba10a2aeaa023c0e3609102f4ad130",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/ruin_names/test-00000-of-00001.parquet",
+          "sha256": "d75882ee191fc60464c4c8cb6d90085a565de4476f58c8ada0fe31f0d18e3a24",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/salient_translation_error_detection/test-00000-of-00001.parquet",
+          "sha256": "fd56dfa6d5a3c00fab3cf0a3b951a4cb2d5daf6cd0a564b4229dbc7fee13ba5e",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/snarks/test-00000-of-00001.parquet",
+          "sha256": "4aa85c7c94ba0b6de3e5245af6af2dac4df2b979e8fc944513a317d20d77382e",
+          "row_count": 178
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/sports_understanding/test-00000-of-00001.parquet",
+          "sha256": "0f67780a329b4b4a22698d19f95f165b68831aad18c59236834b2c7272d37008",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/temporal_sequences/test-00000-of-00001.parquet",
+          "sha256": "b12750a723e54541eb27f6f534d5f91650e8d406e81cd5ac23c3ee7f780ad8ce",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/tracking_shuffled_objects_five_objects/test-00000-of-00001.parquet",
+          "sha256": "ba3cdb666a305b3bd87be668e16c66b6bc7ada0a71cd53bc25f65932a814d00a",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/tracking_shuffled_objects_seven_objects/test-00000-of-00001.parquet",
+          "sha256": "23f26fa036a7314b86e6eca4ad985218930645b47a31f920b65da70b22f98227",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/tracking_shuffled_objects_three_objects/test-00000-of-00001.parquet",
+          "sha256": "b3d557e426ac57f4b2194b4be5d810eb4425ff5a2c776d9b0bb6572b246c4564",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/web_of_lies/test-00000-of-00001.parquet",
+          "sha256": "ad0a5707016259f060927a7a777bb0434c5e5293da0f6570e4e185919c434f11",
+          "row_count": 250
+        },
+        {
+          "relative_path": "datasets--lukaemon--bbh/snapshots/982bb89fd79532a8ac676a61fc42eb1aeec63f99/word_sorting/test-00000-of-00001.parquet",
+          "sha256": "7c623d20c1e38e7b1b67213d0933b7b24b18edb5b9788a33ae0b05add40f7201",
+          "row_count": 250
+        }
+      ],
+      "task_count": 6511,
+      "unique_text_hash_count": 6509,
+      "canonical_snapshot_filename": "bbh.jsonl",
+      "canonical_snapshot_sha256": "06a079ab9e6663412d5d718db438e494d69c4e745f7cc0db30687e1b7daf493a"
+    },
+    {
+      "benchmark_id": "arc_challenge",
+      "panel": "general",
+      "repository_id": "allenai/ai2_arc",
+      "revision": "210d026faf9955653af8916fad021475a3f00453",
+      "declared_split": "ARC-Challenge/test",
+      "source_files": [
+        {
+          "relative_path": "datasets--allenai--ai2_arc/snapshots/210d026faf9955653af8916fad021475a3f00453/ARC-Challenge/test-00000-of-00001.parquet",
+          "sha256": "62f03257e737aed263f55c6abf87c7bb0028a44a6bdd2a26eb1279eb42c1d1e9",
+          "row_count": 1172
+        }
+      ],
+      "task_count": 1172,
+      "unique_text_hash_count": 1172,
+      "canonical_snapshot_filename": "arc_challenge.jsonl",
+      "canonical_snapshot_sha256": "159782c0617df3123e272c1965b16ec86e43c6b2c1a19d42806894d553ac0601"
+    },
+    {
+      "benchmark_id": "hellaswag",
+      "panel": "general",
+      "repository_id": "Rowan/hellaswag",
+      "revision": "218ec52e09a7e7462a5400043bb9a69a41d06b76",
+      "declared_split": "validation",
+      "source_files": [
+        {
+          "relative_path": "datasets--Rowan--hellaswag/snapshots/218ec52e09a7e7462a5400043bb9a69a41d06b76/data/validation-00000-of-00001.parquet",
+          "sha256": "899813071e1e95efafec90f856e1987d2150fa4d020fc005df6962c259f660cd",
+          "row_count": 10042
+        }
+      ],
+      "task_count": 10042,
+      "unique_text_hash_count": 10042,
+      "canonical_snapshot_filename": "hellaswag.jsonl",
+      "canonical_snapshot_sha256": "81fe2068a6b0c7b0e43636b278b9d4fd2741e1a690ff3feb2c8deda4c41b6864"
+    }
+  ],
+  "manifest_sha256": "8148d8372338fda25ff40aa7a28f30350eea226a962453911f70e1ccdd1095e3",
+  "benchmark_outcomes_read": false,
+  "selector_membership_mutated": false
+}

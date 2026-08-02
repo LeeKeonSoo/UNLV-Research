@@ -628,9 +628,14 @@ enter the profile freeze.
 
 The frozen current-state audit is
 `validation/frozen_contracts/development_selection_v1_current_preflight.json`.
-It reports six blockers: Redundancy, Quality, and Coverage empirical gates;
-the Code/Math/General development corpus manifest; frozen Math and General
-benchmark-exclusion snapshots. Hard extension selection is an output of this
+It reports four blockers: Redundancy, Quality, and Coverage empirical gates,
+plus the Code/Math/General development corpus manifest. Math and General
+benchmark-exclusion snapshots are frozen under the hash-pinned registry
+`protocols/math_general_benchmark_snapshot_registry_v1.json`. The frozen
+manifest contains 6,319 Math tasks and 29,757 General tasks and is replay-stable
+at `validation/frozen_contracts/math_general_benchmark_snapshot_manifest_v1.json`.
+No benchmark outcome is present in or consumed by this exclusion artifact.
+Hard extension selection is an output of this
 Block, so it is deliberately not a preflight prerequisite. Therefore no
 Normal or Hard profile hash has been frozen and Block 9 is not authorized.
 
@@ -713,7 +718,9 @@ registry gates currently retain Base. Block 8 must select development operating
 points, while Block 5 and Block 6 empirical evidence remains required before
 any runtime promotion. Block 8 now has a fail-closed typed selection and
 preflight implementation under `configs/development_selection_v1.json`. Its
-mechanics pass deterministic contract tests, but the current audit reports
-six unresolved empirical prerequisites. This is a Block 8 implementation
+mechanics pass deterministic contract tests, and Math/General exclusion
+snapshots now pass revision, source-file, task-count, and manifest-hash replay
+checks. The current audit reports four unresolved empirical prerequisites.
+This is a Block 8 implementation
 milestone, not a profile-selection result; Base remains the only target-aware
 materialization authorized by the new selector namespace.

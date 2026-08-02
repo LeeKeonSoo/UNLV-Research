@@ -281,18 +281,30 @@
       "all_primary_snapshots_have_recorded_sha256": true
     },
     "math": {
-      "status": "suite_ids_frozen_snapshot_revisions_pending",
-      "corpus_admission_allowed": false
+      "status": "frozen",
+      "source_registry": "protocols/math_general_benchmark_snapshot_registry_v1.json",
+      "frozen_manifest": "validation/frozen_contracts/math_general_benchmark_snapshot_manifest_v1.json",
+      "source_registry_sha256": "2388be20a272a74d289dc893100782bcec7f54b49c0ec6474d8b5933c5bcca5c",
+      "frozen_manifest_sha256": "8148d8372338fda25ff40aa7a28f30350eea226a962453911f70e1ccdd1095e3",
+      "frozen_manifest_file_sha256": "a1ca1f797a506564ad4180ab3706fa147433c27af854b50be1d2205be714e35c",
+      "task_count": 6319,
+      "corpus_admission_allowed": true
     },
     "general": {
-      "status": "suite_ids_frozen_snapshot_revisions_pending",
-      "corpus_admission_allowed": false
+      "status": "frozen",
+      "source_registry": "protocols/math_general_benchmark_snapshot_registry_v1.json",
+      "frozen_manifest": "validation/frozen_contracts/math_general_benchmark_snapshot_manifest_v1.json",
+      "source_registry_sha256": "2388be20a272a74d289dc893100782bcec7f54b49c0ec6474d8b5933c5bcca5c",
+      "frozen_manifest_sha256": "8148d8372338fda25ff40aa7a28f30350eea226a962453911f70e1ccdd1095e3",
+      "frozen_manifest_file_sha256": "a1ca1f797a506564ad4180ab3706fa147433c27af854b50be1d2205be714e35c",
+      "task_count": 29757,
+      "corpus_admission_allowed": true
     },
     "multilingual": {
       "status": "suite_ids_frozen_snapshot_revisions_pending",
       "corpus_admission_allowed": false
     },
-    "fail_closed_rule": "No development or confirmatory corpus may be admitted for a panel until every benchmark snapshot, evaluator revision, exclusion hash, and task count is frozen."
+    "fail_closed_rule": "Development corpus admission requires frozen benchmark revisions, exclusion hashes, and task counts; confirmatory execution additionally requires a frozen evaluator revision."
   },
   "split_and_leakage_contract": {
     "development_and_confirmatory_disjoint_by": [
@@ -547,8 +559,6 @@
     "current_blockers": [
       "coverage_gate_not_ready",
       "development_corpus_manifest_missing",
-      "general_benchmark_snapshot_not_frozen",
-      "math_benchmark_snapshot_not_frozen",
       "quality_gate_not_ready",
       "redundancy_gate_not_ready"
     ],
