@@ -7,6 +7,9 @@ The sole current-status authority is
 running new experiments. `README.md` is the repository overview and
 `docs/current_curation_framework.md` is detailed design context. Quality and
 Coverage semantics are fixed in `docs/quality_coverage_formal_definition.md`.
+The frozen target for the next framework version is
+`docs/framework_research_contract_v1.md`. It is the redesign authority, not a
+statement that the current runtime already implements the target.
 
 ## Current Alignment
 
@@ -113,7 +116,8 @@ current config/protocol JSON parses with GPU and network use disabled.
 
 ## Next Authorized Work
 
-Only after the user requests implementation, follow redesign blocks `R1` to
-`R6` in the consistency baseline. Do not tune Quality formulas or add stronger
-rules before the runtime contract, normalization safety, lifecycle semantics,
-and measurement vocabulary are fixed.
+Follow `docs/framework_research_contract_v1.md` for redesign decisions. The
+next block is a single machine-readable framework schema that expresses that
+contract without activating new removal rules. Do not tune Quality formulas or
+add stronger rules before the schema, object contracts, stage permissions, and
+measurement vocabulary are implemented and tested.

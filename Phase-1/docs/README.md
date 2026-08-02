@@ -12,6 +12,18 @@ presence does not make its design runtime-active.
 - `current_curation_framework.md`: detailed framework description subordinate
   to the baseline.
 
+## Redesign Authority
+
+- `framework_research_contract_v1.md`: frozen objective, Core-Metric-Policy-
+  Method hierarchy, stage authority, profile semantics, model-evidence
+  boundary, validation protocol, and claim gates for the next framework
+  version.
+
+This contract defines the implementation target. It does not make a candidate
+Policy runtime-active. Until the implementation and validation blocks close,
+`framework_consistency_baseline.md` remains authoritative for observed runtime
+behavior.
+
 ## Current Contracts and Inventories
 
 - `content_routing_quality_coverage_contract_v2.md`
