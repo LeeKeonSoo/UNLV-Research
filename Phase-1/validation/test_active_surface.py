@@ -185,6 +185,19 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("development_quality_gate_contract.py")
     expected.add("scripts/build_development_quality_gate_v1.py")
     expected.add("validation/test_development_quality_gate_v1.py")
+    expected.update(
+        {
+            "framework_objects.py",
+            "stage_permissions.py",
+            "contrastive_quality_contract.py",
+            "framework_profiles.py",
+            "validation/test_framework_manifest_v1.py",
+            "validation/test_framework_objects_v1.py",
+            "validation/test_stage_permissions_v1.py",
+            "validation/test_contrastive_quality_protocol_v2.py",
+            "validation/test_framework_profiles_v1.py",
+        }
+    )
     actual = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*.py")
@@ -243,6 +256,14 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
     expected.add("joint_selector_profiles_v1.json")
     expected.add("development_selection_v1.json")
     expected.add("development_corpus_manifest_v1.json")
+    expected.update(
+        {
+            "curation_framework_v1.json",
+            "framework_objects_v1.json",
+            "contrastive_quality_protocol_v2.json",
+            "framework_profiles_v1.json",
+        }
+    )
     expected.update(
         {
             "math_complete_bundle_calibration_v1.json",

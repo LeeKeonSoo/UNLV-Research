@@ -1,0 +1,55 @@
+{
+  "schema_version": "framework-profiles-v1",
+  "status": "design_only_until_block_7",
+  "framework_manifest_sha256": "7051acd584aec4303adce07c3cbad5b38e6edb54f3b8b86c058d486d3e26f194",
+  "object_registry_sha256": "5b88f1c7942482edaff0e5551bc2979675fa3f4407315e801e8670a84c2ab4a8",
+  "policy_lifecycles": [
+    {"policy_id": "validity.interpretable_text", "lifecycle": "candidate"},
+    {"policy_id": "redundancy.exact_text_family", "lifecycle": "candidate"},
+    {"policy_id": "redundancy.symmetric_near_duplicate_candidate", "lifecycle": "blocked"},
+    {"policy_id": "quality.explicit_nonpayload", "lifecycle": "candidate"},
+    {"policy_id": "coverage.representative_guard", "lifecycle": "candidate"},
+    {"policy_id": "quality.contrastive_alignment_candidate", "lifecycle": "blocked"}
+  ],
+  "profiles": [
+    {
+      "id": "normal",
+      "inherits_profile": null,
+      "policy_ids": [
+        "validity.interpretable_text",
+        "redundancy.exact_text_family",
+        "quality.explicit_nonpayload",
+        "coverage.representative_guard"
+      ],
+      "additional_policy_ids": [],
+      "threshold_overrides": [],
+      "release_enabled": false,
+      "fixed_retention_fraction_allowed": false,
+      "maximum_token_budget_allowed": false,
+      "output": "full_reason_coded_curated_pool"
+    },
+    {
+      "id": "hard",
+      "inherits_profile": "normal",
+      "policy_ids": [
+        "validity.interpretable_text",
+        "redundancy.exact_text_family",
+        "quality.explicit_nonpayload",
+        "coverage.representative_guard",
+        "redundancy.symmetric_near_duplicate_candidate",
+        "quality.contrastive_alignment_candidate"
+      ],
+      "additional_policy_ids": [
+        "redundancy.symmetric_near_duplicate_candidate",
+        "quality.contrastive_alignment_candidate"
+      ],
+      "threshold_overrides": [],
+      "release_enabled": false,
+      "fixed_retention_fraction_allowed": false,
+      "maximum_token_budget_allowed": false,
+      "output": "full_reason_coded_curated_pool"
+    }
+  ],
+  "blocker_codes": ["profile_contains_unpromoted_policy"],
+  "retained_set_invariant": "hard_subset_or_equal_normal"
+}

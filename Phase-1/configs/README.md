@@ -8,8 +8,10 @@ does not grant runtime authority.
 `curation_framework_v1.json` is the single machine-readable root for the next
 framework version. Its schema is
 `schemas/curation_framework_v1.schema.json`. It is design-only until Block 7;
-referenced registries that do not yet exist are forward declarations, not
-runtime activation.
+`framework_objects_v1.json`, `contrastive_quality_protocol_v2.json`, and
+`framework_profiles_v1.json` implement its typed registries. They are not
+runtime activation: both new profiles remain release-disabled until Policy
+promotion and the Block 7 runtime transition are complete.
 
 ## Runtime Contracts
 

@@ -117,7 +117,12 @@ current config/protocol JSON parses with GPU and network use disabled.
 ## Next Authorized Work
 
 Follow `docs/framework_research_contract_v1.md` for redesign decisions. The
-next block is a single machine-readable framework schema that expresses that
-contract without activating new removal rules. Do not tune Quality formulas or
-add stronger rules before the schema, object contracts, stage permissions, and
-measurement vocabulary are implemented and tested.
+redesign foundation through Block 6 is now implemented: one root manifest,
+typed Core-Metric-Policy-Method-Provider objects, Stage input permissions, a
+blocked three-role contrastive Quality protocol, and release-disabled
+Normal/Hard composition with retained-set monotonicity. These files remain
+design-only and do not alter the observed runtime.
+
+The next authorized work is Block 7: refactor the existing runtime to consume
+the new objects and permissions without changing frozen policy behavior. Do not
+promote the blocked near-duplicate or contrastive policies during that refactor.
