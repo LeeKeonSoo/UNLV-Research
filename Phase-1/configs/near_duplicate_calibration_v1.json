@@ -1,0 +1,36 @@
+{
+  "schema_version": "near-duplicate-calibration-protocol-v1",
+  "status": "block_10a_frozen_before_calibration",
+  "domains": ["code", "math", "general"],
+  "target_token_counts": [24, 64, 128, 256],
+  "claimed_minimum_tokens": 64,
+  "candidate_near_minimum_tokens": [32, 64, 96],
+  "candidate_maximum_changed_ratios": [0.01, 0.02, 0.04],
+  "candidate_maximum_changed_tokens": [1, 2, 4],
+  "current_setting": {
+    "near_minimum_tokens": 64,
+    "maximum_changed_ratio": 0.02,
+    "maximum_changed_tokens": 4
+  },
+  "positive_operators": {
+    "code": "python_optional_statement_terminator_ast_equal",
+    "math": "arithmetic_optional_statement_terminator_ast_equal",
+    "general": "token_preserving_line_reflow"
+  },
+  "hard_negative_operators": {
+    "code": "python_scalar_return_to_singleton_tuple_ast_changed",
+    "math": "arithmetic_scalar_expression_to_singleton_tuple_ast_changed",
+    "general": "directional_verb_increases_to_decreases"
+  },
+  "acceptance": {
+    "require_all_eligible_positives": true,
+    "require_zero_semantic_false_positives": true,
+    "require_zero_short_positive_removals": true
+  },
+  "selector_boundary": {
+    "benchmark_outcomes_available": false,
+    "utility_available": false,
+    "runtime_activation_mutation_allowed": false
+  },
+  "claim_boundary": "Metamorphic counterexamples test whether the current length-and-edit threshold can authorize deletion. They do not label intrinsic Quality or activate a runtime Policy."
+}

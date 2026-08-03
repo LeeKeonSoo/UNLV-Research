@@ -46,6 +46,10 @@ def test_manifest_declares_the_complete_core_and_stage_boundary() -> None:
     assert stage_ids == ("stage_a", "stage_b", "stage_c")
     assert manifest["external_evaluation"]["runtime_stage"] is False
     assert manifest["external_evaluation"]["selector_visible"] is False
+    profile = manifest["profile_contract"]
+    assert profile["shared_policy_families_required"] is True
+    assert profile["independent_operating_point_calibration_required"] is True
+    assert profile["arbitrary_threshold_override_allowed"] is False
 
 
 def test_threshold_provenance_is_non_optional() -> None:

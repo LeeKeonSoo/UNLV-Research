@@ -1,6 +1,6 @@
 # Framework Consistency Baseline
 
-Status: observed baseline plus Block 9 development-ablation decision
+Status: observed baseline plus Block 10A profile and near-calibration decision
 Frozen on: 2026-08-01
 Authority: this file is the sole status index during the consistency reset
 
@@ -73,7 +73,8 @@ All 39 Core behavior cases pass with 24 true positives, 15 true negatives, and
 no false result or invariant failure. All nine implementation gates also pass,
 including identity tamper detection, required threshold provenance, Stage/Core
 authority, forbidden benchmark input rejection, provider non-authority,
-unpromoted-profile rejection, profile monotonicity, and output equivalence.
+uncalibrated/unpromoted-profile rejection, profile monotonicity, and output
+equivalence.
 
 This closes implementation-integrity Block 8, not scientific Policy promotion.
 The report deliberately records `framework_release: blocked` because the new
@@ -112,6 +113,31 @@ benchmark outcomes nor Utility and does not mutate selector membership.
 
 The Block 9 regression run passed 143/143 direct validation files and parsed
 181/181 active config, protocol, and frozen-contract JSON files with GPU and
+network access disabled.
+
+## Block 10A Profile And Near Calibration
+
+Normal and Hard now expose identical Policy-family inventories and differ only
+through versioned, independently calibrated operating points. Normal has
+strength rank 1 and Hard rank 2; both calibration hashes are currently null.
+Arbitrary threshold overrides, retention fractions, and token budgets remain
+forbidden, and `Hard subset-or-equal Normal` remains a release invariant.
+
+The frozen Block 10A artifact is
+`validation/frozen_contracts/near_duplicate_calibration_v1.json`. It evaluates
+12 mechanically witnessed non-exact equivalents and 12 semantic-change hard
+negatives over Code, Math, General, and four length targets. None of 27
+candidate settings passed: the current setting detects only 3/9 eligible
+positives, accepts three General semantic changes, and misses verified Code and
+Math equivalents.
+
+This is a threshold non-identifiability result, not Policy promotion. The near-
+duplicate Policy remains blocked, no Normal or Hard operating point was
+emitted, and runtime behavior is unchanged. A future version requires external
+route-appropriate equivalence witnesses rather than length/edit evidence alone.
+
+The Block 10A regression run passed 144/144 direct validation files and parsed
+183/183 active config, protocol, and frozen-contract JSON files with GPU and
 network access disabled.
 
 ## Observed Runtime

@@ -26,6 +26,12 @@ evidence. Its current decision advances exact-text family removal only to
 `development_passed`; it emits no near-duplicate or Quality threshold and does
 not authorize Hard or confirmatory training.
 
+`near_duplicate_calibration_v1.json` freezes the Block 10A metamorphic
+calibration grid. The result emits neither a Normal nor Hard threshold: the
+current metric misses verified Code/Math equivalents and accepts General
+semantic-change counterexamples. The evidence is linked to the blocked near-
+duplicate Policy and cannot activate runtime behavior.
+
 ## Runtime Contracts
 
 The runtime contract surface is anchored by:
@@ -38,9 +44,10 @@ The runtime contract surface is anchored by:
 - `policy_profiles.json`
 
 These files are checked against the observed call path documented in
-`../docs/framework_consistency_baseline.md`. Normal/Hard profile identity now
-determines all policy switches; a run contract may provide operational paths
-and sizes but cannot override Stage-A/B/C policy decisions.
+`../docs/framework_consistency_baseline.md`. Normal and Hard share Policy
+families and identify separately calibrated operating points; a run contract
+may provide operational paths and sizes but cannot override Stage-A/B/C Policy
+decisions or calibration values.
 
 ## Candidate and Evidence Artifacts
 

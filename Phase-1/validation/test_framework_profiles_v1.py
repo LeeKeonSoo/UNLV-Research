@@ -33,21 +33,30 @@ def test_only_normal_and_hard_profiles_are_public() -> None:
     assert all(not profile.maximum_token_budget_allowed for profile in registry.profiles)
 
 
-def test_hard_is_policy_superset_not_threshold_override() -> None:
+def test_normal_and_hard_share_policy_families_with_distinct_operating_points() -> None:
     # Given: Normal and Hard composition.
     registry = load_profile_registry(MANIFEST, OBJECTS, PROFILES)
     by_id = {profile.id.value: profile for profile in registry.profiles}
     normal = by_id["normal"]
     hard = by_id["hard"]
 
-    # When / Then: Hard only gains named Policies and owns no score overrides.
-    assert set(normal.policy_ids) < set(hard.policy_ids)
+    # When / Then: both modes apply the same Policies through separately calibrated strengths.
+    assert normal.policy_ids == hard.policy_ids
     assert hard.inherits_profile == "normal"
-    assert hard.threshold_overrides == ()
-    assert hard.additional_policy_ids == (
+    assert set(normal.policy_ids) == {
+        "validity.interpretable_text",
+        "redundancy.exact_text_family",
         "redundancy.symmetric_near_duplicate_candidate",
+        "quality.explicit_nonpayload",
+        "coverage.representative_guard",
         "quality.contrastive_alignment_candidate",
-    )
+    }
+    assert normal.operating_point_id == "normal_v1"
+    assert hard.operating_point_id == "hard_v1"
+    assert normal.strength_rank == 1
+    assert hard.strength_rank == 2
+    assert normal.calibration_artifact_sha256 is None
+    assert hard.calibration_artifact_sha256 is None
 
 
 def test_profiles_remain_blocked_until_all_policies_are_promoted() -> None:
@@ -65,6 +74,7 @@ def test_release_enabled_profile_cannot_reference_unpromoted_policy() -> None:
     payload = registry.model_dump(mode="json")
     normal = next(profile for profile in payload["profiles"] if profile["id"] == "normal")
     normal["release_enabled"] = True
+    normal["calibration_artifact_sha256"] = "f" * 64
 
     # When / Then: lifecycle state prevents accidental activation.
     try:
@@ -97,7 +107,7 @@ def test_materialized_hard_set_must_be_subset_of_normal() -> None:
 
 if __name__ == "__main__":
     test_only_normal_and_hard_profiles_are_public()
-    test_hard_is_policy_superset_not_threshold_override()
+    test_normal_and_hard_share_policy_families_with_distinct_operating_points()
     test_profiles_remain_blocked_until_all_policies_are_promoted()
     test_release_enabled_profile_cannot_reference_unpromoted_policy()
     test_materialized_hard_set_must_be_subset_of_normal()

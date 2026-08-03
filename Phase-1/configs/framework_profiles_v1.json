@@ -1,8 +1,8 @@
 {
   "schema_version": "framework-profiles-v1",
   "status": "runtime_integrated_block_7",
-  "framework_manifest_sha256": "4e37a9c0212ad115014e8e247ba405fb766ea3dbefe374a493283a6b31372062",
-  "object_registry_sha256": "4f1a55befab90e01e492b0c319ae4c86767403223eff989921834c41d31de627",
+  "framework_manifest_sha256": "897a3c68ebfa2ab3618fbd421eb3489cf1724757ed43d2c490808fb5b6c3c134",
+  "object_registry_sha256": "0672f9a2fff2e1b07b795c7fda20df9a72c8d27fe33040100c124f06747a45a9",
   "policy_lifecycles": [
     {"policy_id": "validity.interpretable_text", "lifecycle": "candidate"},
     {"policy_id": "redundancy.exact_text_family", "lifecycle": "development_passed"},
@@ -18,11 +18,14 @@
       "policy_ids": [
         "validity.interpretable_text",
         "redundancy.exact_text_family",
+        "redundancy.symmetric_near_duplicate_candidate",
         "quality.explicit_nonpayload",
-        "coverage.representative_guard"
+        "coverage.representative_guard",
+        "quality.contrastive_alignment_candidate"
       ],
-      "additional_policy_ids": [],
-      "threshold_overrides": [],
+      "operating_point_id": "normal_v1",
+      "strength_rank": 1,
+      "calibration_artifact_sha256": null,
       "release_enabled": false,
       "fixed_retention_fraction_allowed": false,
       "maximum_token_budget_allowed": false,
@@ -34,22 +37,23 @@
       "policy_ids": [
         "validity.interpretable_text",
         "redundancy.exact_text_family",
+        "redundancy.symmetric_near_duplicate_candidate",
         "quality.explicit_nonpayload",
         "coverage.representative_guard",
-        "redundancy.symmetric_near_duplicate_candidate",
         "quality.contrastive_alignment_candidate"
       ],
-      "additional_policy_ids": [
-        "redundancy.symmetric_near_duplicate_candidate",
-        "quality.contrastive_alignment_candidate"
-      ],
-      "threshold_overrides": [],
+      "operating_point_id": "hard_v1",
+      "strength_rank": 2,
+      "calibration_artifact_sha256": null,
       "release_enabled": false,
       "fixed_retention_fraction_allowed": false,
       "maximum_token_budget_allowed": false,
       "output": "full_reason_coded_curated_pool"
     }
   ],
-  "blocker_codes": ["profile_contains_unpromoted_policy"],
+  "blocker_codes": [
+    "profile_contains_unpromoted_policy",
+    "profile_operating_points_uncalibrated"
+  ],
   "retained_set_invariant": "hard_subset_or_equal_normal"
 }

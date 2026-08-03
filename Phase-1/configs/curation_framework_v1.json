@@ -3,7 +3,7 @@
   "activation": "runtime_integrated_block_7",
   "research_contract": {
     "path": "docs/framework_research_contract_v1.md",
-    "sha256": "d2e8eb8caba14a349207e441409a79712ad8e9a733c6dd9e3135b0cabbb5335f"
+    "sha256": "8f204c7d78dae2491f2ce9e581f46d8cce9fd301daf96c220624a76a3b5ff8a0"
   },
   "hierarchy": ["core", "metric", "policy", "method"],
   "cores": [
@@ -72,7 +72,9 @@
     "retained_set_invariant": "hard_subset_or_equal_normal",
     "fixed_retention_fraction_allowed": false,
     "maximum_token_budget_allowed": false,
-    "hard_requires_independently_promoted_policies": true
+    "shared_policy_families_required": true,
+    "independent_operating_point_calibration_required": true,
+    "arbitrary_threshold_override_allowed": false
   },
   "threshold_provenance": {
     "required_fields": ["value", "unit", "comparison_direction", "derivation_procedure", "development_corpus_sha256", "sample_count", "supported_routes", "provider_identity_sha256", "tokenizer_identity_sha256", "uncertainty_procedure", "fixture_artifact_sha256", "ablation_artifact_sha256", "external_evidence_sha256", "lifecycle", "invalidation_conditions"],

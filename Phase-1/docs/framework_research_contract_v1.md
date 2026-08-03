@@ -208,11 +208,15 @@ separate validated safety Policy explicitly owns it.
 
 ## 8. Normal and Hard Profiles
 
-The only public profiles are `normal` and `hard`.
+The only public profiles are `normal` and `hard`. Both profiles expose the same
+Core and Policy families. Their difference is a versioned, independently
+calibrated operating point for Policies whose Metrics support graded evidence.
 
-`normal` contains the set of promoted policies with the strongest transfer and
-false-positive evidence. `hard` adds separately promoted policies or stricter
-calibrations that have independently passed their own gates.
+`normal` uses the more conservative removal operating point. `hard` uses a
+stronger operating point that may remove additional units only where its own
+false-positive, Coverage, and external-evidence gates pass. Binary Policies
+without a meaningful calibrated strength, including closed Validity failures
+and exact identity, behave identically in both profiles.
 
 For the same Stage-A baseline and framework version:
 
@@ -221,9 +225,11 @@ retained(hard) subset-or-equal retained(normal)
 ```
 
 This monotonicity is a release invariant. Hard is not Normal with an arbitrary
-lower score threshold. Neither profile has a retention ratio or token budget.
-If a corpus contains no supported removal opportunity, either profile may
-retain nearly all Stage-A data.
+lower score threshold: each operating point has its own immutable provenance
+and calibration-artifact hash, and missing calibration forces abstention.
+Neither profile has a retention ratio or token budget. If a corpus contains no
+supported removal opportunity, either profile may retain nearly all Stage-A
+data.
 
 ## 9. Model-Driven and Contrastive Quality Evidence
 
@@ -432,8 +438,9 @@ The following decisions may not drift during implementation:
 4. Quality is conditional learning contribution, not intrinsic document merit.
 5. Coverage preserves explainable support and has veto authority, not quota or
    Quality authority.
-6. Public profiles are Normal and Hard, with Hard retained data a subset of
-   Normal retained data.
+6. Public profiles are Normal and Hard. They share the same Policy families,
+   use independently calibrated operating points, and require Hard retained
+   data to be a subset of Normal retained data.
 7. Neither profile uses a fixed token budget or retention fraction.
 8. Contrastive Metrics are directional and role-specific; generic model-size
    gaps have no deletion authority.

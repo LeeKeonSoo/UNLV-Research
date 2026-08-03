@@ -55,11 +55,12 @@ it changes imports and the active-surface test contract.
 
 ## Current Policy State
 
-Normal now resolves to one immutable complete policy. Run contracts may supply
-input paths, chunk size, residual-transform constraints, and output paths, but
-cannot override Stage-A/B/C policy switches. Hard remains development or
-confirmatory only. Historical contracts with run-local switches are marked
-incompatible with the current runtime rather than silently replayed.
+Normal and Hard now expose the same immutable Policy families. Their intended
+difference is a separately calibrated versioned operating point: Normal is the
+more conservative removal mode and Hard is stronger while preserving
+`Hard subset-or-equal Normal`. Neither accepts a run-local threshold, retention
+fraction, or token budget. Both redesigned operating points remain uncalibrated
+and release-disabled; the legacy-compatible selector behavior is unchanged.
 
 ## Verification
 

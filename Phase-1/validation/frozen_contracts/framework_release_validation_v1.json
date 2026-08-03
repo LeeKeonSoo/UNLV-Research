@@ -129,10 +129,10 @@
       "observed_sha256": null
     },
     {
-      "id": "profile_no_unpromoted_release",
+      "id": "profile_no_uncalibrated_or_unpromoted_release",
       "passed": true,
-      "expected_reason_code": "profile_no_unpromoted_release_rejected",
-      "observed_reason_code": "profile_no_unpromoted_release_rejected",
+      "expected_reason_code": "profile_no_uncalibrated_or_unpromoted_release_rejected",
+      "observed_reason_code": "profile_no_uncalibrated_or_unpromoted_release_rejected",
       "expected_sha256": null,
       "observed_sha256": null
     },
@@ -155,6 +155,7 @@
   ],
   "release_blockers": [
     "profile_contains_unpromoted_policy",
+    "profile_operating_points_uncalibrated",
     "redundancy.symmetric_near_duplicate_candidate:blocked",
     "quality.contrastive_alignment_candidate:blocked"
   ],

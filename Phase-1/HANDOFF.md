@@ -32,6 +32,9 @@ Current repository facts:
   Exact-text family removal is `development_passed`; symmetric near-duplicate
   and contrastive Quality remain `blocked`, so Hard and Block 10 are not
   authorized.
+- Block 10A aligns Normal and Hard to the same Policy families with distinct
+  versioned operating points. The near-duplicate grid produced no safe Normal
+  or Hard threshold, so both operating points remain uncalibrated and blocked.
 - The selector kernel still executes the frozen legacy-compatible Normal/Hard
   behavior. No blocked v1 Policy was promoted by the bridge, and both new v1
   profiles remain release-disabled.
@@ -56,7 +59,7 @@ Current repository facts:
   positives, zero false negatives, and zero behavior-invariant failures.
 - Nine implementation gates pass: foundation hash chain, kernel tamper
   detection, threshold provenance completeness, Stage/Core authority, runtime
-  forbidden inputs, provider non-authority, unpromoted-profile rejection,
+  forbidden inputs, provider non-authority, uncalibrated/unpromoted-profile rejection,
   Normal/Hard retained-set monotonicity, and curated-output equivalence.
 - `implementation_integrity` is `passed`, but `framework_release` is `blocked`.
   The blockers are the unpromoted profile inventory plus blocked near-duplicate
@@ -109,6 +112,24 @@ Current repository facts:
   181/181 active config, protocol, and frozen-contract JSON files with GPU and
   network access disabled.
 
+## Block 10A Evidence Status
+
+- `validation/frozen_contracts/near_duplicate_calibration_v1.json` evaluates
+  12 mechanically witnessed non-exact equivalents and 12 semantic-change hard
+  negatives across Code, Math, General, and target lengths 24/64/128/256.
+- None of 27 preregistered length/edit settings passed. Under the current
+  setting, only 3/9 eligible positives were detected, three General semantic
+  changes were false positives, and Code/Math verified positives were missed.
+- The result is `blocked_threshold_not_identifiable`. No threshold, safe family
+  edge, selector mutation, or runtime activation was emitted. The recommended
+  next design requires an external route-appropriate equivalence witness.
+- Normal and Hard now reference the same Policy families through `normal_v1`
+  and `hard_v1`. Their calibration hashes remain null, release is blocked, and
+  Hard retained output must remain a subset of Normal.
+- The Block 10A regression run passed 144/144 direct validation files and
+  parsed 183/183 active config, protocol, and frozen-contract JSON files with
+  GPU and network access disabled.
+
 ## Resolved Consistency Defects
 
 The baseline tracks `C-01` through `C-14`. The implementation pass resolved:
@@ -153,6 +174,7 @@ conda run -n research python validation\test_core_policy_runtime_linkage.py
 conda run -n research python validation\test_core_behavior_audit_v3.py
 conda run -n research python validation\test_framework_release_validation_v1.py
 conda run -n research python validation\test_framework_policy_ablation_v1.py
+conda run -n research python validation\test_near_duplicate_calibration_v1.py
 conda run -n research python validation\test_source_contract.py
 ```
 
@@ -180,9 +202,9 @@ Stage permissions, and the compatibility bridge before it reads corpus input.
 The bridge preserves the frozen selector output and does not activate blocked
 v1 policies.
 
-Block 9 is complete, but its result does not authorize Block 10. The next
-authorized work is to construct a positive, non-exact equivalence calibration
-set for near-duplicate deletion and to qualify the three-role contrastive
-provider with one common Stage-A baseline and route-specific effect bins.
-Only a new frozen Block 9 decision that passes those gates may freeze Hard and
-authorize three-seed natural-budget confirmatory evaluation.
+Block 10A is complete as a negative calibration result. The next authorized
+work is Block 10B: qualify the three-role contrastive provider with one common
+Stage-A baseline and route-specific effect bins. Near-duplicate remains blocked
+until a new witness-required Policy version replaces threshold-only authority.
+Only frozen Normal/Hard operating-point artifacts may authorize three-seed
+natural-budget confirmatory evaluation.

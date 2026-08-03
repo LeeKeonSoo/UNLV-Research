@@ -174,7 +174,7 @@ def _integrity_gates(root: Path, protocol: ReleaseValidationProtocol) -> tuple[I
         ),
         _expect_validation_error("provider_no_direct_deletion", lambda: ProviderSpec.model_validate(provider)),
         _expect_validation_error(
-            "profile_no_unpromoted_release",
+            "profile_no_uncalibrated_or_unpromoted_release",
             lambda: ProfileRegistry.model_validate(release_profiles),
         ),
         _expect_reason(

@@ -41,8 +41,9 @@ class ProfileSpec(BaseModel):
     id: ProfileId
     inherits_profile: Literal["normal"] | None
     policy_ids: tuple[str, ...] = Field(min_length=1)
-    additional_policy_ids: tuple[str, ...]
-    threshold_overrides: tuple[str, ...]
+    operating_point_id: Literal["normal_v1", "hard_v1"]
+    strength_rank: int = Field(ge=1)
+    calibration_artifact_sha256: Sha256 | None
     release_enabled: bool
     fixed_retention_fraction_allowed: Literal[False]
     maximum_token_budget_allowed: Literal[False]
@@ -52,10 +53,8 @@ class ProfileSpec(BaseModel):
     def validate_unique_policies(self) -> "ProfileSpec":
         if len(set(self.policy_ids)) != len(self.policy_ids):
             raise ProfileContractError("profile_policy_duplicate")
-        if len(set(self.additional_policy_ids)) != len(self.additional_policy_ids):
-            raise ProfileContractError("profile_additional_policy_duplicate")
-        if self.threshold_overrides:
-            raise ProfileContractError("profile_threshold_override_forbidden")
+        if self.release_enabled and self.calibration_artifact_sha256 is None:
+            raise ProfileContractError("profile_release_calibration_missing")
         return self
 
 
@@ -81,17 +80,17 @@ class ProfileRegistry(BaseModel):
             raise ProfileContractError("profile_public_inventory_invalid")
         normal = by_id[ProfileId.NORMAL]
         hard = by_id[ProfileId.HARD]
-        if normal.inherits_profile is not None or normal.additional_policy_ids:
+        if normal.inherits_profile is not None:
             raise ProfileContractError("profile_normal_inheritance_invalid")
         if hard.inherits_profile != ProfileId.NORMAL.value:
             raise ProfileContractError("profile_hard_inheritance_invalid")
-        normal_ids = set(normal.policy_ids)
-        hard_ids = set(hard.policy_ids)
-        if not normal_ids < hard_ids:
-            raise ProfileContractError("profile_hard_policy_set_not_strict_superset")
-        if set(hard.additional_policy_ids) != hard_ids - normal_ids:
-            raise ProfileContractError("profile_hard_additional_policy_mismatch")
-        referenced = normal_ids | hard_ids
+        if normal.policy_ids != hard.policy_ids:
+            raise ProfileContractError("profile_policy_family_mismatch")
+        if normal.operating_point_id != "normal_v1" or hard.operating_point_id != "hard_v1":
+            raise ProfileContractError("profile_operating_point_identity_mismatch")
+        if normal.strength_rank >= hard.strength_rank:
+            raise ProfileContractError("profile_strength_order_invalid")
+        referenced = set(normal.policy_ids)
         missing = tuple(sorted(referenced - set(lifecycle_by_id)))
         if missing:
             raise ProfileContractError("profile_policy_lifecycle_missing", missing)
@@ -104,7 +103,15 @@ class ProfileRegistry(BaseModel):
             if profile.release_enabled and unpromoted:
                 raise ProfileContractError("profile_release_contains_unpromoted_policy", unpromoted)
         has_unpromoted = any(lifecycle is not Lifecycle.PROMOTED for lifecycle in lifecycle_by_id.values())
-        expected_blockers = ("profile_contains_unpromoted_policy",) if has_unpromoted else ()
+        has_uncalibrated = any(profile.calibration_artifact_sha256 is None for profile in self.profiles)
+        expected_blockers = tuple(
+            code
+            for code, active in (
+                ("profile_contains_unpromoted_policy", has_unpromoted),
+                ("profile_operating_points_uncalibrated", has_uncalibrated),
+            )
+            if active
+        )
         if self.blocker_codes != expected_blockers:
             raise ProfileContractError("profile_blocker_inventory_mismatch")
         return self

@@ -37,7 +37,7 @@ def main() -> int:
         "stage_core_authority",
         "runtime_forbidden_input",
         "provider_no_direct_deletion",
-        "profile_no_unpromoted_release",
+        "profile_no_uncalibrated_or_unpromoted_release",
         "hard_retained_set_monotonicity",
         "curated_output_equivalence",
     }
@@ -54,6 +54,7 @@ def main() -> int:
 
     assert report["release_blockers"] == [
         "profile_contains_unpromoted_policy",
+        "profile_operating_points_uncalibrated",
         "redundancy.symmetric_near_duplicate_candidate:blocked",
         "quality.contrastive_alignment_candidate:blocked",
     ]

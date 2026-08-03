@@ -24,13 +24,15 @@
     "profile_contract": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["public_profiles", "retained_set_invariant", "fixed_retention_fraction_allowed", "maximum_token_budget_allowed", "hard_requires_independently_promoted_policies"],
+      "required": ["public_profiles", "retained_set_invariant", "fixed_retention_fraction_allowed", "maximum_token_budget_allowed", "shared_policy_families_required", "independent_operating_point_calibration_required", "arbitrary_threshold_override_allowed"],
       "properties": {
         "public_profiles": {"const": ["normal", "hard"]},
         "retained_set_invariant": {"const": "hard_subset_or_equal_normal"},
         "fixed_retention_fraction_allowed": {"const": false},
         "maximum_token_budget_allowed": {"const": false},
-        "hard_requires_independently_promoted_policies": {"const": true}
+        "shared_policy_families_required": {"const": true},
+        "independent_operating_point_calibration_required": {"const": true},
+        "arbitrary_threshold_override_allowed": {"const": false}
       }
     },
     "threshold_provenance": {
