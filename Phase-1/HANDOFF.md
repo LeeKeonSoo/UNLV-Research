@@ -25,6 +25,9 @@ Current repository facts:
   object registry, profile registry, runtime bridge, and Stage permissions at
   the start of every materialization. Each run emits four authorization tickets
   for Validity, Redundancy, Quality, and Coverage.
+- Block 8 now produces one deterministic release-validation bundle. The frozen
+  report passes all Core fixture and implementation-integrity gates while
+  keeping the scientific framework release blocked.
 - The selector kernel still executes the frozen legacy-compatible Normal/Hard
   behavior. No blocked v1 Policy was promoted by the bridge, and both new v1
   profiles remain release-disabled.
@@ -42,6 +45,19 @@ Current repository facts:
 - Candidate and historical files must not be described as active policy.
 
 ## Block 8 Evidence Status
+
+- `validation/frozen_contracts/framework_release_validation_v1.json` is the
+  frozen Block 8 bundle. It covers 39 labeled, false-positive, metamorphic, and
+  adversarial Core cases: 24 true positives, 15 true negatives, zero false
+  positives, zero false negatives, and zero behavior-invariant failures.
+- Nine implementation gates pass: foundation hash chain, kernel tamper
+  detection, threshold provenance completeness, Stage/Core authority, runtime
+  forbidden inputs, provider non-authority, unpromoted-profile rejection,
+  Normal/Hard retained-set monotonicity, and curated-output equivalence.
+- `implementation_integrity` is `passed`, but `framework_release` is `blocked`.
+  The blockers are the unpromoted profile inventory plus blocked near-duplicate
+  and contrastive Quality Policies. This is intentional and prevents a fixture
+  pass from being reported as downstream effectiveness.
 
 - E1 corpus admission is complete: Code, Math, and General development sources
   are benchmark-excluded and disjoint from frozen confirmatory references.
@@ -109,6 +125,7 @@ conda run -n research python validation\test_curation_runtime.py
 conda run -n research python validation\test_policy_profile_contract.py
 conda run -n research python validation\test_core_policy_runtime_linkage.py
 conda run -n research python validation\test_core_behavior_audit_v3.py
+conda run -n research python validation\test_framework_release_validation_v1.py
 conda run -n research python validation\test_source_contract.py
 ```
 
@@ -121,6 +138,12 @@ are run directly with the repository on `PYTHONPATH`. The 2026-08-01 alignment
 pass completed 120/120 direct validation files, Python compileall, and 131/131
 current config/protocol JSON parses with GPU and network use disabled.
 
+The 2026-08-03 Block 8 pass completed 142/142 direct validation files with the
+repository on `PYTHONPATH`, GPU visibility empty, and Hugging Face/Transformers
+offline. The first unqualified invocation reproduced the known Stage-C2 import
+failure; the authoritative run includes the documented repository
+`PYTHONPATH` and passed in full.
+
 ## Next Authorized Work
 
 Follow `docs/framework_research_contract_v1.md` for redesign decisions. The
@@ -130,6 +153,7 @@ Stage permissions, and the compatibility bridge before it reads corpus input.
 The bridge preserves the frozen selector output and does not activate blocked
 v1 policies.
 
-The next authorized work is Block 8: complete fixture, behavior, provenance,
-fail-closed, and output-equivalence validation. Near-duplicate and contrastive
-Quality remain blocked pending Block 9 development calibration and ablation.
+Block 8 is complete. The next authorized work is Block 9: use disjoint
+development corpora for threshold calibration and independent Policy ablation.
+Near-duplicate and contrastive Quality remain blocked until those empirical
+gates pass; Block 8 did not activate either Policy.

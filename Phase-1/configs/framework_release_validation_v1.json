@@ -1,0 +1,34 @@
+{
+  "schema_version": "framework-release-validation-protocol-v1",
+  "status": "block_8_frozen_integrity_protocol",
+  "core_fixture_path": "validation/fixtures/core_behavior_audit_v3_cases.json",
+  "case_matrix_path": "validation/fixtures/core_case_matrix.json",
+  "policy_registry_path": "configs/core_policy_registry.json",
+  "required_fixture_kinds": [
+    "labeled_positive",
+    "false_positive_guard",
+    "metamorphic_positive",
+    "adversarial_positive",
+    "adversarial_negative"
+  ],
+  "blocked_policy_ids": [
+    "redundancy.symmetric_near_duplicate_candidate",
+    "quality.contrastive_alignment_candidate"
+  ],
+  "equivalence_records": [
+    {
+      "id": "code-fixture",
+      "text": "def add(left, right):\n    return left + right\n\nThis implementation returns the sum without side effects."
+    },
+    {
+      "id": "math-fixture",
+      "text": "Theorem. For every differentiable function, the derivative of a sum is the sum of its derivatives. Proof. Apply the limit definition to each term."
+    },
+    {
+      "id": "general-fixture",
+      "text": "A controlled experiment records its assumptions, measurements, and uncertainty before drawing a conclusion from the observed evidence."
+    }
+  ],
+  "expected_curated_projection_sha256": "ec5dd525ea30fd3ec2bb520f82ca9af8f18226f0cab9d0117e3d1a4c628084a9",
+  "claim_boundary": "Block 8 validates implementation integrity and frozen fixture behavior only; it does not promote candidate policies or establish downstream effectiveness."
+}

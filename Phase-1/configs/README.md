@@ -14,6 +14,12 @@ Policy promotion: Block 7 integrates their identity and Stage permissions into
 the runtime, while both new profiles remain release-disabled until their Policy
 gates close.
 
+`framework_release_validation_v1.json` is the frozen Block 8 integrity
+protocol. It binds the Core behavior fixtures, negative fail-closed scenarios,
+blocked Policy inventory, and curated-output equivalence hash. A passing Block
+8 report validates implementation integrity only; it does not enable a profile
+or promote a Policy.
+
 ## Runtime Contracts
 
 The runtime contract surface is anchored by:

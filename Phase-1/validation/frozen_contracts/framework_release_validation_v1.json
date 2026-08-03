@@ -1,0 +1,162 @@
+{
+  "schema_version": "framework-release-validation-v1",
+  "protocol_sha256": "d96d7cc46375da6b99ac8ca3b45decfa66f8387d5204edec54343451ff3c2912",
+  "implementation_integrity": "passed",
+  "framework_release": "blocked",
+  "core_behavior": {
+    "passed": true,
+    "fixture_sha256": "74febac8e5f98c12375fca24e69a32336ffba01287aa7ecc29e06ec0069cd153",
+    "case_matrix_sha256": "0bce07624a3ee873c41d88c46c442e9f319e29ff99ec968846aa180b42439459",
+    "policy_registry_sha256": "96778006138743fac093016eb3b67715a61e6af5e46b6905a70c49dff6748935",
+    "fixture_kinds": [
+      "adversarial_negative",
+      "adversarial_positive",
+      "false_positive_guard",
+      "labeled_positive",
+      "metamorphic_positive"
+    ],
+    "summary": {
+      "cases": 39,
+      "true_positives": 24,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 15,
+      "behavior_invariant_failures": 0,
+      "core_behavior_gates_passed": true,
+      "case_matrix_reconciled": true
+    },
+    "cores": {
+      "coverage": {
+        "required_dimensions": [
+          "materialization_invariant_authority",
+          "representative_linkage_detection",
+          "zero_survivor_detection"
+        ],
+        "true_positives": 1,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 1,
+        "behavior_invariant_failures": 0,
+        "behavior_gate_passed": true
+      },
+      "quality": {
+        "required_dimensions": [
+          "typed_deletion_authority",
+          "observable_trigger",
+          "false_positive_boundary"
+        ],
+        "true_positives": 4,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 5,
+        "behavior_invariant_failures": 0,
+        "behavior_gate_passed": true
+      },
+      "redundancy": {
+        "required_dimensions": [
+          "representative_linkage",
+          "representative_survival",
+          "non_trigger_retention"
+        ],
+        "true_positives": 3,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 4,
+        "behavior_invariant_failures": 0,
+        "behavior_gate_passed": true
+      },
+      "validity": {
+        "required_dimensions": [
+          "reason_coded_action",
+          "non_trigger_retention"
+        ],
+        "true_positives": 16,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 5,
+        "behavior_invariant_failures": 0,
+        "behavior_gate_passed": true
+      }
+    }
+  },
+  "integrity_gates": [
+    {
+      "id": "foundation_hash_chain",
+      "passed": true,
+      "expected_reason_code": null,
+      "observed_reason_code": null,
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "kernel_hash_tamper_detection",
+      "passed": true,
+      "expected_reason_code": "runtime_bridge_kernel_identity_mismatch",
+      "observed_reason_code": "runtime_bridge_kernel_identity_mismatch",
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "threshold_provenance_completeness",
+      "passed": true,
+      "expected_reason_code": "threshold_provenance_completeness_rejected",
+      "observed_reason_code": "threshold_provenance_completeness_rejected",
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "stage_core_authority",
+      "passed": true,
+      "expected_reason_code": "stage_core_authority_mismatch:stage_b",
+      "observed_reason_code": "stage_core_authority_mismatch:stage_b",
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "runtime_forbidden_input",
+      "passed": true,
+      "expected_reason_code": "stage_runtime_forbidden_input:stage_b:benchmark_outcomes",
+      "observed_reason_code": "stage_runtime_forbidden_input:stage_b:benchmark_outcomes",
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "provider_no_direct_deletion",
+      "passed": true,
+      "expected_reason_code": "provider_no_direct_deletion_rejected",
+      "observed_reason_code": "provider_no_direct_deletion_rejected",
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "profile_no_unpromoted_release",
+      "passed": true,
+      "expected_reason_code": "profile_no_unpromoted_release_rejected",
+      "observed_reason_code": "profile_no_unpromoted_release_rejected",
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "hard_retained_set_monotonicity",
+      "passed": true,
+      "expected_reason_code": "profile_hard_retained_set_not_subset:hard-only",
+      "observed_reason_code": "profile_hard_retained_set_not_subset:hard-only",
+      "expected_sha256": null,
+      "observed_sha256": null
+    },
+    {
+      "id": "curated_output_equivalence",
+      "passed": true,
+      "expected_reason_code": null,
+      "observed_reason_code": null,
+      "expected_sha256": "ec5dd525ea30fd3ec2bb520f82ca9af8f18226f0cab9d0117e3d1a4c628084a9",
+      "observed_sha256": "ec5dd525ea30fd3ec2bb520f82ca9af8f18226f0cab9d0117e3d1a4c628084a9"
+    }
+  ],
+  "release_blockers": [
+    "profile_contains_unpromoted_policy",
+    "redundancy.symmetric_near_duplicate_candidate:blocked",
+    "quality.contrastive_alignment_candidate:blocked"
+  ],
+  "claim_boundary": "Block 8 validates implementation integrity and frozen fixture behavior only; it does not promote candidate policies or establish downstream effectiveness."
+}

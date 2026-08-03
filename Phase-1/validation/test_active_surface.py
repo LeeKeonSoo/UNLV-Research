@@ -192,12 +192,15 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
             "contrastive_quality_contract.py",
             "framework_profiles.py",
             "framework_runtime_bridge.py",
+            "framework_equivalence_fixture.py",
+            "framework_release_validation.py",
             "validation/test_framework_manifest_v1.py",
             "validation/test_framework_objects_v1.py",
             "validation/test_stage_permissions_v1.py",
             "validation/test_contrastive_quality_protocol_v2.py",
             "validation/test_framework_profiles_v1.py",
             "validation/test_framework_runtime_bridge_v1.py",
+            "validation/test_framework_release_validation_v1.py",
         }
     )
     actual = {
@@ -265,6 +268,7 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
             "contrastive_quality_protocol_v2.json",
             "framework_profiles_v1.json",
             "framework_runtime_bridge_v1.json",
+            "framework_release_validation_v1.json",
         }
     )
     expected.update(

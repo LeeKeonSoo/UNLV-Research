@@ -1,6 +1,6 @@
 # Framework Consistency Baseline
 
-Status: observed baseline plus Block 7 compatibility integration
+Status: observed baseline plus Block 8 integrity validation
 Frozen on: 2026-08-01
 Authority: this file is the sole status index during the consistency reset
 
@@ -60,6 +60,31 @@ and the near-duplicate and contrastive v1 policies remain `blocked`. Legacy
 near-duplicate execution is explicitly reported as compatibility-only and must
 be promoted or retired through development evidence rather than inherited by
 the new profile.
+
+## Block 8 Integrity Validation
+
+As of 2026-08-03, `framework_release_validation.py` composes the existing Core
+behavior audit with negative fail-closed scenarios and a deterministic
+input-to-curated-output projection hash. Its frozen protocol is
+`configs/framework_release_validation_v1.json`; its frozen result is
+`validation/frozen_contracts/framework_release_validation_v1.json`.
+
+All 39 Core behavior cases pass with 24 true positives, 15 true negatives, and
+no false result or invariant failure. All nine implementation gates also pass,
+including identity tamper detection, required threshold provenance, Stage/Core
+authority, forbidden benchmark input rejection, provider non-authority,
+unpromoted-profile rejection, profile monotonicity, and output equivalence.
+
+This closes implementation-integrity Block 8, not scientific Policy promotion.
+The report deliberately records `framework_release: blocked` because the new
+profiles contain unpromoted Policies and both symmetric near-duplicate and
+contrastive Quality remain blocked. Development calibration and independent
+ablation are Block 9.
+
+The Block 8 regression run passed 142/142 direct validation files with the
+repository root on `PYTHONPATH`, GPU visibility disabled, and model-network
+access offline. An invocation without the documented `PYTHONPATH` reproduced
+the pre-existing Stage-C2 import-path failure; no curation behavior failed.
 
 ## Observed Runtime
 
