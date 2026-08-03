@@ -137,9 +137,11 @@ Current repository facts:
   audit. It does not trust a readiness boolean or consume runtime benchmark or
   Utility values.
 - Every sensitivity arm must share one identical Stage-A baseline. The baseline
-  must be record- and source-disjoint from all arms, arms must be pairwise
-  disjoint, and each required route must provide at least three ordered effect
-  bins from at least three development source groups.
+  must be record- and source-disjoint from the common eligible arm pool. Normal
+  and Hard operate on that same pool so their effect is comparable and the
+  `Hard subset-or-equal Normal` invariant can be tested. Each required route
+  must provide at least three ordered effect bins from at least three
+  development source groups.
 - The current result is `blocked_missing_empirical_inputs`: Code, Math, and
   General each have 2/3 source groups and 0/3 effect bins. The qualified
   reference distribution, background provider, reference precision evidence,

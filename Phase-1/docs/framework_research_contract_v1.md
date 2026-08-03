@@ -233,11 +233,13 @@ data.
 
 For sensitivity calibration, all candidate arms must reference one identical
 Stage-A baseline. That baseline must be record- and source-disjoint from every
-arm, and sensitivity arms must be pairwise disjoint. A different baseline per
-arm is forbidden because it confounds the policy effect with baseline sampling.
-Normal and Hard thresholds may be emitted only after each required route has at
-least three ordered empirical effect bins and separately frozen natural-budget
-external evidence.
+arm's common eligible pool. Normal and Hard must operate on that same eligible
+pool; forcing the arms themselves to be disjoint would confound policy strength
+with corpus composition and contradict the retained-set monotonicity invariant.
+A different baseline per arm is forbidden because it confounds the policy
+effect with baseline sampling. Normal and Hard thresholds may be emitted only
+after each required route has at least three ordered empirical effect bins and
+separately frozen natural-budget external evidence.
 
 ## 9. Model-Driven and Contrastive Quality Evidence
 

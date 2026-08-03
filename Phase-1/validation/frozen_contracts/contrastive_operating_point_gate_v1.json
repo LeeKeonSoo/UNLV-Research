@@ -1,7 +1,7 @@
 {
   "schema_version": "contrastive-operating-point-gate-v1",
   "status": "blocked_missing_empirical_inputs",
-  "gate_protocol_sha256": "fc0dfad0b5323722ac6e328b956250377d33e0703fc8fda135d151d95e28e39b",
+  "gate_protocol_sha256": "b014c100b6360273cca7e58f7e2dca732408dd8b6ce5b8dd682cbb75cf92fcb5",
   "contrastive_protocol_sha256": "b81fd0bfd13f724adf742fa976b00a03d89a2f0412381919b12deed3413291a8",
   "contrastive_audit_sha256": "ff4508edaf8cb7a4ddc8a17b5b083f9dcca1f65a803ebabac61efecf73a65f30",
   "required_routes": [
@@ -13,7 +13,8 @@
   "validated_execution_precision": false,
   "common_baseline_shared_by_all_arms": false,
   "baseline_disjoint_from_every_arm": false,
-  "arms_pairwise_disjoint": false,
+  "sensitivity_arms_share_eligible_pool": false,
+  "effect_bin_manifest_aligned": false,
   "sensitivity_arm_count": 0,
   "route_gates": [
     {
@@ -74,12 +75,13 @@
     "provider_training_disjointness_unverified",
     "quality_reference_distribution_contract_missing",
     "reference_int8_validation_missing",
-    "reference_quantization_unvalidated"
+    "reference_quantization_unvalidated",
+    "sensitivity_arm_pool_missing"
   ],
   "hard_subset_of_normal_required": true,
   "runtime_activation_mutated": false,
   "benchmark_outcomes_read_at_runtime": false,
   "utility_read_at_runtime": false,
-  "claim_boundary": "Block 10B may emit Normal and Hard operating points only after one Stage-A baseline is shared by every sensitivity arm, all partitions are record/source disjoint, every required route has ordered empirical effect bins, the three-role provider is qualified, and natural-budget external evidence is frozen.",
-  "report_sha256": "fea34a6394d1fcae22fcabc920a7e3c10886d259143539b6b97bf6a1a4d33ca2"
+  "claim_boundary": "Block 10B may emit Normal and Hard operating points only after one Stage-A baseline is shared by every sensitivity arm and is record/source disjoint from their common eligible pool, every required route has ordered empirical effect bins, the three-role provider is qualified, profile monotonicity is proven, and natural-budget external evidence is frozen.",
+  "report_sha256": "8f810728d47235fe1d2da40515611889a98e5334ec9afcfca8eb94c6a5bd9eba"
 }

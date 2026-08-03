@@ -145,10 +145,11 @@ network access disabled.
 `validation/frozen_contracts/contrastive_operating_point_gate_v1.json` binds
 the v2 three-role protocol to the frozen 1,500-record Qwen audit. It requires
 one common Stage-A baseline shared by all sensitivity arms, zero baseline-arm
-record and source overlap, pairwise arm disjointness, three development source
-groups and three ordered effect bins per required route, qualified target,
-reference, and background roles, validated precision, and natural-budget
-external evidence.
+record and source overlap, one shared eligible arm pool, three development
+source groups and three ordered effect bins per required route, qualified
+target, reference, and background roles, validated precision, and natural-
+budget external evidence. Normal and Hard must be measured on the shared arm
+pool; they are not required to be pairwise disjoint.
 
 The current result is `blocked_missing_empirical_inputs`. Code, Math, and
 General each provide 2/3 source groups and 0/3 effect bins; the background role,

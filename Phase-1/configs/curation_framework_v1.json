@@ -3,7 +3,7 @@
   "activation": "runtime_integrated_block_7",
   "research_contract": {
     "path": "docs/framework_research_contract_v1.md",
-    "sha256": "ee97d5aedf32465d6f1f4a6b03b8dd452c13aded803ae6696ab4bb14d8f37c6b"
+    "sha256": "ca879f072b3b19e5e6f451f6070a8b2bc9969b9e8deca59721f37a324d60e141"
   },
   "hierarchy": ["core", "metric", "policy", "method"],
   "cores": [

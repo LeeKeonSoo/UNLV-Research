@@ -198,6 +198,7 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
             "framework_policy_ablation.py",
             "near_duplicate_calibration.py",
             "contrastive_operating_point_gate.py",
+            "contrastive_operating_point_contract.py",
             "validation/test_framework_manifest_v1.py",
             "validation/test_framework_objects_v1.py",
             "validation/test_stage_permissions_v1.py",

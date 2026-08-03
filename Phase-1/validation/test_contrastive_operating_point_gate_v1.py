@@ -26,6 +26,7 @@ def main() -> int:
     ]
     assert report["common_baseline_shared_by_all_arms"] is False
     assert report["baseline_disjoint_from_every_arm"] is False
+    assert report["sensitivity_arms_share_eligible_pool"] is False
     assert report["sensitivity_arm_count"] == 0
     assert report["qualified_three_role_provider"] is False
     assert report["external_natural_budget_evidence_present"] is False
