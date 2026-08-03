@@ -36,6 +36,17 @@ def _text_field(source: JsonMap) -> str:
     return value if isinstance(value, str) and value.strip() else "text"
 
 
+def _field_value(row: JsonMap, field: str | None) -> Any:
+    if not isinstance(field, str) or not field.strip():
+        return None
+    value: Any = row
+    for component in field.split("."):
+        if not isinstance(value, dict):
+            return None
+        value = value.get(component)
+    return value
+
+
 def _stable_record_id(row: JsonMap, source: JsonMap, index: int, digest: str) -> str:
     field = source.get("stable_record_id_field")
     value = row.get(field) if isinstance(field, str) and field.strip() else None
@@ -46,9 +57,7 @@ def _stable_record_id(row: JsonMap, source: JsonMap, index: int, digest: str) ->
 
 def _row_license(row: JsonMap, source: JsonMap) -> str | None:
     field = source.get("source_license_field")
-    if not isinstance(field, str) or not field.strip():
-        return None
-    value = row.get(field)
+    value = _field_value(row, field if isinstance(field, str) else None)
     if isinstance(value, str) and value.strip():
         return value.strip()
     if isinstance(value, list):
@@ -63,7 +72,7 @@ def _allowed_license(row: JsonMap, source: JsonMap) -> str | None:
         return _row_license(row, source) or str(_mapping(source.get("rights")).get("license") or "")
     allowed_licenses = {item for item in allowed if isinstance(item, str) and item.strip()}
     field = source.get("source_license_field")
-    value = row.get(field) if isinstance(field, str) else None
+    value = _field_value(row, field if isinstance(field, str) else None)
     candidates = [value] if isinstance(value, str) else value if isinstance(value, list) else []
     for license_name in candidates:
         if isinstance(license_name, str) and license_name in allowed_licenses:

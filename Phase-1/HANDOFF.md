@@ -168,6 +168,29 @@ The baseline tracks `C-01` through `C-14`. The implementation pass resolved:
 The unresolved scientific work is Quality estimator validation and broader
 Coverage taxonomy/threshold validation, not a hidden runtime inconsistency.
 
+## Block 10C-1 Source Contract
+
+- `protocols/contrastive_operating_point_source_pool_v1.json` freezes nine
+  development source roles: one common-baseline source and two eligible-arm
+  sources for each of Code, Math, and General.
+- Normal and Hard consume the same stable-hash-selected eligible record IDs.
+  Effect bins are measurements inside that pool, not separately sampled arms.
+- The baseline and eligible sources are source-disjoint and the materializer
+  fails closed on record or normalized-text overlap. Confirmatory source-group
+  identities are separately excluded.
+- New Hugging Face sources are pinned to exact revisions and shards. The Math
+  source is `common-pile/arxiv_papers` with text-evidenced math routing; Math
+  Stack Exchange was rejected because it may overlap the existing OpenWebMath
+  development source.
+- `scripts/materialize_contrastive_source_pool_v1.py` applies the active
+  source-agnostic `text_only_v2` Stage-A contract, exact Qwen3-4B tokenizer
+  counting, and stable sampling. It writes one baseline artifact and one shared
+  eligible-pool artifact; it does not read Utility or benchmark outcomes.
+- This closes source-role preregistration only. The remote source collection,
+  pool materialization, qualified reference/background provider, precision
+  validation, and effect-bin scoring remain Block 10C work. Runtime behavior
+  and Normal/Hard activation are unchanged.
+
 ## File Authority
 
 - `docs/README.md` classifies documentation as authoritative, candidate,
@@ -225,11 +248,11 @@ The bridge preserves the frozen selector output and does not activate blocked
 v1 policies.
 
 Block 10A is complete as a negative near-duplicate calibration result. Block
-10B is complete as a fail-closed Contrastive Quality preflight. The next
-authorized work is Block 10C evidence acquisition: qualify the reference and
-background roles, validate execution precision, add a third development source
-group per route, materialize one common arm-disjoint Stage-A baseline, and
-measure route-specific effect bins. Near-duplicate remains blocked until a new
+10B is complete as a fail-closed Contrastive Quality preflight. Block 10C-1
+freezes the third-source and common-pool contract; the next authorized work is
+to collect those sources, materialize the common arm-disjoint Stage-A baseline
+and shared eligible pool, qualify the reference/background roles, validate
+execution precision, and measure route-specific effect bins. Near-duplicate remains blocked until a new
 witness-required Policy version replaces threshold-only authority. Only frozen
 Normal/Hard operating-point artifacts may authorize three-seed natural-budget
 confirmatory evaluation.

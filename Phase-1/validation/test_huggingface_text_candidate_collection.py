@@ -108,9 +108,32 @@ def test_collect_rows_preserves_row_declared_language_when_configured() -> None:
     assert rows[0]["record_shape"] == "complete_source"
 
 
+def test_collect_rows_reads_nested_per_record_license() -> None:
+    source = {
+        "source_name": "fixture/stackexchange",
+        "source_uri": "https://example.invalid/stackexchange",
+        "collected_at": "2026-08-03T00:00:00Z",
+        "rights": {"status": "allowed", "license": "per-record"},
+        "source_license_field": "metadata.license",
+        "allowed_source_licenses": ["CC-BY-SA-4.0"],
+    }
+    upstream = iter(
+        [
+            {"text": "retain this licensed document", "metadata": {"license": "CC-BY-SA-4.0"}},
+            {"text": "reject this undeclared document", "metadata": {}},
+        ]
+    )
+
+    rows = collect_rows(upstream, source, token_limit=4)
+
+    assert len(rows) == 1
+    assert rows[0]["rights"] == {"status": "allowed", "license": "CC-BY-SA-4.0"}
+
+
 if __name__ == "__main__":
     test_collect_rows_preserves_declared_source_facts_and_stops_at_token_limit()
     test_collect_rows_excludes_development_ids_and_requires_declared_license()
     test_collect_rows_uses_declared_exact_token_counter()
     test_collect_rows_preserves_row_declared_language_when_configured()
+    test_collect_rows_reads_nested_per_record_license()
     print("[huggingface-text-collection] source-preserving token-limited collection: pass")

@@ -1,0 +1,143 @@
+{
+  "schema_version": "contrastive-operating-point-source-pool-v1",
+  "status": "preregistered_before_collection_and_scoring",
+  "collection_timestamp_utc": "2026-08-03T00:00:00Z",
+  "sources": [
+    {
+      "source_id": "code-clean-baseline-v1",
+      "source_group_id": "code-post-stack-v2-clean-controls-v1",
+      "route": "code_artifact",
+      "pool_role": "common_baseline",
+      "location_kind": "local_jsonl",
+      "local_path": "D:/UNLV-Research/positive_quality_v1/clean_controls/code_post_stack_v2_v1/python_clean_controls_v1.jsonl",
+      "expected_file_sha256": "7c64b6ec77e91e74cd0aaee5ffb0dc210fd35964c2240bdb2e29fc28a18f2f58",
+      "text_field": "text"
+    },
+    {
+      "source_id": "code-github-raw-v1",
+      "source_group_id": "github-code-10m-raw-v1",
+      "route": "code_artifact",
+      "pool_role": "eligible_arm",
+      "location_kind": "local_jsonl",
+      "local_path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/github_code_10m.jsonl",
+      "expected_file_sha256": "6ed4bc1f0f492cdd90f98c5417eb7b8ce3ed618c7f3fdef3b15422b50852b590",
+      "text_field": "text"
+    },
+    {
+      "source_id": "code-stackoverflow-raw-v1",
+      "source_group_id": "common-pile-stackoverflow-raw-v1",
+      "route": "code_artifact",
+      "pool_role": "eligible_arm",
+      "location_kind": "huggingface_file",
+      "dataset_id": "common-pile/stackexchange",
+      "revision": "5ec3aa2e65b7c61b7c18f1ff18ccbc4d3279a23c",
+      "loader": "json",
+      "data_file": "stackoverflow.com/documents/00000_se.jsonl.gz",
+      "text_field": "text",
+      "stable_record_id_field": "id",
+      "source_license_field": "metadata.license",
+      "allowed_source_licenses": [
+        "Creative Commons - Attribution Share-Alike - https://creativecommons.org/licenses/by-sa/2.5/",
+        "Creative Commons - Attribution Share-Alike - https://creativecommons.org/licenses/by-sa/3.0/",
+        "Creative Commons - Attribution Share-Alike - https://creativecommons.org/licenses/by-sa/4.0/"
+      ],
+      "exact_token_collection_target": 1000000,
+      "collection_output": "D:/UNLV-Research/contrastive_quality_v2/sources/code_stackoverflow_raw_v1.jsonl"
+    },
+    {
+      "source_id": "math-clean-baseline-v1",
+      "source_group_id": "math-open-educational-clean-controls-v6",
+      "route": "mathematical_content",
+      "pool_role": "common_baseline",
+      "location_kind": "local_jsonl",
+      "local_path": "D:/UNLV-Research/positive_quality_v1/clean_controls/math_open_educational_v6/math_clean_controls_v6.jsonl",
+      "expected_file_sha256": "c123ac09b1a203f1bda90618b42ec97d65e2b6418e21751241f1c3c483725d4f",
+      "text_field": "text"
+    },
+    {
+      "source_id": "math-open-web-math-raw-v1",
+      "source_group_id": "open-web-math-5m-raw-v1",
+      "route": "mathematical_content",
+      "pool_role": "eligible_arm",
+      "location_kind": "local_jsonl",
+      "local_path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/open_web_math_5m.jsonl",
+      "expected_file_sha256": "efcc245f8abff4dac441acb3299a79a76fd83857b9d220dfe2250892e5e0c612",
+      "text_field": "text"
+    },
+    {
+      "source_id": "math-arxiv-papers-raw-v1",
+      "source_group_id": "common-pile-arxiv-papers-math-routed-v1",
+      "route": "mathematical_content",
+      "pool_role": "eligible_arm",
+      "location_kind": "huggingface_file",
+      "dataset_id": "common-pile/arxiv_papers",
+      "revision": "963fe980c55b353980653f1a27c1dc0c8a2d7058",
+      "loader": "json",
+      "data_file": "00000_arxiv-papers.jsonl.gz",
+      "text_field": "text",
+      "stable_record_id_field": "id",
+      "source_license_field": "metadata.license",
+      "allowed_source_licenses": ["Public Domain"],
+      "exact_token_collection_target": 1000000,
+      "required_text_route": "mathematical_content",
+      "collection_output": "D:/UNLV-Research/contrastive_quality_v2/sources/math_arxiv_papers_raw_v1.jsonl"
+    },
+    {
+      "source_id": "general-clean-baseline-v1",
+      "source_group_id": "common-pile-general-clean-controls-v2",
+      "route": "general_prose",
+      "pool_role": "common_baseline",
+      "location_kind": "local_jsonl",
+      "local_path": "D:/UNLV-Research/positive_quality_v2/general/clean_controls_v2.jsonl",
+      "expected_file_sha256": "17d796c1237b767808939bed2dab1b1a2c5868d9b672fde6fb01f27cabe837c4",
+      "text_field": "text"
+    },
+    {
+      "source_id": "general-redpajama-raw-v1",
+      "source_group_id": "redpajama-v2-tail-10m-raw-v1",
+      "route": "general_prose",
+      "pool_role": "eligible_arm",
+      "location_kind": "local_jsonl",
+      "local_path": "D:/UNLV-Research/hf_validation_corpora_v1/raw/redpajama_v2_tail_10m.jsonl",
+      "expected_file_sha256": "f55fd061828910e8741b8cf17af4358a9b14a4004146b5454900ae50f906a7af",
+      "text_field": "text"
+    },
+    {
+      "source_id": "general-openwebtext-raw-v1",
+      "source_group_id": "openwebtext-raw-v1",
+      "route": "general_prose",
+      "pool_role": "eligible_arm",
+      "location_kind": "huggingface_file",
+      "dataset_id": "Skylion007/openwebtext",
+      "revision": "79d93d786212f7344586290adb811d4ae6a1762c",
+      "loader": "parquet",
+      "data_file": "plain_text/train-00000-of-00080.parquet",
+      "text_field": "text",
+      "declared_license": "CC0-1.0",
+      "exact_token_collection_target": 1000000,
+      "collection_output": "D:/UNLV-Research/contrastive_quality_v2/sources/general_openwebtext_raw_v1.jsonl"
+    }
+  ],
+  "sampling": {
+    "stage_a_policy": "text_only_v2",
+    "exact_tokenizer_id": "Qwen/Qwen3-4B-Base",
+    "exact_tokenizer_revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "records_per_source_after_stage_a": 200,
+    "stable_hash_seed": "contrastive-operating-point-development-v1",
+    "common_baseline_output": "D:/UNLV-Research/contrastive_quality_v2/development/common_stage_a_baseline_v1.jsonl",
+    "eligible_pool_output": "D:/UNLV-Research/contrastive_quality_v2/development/shared_eligible_arm_pool_v1.jsonl"
+  },
+  "boundary": {
+    "source_metadata_selector_visible": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "normal_and_hard_share_eligible_record_ids": true,
+    "baseline_disjoint_from_eligible_records_and_sources": true,
+    "effect_bins_are_separate_arms": false
+  },
+  "confirmatory_source_group_ids": [
+    "the-stack-dedup-code-confirmatory",
+    "small-open-web-math-v2-confirmatory",
+    "fineweb-cc-main-2024-10-confirmatory"
+  ]
+}

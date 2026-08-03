@@ -63,9 +63,12 @@ fraction, or token budget. Both redesigned operating points remain uncalibrated
 and release-disabled; the legacy-compatible selector behavior is unchanged.
 
 Block 10B adds a fail-closed Contrastive Quality operating-point gate. The
-current two-model audit cannot emit Normal or Hard thresholds: the qualified
-background role, one arm-disjoint Stage-A baseline, a third development source
-group per route, three ordered effect bins per route, and natural-budget
+current two-model audit cannot emit Normal or Hard thresholds. Block 10C-1 now
+preregisters an exact-revision source pool with one common Stage-A baseline and
+one shared Normal/Hard eligible pool. Each route has one baseline and two
+eligible source groups; the Math third source is independently routed arXiv
+text rather than Stack Exchange content that could overlap OpenWebMath. The
+qualified reference/background roles, measured effect bins, and natural-budget
 external evidence are still missing. These are evidence requirements, not
 runtime selector inputs.
 

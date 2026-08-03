@@ -26,3 +26,10 @@ only. Their presence does not authorize reuse in current claims.
 Before running any protocol, verify its input hashes, model revision, dataset
 snapshot, seed set, output location, and status against
 `../docs/framework_consistency_baseline.md`.
+
+`contrastive_operating_point_source_pool_v1.json` is the Block 10C development
+source contract. It preregisters exact source revisions and shards, one
+source-disjoint common Stage-A baseline, and a single eligible record pool
+shared by Normal and Hard. Source identity is audit metadata and is never a
+selector-visible feature; effect bins are measurements within the shared pool,
+not independent corpus arms.

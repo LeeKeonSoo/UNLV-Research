@@ -18,6 +18,7 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     }
     expected.add("validation/test_inline_license_comment_block_compaction.py")
     expected.add("validation/test_python_code_evidence_audit.py")
+    expected.add("scripts/materialize_contrastive_source_pool_v1.py")
     expected.add("validation/test_coverage_invariants.py")
     expected.add("validation/test_weak_structural_quality_rules.py")
     expected.add("validation/test_weak_development_gate.py")
@@ -199,6 +200,8 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
             "near_duplicate_calibration.py",
             "contrastive_operating_point_gate.py",
             "contrastive_operating_point_contract.py",
+            "contrastive_source_pool_contract.py",
+            "contrastive_source_pool_materialization.py",
             "validation/test_framework_manifest_v1.py",
             "validation/test_framework_objects_v1.py",
             "validation/test_stage_permissions_v1.py",
@@ -209,6 +212,8 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
             "validation/test_framework_policy_ablation_v1.py",
             "validation/test_near_duplicate_calibration_v1.py",
             "validation/test_contrastive_operating_point_gate_v1.py",
+            "validation/test_contrastive_source_pool_contract_v1.py",
+            "validation/test_contrastive_source_pool_materialization_v1.py",
         }
     )
     actual = {
