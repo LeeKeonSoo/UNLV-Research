@@ -20,6 +20,12 @@ blocked Policy inventory, and curated-output equivalence hash. A passing Block
 8 report validates implementation integrity only; it does not enable a profile
 or promote a Policy.
 
+`framework_policy_ablation_v1.json` is the frozen Block 9 development-decision
+protocol. It hash-binds corpus admission, Redundancy, and contrastive Quality
+evidence. Its current decision advances exact-text family removal only to
+`development_passed`; it emits no near-duplicate or Quality threshold and does
+not authorize Hard or confirmatory training.
+
 ## Runtime Contracts
 
 The runtime contract surface is anchored by:

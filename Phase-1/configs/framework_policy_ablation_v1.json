@@ -1,0 +1,30 @@
+{
+  "schema_version": "framework-policy-ablation-protocol-v1",
+  "status": "block_9_frozen_development_protocol",
+  "evidence": {
+    "development_admission": {
+      "path": "validation/frozen_contracts/development_corpus_admission_report_v1.json",
+      "sha256": "f105a757e9618461f84dca773caf88b5705b456c53578cde4b9df32f5ed0b9c3"
+    },
+    "redundancy_gate": {
+      "path": "validation/frozen_contracts/development_redundancy_gate_report_v1.json",
+      "sha256": "a00c22653532794d2ebef4789549a7d56273a4aee290552bfc0337c32cf41ba5"
+    },
+    "quality_gate": {
+      "path": "validation/frozen_contracts/development_quality_gate_report_v1.json",
+      "sha256": "d4b94f17fc15e45b153922b0bdf5bf98ec5db2e1e4565d86e7bb0ed255cc6823"
+    },
+    "contrastive_audit": {
+      "path": "validation/frozen_contracts/contrastive_quality_audit_qwen3_4b_8b_v1.json",
+      "sha256": "ff4508edaf8cb7a4ddc8a17b5b083f9dcca1f65a803ebabac61efecf73a65f30"
+    },
+    "contrastive_protocol": {
+      "path": "configs/contrastive_quality_protocol_v2.json",
+      "sha256": "b81fd0bfd13f724adf742fa976b00a03d89a2f0412381919b12deed3413291a8"
+    }
+  },
+  "exact_policy_id": "redundancy.exact_text_family",
+  "near_policy_id": "redundancy.symmetric_near_duplicate_candidate",
+  "contrastive_policy_id": "quality.contrastive_alignment_candidate",
+  "claim_boundary": "Block 9 records disjoint development decisions only. It does not read benchmark outcomes, activate runtime policies, or establish natural-budget downstream effectiveness."
+}

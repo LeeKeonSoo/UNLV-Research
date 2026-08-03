@@ -1,6 +1,6 @@
 # Framework Consistency Baseline
 
-Status: observed baseline plus Block 8 integrity validation
+Status: observed baseline plus Block 9 development-ablation decision
 Frozen on: 2026-08-01
 Authority: this file is the sole status index during the consistency reset
 
@@ -85,6 +85,34 @@ The Block 8 regression run passed 142/142 direct validation files with the
 repository root on `PYTHONPATH`, GPU visibility disabled, and model-network
 access offline. An invocation without the documented `PYTHONPATH` reproduced
 the pre-existing Stage-C2 import-path failure; no curation behavior failed.
+
+## Block 9 Development Ablation
+
+As of 2026-08-03, `framework_policy_ablation.py` hash-verifies the admitted,
+benchmark-excluded development corpus plus frozen Redundancy and Quality
+evidence. Its protocol is `configs/framework_policy_ablation_v1.json`, and its
+decision is frozen at
+`validation/frozen_contracts/framework_policy_ablation_v1.json`.
+
+The exact-text family Policy is `development_passed` from 2,400 correctly
+linked exact copies, zero clean-control false merges, and zero representative
+failures. This lifecycle is deliberately below `promoted` and does not make a
+profile releasable.
+
+Symmetric near-duplicate remains blocked because 860 observed candidate
+relations are not a positive non-exact equivalence ground truth and cannot
+identify a deletion threshold. Contrastive Quality remains blocked because the
+three-role provider lacks a qualified reference distribution, assigned
+background provider, shared Stage-A baseline, and route-specific empirical
+effect bins. Neither policy emitted a threshold or gained runtime authority.
+
+The resulting Hard profile is not development-ready, and Block 10 three-seed
+natural-budget confirmation is not authorized. The bundle reads neither
+benchmark outcomes nor Utility and does not mutate selector membership.
+
+The Block 9 regression run passed 143/143 direct validation files and parsed
+181/181 active config, protocol, and frozen-contract JSON files with GPU and
+network access disabled.
 
 ## Observed Runtime
 

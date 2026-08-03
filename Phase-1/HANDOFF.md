@@ -28,6 +28,10 @@ Current repository facts:
 - Block 8 now produces one deterministic release-validation bundle. The frozen
   report passes all Core fixture and implementation-integrity gates while
   keeping the scientific framework release blocked.
+- Block 9 now produces a hash-linked development-ablation decision bundle.
+  Exact-text family removal is `development_passed`; symmetric near-duplicate
+  and contrastive Quality remain `blocked`, so Hard and Block 10 are not
+  authorized.
 - The selector kernel still executes the frozen legacy-compatible Normal/Hard
   behavior. No blocked v1 Policy was promoted by the bridge, and both new v1
   profiles remain release-disabled.
@@ -83,6 +87,28 @@ Current repository facts:
   source groups per route, and no empirical effect bins for Code, Math, or
   General.
 
+## Block 9 Evidence Status
+
+- `validation/frozen_contracts/framework_policy_ablation_v1.json` is the frozen
+  Block 9 decision bundle. It verifies the admitted development corpus and
+  consumes no benchmark outcome or Utility input.
+- `redundancy.exact_text_family` is now `development_passed`: 2,400 injected
+  exact copies were linked with zero clean-control false merges and zero
+  representative failures. This is development evidence, not downstream
+  effectiveness or release promotion.
+- `redundancy.symmetric_near_duplicate_candidate` remains `blocked`. The audit
+  found 860 candidate relations but has no labeled non-exact equivalence set
+  from which a deletion threshold can be identified; no threshold was emitted.
+- `quality.contrastive_alignment_candidate` remains `blocked`. The frozen run
+  scored 1,500 records, but a qualified reference distribution, background
+  provider, common Stage-A baseline, and empirical route effect bins are still
+  missing; no scalar or threshold was emitted.
+- Consequently `hard_profile_development_ready` and `block_10_authorized` are
+  both false. No runtime activation or selector membership was changed.
+- The Block 9 regression run passed 143/143 direct validation files and parsed
+  181/181 active config, protocol, and frozen-contract JSON files with GPU and
+  network access disabled.
+
 ## Resolved Consistency Defects
 
 The baseline tracks `C-01` through `C-14`. The implementation pass resolved:
@@ -126,6 +152,7 @@ conda run -n research python validation\test_policy_profile_contract.py
 conda run -n research python validation\test_core_policy_runtime_linkage.py
 conda run -n research python validation\test_core_behavior_audit_v3.py
 conda run -n research python validation\test_framework_release_validation_v1.py
+conda run -n research python validation\test_framework_policy_ablation_v1.py
 conda run -n research python validation\test_source_contract.py
 ```
 
@@ -153,7 +180,9 @@ Stage permissions, and the compatibility bridge before it reads corpus input.
 The bridge preserves the frozen selector output and does not activate blocked
 v1 policies.
 
-Block 8 is complete. The next authorized work is Block 9: use disjoint
-development corpora for threshold calibration and independent Policy ablation.
-Near-duplicate and contrastive Quality remain blocked until those empirical
-gates pass; Block 8 did not activate either Policy.
+Block 9 is complete, but its result does not authorize Block 10. The next
+authorized work is to construct a positive, non-exact equivalence calibration
+set for near-duplicate deletion and to qualify the three-role contrastive
+provider with one common Stage-A baseline and route-specific effect bins.
+Only a new frozen Block 9 decision that passes those gates may freeze Hard and
+authorize three-seed natural-budget confirmatory evaluation.
