@@ -59,6 +59,12 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("quality_rule_evidence.py")
     expected.add("validation/test_quality_retention_decision.py")
     expected.add("validation/test_quality_candidate_scope.py")
+    expected.add("quality_teacher_panel.py")
+    expected.add("quality_teacher_qualification.py")
+    expected.add("quality_teacher_response.py")
+    expected.add("validation/test_quality_teacher_panel_v1.py")
+    expected.add("validation/test_quality_teacher_qualification_v1.py")
+    expected.add("validation/test_quality_teacher_response_v1.py")
     expected.add("validation/test_positive_quality_coverage_contract.py")
     expected.add("validation/test_content_routing_quality_coverage_contract_v2.py")
     expected.add("content_router.py")
@@ -285,6 +291,7 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
             "framework_policy_ablation_v1.json",
             "near_duplicate_calibration_v1.json",
             "contrastive_operating_point_gate_v1.json",
+            "quality_teacher_panel_v1.json",
         }
     )
     expected.update(

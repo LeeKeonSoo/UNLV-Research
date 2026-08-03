@@ -1,0 +1,115 @@
+{
+  "schema_version": "quality-teacher-panel-v1",
+  "lifecycle": "candidate_qualification",
+  "runtime_activation": false,
+  "teacher_output_alone_may_delete": false,
+  "training_objective": "continued_pretraining",
+  "initial_language_scope": [
+    "english"
+  ],
+  "allowed_external_data": [
+    "public_license_compatible_calibration_samples"
+  ],
+  "forbidden_inputs": [
+    "benchmark_outcomes",
+    "nll",
+    "utility",
+    "source_reputation",
+    "domain_quota",
+    "target_retention_fraction",
+    "maximum_token_budget",
+    "confirmatory_corpus"
+  ],
+  "teachers": [
+    {
+      "teacher_id": "nemotron-ultra-build-v1",
+      "organization": "NVIDIA",
+      "location": "nvidia_build",
+      "model_id": "nvidia/nemotron-3-ultra-550b-a55b",
+      "revision": "build-endpoint-observed-2026-08-04",
+      "model_card_url": "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard",
+      "endpoint_base_url": "https://integrate.api.nvidia.com/v1",
+      "api_key_environment_variable": "NVIDIA_API_KEY",
+      "reasoning_mode": "disabled",
+      "inference_precision": "endpoint_managed"
+    },
+    {
+      "teacher_id": "glm-5-2-build-v1",
+      "organization": "Z.ai",
+      "location": "nvidia_build",
+      "model_id": "z-ai/glm-5.2",
+      "revision": "build-endpoint-observed-2026-08-04",
+      "model_card_url": "https://build.nvidia.com/z-ai/glm-5.2/modelcard",
+      "endpoint_base_url": "https://integrate.api.nvidia.com/v1",
+      "api_key_environment_variable": "NVIDIA_API_KEY",
+      "reasoning_mode": "bounded",
+      "inference_precision": "endpoint_managed"
+    },
+    {
+      "teacher_id": "qwen3-5-9b-int8-local-v1",
+      "organization": "Qwen",
+      "location": "local",
+      "model_id": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "model_card_url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "endpoint_base_url": null,
+      "api_key_environment_variable": null,
+      "reasoning_mode": "disabled",
+      "inference_precision": "bitsandbytes_int8"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "q1_correctness_evidence",
+      "name": "Correctness Evidence",
+      "question": "Does locally observable or attached verifier evidence support that the payload is correct under its declared context?",
+      "fail_boundary": "Fail only on a reproducible contradiction, impossible derivation, failed declared verifier, or locally checkable incorrect result.",
+      "abstain_boundary": "Abstain when correctness requires unavailable external knowledge or undeclared execution assumptions."
+    },
+    {
+      "policy_id": "q2_semantic_coherence",
+      "name": "Semantic Coherence",
+      "question": "Do the payload's parts form a consistent and recoverable semantic unit?",
+      "fail_boundary": "Fail only when incompatible fragments, broken dependencies, or internal contradictions prevent a coherent interpretation.",
+      "abstain_boundary": "Abstain when missing context could plausibly repair the apparent discontinuity."
+    },
+    {
+      "policy_id": "q3_substantive_payload",
+      "name": "Substantive Payload",
+      "question": "Does the unit contain substantive content beyond navigation, metadata, boilerplate, or an uninstantiated template?",
+      "fail_boundary": "Fail only when no substantive residual payload remains after observable boilerplate is excluded.",
+      "abstain_boundary": "Abstain when a short unit may carry domain-specific meaning that the panel cannot verify."
+    },
+    {
+      "policy_id": "q4_learnable_relations",
+      "name": "Learnable Relations",
+      "question": "Does the unit expose at least one recoverable relation among entities, operations, claims, conditions, or outcomes?",
+      "fail_boundary": "Fail only when the payload is an unconnected token, label, or fragment set with no recoverable relation.",
+      "abstain_boundary": "Abstain when specialized notation may encode a relation unavailable to the panel."
+    }
+  ],
+  "response_contract": {
+    "decision_enum": [
+      "pass",
+      "fail",
+      "abstain"
+    ],
+    "reason_codes_required": true,
+    "maximum_schema_retries": 1,
+    "invalid_response_action": "abstain"
+  },
+  "fixture_matrix": {
+    "policies": 4,
+    "routes": 4,
+    "fixture_classes": 4,
+    "samples_per_cell": 8,
+    "total": 512
+  },
+  "promotion_gate": {
+    "protected_fixture_count": 800,
+    "confidence": 0.95,
+    "normal_false_removal_upper_bound": 0.005,
+    "hard_false_removal_upper_bound": 0.02,
+    "smoke_suite_may_activate_runtime": false
+  }
+}
