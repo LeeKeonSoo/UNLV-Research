@@ -130,6 +130,26 @@ Current repository facts:
   parsed 183/183 active config, protocol, and frozen-contract JSON files with
   GPU and network access disabled.
 
+## Block 10B Evidence Status
+
+- `validation/frozen_contracts/contrastive_operating_point_gate_v1.json`
+  hash-binds the three-role v2 protocol and the frozen 1,500-record contrastive
+  audit. It does not trust a readiness boolean or consume runtime benchmark or
+  Utility values.
+- Every sensitivity arm must share one identical Stage-A baseline. The baseline
+  must be record- and source-disjoint from all arms, arms must be pairwise
+  disjoint, and each required route must provide at least three ordered effect
+  bins from at least three development source groups.
+- The current result is `blocked_missing_empirical_inputs`: Code, Math, and
+  General each have 2/3 source groups and 0/3 effect bins. The qualified
+  reference distribution, background provider, reference precision evidence,
+  common baseline, and natural-budget external evidence are also missing.
+- No Normal or Hard threshold was emitted, both profile calibration hashes
+  remain null, and runtime behavior is unchanged.
+- The Block 10B regression run passed 145/145 direct validation files and
+  parsed 185/185 active config, protocol, and frozen-contract JSON files with
+  GPU and network access disabled.
+
 ## Resolved Consistency Defects
 
 The baseline tracks `C-01` through `C-14`. The implementation pass resolved:
@@ -202,9 +222,12 @@ Stage permissions, and the compatibility bridge before it reads corpus input.
 The bridge preserves the frozen selector output and does not activate blocked
 v1 policies.
 
-Block 10A is complete as a negative calibration result. The next authorized
-work is Block 10B: qualify the three-role contrastive provider with one common
-Stage-A baseline and route-specific effect bins. Near-duplicate remains blocked
-until a new witness-required Policy version replaces threshold-only authority.
-Only frozen Normal/Hard operating-point artifacts may authorize three-seed
-natural-budget confirmatory evaluation.
+Block 10A is complete as a negative near-duplicate calibration result. Block
+10B is complete as a fail-closed Contrastive Quality preflight. The next
+authorized work is Block 10C evidence acquisition: qualify the reference and
+background roles, validate execution precision, add a third development source
+group per route, materialize one common arm-disjoint Stage-A baseline, and
+measure route-specific effect bins. Near-duplicate remains blocked until a new
+witness-required Policy version replaces threshold-only authority. Only frozen
+Normal/Hard operating-point artifacts may authorize three-seed natural-budget
+confirmatory evaluation.

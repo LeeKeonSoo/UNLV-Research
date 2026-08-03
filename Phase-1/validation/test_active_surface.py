@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# noqa: SIZE_OK -- This test is the authoritative pure-data active-file inventory.
 from __future__ import annotations
 
 from pathlib import Path
@@ -196,6 +197,7 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
             "framework_release_validation.py",
             "framework_policy_ablation.py",
             "near_duplicate_calibration.py",
+            "contrastive_operating_point_gate.py",
             "validation/test_framework_manifest_v1.py",
             "validation/test_framework_objects_v1.py",
             "validation/test_stage_permissions_v1.py",
@@ -205,6 +207,7 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
             "validation/test_framework_release_validation_v1.py",
             "validation/test_framework_policy_ablation_v1.py",
             "validation/test_near_duplicate_calibration_v1.py",
+            "validation/test_contrastive_operating_point_gate_v1.py",
         }
     )
     actual = {
@@ -275,6 +278,7 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
             "framework_release_validation_v1.json",
             "framework_policy_ablation_v1.json",
             "near_duplicate_calibration_v1.json",
+            "contrastive_operating_point_gate_v1.json",
         }
     )
     expected.update(

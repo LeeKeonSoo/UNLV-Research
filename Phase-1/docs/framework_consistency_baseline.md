@@ -140,6 +140,26 @@ The Block 10A regression run passed 144/144 direct validation files and parsed
 183/183 active config, protocol, and frozen-contract JSON files with GPU and
 network access disabled.
 
+## Block 10B Contrastive Operating-Point Gate
+
+`validation/frozen_contracts/contrastive_operating_point_gate_v1.json` binds
+the v2 three-role protocol to the frozen 1,500-record Qwen audit. It requires
+one common Stage-A baseline shared by all sensitivity arms, zero baseline-arm
+record and source overlap, pairwise arm disjointness, three development source
+groups and three ordered effect bins per required route, qualified target,
+reference, and background roles, validated precision, and natural-budget
+external evidence.
+
+The current result is `blocked_missing_empirical_inputs`. Code, Math, and
+General each provide 2/3 source groups and 0/3 effect bins; the background role,
+qualified reference distribution, common baseline, precision evidence, and
+external evidence are absent. No Normal or Hard threshold was emitted and
+runtime behavior remains unchanged.
+
+The Block 10B regression run passed 145/145 direct validation files and parsed
+185/185 active config, protocol, and frozen-contract JSON files with GPU and
+network access disabled.
+
 ## Observed Runtime
 
 The only production entry point is `run_curation.py`.

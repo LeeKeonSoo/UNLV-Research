@@ -3,7 +3,7 @@
   "activation": "runtime_integrated_block_7",
   "research_contract": {
     "path": "docs/framework_research_contract_v1.md",
-    "sha256": "8f204c7d78dae2491f2ce9e581f46d8cce9fd301daf96c220624a76a3b5ff8a0"
+    "sha256": "ee97d5aedf32465d6f1f4a6b03b8dd452c13aded803ae6696ab4bb14d8f37c6b"
   },
   "hierarchy": ["core", "metric", "policy", "method"],
   "cores": [
@@ -83,6 +83,7 @@
   "registry_references": {
     "object_registry": "configs/framework_objects_v1.json",
     "contrastive_protocol": "configs/contrastive_quality_protocol_v2.json",
+    "contrastive_operating_point_gate": "configs/contrastive_operating_point_gate_v1.json",
     "profile_composition": "configs/framework_profiles_v1.json",
     "runtime_bridge": "configs/framework_runtime_bridge_v1.json"
   },

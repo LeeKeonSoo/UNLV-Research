@@ -1,0 +1,85 @@
+{
+  "schema_version": "contrastive-operating-point-gate-v1",
+  "status": "blocked_missing_empirical_inputs",
+  "gate_protocol_sha256": "fc0dfad0b5323722ac6e328b956250377d33e0703fc8fda135d151d95e28e39b",
+  "contrastive_protocol_sha256": "b81fd0bfd13f724adf742fa976b00a03d89a2f0412381919b12deed3413291a8",
+  "contrastive_audit_sha256": "ff4508edaf8cb7a4ddc8a17b5b083f9dcca1f65a803ebabac61efecf73a65f30",
+  "required_routes": [
+    "code_artifact",
+    "mathematical_content",
+    "general_prose"
+  ],
+  "qualified_three_role_provider": false,
+  "validated_execution_precision": false,
+  "common_baseline_shared_by_all_arms": false,
+  "baseline_disjoint_from_every_arm": false,
+  "arms_pairwise_disjoint": false,
+  "sensitivity_arm_count": 0,
+  "route_gates": [
+    {
+      "route": "code_artifact",
+      "observed_source_group_count": 2,
+      "required_source_group_count": 3,
+      "observed_effect_bin_count": 0,
+      "required_effect_bin_count": 3,
+      "ready": false
+    },
+    {
+      "route": "mathematical_content",
+      "observed_source_group_count": 2,
+      "required_source_group_count": 3,
+      "observed_effect_bin_count": 0,
+      "required_effect_bin_count": 3,
+      "ready": false
+    },
+    {
+      "route": "general_prose",
+      "observed_source_group_count": 2,
+      "required_source_group_count": 3,
+      "observed_effect_bin_count": 0,
+      "required_effect_bin_count": 3,
+      "ready": false
+    }
+  ],
+  "external_natural_budget_evidence_present": false,
+  "profile_operating_point_artifacts_present": false,
+  "hard_subset_of_normal_verified": false,
+  "operating_point_decisions": [
+    {
+      "profile_id": "normal",
+      "status": "blocked",
+      "threshold_emitted": false,
+      "artifact_sha256": null
+    },
+    {
+      "profile_id": "hard",
+      "status": "blocked",
+      "threshold_emitted": false,
+      "artifact_sha256": null
+    }
+  ],
+  "blocker_codes": [
+    "background_provider_unassigned",
+    "common_baseline_missing",
+    "effect_bins_missing",
+    "empirical_effect_bins_missing:code_artifact",
+    "empirical_effect_bins_missing:general_prose",
+    "empirical_effect_bins_missing:mathematical_content",
+    "external_natural_budget_evidence_missing",
+    "insufficient_source_groups:code_artifact",
+    "insufficient_source_groups:general_prose",
+    "insufficient_source_groups:mathematical_content",
+    "profile_monotonicity_evidence_missing",
+    "profile_operating_point_artifacts_missing",
+    "provider_training_disjointness_unverified",
+    "quality_reference_distribution_contract_missing",
+    "reference_int8_validation_missing",
+    "reference_quantization_unvalidated"
+  ],
+  "hard_subset_of_normal_required": true,
+  "runtime_activation_mutated": false,
+  "benchmark_outcomes_read_at_runtime": false,
+  "utility_read_at_runtime": false,
+  "claim_boundary": "Block 10B may emit Normal and Hard operating points only after one Stage-A baseline is shared by every sensitivity arm, all partitions are record/source disjoint, every required route has ordered empirical effect bins, the three-role provider is qualified, and natural-budget external evidence is frozen.",
+  "report_sha256": "fea34a6394d1fcae22fcabc920a7e3c10886d259143539b6b97bf6a1a4d33ca2"
+}

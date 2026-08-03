@@ -1,0 +1,42 @@
+{
+  "schema_version": "contrastive-operating-point-gate-protocol-v1",
+  "status": "block_10b_frozen_preflight",
+  "contrastive_protocol": {
+    "path": "configs/contrastive_quality_protocol_v2.json",
+    "sha256": "b81fd0bfd13f724adf742fa976b00a03d89a2f0412381919b12deed3413291a8"
+  },
+  "contrastive_audit": {
+    "path": "validation/frozen_contracts/contrastive_quality_audit_qwen3_4b_8b_v1.json",
+    "sha256": "ff4508edaf8cb7a4ddc8a17b5b083f9dcca1f65a803ebabac61efecf73a65f30"
+  },
+  "required_routes": ["code_artifact", "mathematical_content", "general_prose"],
+  "minimum_source_groups_per_route": 3,
+  "minimum_ordered_effect_bins_per_route": 3,
+  "profile_ids": ["normal", "hard"],
+  "common_baseline": null,
+  "sensitivity_arms": [],
+  "arm_pairwise_disjointness_artifact_sha256": null,
+  "external_natural_budget_evidence_sha256": null,
+  "operating_point_artifact_sha256_by_profile": {
+    "normal": null,
+    "hard": null
+  },
+  "profile_monotonicity_artifact_sha256": null,
+  "acceptance": {
+    "require_qualified_three_role_provider": true,
+    "require_validated_execution_precision": true,
+    "require_one_shared_stage_a_baseline": true,
+    "require_baseline_disjoint_from_every_arm": true,
+    "require_arms_pairwise_disjoint": true,
+    "require_ordered_route_effect_bins": true,
+    "require_external_natural_budget_evidence": true,
+    "require_hard_subset_of_normal": true
+  },
+  "selector_boundary": {
+    "benchmark_outcomes_available_at_runtime": false,
+    "utility_available_at_runtime": false,
+    "source_reputation_available_at_runtime": false,
+    "runtime_activation_mutation_allowed": false
+  },
+  "claim_boundary": "Block 10B may emit Normal and Hard operating points only after one Stage-A baseline is shared by every sensitivity arm, all partitions are record/source disjoint, every required route has ordered empirical effect bins, the three-role provider is qualified, and natural-budget external evidence is frozen."
+}

@@ -1,8 +1,8 @@
 {
   "schema_version": "framework-profiles-v1",
   "status": "runtime_integrated_block_7",
-  "framework_manifest_sha256": "897a3c68ebfa2ab3618fbd421eb3489cf1724757ed43d2c490808fb5b6c3c134",
-  "object_registry_sha256": "0672f9a2fff2e1b07b795c7fda20df9a72c8d27fe33040100c124f06747a45a9",
+  "framework_manifest_sha256": "64b8679598eb75ccf375e54acebde6b5e8694fc545350cb98d41f182cbfa9646",
+  "object_registry_sha256": "bead97f41005be2feae0398a87a94a25b27f8549c0833dcc9251674f0a0de2d1",
   "policy_lifecycles": [
     {"policy_id": "validity.interpretable_text", "lifecycle": "candidate"},
     {"policy_id": "redundancy.exact_text_family", "lifecycle": "development_passed"},

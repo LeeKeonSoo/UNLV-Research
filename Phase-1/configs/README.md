@@ -32,6 +32,12 @@ current metric misses verified Code/Math equivalents and accepts General
 semantic-change counterexamples. The evidence is linked to the blocked near-
 duplicate Policy and cannot activate runtime behavior.
 
+`contrastive_operating_point_gate_v1.json` freezes the Block 10B evidence
+requirements for model-driven Quality. Every sensitivity arm must share one
+Stage-A baseline that is record- and source-disjoint from all arms; every route
+must provide at least three ordered effect bins from at least three development
+source groups. The current preflight is blocked and emits no profile threshold.
+
 ## Runtime Contracts
 
 The runtime contract surface is anchored by:

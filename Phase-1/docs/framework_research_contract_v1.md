@@ -231,6 +231,14 @@ Neither profile has a retention ratio or token budget. If a corpus contains no
 supported removal opportunity, either profile may retain nearly all Stage-A
 data.
 
+For sensitivity calibration, all candidate arms must reference one identical
+Stage-A baseline. That baseline must be record- and source-disjoint from every
+arm, and sensitivity arms must be pairwise disjoint. A different baseline per
+arm is forbidden because it confounds the policy effect with baseline sampling.
+Normal and Hard thresholds may be emitted only after each required route has at
+least three ordered empirical effect bins and separately frozen natural-budget
+external evidence.
+
 ## 9. Model-Driven and Contrastive Quality Evidence
 
 Model-driven evidence is optional and replaceable. It is not a hidden framework

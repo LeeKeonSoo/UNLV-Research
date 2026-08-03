@@ -62,6 +62,13 @@ more conservative removal mode and Hard is stronger while preserving
 fraction, or token budget. Both redesigned operating points remain uncalibrated
 and release-disabled; the legacy-compatible selector behavior is unchanged.
 
+Block 10B adds a fail-closed Contrastive Quality operating-point gate. The
+current two-model audit cannot emit Normal or Hard thresholds: the qualified
+background role, one arm-disjoint Stage-A baseline, a third development source
+group per route, three ordered effect bins per route, and natural-budget
+external evidence are still missing. These are evidence requirements, not
+runtime selector inputs.
+
 ## Verification
 
 From `Phase-1` in the `research` environment:
@@ -74,6 +81,7 @@ conda run -n research python validation\test_curation_runtime.py
 conda run -n research python validation\test_policy_profile_contract.py
 conda run -n research python validation\test_core_policy_runtime_linkage.py
 conda run -n research python validation\test_core_behavior_audit_v3.py
+conda run -n research python validation\test_contrastive_operating_point_gate_v1.py
 conda run -n research python validation\test_source_contract.py
 ```
 
