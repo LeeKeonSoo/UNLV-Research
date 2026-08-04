@@ -4,9 +4,9 @@
   "framework_manifest_path": "configs/curation_framework_v1.json",
   "framework_manifest_sha256": "c5a5b649101ca7c70c9e1d68b5ee6ad1978a7fd3f7048578ca2921f8d87de2b4",
   "object_registry_path": "configs/framework_objects_v1.json",
-  "object_registry_sha256": "177f59531286c46ee5245b219210f866dc687946bad5ff0a3b78386d1ba03393",
+  "object_registry_sha256": "49bd4b28a97809cf999dddc0fcf9870ca52a099ccc887677d5fe0d1001e03c0b",
   "profile_registry_path": "configs/framework_profiles_v1.json",
-  "profile_registry_sha256": "a2da5fe216ac9318dfceadbb48cb0f90c9b7dbb17dec624243c1e8c38abc3d8f",
+  "profile_registry_sha256": "0144326649828c50865441eb48cd039965dcc620f617574a531fbe022da8a8bb",
   "legacy_kernel_path": "run_curation.py",
   "legacy_kernel_sha256": "1455efbf3fd51865a56e9beac4eee3fae605c8cad011ed0925b667d3c8327120",
   "legacy_policy_mappings": [

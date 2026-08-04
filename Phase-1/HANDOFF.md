@@ -101,6 +101,17 @@ Its first eight controlled Q1 tasks completed 8/8 `pass` from
 `declared_verifier` with zero model-generation traces. This validates evidence
 precedence and resume isolation, not full Quality promotion.
 
+The v2 behavior qualification then stopped after 143/512 tasks because the
+preregistered exact gate had become unreachable. Q1 completed all 128 tasks
+exactly. In Q2 Code, two protected PASS constructions resolved to `abstain`:
+one due to repeated local-Qwen FAIL plus a Gemma timeout, and one due to
+second-pass instability. The result is frozen in
+`validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`. Normal
+and Hard remain unqualified, the 3,200-policy protected run was correctly not
+started, and runtime activation remains false. Do not weaken the gate or tune
+on these confirmatory fixtures; panel changes require new development evidence
+and a fresh disjoint confirmatory set.
+
 ## Retired Contrastive Research
 
 The target/reference NLL-gap Quality design did not identify a stable

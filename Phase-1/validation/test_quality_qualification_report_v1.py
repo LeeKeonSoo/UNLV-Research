@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from quality_qualification_report import build_qualification_report
+from quality_qualification_report import build_qualification_report, load_observation_jsonl
 from quality_teacher_qualification_runner import build_qualification_tasks
 
 
@@ -58,7 +59,32 @@ def test_one_protected_unanimous_fail_blocks_both_modes() -> None:
     assert report["hard_qualified"] is True
 
 
+def test_partial_behavior_failure_reports_blocked_without_protected_input() -> None:
+    tasks = build_qualification_tasks("behavior")[:2]
+    behavior = [_record(tasks[0]), _record(tasks[1], "abstain")]
+
+    report = build_qualification_report(behavior, [])
+
+    assert report["behavior_complete"] is False
+    assert report["behavior_exact"] is False
+    assert report["behavior_mismatch_task_ids"] == [tasks[1].task_id]
+    assert report["protected_complete"] is False
+    assert report["normal_false_removal_upper_bound_95"] is None
+    assert report["hard_false_removal_upper_bound_95"] is None
+    assert report["normal_qualified"] is False
+    assert report["hard_qualified"] is False
+
+
+def test_missing_observation_file_loads_as_incomplete_evidence() -> None:
+    with TemporaryDirectory() as directory:
+        missing = Path(directory) / "not-run.jsonl"
+
+        assert load_observation_jsonl(missing) == []
+
+
 if __name__ == "__main__":
     test_complete_exact_fixture_evidence_promotes_both_operating_points()
     test_one_protected_unanimous_fail_blocks_both_modes()
+    test_partial_behavior_failure_reports_blocked_without_protected_input()
+    test_missing_observation_file_loads_as_incomplete_evidence()
     print("[quality-qualification-report-v1] completeness and exact confidence gates: pass")

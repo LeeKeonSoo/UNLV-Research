@@ -1,0 +1,62 @@
+{
+  "schema_version": "quality-teacher-behavior-gate-v2",
+  "status": "blocked_behavior_exact_gate",
+  "observed_date": "2026-08-04",
+  "teacher_panel": {
+    "path": "configs/quality_teacher_panel_v1.json",
+    "sha256": "bcfcf764b68cb0fb4ee1f4dba1edbb2ac5de1497883c086d4664f0f3ccfc68ec"
+  },
+  "observation_source": {
+    "path": "outputs/validation/quality_behavior_observations_v2.jsonl",
+    "sha256": "3e3e8ef59acd220cfc1954e00c0e2d086bcbfac29d4370534f1e99de1410aa22",
+    "schema_version": "quality-teacher-observation-v2",
+    "raw_model_text_persisted": false
+  },
+  "partial_qualification_report": {
+    "path": "outputs/validation/quality_teacher_qualification_report_v2.json",
+    "file_sha256": "eb0e4a5cc1995950dcbc484971b80b2e7deb1c1a0ba9e402284da8eaf4cd1f3e",
+    "report_sha256": "8c7c52549b6ac693c9dc4185674557377be4fbf9ee4b23d1395e7511183db0eb"
+  },
+  "behavior_gate": {
+    "observed_tasks": 143,
+    "expected_tasks": 512,
+    "exact_matches": 141,
+    "mismatch_count": 2,
+    "complete": false,
+    "exact": false
+  },
+  "mismatches": [
+    {
+      "task_id": "q2_semantic_coherence-code_artifact-pass-005",
+      "expected": "pass",
+      "observed": "abstain",
+      "first_pass": ["pass", "pass", "fail"],
+      "second_pass": ["abstain", "pass", "fail"],
+      "observed_failure_signals": [
+        "local_qwen_repeated_internal_semantic_contradiction",
+        "gemma_second_pass_read_timeout"
+      ]
+    },
+    {
+      "task_id": "q2_semantic_coherence-code_artifact-pass-007",
+      "expected": "pass",
+      "observed": "abstain",
+      "first_pass": ["abstain", "pass", "pass"],
+      "second_pass": ["pass", "pass", "fail"],
+      "observed_failure_signals": [
+        "gemma_first_pass_read_timeout",
+        "local_qwen_second_pass_instability"
+      ]
+    }
+  ],
+  "execution_disposition": {
+    "behavior_run": "stopped_after_preregistered_exact_gate_became_unreachable",
+    "protected_run": "not_run_because_behavior_prerequisite_failed",
+    "normal_qualified": false,
+    "hard_qualified": false,
+    "runtime_activation_mutated": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false
+  },
+  "interpretation": "The Quality semantics remain frozen, but this teacher panel is not qualified to operationalize them. The candidate must remain blocked; the failed gate must not be weakened or tuned on these confirmatory fixtures."
+}

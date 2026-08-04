@@ -83,6 +83,12 @@ evidence is absent. Qualification observations use the incompatible-with-v1
 `quality-teacher-observation-v2` contract so pre-fix diagnostics cannot be
 resumed into promotion evidence.
 
+The first v2 behavior qualification is negative evidence: Q1 passed all 128
+controlled tasks, but Q2 produced two PASS-to-ABSTAIN mismatches by task 143.
+Because exact behavior was preregistered, the protected run was not started and
+both operating points remain blocked. See
+`validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`.
+
 The previous loss-gap Quality experiment is retired and preserved only under
 `archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.
 

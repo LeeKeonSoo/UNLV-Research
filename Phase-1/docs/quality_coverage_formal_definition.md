@@ -93,7 +93,10 @@ A Quality rule becomes enabled only after all of the following pass:
 
 The current implementation provides the complete measurement and qualification
 path, including observation-schema isolation and Q1 verifier precedence, but
-runtime activation remains blocked until the complete observations pass.
+runtime activation remains blocked. The first v2 panel failed the behavior
+prerequisite after two Q2 PASS-to-ABSTAIN mismatches; protected-fixture
+qualification was therefore not run. This negative result does not change the
+Quality definition or authorize a weaker post-hoc gate.
 
 ## 3. Coverage
 

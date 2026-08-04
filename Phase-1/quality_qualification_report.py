@@ -69,6 +69,11 @@ def build_qualification_report(
     behavior_matches = sum(
         record["expected_decision"] == record["panel_decision"] for record in behavior.values()
     )
+    behavior_mismatch_task_ids = sorted(
+        task_id
+        for task_id, record in behavior.items()
+        if record["expected_decision"] != record["panel_decision"]
+    )
 
     by_fixture: dict[str, list[dict[str, object]]] = defaultdict(list)
     for record in protected.values():
@@ -82,8 +87,18 @@ def build_qualification_report(
         for records in by_fixture.values()
     )
     fixture_count = len(by_fixture)
-    normal_gate = ProtectedFixtureGate(fixture_count, normal_false, 0.005)
-    hard_gate = ProtectedFixtureGate(fixture_count, hard_false, 0.02)
+    if fixture_count:
+        normal_gate = ProtectedFixtureGate(fixture_count, normal_false, 0.005)
+        hard_gate = ProtectedFixtureGate(fixture_count, hard_false, 0.02)
+        normal_upper_bound = normal_gate.upper_bound(0.95)
+        hard_upper_bound = hard_gate.upper_bound(0.95)
+        normal_gate_passed = normal_gate.passes(0.95)
+        hard_gate_passed = hard_gate.passes(0.95)
+    else:
+        normal_upper_bound = None
+        hard_upper_bound = None
+        normal_gate_passed = False
+        hard_gate_passed = False
     behavior_exact = behavior_complete and behavior_matches == len(expected_behavior)
     report: dict[str, object] = {
         "schema_version": "quality-teacher-qualification-report-v1",
@@ -91,6 +106,7 @@ def build_qualification_report(
         "behavior_expected_task_count": len(expected_behavior),
         "behavior_complete": behavior_complete,
         "behavior_exact_match_count": behavior_matches,
+        "behavior_mismatch_task_ids": behavior_mismatch_task_ids,
         "behavior_exact": behavior_exact,
         "behavior_matrix": _matrix_summary(behavior.values()),
         "protected_task_count": len(protected),
@@ -98,11 +114,11 @@ def build_qualification_report(
         "protected_complete": protected_complete,
         "protected_fixture_count": fixture_count,
         "normal_false_removal_count": normal_false,
-        "normal_false_removal_upper_bound_95": normal_gate.upper_bound(0.95),
+        "normal_false_removal_upper_bound_95": normal_upper_bound,
         "hard_false_removal_count": hard_false,
-        "hard_false_removal_upper_bound_95": hard_gate.upper_bound(0.95),
-        "normal_qualified": behavior_exact and protected_complete and normal_gate.passes(0.95),
-        "hard_qualified": behavior_exact and protected_complete and hard_gate.passes(0.95),
+        "hard_false_removal_upper_bound_95": hard_upper_bound,
+        "normal_qualified": behavior_exact and protected_complete and normal_gate_passed,
+        "hard_qualified": behavior_exact and protected_complete and hard_gate_passed,
         "runtime_activation_mutated": False,
         "benchmark_outcomes_read": False,
         "utility_read": False,
@@ -112,7 +128,9 @@ def build_qualification_report(
     return report
 
 
-def _jsonl(path: Path) -> list[dict[str, object]]:
+def load_observation_jsonl(path: Path) -> list[dict[str, object]]:
+    if not path.exists():
+        return []
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
 
@@ -122,7 +140,10 @@ def main() -> int:
     parser.add_argument("--protected", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    report = build_qualification_report(_jsonl(args.behavior), _jsonl(args.protected))
+    report = build_qualification_report(
+        load_observation_jsonl(args.behavior),
+        load_observation_jsonl(args.protected),
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"normal_qualified": report["normal_qualified"], "hard_qualified": report["hard_qualified"]}))

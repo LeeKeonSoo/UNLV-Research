@@ -41,6 +41,7 @@ def test_registry_parses_complete_core_metric_policy_method_lineage() -> None:
     )
     assert tuple(item.path for item in teacher_panel.evidence) == (
         "configs/quality_teacher_panel_v1.json",
+        "validation/frozen_contracts/quality_teacher_behavior_gate_v2.json",
     )
 
 

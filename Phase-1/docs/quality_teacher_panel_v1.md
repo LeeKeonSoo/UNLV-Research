@@ -97,3 +97,10 @@ The first eight Q1 behavior fixtures also completed under the v2 observation
 contract: all eight used declared-verifier precedence, all passed, and no model
 generation occurred. Precedence-free v1 diagnostic observations are excluded,
 and the resumable runner rejects any observation schema other than v2.
+
+The full behavior gate was stopped at 143/512 tasks after two Q2 Code PASS
+fixtures resolved to `abstain`, making the preregistered 512/512 exact criterion
+unreachable. Q1 had completed 128/128 exactly. The protected run was not
+started because behavior exactness is a prerequisite. This panel is therefore
+not qualified for Normal or Hard, and the negative result is frozen at
+`validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`.
