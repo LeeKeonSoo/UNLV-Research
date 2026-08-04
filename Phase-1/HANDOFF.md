@@ -63,7 +63,16 @@ The common hosted/local adapter, strict response parser, one schema-only retry,
 blinded second pass, and Q1-Q4 independent fail-gate aggregation are now
 implemented. Reason codes come from a closed Policy-specific vocabulary.
 Hosted transport retries are disabled, unavailable teachers produce an audited
-`abstain`, and the local teacher loaded in about 11.2 GiB observed VRAM.
+`abstain`, and the local teacher loaded in about 11.2 GiB observed VRAM. The
+local backend is now lazy-loaded, so verifier-resolved Q1 tasks do not allocate
+the 9B model.
+
+Q1 has a deterministic evidence precedence rule. When a typed declared
+verifier supplies a versioned `pass` or `fail` result and evidence hash, that
+result is authoritative and no teacher is called. The panel evaluates Q1 only
+when no declared verifier is available. This prevents probabilistic teachers
+from overruling locally checkable evidence while preserving `abstain` for
+unsupported correctness claims.
 
 Historical endpoint probes showed that the earlier 70B/753B hosted pair could
 exceed 120 seconds per small fixture. The current Gemma/Llama hosted pair was
@@ -84,6 +93,13 @@ implemented. The resumable executor, qualification report, Normal/Hard
 consensus operating points, and Stage-B proposal/Stage-C Coverage-veto bridge
 are also implemented. Full teacher observations are not complete, so runtime
 activation remains false.
+
+The first pre-precedence Q1 diagnostic exposed teachers overruling a trivial
+declared verifier result. Those `quality-teacher-observation-v1` records are
+excluded from qualification. The `v2` runner rejects legacy observation files.
+Its first eight controlled Q1 tasks completed 8/8 `pass` from
+`declared_verifier` with zero model-generation traces. This validates evidence
+precedence and resume isolation, not full Quality promotion.
 
 ## Retired Contrastive Research
 

@@ -51,7 +51,10 @@ curation and are not part of `QualityEvidence(x)`.
 
 ### 2.2 Runtime meaning
 
-Three frozen teacher organizations evaluate each Policy independently. A
+Q1 first consumes typed declared-verifier evidence when available. A versioned
+verifier identity, binary result, and evidence SHA-256 are required; its result
+is authoritative and bypasses teacher generation. Without that evidence, three
+frozen teacher organizations evaluate Q1. Q2-Q4 always use those teachers. A
 first-pass 3-of-3 decision is accepted. A 2-of-3 result is accepted only when a
 blinded second pass preserves the decision and at least two of the same
 teachers. Invalid output and teacher unavailability abstain.
@@ -89,7 +92,8 @@ A Quality rule becomes enabled only after all of the following pass:
 7. benchmark-disjoint external evaluation of the frozen curation result.
 
 The current implementation provides the complete measurement and qualification
-path, but runtime activation remains blocked until the observations pass.
+path, including observation-schema isolation and Q1 verifier precedence, but
+runtime activation remains blocked until the complete observations pass.
 
 ## 3. Coverage
 

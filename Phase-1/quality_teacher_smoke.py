@@ -16,7 +16,7 @@ from quality_teacher_adapters import (
     NvidiaBuildBackend,
     TeacherModelAdapter,
 )
-from quality_teacher_local import QwenLocalBackend
+from quality_teacher_local import LazyQwenLocalBackend
 from quality_teacher_panel import (
     QualityPolicy,
     TeacherLocation,
@@ -96,7 +96,7 @@ def _build_adapters(
     panel: TeacherPanel,
     local_model_path: Path,
 ) -> Mapping[str, AuditedAdapter]:
-    local_backend: QwenLocalBackend | None = None
+    local_backend: LazyQwenLocalBackend | None = None
     adapters: dict[str, AuditedAdapter] = {}
     for teacher in panel.teachers:
         match teacher.location:
@@ -121,7 +121,7 @@ def _build_adapters(
                 )
             case TeacherLocation.LOCAL:
                 if local_backend is None:
-                    local_backend = QwenLocalBackend(local_model_path)
+                    local_backend = LazyQwenLocalBackend(local_model_path)
                 backend = local_backend
             case unreachable:
                 assert_never(unreachable)

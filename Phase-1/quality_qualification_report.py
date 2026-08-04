@@ -22,6 +22,8 @@ def _unique_by_task(records: Iterable[dict[str, object]]) -> dict[str, dict[str,
 
 
 def _first_pass_unanimous_fail(record: dict[str, object]) -> bool:
+    if record.get("decision_source") == "declared_verifier":
+        return record.get("panel_decision") == "fail"
     votes = record.get("first_pass", [])
     return (
         isinstance(votes, list)

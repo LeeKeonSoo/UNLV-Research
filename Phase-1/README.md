@@ -77,6 +77,12 @@ false-removal report, and Normal/Hard staged-policy bridge are implemented.
 The bridge remains inactive until the full observations pass and Stage C
 Coverage evidence can veto support loss.
 
+Q1 uses typed declared-verifier evidence before model judgment. A declared
+verifier result bypasses teacher generation; the panel is used only when that
+evidence is absent. Qualification observations use the incompatible-with-v1
+`quality-teacher-observation-v2` contract so pre-fix diagnostics cannot be
+resumed into promotion evidence.
+
 The previous loss-gap Quality experiment is retired and preserved only under
 `archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.
 

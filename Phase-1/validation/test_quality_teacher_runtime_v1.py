@@ -11,6 +11,7 @@ if str(ROOT) not in sys.path:
 
 from quality_teacher_panel import PanelDecision, load_teacher_panel
 from quality_teacher_runtime import (
+    DeclaredVerifierEvidence,
     EvaluationUnit,
     TeacherGenerationUnavailable,
     TeacherGenerationRequest,
@@ -123,6 +124,35 @@ def test_teacher_runtime_abstains_when_generation_is_unavailable() -> None:
     # Then: the teacher abstains without terminating the whole panel.
     assert vote.decision.value == "abstain"
     assert vote.reason_codes == ("teacher_generation_unavailable",)
+
+
+def test_q1_declared_verifier_precedes_teacher_opinion() -> None:
+    # Given: a frozen local verifier has already established the observable result.
+    panel = load_teacher_panel(CONFIG)
+    unit = _unit().model_copy(
+        update={
+            "declared_verifier": DeclaredVerifierEvidence(
+                verifier_id="integer-addition-v1",
+                status="pass",
+                evidence_sha256="a" * 64,
+            )
+        }
+    )
+    adapters = {
+        teacher.teacher_id: ScriptedAdapter(
+            ('{"decision":"fail","reason_codes":["locally_checkable_incorrect_result"]}',)
+        )
+        for teacher in panel.teachers
+    }
+
+    # When: Q1 is evaluated.
+    result = evaluate_panel_policy(panel, adapters, panel.policies[0], unit)
+
+    # Then: the deterministic verifier passes without asking an LLM to overrule it.
+    assert result.decision is PanelDecision.PASS
+    assert result.decision_source == "declared_verifier"
+    assert result.reason_codes == ("observable_correctness_evidence",)
+    assert all(adapter.requests == [] for adapter in adapters.values())
 
 
 def test_panel_runtime_repeats_nonunanimous_majority_blinded() -> None:
@@ -244,6 +274,7 @@ if __name__ == "__main__":
     test_teacher_runtime_retries_schema_once_without_changing_policy()
     test_teacher_runtime_abstains_after_two_invalid_responses()
     test_teacher_runtime_abstains_when_generation_is_unavailable()
+    test_q1_declared_verifier_precedes_teacher_opinion()
     test_panel_runtime_repeats_nonunanimous_majority_blinded()
     test_panel_runtime_repeats_majority_with_one_abstention()
     test_quality_runtime_evaluates_q1_to_q4_as_independent_gates()

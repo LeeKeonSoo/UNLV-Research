@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Mapping, TypeVar
+from threading import Lock
+from typing import Callable, Mapping, TypeVar
 
-from quality_teacher_adapters import CompletionRequest, TeacherAdapterContractError
+from quality_teacher_adapters import (
+    CompletionBackend,
+    CompletionRequest,
+    TeacherAdapterContractError,
+)
 
 
 InputIds = TypeVar("InputIds")
@@ -75,3 +80,27 @@ class QwenLocalBackend:
                 detail="local model returned no textual completion",
             )
         return content
+
+
+class LazyQwenLocalBackend:
+    """Loads the frozen local teacher only when a request requires generation."""
+
+    def __init__(
+        self,
+        model_path: Path,
+        backend_factory: Callable[[Path], CompletionBackend] | None = None,
+    ) -> None:
+        self._model_path = model_path
+        self._backend_factory = backend_factory or QwenLocalBackend
+        self._backend: CompletionBackend | None = None
+        self._lock = Lock()
+
+    def complete(self, request: CompletionRequest) -> str:
+        backend = self._backend
+        if backend is None:
+            with self._lock:
+                backend = self._backend
+                if backend is None:
+                    backend = self._backend_factory(self._model_path)
+                    self._backend = backend
+        return backend.complete(request)

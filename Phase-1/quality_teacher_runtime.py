@@ -32,6 +32,14 @@ class TeacherGenerationUnavailable(RuntimeError):
         return f"Teacher generation unavailable for {self.teacher_id}: {self.reason}"
 
 
+class DeclaredVerifierEvidence(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    verifier_id: str = Field(min_length=1)
+    status: Literal["pass", "fail"]
+    evidence_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class EvaluationUnit(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -39,6 +47,7 @@ class EvaluationUnit(BaseModel):
     text: str = Field(min_length=1)
     declared_context: str | None = None
     attached_evidence: tuple[str, ...]
+    declared_verifier: DeclaredVerifierEvidence | None = None
 
 
 class TeacherGenerationRequest(BaseModel):
@@ -73,6 +82,8 @@ class PanelPolicyResult:
     decision: PanelDecision
     first_pass: tuple[TeacherVote, ...]
     second_pass: tuple[TeacherVote, ...] | None
+    decision_source: Literal["teacher_panel", "declared_verifier"] = "teacher_panel"
+    reason_codes: tuple[str, ...] = ()
 
 
 def _request(
@@ -187,6 +198,18 @@ def evaluate_panel_policy(
     policy: QualityPolicy,
     unit: EvaluationUnit,
 ) -> PanelPolicyResult:
+    if policy.policy_id == "q1_correctness_evidence" and unit.declared_verifier is not None:
+        passed = unit.declared_verifier.status == "pass"
+        return PanelPolicyResult(
+            policy_id=policy.policy_id,
+            decision=PanelDecision.PASS if passed else PanelDecision.FAIL,
+            first_pass=(),
+            second_pass=None,
+            decision_source="declared_verifier",
+            reason_codes=(
+                "observable_correctness_evidence" if passed else "declared_verifier_failed",
+            ),
+        )
     first_pass = _run_pass(
         panel,
         adapters,

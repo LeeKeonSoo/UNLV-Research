@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
-from quality_teacher_runtime import EvaluationUnit
+from quality_teacher_runtime import DeclaredVerifierEvidence, EvaluationUnit
 
 
 POLICY_IDS = (
@@ -147,6 +148,19 @@ def _behavior_payload(
     return _abstain_payload(route, index)
 
 
+def _verifier(
+    fixture_id: str,
+    status: Literal["pass", "fail"],
+    evidence: tuple[str, ...],
+) -> DeclaredVerifierEvidence:
+    payload = "\n".join((fixture_id, status, *evidence)).encode("utf-8")
+    return DeclaredVerifierEvidence(
+        verifier_id="controlled-local-verifier-v1",
+        status=status,
+        evidence_sha256=hashlib.sha256(payload).hexdigest(),
+    )
+
+
 def build_behavior_fixture_matrix(samples_per_cell: int = 8) -> tuple[BehaviorFixture, ...]:
     fixtures: list[BehaviorFixture] = []
     for policy_id in POLICY_IDS:
@@ -156,6 +170,11 @@ def build_behavior_fixture_matrix(samples_per_cell: int = 8) -> tuple[BehaviorFi
                     fixture_id = f"{policy_id}-{route}-{fixture_class.value}-{index:03d}"
                     text, evidence = _behavior_payload(policy_id, route, fixture_class, index)
                     expected = "pass" if fixture_class is FixtureClass.PROTECTED_PASS else fixture_class.value
+                    verifier = (
+                        _verifier(fixture_id, expected, evidence)
+                        if policy_id == "q1_correctness_evidence" and expected in {"pass", "fail"}
+                        else None
+                    )
                     reason_map = (
                         _PASS_REASONS
                         if expected == "pass"
@@ -175,6 +194,7 @@ def build_behavior_fixture_matrix(samples_per_cell: int = 8) -> tuple[BehaviorFi
                                 text=text,
                                 declared_context=f"English {route} controlled fixture.",
                                 attached_evidence=evidence,
+                                declared_verifier=verifier,
                             ),
                         )
                     )
@@ -198,6 +218,7 @@ def build_protected_fixture_set(samples_per_route: int = 200) -> tuple[Protected
                         text=text,
                         declared_context=f"English {route} protected controlled fixture.",
                         attached_evidence=evidence,
+                        declared_verifier=_verifier(fixture_id, "pass", evidence),
                     ),
                 )
             )

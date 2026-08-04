@@ -34,6 +34,13 @@ Each policy returns `pass`, `fail`, or `abstain`. Missing external knowledge,
 undeclared execution assumptions, uncertain specialized notation, and possible
 missing context must produce `abstain`.
 
+Q1 first consumes a typed declared-verifier result when one is present. The
+verifier identity, binary status, and evidence SHA-256 are required. A declared
+`pass` or `fail` is authoritative and bypasses all teacher generation; teachers
+evaluate Q1 only when no declared verifier is attached. Q2-Q4 always follow the
+panel path. A verifier result is evidence for Q1 only and cannot bypass another
+Policy.
+
 ## Response and consensus contract
 
 Each teacher must return one JSON object with a decision enum and a non-empty
@@ -85,3 +92,8 @@ hosted endpoint is
 `https://integrate.api.nvidia.com/v1`; model IDs and raw-response hashes are
 recorded because a hosted endpoint does not expose immutable weight artifacts
 like the local Hugging Face revision.
+
+The first eight Q1 behavior fixtures also completed under the v2 observation
+contract: all eight used declared-verifier precedence, all passed, and no model
+generation occurred. Precedence-free v1 diagnostic observations are excluded,
+and the resumable runner rejects any observation schema other than v2.

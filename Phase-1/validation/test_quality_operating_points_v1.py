@@ -65,7 +65,22 @@ def test_abstention_and_coverage_veto_retain() -> None:
     assert vetoed.reason_code == "coverage_veto_retain"
 
 
+def test_declared_verifier_fail_is_strong_in_both_modes() -> None:
+    verified = PanelPolicyResult(
+        "q1_correctness_evidence",
+        PanelDecision.FAIL,
+        (),
+        None,
+        decision_source="declared_verifier",
+        reason_codes=("declared_verifier_failed",),
+    )
+
+    assert decide_quality_action((verified,), CurationMode.NORMAL, False).action is QualityAction.REMOVE
+    assert decide_quality_action((verified,), CurationMode.HARD, False).action is QualityAction.REMOVE
+
+
 if __name__ == "__main__":
     test_normal_requires_first_pass_unanimous_fail()
     test_abstention_and_coverage_veto_retain()
+    test_declared_verifier_fail_is_strong_in_both_modes()
     print("[quality-operating-points-v1] Normal/Hard consensus strength and Coverage veto: pass")

@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 
 from quality_teacher_adapters import (
     CompletionRequest,
+    StructuredResponseFormat,
     TeacherAdapterContractError,
     TeacherModelAdapter,
     build_teacher_messages,
@@ -19,7 +20,7 @@ from quality_teacher_adapters import (
 )
 from quality_teacher_panel import load_teacher_panel
 from quality_teacher_runtime import EvaluationUnit, TeacherGenerationRequest
-from quality_teacher_local import extract_chat_input_ids
+from quality_teacher_local import LazyQwenLocalBackend, extract_chat_input_ids
 
 
 CONFIG = ROOT / "configs" / "quality_teacher_panel_v1.json"
@@ -145,10 +146,41 @@ def test_stream_collector_ignores_empty_transport_events() -> None:
     assert collect_stream_content(chunks) == '{"decision":"pass"}'
 
 
+def test_local_backend_is_loaded_only_on_first_generation() -> None:
+    created: list[Path] = []
+
+    class FakeLocalBackend:
+        def __init__(self, path: Path) -> None:
+            created.append(path)
+
+        def complete(self, request: CompletionRequest) -> str:
+            return "ready"
+
+    path = Path("frozen-local-model")
+    backend = LazyQwenLocalBackend(path, backend_factory=FakeLocalBackend)
+    assert created == []
+    request = CompletionRequest(
+        model_id="local",
+        messages=build_teacher_messages(
+            _request(teacher_id="teacher-a", model_id="local", schema_retry=False)
+        ),
+        maximum_new_tokens=8,
+        response_format=StructuredResponseFormat(
+            type="json_object",
+            allowed_reason_codes=("observable_correctness_evidence",),
+        ),
+    )
+
+    assert backend.complete(request) == "ready"
+    assert backend.complete(request) == "ready"
+    assert created == [path]
+
+
 if __name__ == "__main__":
     test_prompt_builder_emits_machine_readable_policy_and_schema_contract()
     test_teacher_model_adapter_routes_frozen_model_and_returns_raw_response()
     test_teacher_model_adapter_rejects_cross_teacher_dispatch()
     test_local_chat_template_extracts_input_ids_from_batch_encoding()
     test_stream_collector_ignores_empty_transport_events()
+    test_local_backend_is_loaded_only_on_first_generation()
     print("[quality-teacher-adapters-v1] prompt and model routing contract: pass")

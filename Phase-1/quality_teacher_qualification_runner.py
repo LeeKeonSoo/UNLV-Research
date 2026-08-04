@@ -4,7 +4,7 @@ import argparse
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Mapping
+from typing import Final, Literal, Mapping
 
 from dotenv import load_dotenv
 
@@ -20,6 +20,21 @@ from quality_teacher_runtime import (
     TeacherAdapter,
     evaluate_panel_policy,
 )
+
+
+OBSERVATION_SCHEMA_VERSION: Final = "quality-teacher-observation-v2"
+
+
+@dataclass(frozen=True, slots=True)
+class IncompatibleObservationError(RuntimeError):
+    path: Path
+    observed_schema: str
+
+    def __str__(self) -> str:
+        return (
+            f"Qualification output {self.path} uses {self.observed_schema!r}; "
+            f"expected {OBSERVATION_SCHEMA_VERSION!r}"
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,7 +132,7 @@ def run_tasks(
         result = evaluate_panel_policy(panel, adapters, _policy(panel, task.policy_id), task.unit)
         records.append(
             {
-                "schema_version": "quality-teacher-observation-v1",
+                "schema_version": OBSERVATION_SCHEMA_VERSION,
                 "task_id": task.task_id,
                 "fixture_id": task.fixture_id,
                 "policy_id": task.policy_id,
@@ -125,6 +140,8 @@ def run_tasks(
                 "fixture_class": task.fixture_class,
                 "expected_decision": task.expected_decision,
                 "panel_decision": result.decision.value,
+                "decision_source": result.decision_source,
+                "decision_reason_codes": list(result.reason_codes),
                 "first_pass": _votes(result, "first"),
                 "second_pass": _votes(result, "second"),
                 "generation_traces": _new_traces(adapters, offsets),
@@ -133,14 +150,19 @@ def run_tasks(
     return records
 
 
-def _completed(path: Path) -> set[str]:
+def load_completed_task_ids(path: Path) -> set[str]:
     if not path.exists():
         return set()
-    return {
-        json.loads(line)["task_id"]
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    }
+    completed: set[str] = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        record = json.loads(line)
+        observed_schema = str(record.get("schema_version", "missing"))
+        if observed_schema != OBSERVATION_SCHEMA_VERSION:
+            raise IncompatibleObservationError(path=path, observed_schema=observed_schema)
+        completed.add(str(record["task_id"]))
+    return completed
 
 
 def main() -> int:
@@ -163,7 +185,12 @@ def main() -> int:
     if args.limit is not None:
         tasks = tasks[: args.limit]
     adapters = _build_adapters(panel, args.local_model_path)
-    records = run_tasks(panel, adapters, tasks, completed_task_ids=_completed(args.output))
+    records = run_tasks(
+        panel,
+        adapters,
+        tasks,
+        completed_task_ids=load_completed_task_ids(args.output),
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("a", encoding="utf-8", newline="\n") as handle:
         for record in records:

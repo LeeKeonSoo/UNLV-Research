@@ -25,6 +25,8 @@ class QualityActionDecision:
 
 
 def _is_unanimous_first_pass_fail(result: PanelPolicyResult) -> bool:
+    if result.decision_source == "declared_verifier":
+        return result.decision is PanelDecision.FAIL
     return (
         result.decision is PanelDecision.FAIL
         and len(result.first_pass) == 3
