@@ -4,11 +4,11 @@
   "framework_manifest_path": "configs/curation_framework_v1.json",
   "framework_manifest_sha256": "6bb8e1294e28ed6df7961ff139518da271a78a9f4b2d234851ba59d8c49cfcbb",
   "object_registry_path": "configs/framework_objects_v1.json",
-  "object_registry_sha256": "2cb2eca65dd642dbd110f1a18c1eceb57a7bab563fd2a40a60f04beca02bbf45",
+  "object_registry_sha256": "efc846f7aa4965ba9b8f8ba69edcbede27f6f77cd650edf2b296277072a527a3",
   "profile_registry_path": "configs/framework_profiles_v1.json",
-  "profile_registry_sha256": "4d533e84cfe8a4296989806a85f8a69dd6ef0933bbd7ec686f7c16c5f444ab7c",
+  "profile_registry_sha256": "93d33915bc8f1d37df715f1b100866432cf21cd90b56f8a3397001f099acc4bf",
   "legacy_kernel_path": "run_curation.py",
-  "legacy_kernel_sha256": "8975606b642ec716237c125c8bfa511dd1f24aa614e32552891537ae96d7b02f",
+  "legacy_kernel_sha256": "a3e63ee05229ab73c5c0cbf2c75be33d0d77b209b15d2aeb3ecae4334b400049",
   "legacy_policy_mappings": [
     {
       "legacy_policy_id": "stage_c_symmetric_near_duplicate",

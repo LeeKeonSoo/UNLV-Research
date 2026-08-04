@@ -5,10 +5,17 @@
   "execution_scope": "confirmatory",
   "input": {"candidate_files": ["D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl"], "text_fields": ["text"], "defaults": {}},
   "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
-  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/hard_confirmatory_7m_v1/hard_curation",
-  "stage_a": {"policy": "text_only_v2"},
+  "output_dir": "D:/UNLV-Research/final_framework_test_v1/hard_curation_v2",
   "stage_b": {"max_chunk_chars": 6000, "minimum_chunk_chars": 40},
-  "stage_c_selection": {"near_duplicate_compaction": {"candidate_enabled": false, "shingle_size": 5, "minimum_lexical_tokens": 40, "symmetric_overlap_threshold": 0.95}, "structural_artifact_rules": {"explicit_generated_artifact": true, "license_comment_only_chunk": true, "empty_html_shell": true, "web_chrome_only_chunk": true}},
-  "stage_c": {"no_binding_budget_action": "selection_without_binding_budget"},
-  "claim_boundary": "Confirmatory-only Hard curation on the audited Raw input; Hard remains unavailable for production curation until external results are frozen."
+  "stage_c": {
+    "minimum_residual_chars": 40,
+    "no_binding_budget_action": "selection_without_binding_budget",
+    "semantic_coverage": {
+      "provider_registry_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/Phase-1/configs/model_provider_registry_v1.json",
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "corpus_path": "D:/UNLV-Research/final_framework_test_v1/semantic_coverage/hard/corpus.jsonl",
+      "graph_path": "D:/UNLV-Research/final_framework_test_v1/semantic_coverage/hard/semantic_coverage_graph.json"
+    }
+  },
+  "claim_boundary": "Confirmatory Hard framework materialization only; semantic Coverage remains a runtime experiment and external evaluation is not a runtime input."
 }

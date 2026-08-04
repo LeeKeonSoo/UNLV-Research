@@ -45,10 +45,11 @@ domain quotas, a target retention fraction, or a maximum token budget.
 - Coverage is a non-deleting materialization veto. A veto emits typed
   `required_retain_uids`, performs explicit rematerialization, and reruns the
   complete Coverage contract; silent restore is forbidden.
-- Semantic Coverage v3 is implemented as a candidate using independent Qwen3
-  Embedding and BGE-M3 views plus route, script, format, and Redundancy-family
-  strata. Provider disagreement and uncertainty retain. Both providers remain
-  audit-only until empirical promotion gates pass.
+- Semantic Coverage v3 uses reciprocal-neighbor support shared by independent
+  Qwen3-Embedding-0.6B and BGE-M3 graphs plus route, script, format, and
+  Redundancy-family strata. Qwen is a development/confirmatory runtime
+  experiment and BGE-M3 is the independent audit view. Neither is
+  scientifically promoted.
 - Normal and Hard use identical Coverage invariants. Stage-B Redundancy or
   Quality proposals are the only source of mode strength.
 - Raw-to-Curated route and language/script composition files are explanation
@@ -56,6 +57,26 @@ domain quotas, a target retention fraction, or a maximum token budget.
 - The redesigned Normal and Hard profiles remain release-disabled.
 - Implementation integrity passes, while scientific release remains blocked
   by unpromoted Policies and missing operating-point calibration.
+
+## Final Code Candidate Snapshot
+
+The final candidate paths are under
+`D:/UNLV-Research/final_framework_test_v1/`. Normal and Hard each receive the
+same 8,024 Stage-B chunks and 40 removal proposals. Stage C restores 15 support
+representatives and emits 7,999 chunks. Normal has a 2,571,572 whitespace-token
+proxy; Hard has 2,461,632 after span compaction. Exact Qwen3-4B stream-token
+counts are 6,984,438 Raw, 6,961,249 Normal, and 6,747,888 Hard. Packed totals
+are 6,979,584, 6,946,816, and 6,733,824. The authoritative report is
+`training_inputs_v2/training_inputs_report.json`.
+
+The mixed 768-record Code/Math/General semantic audit passes its implementation
+gate but not scientific promotion. Mean provider-neighbor Jaccard is 0.2178;
+this supports fail-closed local consensus, not a domain-general semantic
+taxonomy claim.
+
+`final_experiment_preflight_v1.json` reports framework materialization ready
+and external confirmatory ready. Paper-claim and production-release readiness
+remain false because Policy and Coverage scientific promotion gates are open.
 
 ## Quality Ranker Decision
 
@@ -218,5 +239,5 @@ python validation\test_active_surface.py
 Generated datasets, model caches, raw API responses containing corpus text,
 benchmark outputs, and local work directories must remain untracked.
 
-The current direct validation surface contains 159 scripts and passed 159/159
-after the Semantic Coverage v3 implementation and multilingual routing update.
+Do not copy a historical test-count claim into a paper or handoff. Run the
+current active and targeted validation commands and record their dated output.

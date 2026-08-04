@@ -28,14 +28,14 @@ def test_reason_code_impact_audit_reports_stage_specific_record_chunk_and_token_
                 "stage_b_hard_gate_reasons": ["normalized_exact_duplicate"],
             }
         ],
-        stage_c_not_selected=[
+        stage_b_not_selected=[
             {
                 "stage_a_record_id": "c1",
                 "token_proxy": 5,
-                "stage_c_selection": {"removed_reason": "near_duplicate_representative_retained"},
+                "stage_b_policy": {"removed_reason": "near_duplicate_representative_retained"},
             }
         ],
-        stage_c_transformations=[
+        stage_b_transformations=[
             {
                 "chunk_uid": "c2",
                 "reason_code": "repeated_exact_template_span_removed",
@@ -60,12 +60,12 @@ def test_reason_code_impact_audit_reports_stage_specific_record_chunk_and_token_
         "token_proxy": 3,
     }
     assert report["stages"]["stage_b_rejection"]["reasons"]["normalized_exact_duplicate"]["token_proxy"] == 7
-    assert report["stages"]["stage_c_compaction"]["reasons"]["near_duplicate_representative_retained"]["records"] == 1
-    assert report["stages"]["stage_c_span_transformation"]["reasons"]["repeated_exact_template_span_removed"] == {
+    assert report["stages"]["stage_b_policy_removal"]["reasons"]["near_duplicate_representative_retained"]["records"] == 1
+    assert report["stages"]["stage_b_span_transformation"]["reasons"]["repeated_exact_template_span_removed"] == {
         "chunks": 1,
         "token_proxy_removed": 12,
     }
-    assert report["stages"]["stage_c_span_transformation"]["reasons"]["inline_license_header_removed"] == {
+    assert report["stages"]["stage_b_span_transformation"]["reasons"]["inline_license_header_removed"] == {
         "chunks": 1,
         "token_proxy_removed": 10,
     }

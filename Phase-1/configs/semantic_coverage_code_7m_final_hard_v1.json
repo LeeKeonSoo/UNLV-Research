@@ -1,0 +1,35 @@
+{
+  "schema_version": "semantic-coverage-corpus-run-v1",
+  "status": "frozen_before_embedding",
+  "sources": [{
+    "path": "D:/UNLV-Research/final_framework_test_v1/hard_precoverage/stage_b_pass_chunks.jsonl",
+    "text_fields": ["text"],
+    "max_records": null
+  }],
+  "output_root": "D:/UNLV-Research/final_framework_test_v1/semantic_coverage/hard",
+  "cache_dir": "D:/UNLV-Research/hf_cache",
+  "provider_registry": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/Phase-1/configs/model_provider_registry_v1.json",
+  "providers": {
+    "primary": {
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "pooling": "last_token",
+      "max_length": 2048,
+      "batch_size": 4,
+      "device": "cuda:0",
+      "append_eos": false,
+      "model_path": "D:/UNLV-Research/models/Qwen3-Embedding-0.6B"
+    },
+    "audit": {
+      "provider_id": "bge-m3-semantic-audit-candidate",
+      "pooling": "cls",
+      "max_length": 2048,
+      "batch_size": 1,
+      "device": "cuda:1",
+      "append_eos": false,
+      "model_path": null
+    }
+  },
+  "neighbor_count": 8,
+  "block_size": 512,
+  "graph_device": "cuda:0"
+}

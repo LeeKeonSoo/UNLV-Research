@@ -28,6 +28,6 @@
       "text": "A controlled experiment records its assumptions, measurements, and uncertainty before drawing a conclusion from the observed evidence."
     }
   ],
-  "expected_curated_projection_sha256": "ec5dd525ea30fd3ec2bb520f82ca9af8f18226f0cab9d0117e3d1a4c628084a9",
+  "expected_curated_projection_sha256": "3eefc2e0eaf1de2149e1876960337d4fae3e3f99e578e3fdc32676a4613b1b46",
   "claim_boundary": "Block 8 validates implementation integrity and frozen fixture behavior only; it does not promote candidate policies or establish downstream effectiveness."
 }

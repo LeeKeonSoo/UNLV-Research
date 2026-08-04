@@ -16,7 +16,7 @@ def main() -> int:
     mode = resolve_curation_mode("hard", execution_scope="confirmatory")
     assert mode["mode"] == "hard"
     assert mode["profile_id"] == "hard_structural_v1"
-    assert mode["authorization"] == "confirmatory_only_pending_external_decision"
+    assert mode["authorization"] == "confirmatory_candidate_release_blocked"
     assert mode["effective_policy_sha256"]
     try:
         resolve_curation_mode("hard", execution_scope="production")

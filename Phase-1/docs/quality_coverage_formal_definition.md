@@ -124,19 +124,21 @@ Coverage is evaluated over multiple nonexclusive views of `V`:
 - redundancy families defined by the active exact or symmetric policy;
 - content-route labels with `unknown` retained as a valid label;
 - language/script, format, and structural-family labels;
-- semantic strata built only from agreement between a frozen primary embedding
-  provider and an independently frozen audit provider;
+- semantic support strata built from reciprocal-neighbor evidence shared by a
+  frozen primary embedding provider and an independently frozen audit provider;
 - transformed chunks and their residual payload links.
 
 Source identity is an optional audit dimension, not a selection axis. Rare does
 not imply useful, and common does not imply removable.
 
-The v3 candidate uses mutual-kNN graphs from both providers. A non-singleton
-connected component is stable only when both providers produce the identical
-member set. Provider disagreement, singletons, unknown routing, and unstable
-tags enter an uncertainty stratum that retains by default. Embedding similarity
-alone never authorizes deletion. Normal and Hard use exactly the same Coverage
-invariants; their difference remains limited to Stage-B removal proposals.
+The v3 candidate uses mutual-kNN graphs from both providers. Shared reciprocal
+edges form stable local support groups; provider-specific neighborhoods form
+overlapping uncertainty groups. Stage C restores a deterministic representative
+only when a group would otherwise be extinct. Singletons, unknown routing, and
+unsupported tags remain explicitly represented. Embedding similarity alone
+never authorizes deletion. Normal and Hard use exactly the same Coverage
+invariants; their difference remains limited to Stage-B removal proposals and
+span transformations.
 
 ### 3.3 Mandatory runtime invariants
 
@@ -215,8 +217,10 @@ unknown handling, confidence interval, false-positive fixtures, and development
 ablation are frozen. The implemented semantic v3 candidate is limited to
 representative linkage, provider-agreed stable strata, zero-survivor
 explanation, and residual-payload integrity. Its model providers remain
-audit-only until multilingual stability, provider-bias, false-veto, extinction
-recall, and corpus-scale ANN gates pass.
+unpromoted until protected false-veto and independent multilingual and
+multidomain confirmatory gates pass. The current primary provider is a
+development/confirmatory runtime experiment and the second provider remains an
+audit view.
 
 ### 3.5 Boundary with the other Cores
 

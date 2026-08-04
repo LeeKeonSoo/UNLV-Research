@@ -1,228 +1,102 @@
 {
-  "schema_version": "curation-contract-v1",
-  "status": "active_operational_boundary",
-  "purpose": "Define the curation engine independently from external research evaluation.",
-  "quality_coverage_definition": "docs/quality_coverage_formal_definition.md",
+  "schema_version": "curation-contract-v2",
+  "status": "runtime_alignment_in_progress_release_blocked",
+  "purpose": "Define the dataset-in to curated-dataset-out framework boundary without external evaluation feedback.",
+  "framework_root": "configs/curation_framework_v1.json",
+  "canonical_cores": ["validity", "redundancy", "quality", "coverage"],
   "curation_engine": {
-    "included_stages": [
-      "Stage A",
-      "Stage B",
-      "Stage C"
-    ],
+    "included_stages": ["Stage A", "Stage B", "Stage C"],
     "curated_output": "full_reason_coded_curated_pool",
-    "completion_rule": "A curation run is complete after Stage C selects and materializes its declared output with an audit trail.",
-    "safety_boundary": "Stage A applies text normalization and text-integrity handling; optional source, rights, and hazard signals are audit-only in the active profile. Stage B applies chunk-level hard gates; Stage C applies only declared reason-coded text-structural compaction, never a target retention fraction or weighted priority score.",
-    "active_policy_profile": "normal_structural_v1",
-    "user_facing_modes": {"active": ["normal"], "development_only": ["hard"], "blocked_for_production": ["hard"]},
-    "policy_profile_contract": "configs/policy_profiles.json",
-    "policy_card_contract": "configs/policy_card_contract.json"
+    "completion_rule": "A run completes only after Stage-C Coverage evaluates Stage-B removal proposals and final materialization passes a complete recheck.",
+    "public_modes": ["normal", "hard"],
+    "release_enabled_modes": [],
+    "fixed_retention_fraction_allowed": false,
+    "maximum_token_budget_allowed": false
   },
   "runtime_forbidden_inputs": [
     "intrinsic_quality_score",
+    "weighted_quality_score",
     "human_quality_label",
+    "unversioned_human_quality_judgment",
     "Utility",
     "NLL",
     "benchmark_outcomes",
     "target_retention_fraction",
+    "maximum_token_budget",
+    "source_reputation",
     "source_pool_role",
     "source_tier",
+    "domain_quota",
+    "target_domain_distribution",
     "composition"
   ],
   "stage_a": {
-    "role": "source_agnostic_text_normalization_and_integrity_handling",
-    "forbids_utility_and_benchmark_inputs": true,
-    "forbids_quality_judgment": true,
-    "source_rights_and_hazards_are_audit_only_when_supplied": true,
-    "language_specific_candidate_boundary": "A language-specific parser may create candidate-only validity evidence only for complete sources with a declared compatible language version. It must never infer a language version, source identity, or intrinsic quality, and it cannot remove or select runtime records until its separate promotion gates close."
+    "role": "validity_hard_gate",
+    "core_ids": ["validity"],
+    "allowed_effects": ["normalize_without_payload_change", "quarantine_closed_input_failure"],
+    "required_trace": ["unit_id", "reason_code", "observable_evidence", "action"],
+    "uncertainty_action": "retain_or_quarantine_without_quality_claim"
   },
   "stage_b": {
-    "role": "chunk_level_hard_gate",
-    "forbids_utility_and_benchmark_inputs": true,
-    "forbids_quality_judgment": true
-  },
-  "stage_c": {
-    "role": "reason_coded_redundancy_and_quality_retention_without_implicit_budget",
+    "role": "redundancy_and_quality_removal_proposals",
+    "core_ids": ["redundancy", "quality"],
     "implemented_decisions": [
-      "redundancy_compaction",
-      "quality_retention_eligibility",
-      "reason_coded_materialization"
+      "stable_family_nonrepresentative_proposal",
+      "promoted_typed_quality_policy_proposal",
+      "reason_coded_abstain_retain"
     ],
-    "candidate_policies": {
-      "stage_c_inline_license_header_candidate": {
-        "status": "development_runtime_only_pending_n4_ablation",
-        "input": "stage_b_pass_chunks",
-        "execution_order": [
-          "Stage B hard-gate pass",
-          "candidate header materialization",
-          "active Stage C selection"
-        ],
-        "operation": "remove only a prefix comment header with an explicit license marker when a declared residual payload remains",
-        "post_transform_boundary": "retain the transformed chunk only when its residual text still meets the declared payload threshold",
-        "runtime_may_call_candidate": "development_only",
-        "required_trace": [
-          "chunk_uid",
-          "reason_code",
-          "header_sha256",
-          "header_token_proxy",
-          "pre_token_proxy",
-          "post_token_proxy"
-        ],
-        "promotion_gate": "false-positive fixture, reason-code impact audit, preregistered ablation, and frozen external validation"
-      },
-      "stage_c_inline_license_comment_block_candidate": {
-        "status": "development_runtime_only_pending_n4_ablation",
-        "input": "stage_b_pass_chunks",
-        "execution_order": [
-          "Stage B hard-gate pass",
-          "development-only inline comment-block materialization",
-          "active Stage C selection"
-        ],
-        "operation": "remove only a self-contained contiguous comment block with an explicit license marker when a declared residual payload remains",
-        "post_transform_boundary": "retain the transformed chunk only when its residual text still meets the declared Stage-B minimum_residual_chars",
-        "runtime_may_call_candidate": "development_only",
-        "required_trace": [
-          "chunk_uid",
-          "reason_code",
-          "block_sha256",
-          "block_token_proxy",
-          "pre_token_proxy",
-          "post_token_proxy"
-        ],
-        "promotion_gate": "false-positive fixture, reason-code impact audit, preregistered ablation, and frozen external validation"
-      },
-      "stage_c_repeated_span_template_candidate": {
-        "status": "development_runtime_only_pending_n4_ablation",
-        "input": "stage_b_pass_chunks",
-        "execution_order": [
-          "Stage B hard-gate pass",
-          "candidate span materialization",
-          "active Stage C selection"
-        ],
-        "operation": "remove a planned exact repeated paragraph only from a nonrepresentative Stage-B chunk when residual payload remains above the declared threshold",
-        "post_transform_boundary": "retain the transformed chunk only when its residual text still meets the declared payload threshold",
-        "runtime_may_call_candidate": "development_only",
-        "required_trace": [
-          "chunk_uid",
-          "reason_code",
-          "span_sha256",
-          "span_occurrence_index",
-          "representative_chunk_uid",
-          "span_token_proxy",
-          "pre_token_proxy",
-          "post_token_proxy"
-        ],
-        "promotion_gate": "false-positive fixture, reason-code impact audit, preregistered ablation, and frozen external validation"
-      },
-      "stage_c2_model_relative_representative_candidate": {
-        "status": "not_runtime_active",
-        "input": "stage_b_pass_chunks_plus_frozen_proxy_evidence",
-        "execution_order": [
-          "freeze Stage-B pass snapshot",
-          "join separately frozen proxy evidence by chunk_uid",
-          "candidate-only corpus-level representative selection"
-        ],
-        "operation": "remove only a nonrepresentative semantic-family member when frozen evidence jointly establishes high familiarity, low novelty, and low gradient alignment",
-        "runtime_may_call_candidate": false,
-        "required_trace": [
-          "chunk_uid",
-          "reason_code",
-          "representative_chunk_uid",
-          "proxy_manifest_sha256",
-          "semantic_index_fingerprint"
-        ],
-        "forbidden_inputs": [
-          "quality",
-          "human_quality_label",
-          "Utility",
-          "NLL",
-          "benchmark_outcomes",
-          "source_identity",
-          "domain",
-          "target_retention_fraction",
-          "budget"
-        ],
-        "promotion_gate": "false-positive fixture, reason-code impact audit, code-math-general development matrix, preregistered ablation, and frozen confirmatory validation"
-      }
-    },
-    "selection_without_binding_budget": true,
-    "forbids_implicit_fixed_fraction": true,
-    "forbids_utility_and_benchmark_inputs": true,
-    "forbids_intrinsic_quality_score": true,
-    "quality_retention_contract": "quality_retention_deletion_authority_v2",
-    "quality_decision_semantics": {
-      "keep": "reserved for a separately validated positive retention policy",
-      "reject": "active named policy has explicit non-payload evidence",
-      "abstain_retain": "no active rejection policy has sufficient evidence; retain without claiming intrinsic quality"
-    },
-    "quality_reject_required_trace": [
-      "schema_version",
+    "required_trace": [
       "chunk_uid",
-      "policy_scope_route",
-      "routing_precondition",
+      "core_id",
       "policy_id",
       "policy_version",
       "reason_code",
-      "trigger",
       "observed_evidence",
-      "representative_fixture_id",
-      "false_positive_fixture_id",
-      "original_text_sha256",
-      "policy_artifact_sha256",
+      "representative_chunk_uid",
+      "evidence_artifact_sha256",
       "token_delta_proxy"
     ],
-    "quality_reject_fail_closed_rule": "If any required deletion-authority field is absent, empty, invalid, or unversioned, the decision is unrepresentable and cannot remove the chunk.",
-    "allowed_policy_inputs": [
-      "chunk text",
-      "source-record grouping"
-    ]
+    "proposal_is_final_membership": false,
+    "similarity_alone_may_delete": false,
+    "teacher_output_alone_may_delete": false,
+    "uncertainty_action": "retain"
+  },
+  "stage_c": {
+    "role": "coverage_veto_and_final_materialization",
+    "core_ids": ["coverage"],
+    "may_create_new_removal": false,
+    "may_rank_or_impose_quota": false,
+    "allowed_effects": ["accept_stage_b_proposal", "veto_unexplained_support_loss"],
+    "semantic_candidate_contract": "configs/semantic_coverage_v3.json",
+    "required_retain_is_explicit": true,
+    "silent_restore_allowed": false,
+    "complete_recheck_required_after_veto": true,
+    "normal_hard_invariants_identical": true,
+    "uncertainty_semantics": "Semantic uncertainty gives no removal authority; Stage C prevents unexplained support extinction while independently supported Stage-B decisions remain eligible."
   },
   "core_authority": {
     "validity": {
-      "stage": "Stage A/B",
-      "authority": "handle_empty_or_malformed_text_without_source_metadata_requirements",
-      "forbids": [
-        "intrinsic_quality_judgment",
-        "Utility",
-        "benchmark_outcomes"
-      ]
+      "stage": "Stage A",
+      "authority": "quarantine or remove only closed observable input-contract failures"
     },
     "redundancy": {
-      "stage": "Stage B/C",
-      "authority": "retain_one_stable_representative_of_a_symmetric_near_duplicate_family",
-      "forbids": [
-        "quality_threshold",
-        "Utility",
-        "benchmark_outcomes"
-      ]
-    },
-    "coverage": {
-      "stage": "Stage C materialization",
-      "authority": "verify_representative_linkage_and_residual_payload_invariants_and_veto_unexplained_materialization_loss_without_ranking_deletion_or_quota_authority",
-      "forbids": [
-        "record_selection",
-        "record_removal",
-        "quota_based_restoration",
-        "metadata_strata",
-        "target_mix_deletion",
-        "Utility",
-        "benchmark_outcomes"
-      ]
+      "stage": "Stage B",
+      "authority": "propose removal of reproducibly linked nonrepresentative family members"
     },
     "quality": {
+      "stage": "Stage B",
+      "authority": "propose removal or retention only through promoted independent typed Policies"
+    },
+    "coverage": {
       "stage": "Stage C",
-      "authority": "evaluate_retention_eligibility_and_remove_only_explicit_non_payload_artifacts_or_compact_separable_non_payload_spans",
-      "forbids": [
-        "intrinsic_quality_score",
-        "weighted_priority_score",
-        "target_retention_fraction",
-        "Utility",
-        "benchmark_outcomes",
-        "source_identity",
-        "source_tier",
-        "rights",
-        "path"
-      ]
+      "authority": "veto unexplained representative or semantic-support extinction without deleting, ranking, or quota authority"
     }
+  },
+  "composition_artifacts": {
+    "authority": "audit_only",
+    "may_remove_or_select": false,
+    "target_distribution_enforced": false,
+    "reported_axes": ["content_route", "language_script", "format_morphology"]
   },
   "core_behavior_audit": {
     "schema_version": "core-behavior-audit-v3",
@@ -235,49 +109,14 @@
       "quality": ["typed_deletion_authority", "observable_trigger", "false_positive_boundary"],
       "coverage": ["materialization_invariant_authority", "representative_linkage_detection", "zero_survivor_detection"]
     },
-    "pass_rule": "Every Core has positive and negative executable cases, no false positive or false negative, no behavior-invariant failure, and Registry-to-Case-Matrix ownership is reconciled.",
-    "claim_boundary": "Passing establishes the declared behavior on constructed fixtures only; it is not corpus-wide precision, recall, intrinsic Quality validity, or downstream effectiveness."
+    "claim_boundary": "Passing constructed fixtures establishes declared behavior only, not corpus-wide validity or downstream effectiveness."
   },
   "external_evaluation": {
     "role": "external_offline_validation",
-    "purpose": "Measure a frozen curation output for research or release governance.",
+    "runtime_stage": false,
+    "selector_visible": false,
     "may_mutate_or_reselect_frozen_output": false,
-    "utility_may_enter_stage_c": false,
-    "runtime_requirement": "not required for every curation batch"
-  },
-  "optional_audit_sidecar": {
-    "inputs": [
-      "source provenance",
-      "rights",
-      "hazard signals",
-      "language",
-      "content type",
-      "path"
-    ],
-    "may_remove_or_select": false,
-    "purpose": "Traceability, safety review, and distribution reporting when metadata is supplied."
-  },
-  "claim_boundary": {
-    "allowed": [
-      "The framework can produce an auditable full curated pool.",
-      "The active framework applies reason-coded Stage-C duplicate and scaffold compaction without an implicit budget and materializes the survivor pool."
-    ],
-    "not_allowed": [
-      "The framework measures intrinsic data quality.",
-      "A fixed fraction is a general curation policy.",
-      "A weighted operational threshold proves universal downstream improvement before external validation.",
-      "An unimplemented budget allocator may alter the active curated output.",
-      "External evaluation outcomes can tune Stage C within the same frozen cycle."
-    ]
-  },
-  "canonical_cores": [
-    "validity",
-    "redundancy",
-    "coverage",
-    "quality"
-  ],
-  "legacy_core_aliases": {
-    "selection_value_evidence": "quality",
-    "structural_compression": "quality"
+    "natural_token_budget_primary": true,
+    "seeds": [101, 202, 303]
   }
 }

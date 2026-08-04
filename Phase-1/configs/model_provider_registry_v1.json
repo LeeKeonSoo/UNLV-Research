@@ -1,6 +1,6 @@
 {
   "schema_version": "model-provider-registry-v1",
-  "status": "block_2_audit_only",
+  "status": "semantic_coverage_development_runtime_enabled",
   "framework_model_agnostic": true,
   "replacement_rule": "Any change to provider artifacts, revision, tokenizer, normalization, or output semantics resets that provider to audit_only and invalidates inherited calibration.",
   "slots": {
@@ -82,7 +82,7 @@
       "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
       "role": "semantic",
       "provider_type": "model",
-      "lifecycle": "audit_only",
+      "lifecycle": "runtime_experiment",
       "artifacts": [
         {
           "model_id": "Qwen/Qwen3-Embedding-0.6B",
@@ -96,7 +96,7 @@
       "output_semantics": "primary_multilingual_semantic_neighborhood_candidate_for_consensus_coverage",
       "supported_routes": ["general_prose", "code_artifact", "mathematical_content", "technical_documentation", "conversation", "instruction", "table_structured_data", "mixed", "unknown"],
       "supported_languages": ["100_plus_language_model_capability_pending_framework_bias_audit"],
-      "policy_contribution_authority": false,
+      "policy_contribution_authority": true,
       "direct_deletion_authority": false,
       "calibration": null,
       "validation": null

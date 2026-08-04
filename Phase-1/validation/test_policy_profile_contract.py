@@ -43,7 +43,7 @@ def test_policy_profile_contract() -> None:
     assert safe["forbids_implicit_fixed_fraction"] is True
 
     normal = by_id["normal_structural_v1"]
-    assert normal["status"] == "active"
+    assert normal["status"] == "confirmatory_candidate_release_blocked"
     assert normal["user_facing_mode"] == "normal"
     assert normal["stage_a_policy"] == "text_only_v2"
     assert normal["selector"]["kind"] == "reason_coded_text_structural_only"
@@ -56,9 +56,9 @@ def test_policy_profile_contract() -> None:
         "normalization_context_default": "preserve",
     }
     assert normal["runtime_policy"]["stage_b"]["deduplicate_stage_a_text_exactly"] is True
-    assert normal["runtime_policy"]["stage_c_selection"]["near_duplicate_compaction"]["candidate_enabled"] is True
-    assert normal["runtime_policy"]["stage_c_selection"]["structural_scaffold_compaction"]["enabled"] is True
-    assert normal["runtime_policy"]["stage_c_selection"]["structural_artifact_rules"] == {
+    assert normal["runtime_policy"]["stage_b_policy"]["near_duplicate_compaction"]["candidate_enabled"] is False
+    assert normal["runtime_policy"]["stage_b_policy"]["structural_scaffold_compaction"]["enabled"] is True
+    assert normal["runtime_policy"]["stage_b_policy"]["structural_artifact_rules"] == {
         "explicit_generated_artifact": True,
         "license_comment_only_chunk": True,
         "empty_html_shell": True,
@@ -67,7 +67,7 @@ def test_policy_profile_contract() -> None:
     assert normal["runtime_policy"]["coverage"]["enforce_materialization_invariants"] is True
 
     hard = by_id["hard_structural_v1"]
-    assert hard["status"] == "development_only_pending_n4_ablation"
+    assert hard["status"] == "confirmatory_candidate_release_blocked"
     assert hard["user_facing_mode"] == "hard"
     assert hard["selector"]["kind"] == "development_only_reason_coded_structural_span_compaction"
     assert hard["forbids_implicit_fixed_fraction"] is True
@@ -101,14 +101,14 @@ def test_policy_profile_contract() -> None:
 
     from run_curation import resolve_curation_mode, validate_run_policy_overrides
 
-    resolved = resolve_curation_mode("normal")
+    resolved = resolve_curation_mode("normal", execution_scope="development")
     assert resolved["profile_id"] == "normal_structural_v1"
     assert len(resolved["effective_policy_sha256"]) == 64
     assert resolved["effective_policy"] == normal["runtime_policy"]
     validate_run_policy_overrides({}, resolved["effective_policy"])
     try:
         validate_run_policy_overrides(
-            {"stage_c_selection": {"near_duplicate_compaction": {"candidate_enabled": True}}},
+            {"stage_b_policy": {"near_duplicate_compaction": {"candidate_enabled": True}}},
             resolved["effective_policy"],
         )
     except RuntimeError as error:

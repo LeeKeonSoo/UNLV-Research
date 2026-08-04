@@ -202,9 +202,12 @@ def build_release_validation(root: Path) -> JsonMap:
     gates = _integrity_gates(root, protocol)
     foundation = load_runtime_foundation(root)
     lifecycle_by_id = {policy.id: policy.lifecycle.value for policy in foundation.objects.policies}
+    profile_policy_ids = sorted(
+        {policy_id for profile in foundation.profiles.profiles for policy_id in profile.policy_ids}
+    )
     release_blockers = list(foundation.profiles.blocker_codes) + [
         f"{policy_id}:{lifecycle_by_id[policy_id]}"
-        for policy_id in protocol.blocked_policy_ids
+        for policy_id in profile_policy_ids
         if lifecycle_by_id[policy_id] != "promoted"
     ]
     integrity_passed = core_passed and all(gate.passed for gate in gates)

@@ -1,7 +1,7 @@
 {
   "schema_version": "semantic-coverage-v3",
-  "status": "implementation_candidate_validation_pending",
-  "runtime_activation": false,
+  "status": "development_and_confirmatory_runtime_experiment",
+  "runtime_activation": "development_and_confirmatory_only",
   "definition": "prevent unexplained extinction of stable semantic support after Stage-B removal proposals",
   "authority": "final_corpus_veto_with_explicit_required_retain_and_full_recheck",
   "primary_provider_id": "qwen3-embedding-0.6b-semantic-candidate",
@@ -14,8 +14,8 @@
     "fixture_backend": "deterministic_exact_cosine",
     "neighbor_count_candidate": 8,
     "neighbor_count_requires_development_calibration": true,
-    "stable_component_rule": "identical_non_singleton_connected_component_under_primary_and_audit_mutual_knn",
-    "disagreement_rule": "uncertain_intersection",
+    "stable_component_rule": "shared_local_reciprocal_neighbor_support_under_primary_and_audit_mutual_knn",
+    "disagreement_rule": "non_singleton_union_neighborhood_prevents_group_extinction_without_individual_retain_authority",
     "embedding_similarity_alone_may_delete": false
   },
   "views": {

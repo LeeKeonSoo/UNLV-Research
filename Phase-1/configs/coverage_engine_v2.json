@@ -1,8 +1,8 @@
 {
   "schema_version": "coverage-engine-v2",
-  "status": "semantic_v3_implemented_empirical_gates_blocked",
-  "runtime_activation": false,
-  "runtime_authority": "none_candidate_emits_veto_and_representative_proposals_only",
+  "status": "semantic_v3_confirmatory_runtime_experiment",
+  "runtime_activation": "development_and_confirmatory_only",
+  "runtime_authority": "non_deleting_support_veto_with_explicit_rematerialization",
   "definition": "preserve_support_of_valid_distinct_potentially_learnable_content_under_subset_selection",
   "single_coverage_score": false,
   "fixed_domain_quota": false,
@@ -53,16 +53,16 @@
     "target_retention_fraction",
     "hidden_token_budget"
   ],
-  "current_semantic_provider_state": "audit_only",
+  "current_semantic_provider_state": "runtime_experiment",
   "semantic_coverage_contract": "configs/semantic_coverage_v3.json",
   "semantic_primary_provider": "qwen3-embedding-0.6b-semantic-candidate",
   "semantic_audit_provider": "bge-m3-semantic-audit-candidate",
   "normal_hard_coverage_invariants_identical": true,
   "explicit_required_retain_rematerialization": true,
-  "current_semantic_provider_policy_contribution_authority": false,
-  "real_stable_cluster_evidence_ready": false,
-  "provider_bias_audit_ready": false,
+  "current_semantic_provider_policy_contribution_authority": true,
+  "real_local_consensus_evidence_ready": true,
+  "descriptive_provider_bias_slices_ready": true,
   "all_required_views_empirically_ready": false,
-  "current_runtime_result": "coverage_candidate_abstains_existing_materialization_invariant_remains_active",
-  "activation_deferred_to": "Block 7 atomic joint-selector migration after real semantic evidence and Block 5 Quality gates pass"
+  "current_runtime_result": "confirmatory_scope_may_veto_stage_b_proposals_production_still_abstains",
+  "production_activation_deferred_to": "protected_false_veto_multidomain_confirmatory_and_normal_hard_materialization_gates"
 }

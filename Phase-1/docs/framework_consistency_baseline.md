@@ -68,10 +68,12 @@ protected-fixture and development-disjoint evidence remain required.
 
 Stage C now has an explicit candidate implementation rather than a silent
 post-selection repair. It combines two independent frozen embedding views with
-deterministic route, script, format, and Redundancy-family evidence. Only
-identical non-singleton components from both semantic providers are stable;
-provider disagreement and unsupported or uncertain routing retain by default.
-Similarity retrieves a support stratum but never authorizes deletion.
+deterministic route, script, format, and Redundancy-family evidence. Stable
+local support groups require reciprocal-neighbor evidence shared by both
+providers. Remaining provider-specific neighborhoods become overlapping
+uncertainty groups. Similarity defines support evidence but never authorizes
+deletion; Stage C acts only when a support group would otherwise have no
+survivor.
 
 A Coverage veto emits typed `required_retain_uids`, rematerializes the candidate
 corpus, and reruns the complete invariant set. The Redundancy-selected
@@ -79,9 +81,12 @@ directional representative has precedence; deterministic facility-location is
 only a fallback. Normal and Hard share these exact Coverage invariants.
 
 The primary candidate provider is Qwen3-Embedding-0.6B and the independent audit
-provider is BGE-M3. Both registry entries are audit-only. Scientific activation
-still requires multilingual stability, provider-bias checks, protected
-false-veto bounds, extinction-recall tests, and a corpus-scale ANN backend.
+provider is BGE-M3. Qwen is authorized only as a development/confirmatory
+runtime experiment; BGE-M3 is audit-only. Scientific activation still requires
+protected false-veto bounds and independent multilingual and multidomain
+confirmatory evidence. The current blockwise exact-neighbor implementation is
+adequate for the 8,024-chunk candidate run but is not a production-scale ANN
+claim.
 Raw-to-Curated route and language composition files are explanation artifacts
 only and cannot enforce quotas or feed selection.
 
@@ -142,6 +147,20 @@ fingerprint, or release gate references that candidate.
 
 This is a fail-closed scientific state, not evidence that the active
 legacy-compatible curation output is broken.
+
+The final-test readiness states are deliberately separate:
+
+| State | Meaning | Current state |
+|---|---|---|
+| Framework materialization | Frozen A-B-C code emits audited Normal/Hard datasets | Pass after final v2 materialization |
+| External confirmatory | Exact tokenizer inputs exist for Raw/Normal/Hard | Ready |
+| Paper claim | Promoted Policies plus confirmatory results support the stated claim | Blocked |
+| Production release | All active Policies and providers are promoted | Blocked |
+
+The exact Qwen3-4B stream-token counts are 6,984,438 Raw, 6,961,249 Normal,
+and 6,747,888 Hard. This corresponds to 0.33% Normal and 3.39% Hard compression
+relative to Raw on this already curated Code corpus. It is a measured corpus
+result, not a target retention rate or evidence of downstream benefit.
 
 ## Next Exit Gates
 

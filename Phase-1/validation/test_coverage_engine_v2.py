@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
 from coverage_engine import (
     CoverageChunk,
     CoverageContractError,
+    CoverageExecutionScope,
     CoverageRequest,
     CoverageStatus,
     CoverageStratum,
@@ -25,6 +26,7 @@ from coverage_engine import (
     StratumState,
     evaluate_coverage,
 )
+from coverage_metrics import nearest_representative_radius
 from model_provider_contract import (
     CalibrationEvidence,
     ProviderLifecycle,
@@ -142,15 +144,33 @@ def test_partial_exclusion_protects_the_remaining_eligible_member() -> None:
     assert "skill-tail" not in decision.permitted_extinctions
 
 
-def test_current_audit_only_semantic_provider_abstains_without_veto_candidates() -> None:
+def test_current_semantic_provider_is_confirmatory_only() -> None:
     registry = load_provider_registry(PROVIDER_REGISTRY)
     provider = next(item for item in registry.providers if item.role is ProviderRole.SEMANTIC)
-    decision = evaluate_coverage(_request(provider), provider)
+    production = evaluate_coverage(_request(provider), provider)
+    confirmatory = evaluate_coverage(
+        replace(_request(provider), execution_scope=CoverageExecutionScope.CONFIRMATORY),
+        provider,
+    )
 
-    assert provider.lifecycle is ProviderLifecycle.AUDIT_ONLY
-    assert decision.status is CoverageStatus.ABSTAIN
-    assert decision.reason_code == "coverage_semantic_provider_not_active"
-    assert decision.protected_uids == ()
+    assert provider.lifecycle is ProviderLifecycle.RUNTIME_EXPERIMENT
+    assert production.status is CoverageStatus.ABSTAIN
+    assert production.reason_code == "coverage_semantic_provider_not_active"
+    assert confirmatory.status is CoverageStatus.VETO_CANDIDATE
+
+
+def test_runtime_experiment_provider_is_limited_to_nonproduction_scope() -> None:
+    active = _active_provider()
+    experiment = active.model_copy(
+        update={"lifecycle": ProviderLifecycle.RUNTIME_EXPERIMENT, "validation": None, "calibration": None}
+    )
+    production_request = _request(experiment)
+    confirmatory_request = replace(
+        production_request, execution_scope=CoverageExecutionScope.CONFIRMATORY
+    )
+
+    assert evaluate_coverage(production_request, experiment).status is CoverageStatus.ABSTAIN
+    assert evaluate_coverage(confirmatory_request, experiment).status is CoverageStatus.VETO_CANDIDATE
 
 
 def test_provider_identity_change_and_malformed_universe_fail_closed() -> None:
@@ -180,6 +200,14 @@ def test_provider_identity_change_and_malformed_universe_fail_closed() -> None:
     assert forged_quality_raised is True
 
 
+def test_sparse_radius_scales_with_edges_not_selected_cross_product() -> None:
+    universe = tuple(f"chunk-{index}" for index in range(8_000))
+    selected = frozenset(universe[:-1])
+    edges = (FrozenSimilarity(universe[-1], universe[0], 0.75, "1" * 64),)
+
+    assert nearest_representative_radius(universe, selected, edges) == 0.25
+
+
 def test_report_is_a_vector_without_intrinsic_coverage_score() -> None:
     provider = _active_provider()
     decision = evaluate_coverage(_request(provider), provider)
@@ -199,12 +227,12 @@ def test_report_is_a_vector_without_intrinsic_coverage_score() -> None:
 def test_contract_blocks_quota_source_and_real_activation() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
 
-    assert contract["status"] == "semantic_v3_implemented_empirical_gates_blocked"
-    assert contract["runtime_activation"] is False
+    assert contract["status"] == "semantic_v3_confirmatory_runtime_experiment"
+    assert contract["runtime_activation"] == "development_and_confirmatory_only"
     assert contract["fixed_domain_quota"] is False
     assert contract["source_selection_axis"] is False
     assert contract["single_coverage_score"] is False
-    assert contract["current_semantic_provider_state"] == "audit_only"
+    assert contract["current_semantic_provider_state"] == "runtime_experiment"
     assert contract["normal_hard_coverage_invariants_identical"] is True
     assert contract["explicit_required_retain_rematerialization"] is True
 
@@ -231,8 +259,10 @@ if __name__ == "__main__":
     test_extinction_and_family_constraints_produce_nonmutating_veto_candidates()
     test_extinction_is_permitted_only_when_every_member_has_independent_evidence()
     test_partial_exclusion_protects_the_remaining_eligible_member()
-    test_current_audit_only_semantic_provider_abstains_without_veto_candidates()
+    test_current_semantic_provider_is_confirmatory_only()
+    test_runtime_experiment_provider_is_limited_to_nonproduction_scope()
     test_provider_identity_change_and_malformed_universe_fail_closed()
+    test_sparse_radius_scales_with_edges_not_selected_cross_product()
     test_report_is_a_vector_without_intrinsic_coverage_score()
     test_contract_blocks_quota_source_and_real_activation()
     test_candidate_registry_preserves_the_active_materialization_guard()

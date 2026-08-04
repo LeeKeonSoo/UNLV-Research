@@ -92,6 +92,7 @@ def main() -> int:
                     "schema_version": "curation-run-contract-v1",
                     "status": "frozen_before_stage_a_b_c_materialization",
                     "curation_mode": "normal",
+                    "execution_scope": "development",
                     "input": {
                         "candidate_files": [str(input_path)],
                         "text_fields": ["text", "content", "document", "body"],
@@ -129,14 +130,14 @@ def main() -> int:
         assert report["summary"]["input_records"] == 3
         assert report["summary"]["stage_a_release_records"] == 3
         assert report["summary"]["stage_c_curated_chunks"] == 3
-        assert report["summary"]["stage_c_near_duplicate_removed_chunks"] == 0
-        assert report["summary"]["stage_c_structural_scaffold_removed_chunks"] == 0
+        assert report["summary"]["stage_b_near_duplicate_removed_chunks"] == 0
+        assert report["summary"]["stage_b_structural_scaffold_removed_chunks"] == 0
         assert report["stage_contract"]["stage_a"] == "source_agnostic_text_normalization_and_integrity_handling"
-        assert report["stage_contract"]["stage_b"] == "chunk_level_hard_gate"
-        assert report["stage_contract"]["stage_c"] == "reason_coded_redundancy_and_quality_retention_without_implicit_budget"
-        assert report["summary"]["stage_c_explicit_non_payload_rejected_chunks"] == 0
-        assert report["summary"]["stage_c_positive_quality_kept_chunks"] == 0
-        assert report["summary"]["stage_c_quality_abstain_retained_chunks"] == 3
+        assert report["stage_contract"]["stage_b"] == "redundancy_and_quality_removal_proposals"
+        assert report["stage_contract"]["stage_c"] == "coverage_veto_and_final_materialization"
+        assert report["summary"]["stage_b_explicit_non_payload_rejected_chunks"] == 0
+        assert report["summary"]["stage_b_positive_quality_kept_chunks"] == 0
+        assert report["summary"]["stage_b_quality_abstain_retained_chunks"] == 3
         assert report["curation_mode"]["mode"] == "normal"
         assert report["curation_mode"]["profile_id"] == "normal_structural_v1"
         assert len(report["curation_mode"]["effective_policy_sha256"]) == 64
@@ -162,7 +163,12 @@ def main() -> int:
         reason_impact = report["reason_code_impact_audit"]
         assert reason_impact["authority"] == "audit_only"
         assert reason_impact["selector_consumes_this_audit"] is False
-        assert set(reason_impact["stages"]) == {"stage_a_quarantine", "stage_b_rejection", "stage_c_compaction"}
+        assert set(reason_impact["stages"]) == {
+            "stage_a_quarantine",
+            "stage_b_rejection",
+            "stage_b_policy_removal",
+            "stage_b_span_transformation",
+        }
         assert report["coverage_impact_audit"]["selector_consumes_this_audit"] is False
         assert report["coverage_impact_audit"]["authority"] == "materialization_invariant"
         assert report["measurement_contract"]["runtime_token_measurement"] == "whitespace_proxy_non_training"
@@ -190,11 +196,16 @@ def main() -> int:
             "composition_audit.py",
             "composition_artifacts.py",
             "content_router.py",
+            "coverage_contract.py",
+            "coverage_engine.py",
+            "coverage_metrics.py",
+            "coverage_rematerialization.py",
             "coverage_taxonomy.py",
             "curation_artifacts.py",
             "framework_objects.py",
             "framework_profiles.py",
             "framework_runtime_bridge.py",
+            "model_provider_contract.py",
             "hard_structural_runtime.py",
             "general_web_span_compaction.py",
             "ingestion/input_adapter.py",
@@ -215,21 +226,25 @@ def main() -> int:
             "quality_teacher_batch_runtime.py",
             "run_curation.py",
             "span_level_template_compaction.py",
+            "stage_b_policy.py",
             "stage_c_selection.py",
             "stage_permissions.py",
+            "semantic_coverage_bundle.py",
+            "semantic_coverage_graph.py",
+            "semantic_coverage_materializer.py",
         }
         assert len(report["policy_fingerprint"]["runtime_modules"]["run_curation.py"]) == 64
         assert (output_dir / "stage_c_curated_chunks.jsonl").is_file()
         curated = [json.loads(line) for line in (output_dir / "stage_c_curated_chunks.jsonl").read_text(encoding="utf-8").splitlines()]
         code_chunk = next(row for row in curated if row["chunk_uid"].startswith("code-1"))
         assert code_chunk["stage_b_decision"]["trigger"] == "no_stage_b_hard_gate_reason"
-        assert code_chunk["stage_c_selection"]["trigger"] == "no_symmetric_near_duplicate_match"
+        assert code_chunk["stage_b_policy"]["trigger"] == "no_symmetric_near_duplicate_match"
         assert code_chunk["quality_retention_decision"]["decision"] == "abstain_retain"
         assert code_chunk["quality_retention_decision"]["schema_version"] == "quality-retention-decision-v2"
         assert code_chunk["quality_retention_decision"]["routing_precondition"]["quality_evidence"] is False
-        assert code_chunk["stage_c_policy_metadata"] == {}
-        assert code_chunk["stage_c_selector_visible"]["source_name"] is False
-        assert code_chunk["stage_c_selector_visible"]["declared_artifact_context"] is False
+        assert code_chunk["stage_b_policy_metadata"] == {}
+        assert code_chunk["stage_b_selector_visible"]["source_name"] is False
+        assert code_chunk["stage_b_selector_visible"]["declared_artifact_context"] is False
         assert code_chunk["token_proxy_kind"] == "whitespace_proxy_non_training"
 
         duplicate_rows = [
@@ -262,6 +277,17 @@ def main() -> int:
         assert [row["chunk_uid"] for row in second_passed] == ["a-record::0000"]
         assert first_rejected[0]["stage_b_decision"]["representative_chunk_uid"] == "a-record::0000"
         assert second_rejected[0]["stage_b_decision"]["representative_chunk_uid"] == "a-record::0000"
+
+        passed = [
+            {"chunk_uid": "b", "stage_c_policy_metadata": {"legacy": True}},
+            {"chunk_uid": "a", "stage_c_policy_metadata": {"legacy": True}},
+        ]
+        selected = [{"chunk_uid": "a", "stage_b_policy": {"action": "retain"}}]
+        removed = [{"chunk_uid": "b", "stage_b_policy": {"action": "remove"}}]
+        universe = module._stage_b_materialization_universe(passed, selected, removed)
+        assert [row["chunk_uid"] for row in universe] == ["b", "a"]
+        assert [row["stage_b_policy"]["action"] for row in universe] == ["remove", "retain"]
+        assert all("stage_c_policy_metadata" not in row for row in universe)
 
     print("[curation-runtime] generic cross-domain materialization: pass")
     return 0

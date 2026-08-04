@@ -37,8 +37,9 @@ duplicate Policy and cannot activate runtime behavior.
 `semantic_coverage_v3.json` defines the implemented Stage-C candidate contract:
 independent primary and audit embedding graphs, multilingual route/script/format
 views, explicit required-retain rematerialization, and identical Normal/Hard
-Coverage invariants. Its providers remain audit-only and its promotion gates
-are open, so the file does not grant production selection authority.
+Coverage invariants. Qwen is enabled only for development/confirmatory runtime
+experiments; BGE-M3 remains audit-only. Promotion gates remain open, so the file
+does not grant production authority.
 
 `quality_teacher_panel_v1.json` freezes the current three-teacher Q1-Q4
 candidate, its consensus rules, forbidden inputs, fixture targets, and

@@ -14,9 +14,9 @@ downstream model evaluation.
 
 ```text
 collect candidate pool
-  -> Stage A: source-agnostic text normalization and integrity handling
-  -> Stage B: chunk-level hard gate
-  -> Stage C: enabled reason-coded compaction, then Coverage-guarded materialization
+  -> Stage A: Validity normalization and closed-failure quarantine
+  -> Stage B: chunking plus Redundancy/Quality removal proposals
+  -> Stage C: Coverage veto, explicit restoration, and final materialization
 ```
 
 External training, NLL, and benchmark measurements are not part of this
@@ -51,7 +51,7 @@ Historical artifact identifiers may retain older labels only in the explicit
 | Core | Observable metric | Policy authority in the active implementation |
 | --- | --- | --- |
 | Validity | closed text-contract evidence | Stage A quarantines only payload absence, declared text-contract violation, unrecoverable corruption, or acquisition failure; Stage B rejects only invalid chunk results |
-| Redundancy | exact post-Stage-A text digest, trailing-whitespace-only scaffold-family signature, and symmetric near-duplicate evidence | Stage B removes exact duplicates. Stage C retains one stable representative for identical scaffold families and for 5-shingle families with at least 40 lexical tokens and symmetric overlap at or above 0.95 |
+| Redundancy | exact post-Stage-A text digest plus candidate formatting, containment, and symmetric near-duplicate witnesses | Stage B may propose a nonrepresentative removal only for an authorized family witness and stable representative. Near-duplicate authority remains blocked |
 | Quality | explicit non-payload evidence and separately validated positive retention evidence | Normal enables four closed-set rejection rules: explicit generated-and-do-not-edit artifacts, license-comment-only chunks, empty HTML shells, and cookie-control chrome-only chunks. It has no positive-retention provider, so all other cases abstain and retain. Quality never means an intrinsic score, weighted priority score, source identity, or target fraction |
 | Coverage | representative linkage, residual-payload preservation, and composition audit | Applies a veto-only materialization invariant: unexplained representative or residual-payload loss aborts output. It cannot rank, delete, restore by quota, or enforce a target mix |
 
@@ -66,12 +66,12 @@ Raw input. It therefore explains a shift such as `Code: 60% -> 70%` without
 claiming that either percentage is intrinsically better.
 
 Each report also emits `reason_code_impact_audit`: for every Stage-A quarantine,
-Stage-B rejection, and Stage-C compaction reason, it records affected records,
+Stage-B rejection, Stage-B policy removal, and Stage-B span transformation, it records affected records,
 chunks, and token-proxy cost. When one row has multiple Stage-A reasons, its
 token cost is deliberately visible under each reason and reason totals are not
 additive. `coverage_impact_audit` verifies that each exact-duplicate or
 representative-family removal has a linked survivor in the curated pool,
-checks that a record with no Stage-C survivor has an explicit non-payload or
+checks that a record with no final Stage-C survivor has an explicit non-payload or
 representative explanation, and reports multi-rule interactions plus the
 raw-to-curated composition delta. It has no metadata-stratum selection logic
 or deletion authority; it can veto materialization only when one of these
@@ -82,12 +82,13 @@ in `docs/quality_coverage_formal_definition.md`. In particular, a mathematical
 Quality target is not treated as a currently observable runtime score.
 
 Stage C has no weighted operational threshold. It does not access Utility or
-benchmarks, and every active policy has executable negative conditions that
-bound when it may not trigger. Stage C selects and materializes its output; a fixed-fraction,
-token-cap, or priority allocator remains outside the current framework surface.
+benchmarks. It cannot originate a deletion; it only accepts or vetoes Stage-B
+proposals and materializes the final output. A fixed-fraction, token-cap, or
+priority allocator remains outside the current framework surface.
 The active Normal profile may inspect only chunk text. Source identity, source tier,
-rights, path, language, composition labels, Utility, and benchmark outcomes
-remain unavailable to its selector.
+rights, path, composition labels, Utility, and benchmark outcomes remain
+unavailable to removal policy. Language/script and route tags are used only by
+Coverage support accounting, never as quotas or direct deletion evidence.
 Language-specific parsing is diagnostic unless the input declares the relevant
 language version and the corresponding rule declares executable negative
 conditions.
@@ -114,7 +115,9 @@ authorizes removal in the source-agnostic core.
 `stage_c_declared_dependency_copy_candidate` remains non-runnable historical
 research inventory. It is not part of the source-agnostic framework claim and
 cannot be promoted into the active v2 selector merely because a collector
-provides an artifact declaration.
+provides an artifact declaration. `stage_c_selection.py` is retained only as a
+legacy implementation adapter; public runtime traces and ownership use
+`stage_b_policy.py`.
 
 The Normal Quality rules are intentionally narrower than a generic web-content
 filter. `empty_html_shell` requires a complete HTML wrapper and no visible

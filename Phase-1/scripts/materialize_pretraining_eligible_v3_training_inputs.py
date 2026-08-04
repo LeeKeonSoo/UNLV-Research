@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Materialize the natural-budget v3 external-training inputs with the frozen tokenizer."""
+"""Materialize frozen natural-budget external-training inputs."""
 from __future__ import annotations
 
 import argparse
@@ -12,7 +12,7 @@ import torch
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CONTRACT = ROOT / "protocols" / "code_7benchmark_pretraining_eligible_v3_materialization.json"
+DEFAULT_CONTRACT = ROOT / "protocols" / "code_7m_normal_hard_confirmatory_materialization_v1.json"
 
 
 class Encoded(Protocol):
@@ -163,7 +163,7 @@ def materialize(contract_path: Path = DEFAULT_CONTRACT) -> dict[str, object]:
             gradient_accumulation_steps=gradient_accumulation_steps,
         )
     report = {
-        "schema_version": "code-7benchmark-pretraining-eligible-v3-training-inputs-v1",
+        "schema_version": "natural-budget-training-inputs-v1",
         "status": "tokenizer_materialization_complete",
         "contract": str(contract_path),
         "contract_sha256": sha256_file(contract_path),
@@ -184,7 +184,7 @@ def materialize(contract_path: Path = DEFAULT_CONTRACT) -> dict[str, object]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Materialize the frozen v3 natural-budget training inputs.")
+    parser = argparse.ArgumentParser(description="Materialize frozen natural-budget training inputs.")
     parser.add_argument("--contract", type=Path, default=DEFAULT_CONTRACT)
     args = parser.parse_args()
     report = materialize(args.contract)

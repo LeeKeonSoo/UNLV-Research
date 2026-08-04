@@ -39,6 +39,12 @@ class CoverageStatus(str, Enum):
     ABSTAIN = "abstain"
 
 
+class CoverageExecutionScope(str, Enum):
+    PRODUCTION = "production"
+    DEVELOPMENT = "development"
+    CONFIRMATORY = "confirmatory"
+
+
 @dataclass(frozen=True, slots=True)
 class CoverageChunk:
     uid: str
@@ -146,6 +152,7 @@ class CoverageRequest:
     exclusions: tuple[ExclusionEvidence, ...]
     provider_id: str
     provider_identity_sha256: str
+    execution_scope: CoverageExecutionScope = CoverageExecutionScope.PRODUCTION
 
     def __post_init__(self) -> None:
         chunk_ids = tuple(chunk.uid for chunk in self.chunks)

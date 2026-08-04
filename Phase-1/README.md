@@ -108,19 +108,38 @@ materialization. This candidate remains release-disabled until its disjoint
 behavior and protected false-removal gates pass.
 
 Semantic Coverage v3 is implemented as the Stage-C qualification candidate.
-It requires agreement between independently frozen Qwen3-Embedding-0.6B and
-BGE-M3 semantic graphs and combines that evidence with deterministic route,
-script, format, and Redundancy-family strata. A veto returns explicit required
-retentions, rematerializes, and reruns the complete Coverage contract. Provider
-disagreement and uncertainty retain; embedding similarity never deletes. The
-same Coverage invariants apply to Normal and Hard. Both providers remain
-audit-only until multilingual stability, provider-bias, false-veto,
-extinction-recall, and corpus-scale ANN gates pass.
+It builds local support groups from reciprocal-neighbor evidence shared by
+independently frozen Qwen3-Embedding-0.6B and BGE-M3 graphs, then combines them
+with deterministic route, script, format, and Redundancy-family strata. A veto
+returns explicit required retentions, rematerializes, and reruns the complete
+Coverage contract. Embedding similarity never deletes. Qwen is enabled only as
+a development/confirmatory runtime experiment; BGE-M3 remains the independent
+audit view. Neither is scientifically promoted.
 
 Every curation run now emits explanatory Raw-to-Curated route and
 language/script composition JSON/CSV artifacts. They are audit-only, may be
 multi-label, and never enforce a target domain distribution or enter the
 selector.
+
+## Current Final-Test Evidence
+
+The current Code 7M candidate run materialized both Normal and Hard through
+Stages A-B-C. Stage A released 4,889 records, Stage B produced 8,024 chunks and
+40 removal proposals, and Stage C restored 15 support representatives. The
+result is 7,999 retained chunks in each mode. Normal reports a 2,571,572
+whitespace-token proxy; Hard reports 2,461,632 because Hard also performs
+span-level compaction. Frozen Qwen3-4B stream-token counts are 6,984,438 Raw,
+6,961,249 Normal, and 6,747,888 Hard. Relative to Raw, Normal removes 0.33% and
+Hard removes 3.39%. The packed natural-budget totals are 6,979,584, 6,946,816,
+and 6,733,824 respectively.
+
+The mixed Code/Math/General Coverage audit contains 768 records. Its mean
+cross-provider mutual-neighbor Jaccard is 0.2178, with 499 records in stable
+local support groups and 638 in overlapping uncertainty groups. The
+implementation gate passes, but scientific promotion remains false pending
+protected false-veto and independent multidomain confirmatory evidence.
+The final preflight marks framework materialization and external confirmatory
+execution ready; paper-claim and production-release readiness remain false.
 
 ## Verification
 
@@ -144,6 +163,9 @@ conda run -n research python validation\test_quality_qualification_report_v1.py
 conda run -n research python validation\test_quality_operating_points_v1.py
 conda run -n research python validation\test_quality_stage_bridge_v1.py
 conda run -n research python validation\test_source_contract.py
+conda run -n research python validation\test_coverage_engine_v2.py
+conda run -n research python validation\test_semantic_coverage_materializer_v1.py
+conda run -n research python validation\test_final_experiment_preflight_v1.py
 ```
 
 Passing these checks confirms executable contracts and fixtures. It does not

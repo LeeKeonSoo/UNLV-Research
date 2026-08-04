@@ -1,6 +1,6 @@
 {
   "schema_version": "framework-release-validation-v1",
-  "protocol_sha256": "8fd92eaca29e1ae65cfa90481bf4e6f874763817714f8240ca6d2bedfc64ca29",
+  "protocol_sha256": "ba0a24ca7bc08042ae5fe7c163db7d20bd619095669caad5c8d729ac18c745be",
   "implementation_integrity": "passed",
   "framework_release": "blocked",
   "core_behavior": {
@@ -149,14 +149,19 @@
       "passed": true,
       "expected_reason_code": null,
       "observed_reason_code": null,
-      "expected_sha256": "ec5dd525ea30fd3ec2bb520f82ca9af8f18226f0cab9d0117e3d1a4c628084a9",
-      "observed_sha256": "ec5dd525ea30fd3ec2bb520f82ca9af8f18226f0cab9d0117e3d1a4c628084a9"
+      "expected_sha256": "3eefc2e0eaf1de2149e1876960337d4fae3e3f99e578e3fdc32676a4613b1b46",
+      "observed_sha256": "3eefc2e0eaf1de2149e1876960337d4fae3e3f99e578e3fdc32676a4613b1b46"
     }
   ],
   "release_blockers": [
     "profile_contains_unpromoted_policy",
     "profile_operating_points_uncalibrated",
-    "redundancy.symmetric_near_duplicate_candidate:blocked"
+    "coverage.representative_guard:candidate",
+    "quality.explicit_nonpayload:candidate",
+    "quality.teacher_panel_v2:blocked",
+    "redundancy.exact_text_family:development_passed",
+    "redundancy.symmetric_near_duplicate_candidate:blocked",
+    "validity.interpretable_text:candidate"
   ],
   "claim_boundary": "Block 8 validates implementation integrity and frozen fixture behavior only; it does not promote candidate policies or establish downstream effectiveness."
 }

@@ -7,6 +7,7 @@ from coverage_contract import (
     CoverageChunk,
     CoverageContractError,
     CoverageDecision,
+    CoverageExecutionScope,
     CoverageRequest,
     CoverageStatus,
     CoverageStratum,
@@ -60,9 +61,15 @@ def _provider_gate(request: CoverageRequest, provider: ProviderManifest) -> str 
             return "coverage_provider_role_mismatch"
         case unreachable:
             assert_never(unreachable)
+    allowed_lifecycles = (
+        {ProviderLifecycle.ACTIVE}
+        if request.execution_scope is CoverageExecutionScope.PRODUCTION
+        else {ProviderLifecycle.ACTIVE, ProviderLifecycle.RUNTIME_EXPERIMENT}
+    )
     match provider.lifecycle:
-        case ProviderLifecycle.ACTIVE:
-            pass
+        case ProviderLifecycle.ACTIVE | ProviderLifecycle.RUNTIME_EXPERIMENT:
+            if provider.lifecycle not in allowed_lifecycles:
+                return "coverage_semantic_provider_not_active"
         case (
             ProviderLifecycle.AUDIT_ONLY
             | ProviderLifecycle.CALIBRATED
@@ -203,6 +210,7 @@ __all__ = [
     "CoverageChunk",
     "CoverageContractError",
     "CoverageRequest",
+    "CoverageExecutionScope",
     "CoverageStatus",
     "CoverageStratum",
     "CoverageView",

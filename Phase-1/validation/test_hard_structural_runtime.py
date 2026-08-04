@@ -30,7 +30,7 @@ def test_hard_mode_is_development_only_until_ablation_promotion() -> None:
     mode = resolve_curation_mode("hard", execution_scope="development")
     assert mode["mode"] == "hard"
     assert mode["profile_id"] == "hard_structural_v1"
-    assert mode["authorization"] == "development_only_pending_n4_ablation"
+    assert mode["authorization"] == "development_candidate_release_blocked"
     assert mode["effective_policy_sha256"]
 
 
@@ -82,15 +82,15 @@ def test_hard_runtime_compacts_only_declared_spans_and_emits_audit_traces() -> N
         report = materialize(config_path)
         transformations = [
             json.loads(line)
-            for line in (output_dir / "stage_c_hard_transformations.jsonl").read_text(encoding="utf-8").splitlines()
+            for line in (output_dir / "stage_b_hard_transformations.jsonl").read_text(encoding="utf-8").splitlines()
         ]
         curated = [
             json.loads(line)
             for line in (output_dir / "stage_c_curated_chunks.jsonl").read_text(encoding="utf-8").splitlines()
         ]
 
-    assert report["curation_mode"]["authorization"] == "development_only_pending_n4_ablation"
-    assert report["summary"]["stage_c_hard_span_transformations"] == 3
+    assert report["curation_mode"]["authorization"] == "development_candidate_release_blocked"
+    assert report["summary"]["stage_b_hard_span_transformations"] == 3
     assert {item["reason_code"] for item in transformations} == {
         "inline_license_header_removed",
         "inline_license_comment_block_removed",

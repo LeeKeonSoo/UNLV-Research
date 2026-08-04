@@ -15,6 +15,7 @@ from composition_artifacts import (
     build_composition_artifacts,
     write_composition_artifacts,
 )
+from coverage_contract import CoverageExecutionScope
 from curation_artifacts import load_json, save_json, sha256_file
 from framework_objects import CoreId, StageId
 from framework_runtime_bridge import (
@@ -29,9 +30,11 @@ from general_web_span_compaction import materialize_candidate_plan as materializ
 from hard_structural_runtime import apply_development_hard_policies
 from ingestion.candidate_processing import process_candidate
 from ingestion.input_adapter import adapt_raw_records
+from model_provider_contract import load_provider_registry
 from quality_rule_evidence import CANDIDATE_QUALITY_RULE_KEYS
 from reason_code_audit import build_reason_code_impact_audit
-from stage_c_selection import select_chunks
+from stage_b_policy import propose_stage_b_removals
+from semantic_coverage_materializer import materialize_semantic_coverage
 
 
 JsonMap = dict[str, Any]
@@ -58,11 +61,16 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "composition_audit.py",
     "composition_artifacts.py",
     "content_router.py",
+    "coverage_contract.py",
+    "coverage_engine.py",
+    "coverage_metrics.py",
+    "coverage_rematerialization.py",
     "coverage_taxonomy.py",
     "curation_artifacts.py",
     "framework_objects.py",
     "framework_profiles.py",
     "framework_runtime_bridge.py",
+    "model_provider_contract.py",
     "stage_permissions.py",
     "hard_structural_runtime.py",
     "inline_license_header_compaction.py",
@@ -83,6 +91,10 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "quality_teacher_local.py",
     "quality_retention.py",
     "reason_code_audit.py",
+    "semantic_coverage_materializer.py",
+    "semantic_coverage_bundle.py",
+    "semantic_coverage_graph.py",
+    "stage_b_policy.py",
     "stage_c_selection.py",
 )
 
@@ -121,17 +133,14 @@ def resolve_curation_mode(mode: str, *, execution_scope: str = "production") -> 
     runtime_policy = profile.get("runtime_policy")
     if not isinstance(runtime_policy, dict):
         raise RuntimeError(f"Policy profile {profile_id} has no complete runtime_policy.")
-    if normalized_mode == "hard":
-        if execution_scope == "development":
-            authorization = "development_only_pending_n4_ablation"
-        elif execution_scope == "confirmatory":
-            authorization = "confirmatory_only_pending_external_decision"
-        else:
-            raise RuntimeError(
-                "Hard curation mode is limited to development or confirmatory evaluation; production use remains blocked."
-            )
+    if execution_scope == "development":
+        authorization = "development_candidate_release_blocked"
+    elif execution_scope == "confirmatory":
+        authorization = "confirmatory_candidate_release_blocked"
     else:
-        authorization = "production_runtime"
+        raise RuntimeError(
+            "Normal and Hard remain limited to development or confirmatory evaluation; production release is blocked."
+        )
     effective_policy = json.loads(json.dumps(runtime_policy))
     return {
         "mode": normalized_mode,
@@ -146,7 +155,7 @@ def resolve_curation_mode(mode: str, *, execution_scope: str = "production") -> 
 
 def validate_run_policy_overrides(config: JsonMap, effective_policy: JsonMap) -> None:
     """Reject run-local switches that would mutate an immutable mode profile."""
-    forbidden_sections = [name for name in ("stage_a", "stage_c_selection") if name in config]
+    forbidden_sections = [name for name in ("stage_a", "stage_b_policy") if name in config]
     stage_b = config.get("stage_b") if isinstance(config.get("stage_b"), dict) else {}
     forbidden_stage_b = sorted(
         key
@@ -162,17 +171,17 @@ def validate_run_policy_overrides(config: JsonMap, effective_policy: JsonMap) ->
         raise RuntimeError("Immutable profile is missing Stage-A policy.")
     if not isinstance(effective_policy.get("stage_b"), dict):
         raise RuntimeError("Immutable profile is missing Stage-B policy.")
-    if not isinstance(effective_policy.get("stage_c_selection"), dict):
-        raise RuntimeError("Immutable profile is missing Stage-C policy.")
+    if not isinstance(effective_policy.get("stage_b_policy"), dict):
+        raise RuntimeError("Immutable profile is missing Stage-B removal policy.")
     coverage = effective_policy.get("coverage")
     if not isinstance(coverage, dict) or coverage.get("enforce_materialization_invariants") is not True:
         raise RuntimeError("Immutable profile must enforce Coverage materialization invariants.")
 
 
-def validate_quality_candidate_scope(stage_c_selection: JsonMap, execution_scope: str) -> list[str]:
-    artifact_settings = dict(stage_c_selection.get("structural_artifact_rules") or {})
+def validate_quality_candidate_scope(stage_b_policy: JsonMap, execution_scope: str) -> list[str]:
+    artifact_settings = dict(stage_b_policy.get("structural_artifact_rules") or {})
     enabled = sorted(key for key in CANDIDATE_QUALITY_RULE_KEYS if artifact_settings.get(key) is True)
-    span_settings = dict(stage_c_selection.get("quality_span_candidate_rules") or {})
+    span_settings = dict(stage_b_policy.get("quality_span_candidate_rules") or {})
     if span_settings.get("web_control_and_url_directory") is True:
         enabled.append("web_control_and_url_directory_span_candidate")
     if enabled and execution_scope != "development":
@@ -180,6 +189,17 @@ def validate_quality_candidate_scope(stage_c_selection: JsonMap, execution_scope
             "Candidate Quality rules require execution_scope='development': " + ", ".join(enabled)
         )
     return enabled
+
+
+def _stage_b_materialization_universe(
+    passed: list[JsonMap], selected: list[JsonMap], not_selected: list[JsonMap]
+) -> tuple[JsonMap, ...]:
+    """Preserve Stage-B decisions while retaining the original chunk order."""
+    decided = {str(row["chunk_uid"]): row for row in (*selected, *not_selected)}
+    passed_ids = [str(row["chunk_uid"]) for row in passed]
+    if len(decided) != len(passed) or set(decided) != set(passed_ids):
+        raise RuntimeError("Stage-B decisions do not cover the complete Stage-B universe.")
+    return tuple(decided[uid] for uid in passed_ids)
 
 
 def _policy_fingerprint() -> JsonMap:
@@ -404,14 +424,14 @@ def _coverage_impact_audit(
                 )
             )
     for row in not_selected:
-        selection = row.get("stage_c_selection") if isinstance(row.get("stage_c_selection"), dict) else {}
+        selection = row.get("stage_b_policy") if isinstance(row.get("stage_b_policy"), dict) else {}
         reason = selection.get("removed_reason")
         if reason in {"near_duplicate_representative_retained", "structural_scaffold_representative_retained"}:
             required_links.append((str(row["chunk_uid"]), selection.get("representative_chunk_uid"), str(reason)))
 
     missing_links = [chunk_uid for chunk_uid, representative, _ in required_links if not representative]
     removal_reason_by_chunk_uid = {
-        str(row["chunk_uid"]): str(row["stage_c_selection"].get("removed_reason"))
+        str(row["chunk_uid"]): str(row["stage_b_policy"].get("removed_reason"))
         for row in not_selected
     }
     removed_row_by_chunk_uid = {str(row["chunk_uid"]): row for row in not_selected}
@@ -438,7 +458,7 @@ def _coverage_impact_audit(
             removed_row = removed_row_by_chunk_uid.get(current)
             if removed_row is None:
                 return "missing", chain, None
-            selection = removed_row.get("stage_c_selection")
+            selection = removed_row.get("stage_b_policy")
             if not isinstance(selection, dict):
                 return "missing", chain, None
             reason = str(selection.get("removed_reason"))
@@ -492,15 +512,15 @@ def _coverage_impact_audit(
     zero_survivor_records: list[JsonMap] = []
     interaction_records: list[JsonMap] = []
     for record_id, rows in removed_by_record.items():
-        reasons = sorted({str(row["stage_c_selection"].get("removed_reason")) for row in rows})
+        reasons = sorted({str(row["stage_b_policy"].get("removed_reason")) for row in rows})
         has_curated_chunk = record_id in selected_by_record
         all_rows_explained = all(
             (
-                row["stage_c_selection"].get("removed_reason") in explicit_non_payload_reasons
+                row["stage_b_policy"].get("removed_reason") in explicit_non_payload_reasons
                 or (
-                    isinstance(row["stage_c_selection"].get("representative_chunk_uid"), str)
+                    isinstance(row["stage_b_policy"].get("representative_chunk_uid"), str)
                     and resolve_representative_chain(
-                        str(row["stage_c_selection"]["representative_chunk_uid"])
+                        str(row["stage_b_policy"]["representative_chunk_uid"])
                     )[0]
                     in {"selected", "non_payload"}
                 )
@@ -534,7 +554,7 @@ def _coverage_impact_audit(
     residual_payload_passed = all(
         len(str(row.get("text") or "").strip()) >= minimum_residual_chars
         for row in passed
-        if row.get("stage_c_hard_transformations") or row.get("stage_c_quality_candidate_transformations")
+        if row.get("stage_b_hard_transformations") or row.get("stage_b_quality_candidate_transformations")
     )
     invariant_passed = not (
         missing_links
@@ -563,8 +583,8 @@ def _coverage_impact_audit(
                 str(row["chunk_uid"])
                 for row in passed
                 if (
-                    row.get("stage_c_hard_transformations")
-                    or row.get("stage_c_quality_candidate_transformations")
+                    row.get("stage_b_hard_transformations")
+                    or row.get("stage_b_quality_candidate_transformations")
                 )
                 and len(str(row.get("text") or "").strip()) < minimum_residual_chars
             ],
@@ -676,10 +696,10 @@ def materialize(config_path: Path) -> JsonMap:
         for row in passed:
             traces = transformation_by_chunk.get(str(row["chunk_uid"]))
             if traces:
-                row["stage_c_hard_transformations"] = traces
+                row["stage_b_hard_transformations"] = traces
         hard_transformations = hard_runtime_audit["transformations"]
         span_transformations.extend(hard_transformations)
-    stage_c_selection = effective_policy["stage_c_selection"]
+    removal_policy = effective_policy["stage_b_policy"]
     stage_tickets.append(
         authorize_runtime_stage(
             foundation,
@@ -696,7 +716,7 @@ def materialize(config_path: Path) -> JsonMap:
             ),
         )
     )
-    candidate_quality_rules = validate_quality_candidate_scope(stage_c_selection, execution_scope)
+    candidate_quality_rules = validate_quality_candidate_scope(removal_policy, execution_scope)
     quality_candidate_runtime_audit: JsonMap | None = None
     if "web_control_and_url_directory_span_candidate" in candidate_quality_rules:
         plan = build_web_span_plan(
@@ -717,9 +737,13 @@ def materialize(config_path: Path) -> JsonMap:
         for row in passed:
             traces = transformations_by_chunk.get(str(row["chunk_uid"]))
             if traces:
-                row["stage_c_quality_candidate_transformations"] = traces
+                row["stage_b_quality_candidate_transformations"] = traces
         span_transformations.extend(quality_candidate_transformations)
-    selected, not_selected, selection_audit = select_chunks(passed, stage_c_selection)
+    selected, not_selected, selection_audit = propose_stage_b_removals(passed, removal_policy)
+    stage_b_proposed_survivors = [dict(row) for row in selected]
+    stage_b_materialization_universe = _stage_b_materialization_universe(
+        passed, selected, not_selected
+    )
     stage_tickets.append(
         authorize_runtime_stage(
             foundation,
@@ -735,24 +759,62 @@ def materialize(config_path: Path) -> JsonMap:
             ),
         )
     )
+    semantic_settings = stage_c_settings.get("semantic_coverage")
+    semantic_coverage_audit: JsonMap = {
+        "status": "deterministic_lineage_guard_only",
+        "semantic_graph_consumed": False,
+        "scientific_promotion_claimed": False,
+    }
+    if isinstance(semantic_settings, dict):
+        registry_path = Path(str(semantic_settings["provider_registry_path"]))
+        registry = load_provider_registry(registry_path)
+        provider_id = str(semantic_settings["provider_id"])
+        provider = next(
+            (item for item in registry.providers if item.provider_id == provider_id), None
+        )
+        if provider is None:
+            raise RuntimeError(f"Unknown semantic Coverage provider: {provider_id}")
+        selected, semantic_coverage_audit = materialize_semantic_coverage(
+            universe=stage_b_materialization_universe,
+            proposed_survivors=tuple(selected),
+            removal_proposals=tuple(not_selected),
+            corpus_path=Path(str(semantic_settings["corpus_path"])),
+            graph_path=Path(str(semantic_settings["graph_path"])),
+            provider=provider,
+            execution_scope=CoverageExecutionScope(execution_scope),
+        )
+        semantic_coverage_audit["status"] = "semantic_coverage_materialized"
+        semantic_coverage_audit["semantic_graph_consumed"] = True
+        semantic_coverage_audit["scientific_promotion_claimed"] = False
+    selected_ids = {str(row["chunk_uid"]) for row in selected}
+    final_not_selected = [
+        row for row in not_selected if str(row["chunk_uid"]) not in selected_ids
+    ]
     paths = {
         "stage_a_release": output_dir / "stage_a_release_candidates.jsonl",
         "stage_a_quarantine": output_dir / "stage_a_quarantined_candidates.jsonl",
         "stage_b_pass": output_dir / "stage_b_pass_chunks.jsonl",
         "stage_b_rejected": output_dir / "stage_b_rejected_chunks.jsonl",
+        "stage_b_proposed_survivors": output_dir / "stage_b_proposed_survivors.jsonl",
+        "stage_b_removal_proposals": output_dir / "stage_b_removal_proposals.jsonl",
         "stage_c_not_selected": output_dir / "stage_c_not_selected_chunks.jsonl",
         "stage_c_curated": output_dir / "stage_c_curated_chunks.jsonl",
-        "stage_c_hard_transformations": output_dir / "stage_c_hard_transformations.jsonl",
-        "stage_c_quality_candidate_transformations": output_dir / "stage_c_quality_candidate_transformations.jsonl",
+        "stage_b_hard_transformations": output_dir / "stage_b_hard_transformations.jsonl",
+        "stage_b_quality_candidate_transformations": output_dir / "stage_b_quality_candidate_transformations.jsonl",
     }
     _write_jsonl(paths["stage_a_release"], released)
     _write_jsonl(paths["stage_a_quarantine"], quarantined)
     _write_jsonl(paths["stage_b_pass"], passed)
     _write_jsonl(paths["stage_b_rejected"], rejected)
-    _write_jsonl(paths["stage_c_not_selected"], not_selected)
+    _write_jsonl(paths["stage_b_proposed_survivors"], stage_b_proposed_survivors)
+    _write_jsonl(paths["stage_b_removal_proposals"], not_selected)
+    _write_jsonl(paths["stage_c_not_selected"], final_not_selected)
     _write_jsonl(paths["stage_c_curated"], selected)
-    _write_jsonl(paths["stage_c_hard_transformations"], hard_transformations)
-    _write_jsonl(paths["stage_c_quality_candidate_transformations"], quality_candidate_transformations)
+    _write_jsonl(paths["stage_b_hard_transformations"], hard_transformations)
+    _write_jsonl(paths["stage_b_quality_candidate_transformations"], quality_candidate_transformations)
+    semantic_coverage_audit_path = output_dir / "stage_c_coverage_audit.json"
+    save_json(semantic_coverage_audit_path, semantic_coverage_audit)
+    paths["stage_c_coverage_audit"] = semantic_coverage_audit_path
     composition_audit = build_composition_audit(
         {
             "raw_input": candidates,
@@ -799,7 +861,7 @@ def materialize(config_path: Path) -> JsonMap:
         passed=passed,
         selected=selected,
         rejected=rejected,
-        not_selected=not_selected,
+        not_selected=final_not_selected,
         span_transformations=span_transformations,
         minimum_residual_chars=minimum_residual_chars,
         composition_audit=composition_audit,
@@ -811,8 +873,8 @@ def materialize(config_path: Path) -> JsonMap:
         "status": "curation_materialization_complete",
         "stage_contract": {
             "stage_a": stage_a_role,
-            "stage_b": "chunk_level_hard_gate",
-            "stage_c": "reason_coded_redundancy_and_quality_retention_without_implicit_budget",
+            "stage_b": "redundancy_and_quality_removal_proposals",
+            "stage_c": "coverage_veto_and_final_materialization",
             "external_evaluation": "not_started",
         },
         "curation_mode": mode,
@@ -839,25 +901,25 @@ def materialize(config_path: Path) -> JsonMap:
             "stage_b_hard_gate_pass_chunks": len(passed),
             "stage_b_rejected_chunks": len(rejected),
             "stage_c_retained_chunks": len(selected),
-            "stage_c_not_selected_chunks": len(not_selected),
-            "stage_c_near_duplicate_removed_chunks": int(selection_audit["near_duplicate_removed_chunks"]),
-            "stage_c_structural_scaffold_removed_chunks": int(selection_audit["structural_scaffold_removed_chunks"]),
-            "stage_c_explicit_generated_artifact_removed_chunks": int(selection_audit["explicit_generated_artifact_removed_chunks"]),
-            "stage_c_license_comment_only_removed_chunks": int(selection_audit["license_comment_only_removed_chunks"]),
-            "stage_c_empty_html_shell_removed_chunks": int(selection_audit["empty_html_shell_removed_chunks"]),
-            "stage_c_web_chrome_only_removed_chunks": int(selection_audit["web_chrome_only_removed_chunks"]),
-            "stage_c_explicit_non_payload_rejected_chunks": int(
+            "stage_c_not_selected_chunks": len(final_not_selected),
+            "stage_b_near_duplicate_removed_chunks": int(selection_audit["near_duplicate_removed_chunks"]),
+            "stage_b_structural_scaffold_removed_chunks": int(selection_audit["structural_scaffold_removed_chunks"]),
+            "stage_b_explicit_generated_artifact_removed_chunks": int(selection_audit["explicit_generated_artifact_removed_chunks"]),
+            "stage_b_license_comment_only_removed_chunks": int(selection_audit["license_comment_only_removed_chunks"]),
+            "stage_b_empty_html_shell_removed_chunks": int(selection_audit["empty_html_shell_removed_chunks"]),
+            "stage_b_web_chrome_only_removed_chunks": int(selection_audit["web_chrome_only_removed_chunks"]),
+            "stage_b_explicit_non_payload_rejected_chunks": int(
                 selection_audit["quality_retention"]["decision_counts"]["reject"]
             ),
-            "stage_c_positive_quality_kept_chunks": int(
+            "stage_b_positive_quality_kept_chunks": int(
                 selection_audit["quality_retention"]["decision_counts"]["keep"]
             ),
-            "stage_c_quality_abstain_retained_chunks": int(
+            "stage_b_quality_abstain_retained_chunks": int(
                 selection_audit["quality_retention"]["decision_counts"]["abstain_retain"]
             ),
-            "stage_c_hard_span_transformations": len(hard_transformations),
-            "stage_c_quality_candidate_span_transformations": len(quality_candidate_transformations),
-            "stage_c_total_span_transformations": len(span_transformations),
+            "stage_b_hard_span_transformations": len(hard_transformations),
+            "stage_b_quality_candidate_span_transformations": len(quality_candidate_transformations),
+            "stage_b_total_span_transformations": len(span_transformations),
             "stage_c_curated_chunks": len(selected),
             "stage_c_curated_whitespace_token_proxy": sum(int(row["token_proxy"]) for row in selected),
             "stage_a_quarantine_reasons": dict(Counter(reason for row in quarantined for reason in row["quarantine"]["reasons"])),
@@ -872,7 +934,7 @@ def materialize(config_path: Path) -> JsonMap:
             "curated_tokens": explanatory_composition.curated_tokens,
         },
         "reason_code_impact_audit": build_reason_code_impact_audit(
-            quarantined, rejected, not_selected, span_transformations or None
+            quarantined, rejected, final_not_selected, span_transformations
         ),
         "coverage_impact_audit": coverage_impact_audit,
         "measurement_contract": {
@@ -887,7 +949,8 @@ def materialize(config_path: Path) -> JsonMap:
             "composition_read": False,
         },
         "policy_fingerprint": _policy_fingerprint(),
-        "stage_c_selection": selection_audit,
+        "stage_b_policy": selection_audit,
+        "stage_c_coverage": semantic_coverage_audit,
         "hard_runtime_audit": hard_runtime_audit,
         "quality_candidate_runtime_audit": quality_candidate_runtime_audit,
         "pretraining_audit": pretraining_audit,

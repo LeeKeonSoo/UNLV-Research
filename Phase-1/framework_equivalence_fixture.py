@@ -57,6 +57,7 @@ def curated_projection_hash(records: tuple[EquivalenceRecord, ...]) -> str:
                     "schema_version": "curation-run-contract-v1",
                     "status": "frozen_before_stage_a_b_c_materialization",
                     "curation_mode": "normal",
+                    "execution_scope": "development",
                     "input": {"candidate_files": [str(candidates)], "text_fields": ["text"], "defaults": {}},
                     "output_dir": str(output),
                     "pretraining_audit_path": str(audit),
@@ -80,7 +81,7 @@ def curated_projection_hash(records: tuple[EquivalenceRecord, ...]) -> str:
                 "chunk_uid": row["chunk_uid"],
                 "text": row["text"],
                 "stage_b_trigger": row["stage_b_decision"]["trigger"],
-                "stage_c_trigger": row["stage_c_selection"]["trigger"],
+                "stage_b_policy_trigger": row["stage_b_policy"]["trigger"],
                 "quality_decision": row["quality_retention_decision"]["decision"],
             }
             for row in sorted(rows, key=lambda item: str(item["chunk_uid"]))

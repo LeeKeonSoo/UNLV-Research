@@ -56,8 +56,8 @@ def _stage_b_reasons(row: JsonMap) -> list[str]:
     return [str(reason) for reason in reasons] if isinstance(reasons, list) else []
 
 
-def _stage_c_reasons(row: JsonMap) -> list[str]:
-    selections = (row.get("stage_c_selection"), row.get("stage_c2_selection"))
+def _stage_b_policy_reasons(row: JsonMap) -> list[str]:
+    selections = (row.get("stage_b_policy"), row.get("stage_c_selection"))
     for selection in selections:
         if not isinstance(selection, dict):
             continue
@@ -100,8 +100,8 @@ def _span_transformation_impact(transformations: Iterable[JsonMap]) -> JsonMap:
 def build_reason_code_impact_audit(
     stage_a_quarantined: Iterable[JsonMap],
     stage_b_rejected: Iterable[JsonMap],
-    stage_c_not_selected: Iterable[JsonMap],
-    stage_c_transformations: Iterable[JsonMap] | None = None,
+    stage_b_not_selected: Iterable[JsonMap],
+    stage_b_transformations: Iterable[JsonMap] | None = None,
 ) -> JsonMap:
     """Summarize already-made A/B/C decisions without selection authority."""
     report = {
@@ -112,9 +112,13 @@ def build_reason_code_impact_audit(
         "stages": {
             "stage_a_quarantine": _stage_impact(stage_a_quarantined, _stage_a_reasons),
             "stage_b_rejection": _stage_impact(stage_b_rejected, _stage_b_reasons),
-            "stage_c_compaction": _stage_impact(stage_c_not_selected, _stage_c_reasons),
+            "stage_b_policy_removal": _stage_impact(
+                stage_b_not_selected, _stage_b_policy_reasons
+            ),
         },
     }
-    if stage_c_transformations is not None:
-        report["stages"]["stage_c_span_transformation"] = _span_transformation_impact(stage_c_transformations)
+    if stage_b_transformations is not None:
+        report["stages"]["stage_b_span_transformation"] = _span_transformation_impact(
+            stage_b_transformations
+        )
     return report

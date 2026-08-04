@@ -1,8 +1,17 @@
 from __future__ import annotations
 
 import math
+from collections import defaultdict
 
 from coverage_contract import CoverageChunk, FrozenSimilarity
+
+
+def _adjacency(edges: tuple[FrozenSimilarity, ...]) -> dict[str, dict[str, float]]:
+    result: dict[str, dict[str, float]] = defaultdict(dict)
+    for edge in edges:
+        result[edge.left_uid][edge.right_uid] = edge.similarity
+        result[edge.right_uid][edge.left_uid] = edge.similarity
+    return dict(result)
 
 
 def similarity(left_uid: str, right_uid: str, edges: tuple[FrozenSimilarity, ...]) -> float:
@@ -15,14 +24,28 @@ def similarity(left_uid: str, right_uid: str, edges: tuple[FrozenSimilarity, ...
     return 0.0
 
 
+def _facility_location_value(
+    universe: tuple[str, ...],
+    selected: frozenset[str],
+    adjacency: dict[str, dict[str, float]],
+) -> float:
+    return sum(
+        1.0
+        if uid in selected
+        else max(
+            (score for neighbor, score in adjacency.get(uid, {}).items() if neighbor in selected),
+            default=0.0,
+        )
+        for uid in universe
+    )
+
+
 def facility_location_value(
     universe: tuple[str, ...],
     selected: frozenset[str],
     edges: tuple[FrozenSimilarity, ...],
 ) -> float:
-    if not selected:
-        return 0.0
-    return sum(max(similarity(uid, representative, edges) for representative in selected) for uid in universe)
+    return _facility_location_value(universe, selected, _adjacency(edges))
 
 
 def choose_by_marginal_gain(
@@ -31,11 +54,12 @@ def choose_by_marginal_gain(
     universe: tuple[str, ...],
     edges: tuple[FrozenSimilarity, ...],
 ) -> tuple[str, float]:
-    baseline = facility_location_value(universe, selected, edges)
+    adjacency = _adjacency(edges)
+    baseline = _facility_location_value(universe, selected, adjacency)
     best_uid = ""
     best_gain = -math.inf
     for uid in sorted(candidates):
-        gain = facility_location_value(universe, selected | {uid}, edges) - baseline
+        gain = _facility_location_value(universe, selected | {uid}, adjacency) - baseline
         if gain > best_gain:
             best_uid = uid
             best_gain = gain
@@ -58,7 +82,17 @@ def nearest_representative_radius(
         return 0.0
     if not selected:
         return 1.0
-    return max(1.0 - max(similarity(uid, representative, edges) for representative in selected) for uid in universe)
+    adjacency = _adjacency(edges)
+    minimum_similarity = min(
+        1.0
+        if uid in selected
+        else max(
+            (score for neighbor, score in adjacency.get(uid, {}).items() if neighbor in selected),
+            default=0.0,
+        )
+        for uid in universe
+    )
+    return 1.0 - minimum_similarity
 
 
 def jensen_shannon_divergence(raw_mass: tuple[float, ...], selected_mass: tuple[float, ...]) -> float:
