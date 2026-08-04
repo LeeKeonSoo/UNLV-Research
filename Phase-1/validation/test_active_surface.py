@@ -70,6 +70,9 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("quality_teacher_qualification_runner.py")
     expected.add("quality_qualification_report.py")
     expected.add("quality_stage_bridge.py")
+    expected.add("quality_teacher_materialization.py")
+    expected.add("quality_teacher_unit_runtime.py")
+    expected.add("quality_teacher_batch_runtime.py")
     expected.add("validation/test_quality_teacher_adapters_v1.py")
     expected.add("validation/test_quality_teacher_panel_v1.py")
     expected.add("validation/test_quality_teacher_qualification_v1.py")
@@ -81,6 +84,8 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("validation/test_quality_teacher_qualification_runner_v1.py")
     expected.add("validation/test_quality_qualification_report_v1.py")
     expected.add("validation/test_quality_stage_bridge_v1.py")
+    expected.add("validation/test_quality_teacher_materialization_v1.py")
+    expected.add("validation/test_quality_teacher_unit_runtime_v1.py")
     expected.add("validation/test_quality_candidate_authority_v1.py")
     expected.add("validation/test_positive_quality_coverage_contract.py")
     expected.add("validation/test_content_routing_quality_coverage_contract_v2.py")
@@ -292,6 +297,8 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
             "framework_policy_ablation_v1.json",
             "near_duplicate_calibration_v1.json",
             "quality_teacher_panel_v1.json",
+            "quality_teacher_panel_v2.json",
+            "code_7m_quality_teacher_v2.json",
         }
     )
     expected.update(

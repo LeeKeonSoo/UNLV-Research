@@ -56,7 +56,6 @@ def main() -> int:
         "profile_contains_unpromoted_policy",
         "profile_operating_points_uncalibrated",
         "redundancy.symmetric_near_duplicate_candidate:blocked",
-        "quality.teacher_panel_candidate:blocked",
     ]
     print("[framework-release-validation-v1] integrity pass, scientific release blocked: pass")
     return 0

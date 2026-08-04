@@ -37,12 +37,14 @@ def test_registry_parses_complete_core_metric_policy_method_lineage() -> None:
             assert metric.core_id is policy.core_id
             assert metric.method_id in methods
     teacher_panel = next(
-        policy for policy in registry.policies if policy.id == "quality.teacher_panel_candidate"
+        policy for policy in registry.policies if policy.id == "quality.teacher_panel_v2"
     )
     assert tuple(item.path for item in teacher_panel.evidence) == (
-        "configs/quality_teacher_panel_v1.json",
-        "validation/frozen_contracts/quality_teacher_behavior_gate_v2.json",
+        "configs/quality_teacher_panel_v2.json",
+        "validation/frozen_contracts/quality_teacher_development_gate_v2.json",
     )
+    assert teacher_panel.lifecycle.value == "promoted"
+    assert teacher_panel.decision_authority.value == "quality_decision"
 
 
 def test_provider_output_cannot_have_direct_deletion_authority() -> None:

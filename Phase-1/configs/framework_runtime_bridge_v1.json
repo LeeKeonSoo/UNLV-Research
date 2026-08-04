@@ -2,13 +2,13 @@
   "schema_version": "framework-runtime-bridge-v1",
   "status": "runtime_integrated_block_7",
   "framework_manifest_path": "configs/curation_framework_v1.json",
-  "framework_manifest_sha256": "c5a5b649101ca7c70c9e1d68b5ee6ad1978a7fd3f7048578ca2921f8d87de2b4",
+  "framework_manifest_sha256": "6bb8e1294e28ed6df7961ff139518da271a78a9f4b2d234851ba59d8c49cfcbb",
   "object_registry_path": "configs/framework_objects_v1.json",
-  "object_registry_sha256": "9e944dda9800002cc9618c5629a15b5956970c28d98a8b21489e947d3abf3aaa",
+  "object_registry_sha256": "9131d2a029272c9492397d4e12e06fe7ef12e1dcc0f95495dab0cf5aca6863d0",
   "profile_registry_path": "configs/framework_profiles_v1.json",
-  "profile_registry_sha256": "7b810ea36ae75115cbcac8c2984588f1dd362da9bafa795cf794ebe34a3e16e8",
+  "profile_registry_sha256": "e3d51df2700e1651579b7752c03958c3249a146b6ef9b405d752096ba4ea8ede",
   "legacy_kernel_path": "run_curation.py",
-  "legacy_kernel_sha256": "1455efbf3fd51865a56e9beac4eee3fae605c8cad011ed0925b667d3c8327120",
+  "legacy_kernel_sha256": "78a3fdca7c388ff5373e43561ef5ce9c1dcc96e7d3121a92db3436c3d0859cb0",
   "legacy_policy_mappings": [
     {
       "legacy_policy_id": "stage_c_symmetric_near_duplicate",
@@ -17,9 +17,8 @@
     }
   ],
   "blocked_v1_policy_ids": [
-    "redundancy.symmetric_near_duplicate_candidate",
-    "quality.teacher_panel_candidate"
+    "redundancy.symmetric_near_duplicate_candidate"
   ],
-  "new_v1_policy_activation": false,
-  "curated_output_equivalence_required": true
+  "new_v1_policy_activation": true,
+  "curated_output_equivalence_required": false
 }

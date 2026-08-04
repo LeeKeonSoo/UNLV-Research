@@ -1,0 +1,7 @@
+{
+  "unit_id": "synthetic-endpoint-health-v2",
+  "text": "A binary search repeatedly compares a target with the middle element of a sorted sequence and discards the half that cannot contain the target.",
+  "declared_context": "English synthetic computer-science prose created only for endpoint health verification.",
+  "attached_evidence": [],
+  "declared_verifier": null
+}

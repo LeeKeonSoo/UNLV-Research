@@ -83,7 +83,7 @@ class TeacherSpec(BaseModel):
     api_key_environment_variable: str | None
     reasoning_mode: Literal["disabled", "bounded"]
     inference_precision: Literal["endpoint_managed", "bitsandbytes_int8"]
-    maximum_new_tokens: int = Field(gt=0, le=256)
+    maximum_new_tokens: int = Field(gt=0, le=4096)
     request_timeout_seconds: int | None = Field(default=None, gt=0, le=300)
     maximum_transport_retries: int | None = Field(default=None, ge=0, le=2)
     structured_output_mode: Literal["json_object"] | None
@@ -173,8 +173,13 @@ class TeacherPanel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: Literal["quality-teacher-panel-v1", "quality-teacher-panel-v2"]
-    lifecycle: Literal["candidate_qualification"]
-    runtime_activation: Literal[False]
+    lifecycle: Literal["candidate_qualification", "runtime_experiment_quality_deletion"]
+    runtime_activation: bool
+    transport_mode: Literal[
+        "single_policy_request",
+        "all_policies_per_unit_request",
+    ] = "single_policy_request"
+    unit_batch_size: int = Field(default=1, ge=1, le=8)
     teacher_output_alone_may_delete: Literal[False]
     training_objective: Literal["continued_pretraining"]
     initial_language_scope: tuple[Literal["english"], ...]
@@ -188,6 +193,17 @@ class TeacherPanel(BaseModel):
 
     @model_validator(mode="after")
     def validate_panel(self) -> "TeacherPanel":
+        expected_activation = self.lifecycle == "runtime_experiment_quality_deletion"
+        if self.runtime_activation is not expected_activation:
+            raise PanelContractError(
+                "Panel lifecycle and runtime_activation must change together"
+            )
+        if self.lifecycle == "runtime_experiment_quality_deletion" and self.schema_version != "quality-teacher-panel-v2":
+            raise PanelContractError("Only the frozen v2 hosted panel may be runtime-active")
+        if self.runtime_activation and self.transport_mode != "all_policies_per_unit_request":
+            raise PanelContractError("Runtime Quality deletion requires combined Q1-Q4 transport")
+        if self.runtime_activation and self.unit_batch_size != 4:
+            raise PanelContractError("Runtime Quality deletion requires the frozen four-unit batch")
         if len({teacher.teacher_id for teacher in self.teachers}) != 3:
             raise PanelContractError("Teacher IDs must be unique")
         if len({teacher.organization for teacher in self.teachers}) != 3:

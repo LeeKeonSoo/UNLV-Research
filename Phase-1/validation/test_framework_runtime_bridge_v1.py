@@ -22,8 +22,8 @@ def test_runtime_foundation_loads_every_redesign_contract() -> None:
 
     # When / Then: all identities are verified before input data is read.
     assert foundation.schema_version == "framework-runtime-foundation-v1"
-    assert foundation.bridge.new_v1_policy_activation is False
-    assert foundation.bridge.curated_output_equivalence_required is True
+    assert foundation.bridge.new_v1_policy_activation is True
+    assert foundation.bridge.curated_output_equivalence_required is False
     assert {profile.id.value for profile in foundation.profiles.profiles} == {"normal", "hard"}
     assert all(not profile.release_enabled for profile in foundation.profiles.profiles)
 
@@ -36,7 +36,6 @@ def test_blocked_v1_policies_remain_compatibility_only() -> None:
     # When / Then: blocked Policies cannot be declared newly active by the bridge.
     assert set(foundation.bridge.blocked_v1_policy_ids) == {
         "redundancy.symmetric_near_duplicate_candidate",
-        "quality.teacher_panel_candidate",
     }
     assert all(lifecycle_by_id[policy_id] == "blocked" for policy_id in foundation.bridge.blocked_v1_policy_ids)
     assert all(entry.disposition == "legacy_compatibility_only" for entry in foundation.bridge.legacy_policy_mappings)

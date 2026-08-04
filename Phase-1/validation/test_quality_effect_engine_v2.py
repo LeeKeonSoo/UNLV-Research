@@ -172,13 +172,13 @@ def test_unknown_mixed_ood_and_provider_identity_changes_retain() -> None:
     assert mismatch.reason_code == "quality_provider_identity_mismatch"
 
 
-def test_current_audit_only_provider_cannot_contribute_to_selection() -> None:
+def test_runtime_experiment_panel_does_not_activate_legacy_effect_selector() -> None:
     registry = load_provider_registry(PROVIDER_REGISTRY)
     provider = next(item for item in registry.providers if item.role is ProviderRole.QUALITY)
     report = calibrate_effect_bins(_bundle(provider))
     decision = evaluate_quality_effect(_request(provider, "general-low"), report, provider)
 
-    assert provider.lifecycle is ProviderLifecycle.AUDIT_ONLY
+    assert provider.lifecycle is ProviderLifecycle.RUNTIME_EXPERIMENT
     assert decision.decision.value == "abstain_retain"
     assert decision.reason_code == "quality_provider_not_active"
 
@@ -277,7 +277,7 @@ if __name__ == "__main__":
     test_calibration_uses_measured_effects_without_weighted_quality_formula()
     test_quality_decision_is_uncertainty_aware_and_never_mutates_runtime()
     test_unknown_mixed_ood_and_provider_identity_changes_retain()
-    test_current_audit_only_provider_cannot_contribute_to_selection()
+    test_runtime_experiment_panel_does_not_activate_legacy_effect_selector()
     test_provider_cannot_borrow_an_unsupported_route()
     test_calibration_fails_closed_on_leakage_or_nonmonotonic_holdout()
     test_calibration_requires_three_bins_and_disjoint_nonempty_splits()

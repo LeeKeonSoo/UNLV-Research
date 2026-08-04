@@ -1,0 +1,22 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "execution_scope": "production",
+  "input": {
+    "candidate_files": [
+      "D:/UNLV-Research/code_5m_corpus_v2/stage0_output/release_candidates.jsonl"
+    ],
+    "text_fields": ["text", "content", "document", "body"],
+    "defaults": {}
+  },
+  "output_dir": "D:/UNLV-Research/code_5m_corpus_v2/quality_teacher_v2/structural_base",
+  "stage_b": {
+    "max_chunk_chars": 6000
+  },
+  "stage_c": {
+    "minimum_residual_chars": 120,
+    "no_binding_budget_action": "selection_without_binding_budget"
+  },
+  "claim_boundary": "Frozen 7M The Stack-based Code corpus run with active structural rules before shared Q1-Q4 Normal/Hard Quality materialization. Runtime excludes Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets."
+}

@@ -22,6 +22,7 @@ class ProviderRole(str, Enum):
 
 class ProviderLifecycle(str, Enum):
     AUDIT_ONLY = "audit_only"
+    RUNTIME_EXPERIMENT = "runtime_experiment"
     CALIBRATED = "calibrated"
     DEVELOPMENT_VALIDATED = "development_validated"
     CONFIRMATORY_VALIDATED = "confirmatory_validated"
@@ -87,7 +88,7 @@ class ProviderManifest(BaseModel):
     def validate_lifecycle(self) -> "ProviderManifest":
         if self.provider_type != "deterministic" and not self.artifacts:
             raise ProviderContractError("Model providers require at least one frozen artifact")
-        if self.provider_type != "deterministic" and (not self.tokenizer_id or not self.tokenizer_revision):
+        if self.provider_type == "model" and (not self.tokenizer_id or not self.tokenizer_revision):
             raise ProviderContractError("Model providers require a frozen tokenizer identity")
         validated = {
             ProviderLifecycle.CALIBRATED,
@@ -102,8 +103,13 @@ class ProviderManifest(BaseModel):
         if self.lifecycle in {ProviderLifecycle.CONFIRMATORY_VALIDATED, ProviderLifecycle.ACTIVE}:
             if self.validation is None or not self.validation.three_seed_natural_budget_complete:
                 raise ProviderContractError("Confirmatory validation requires completed three-seed evidence")
-        if self.policy_contribution_authority and self.lifecycle is not ProviderLifecycle.ACTIVE:
-            raise ProviderContractError("Only an active provider may contribute to a promoted policy")
+        if self.policy_contribution_authority and self.lifecycle not in {
+            ProviderLifecycle.RUNTIME_EXPERIMENT,
+            ProviderLifecycle.ACTIVE,
+        }:
+            raise ProviderContractError(
+                "Only a runtime-experiment or active provider may contribute policy evidence"
+            )
         contract_fields = (self.implementation_contract_path, self.implementation_contract_identity_sha256)
         if any(value is not None for value in contract_fields) and not all(
             value is not None for value in contract_fields

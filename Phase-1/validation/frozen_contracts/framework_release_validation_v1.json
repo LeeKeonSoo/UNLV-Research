@@ -1,6 +1,6 @@
 {
   "schema_version": "framework-release-validation-v1",
-  "protocol_sha256": "93ce41e456b152036da941a718201345e3404300b60751b04a64ff9eac94d65d",
+  "protocol_sha256": "8fd92eaca29e1ae65cfa90481bf4e6f874763817714f8240ca6d2bedfc64ca29",
   "implementation_integrity": "passed",
   "framework_release": "blocked",
   "core_behavior": {
@@ -156,8 +156,7 @@
   "release_blockers": [
     "profile_contains_unpromoted_policy",
     "profile_operating_points_uncalibrated",
-    "redundancy.symmetric_near_duplicate_candidate:blocked",
-    "quality.teacher_panel_candidate:blocked"
+    "redundancy.symmetric_near_duplicate_candidate:blocked"
   ],
   "claim_boundary": "Block 8 validates implementation integrity and frozen fixture behavior only; it does not promote candidate policies or establish downstream effectiveness."
 }

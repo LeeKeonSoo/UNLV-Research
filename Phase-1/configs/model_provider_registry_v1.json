@@ -6,7 +6,7 @@
   "slots": {
     "quality": {
       "role": "quality",
-      "allowed_effect": "candidate_evidence_only_after_independent_policy_promotion",
+      "allowed_effect": "typed_policy_evidence_consumed_by_frozen_normal_hard_consensus",
       "provider_output_alone_may_delete": false
     },
     "semantic": {
@@ -44,36 +44,36 @@
       "validation": null
     },
     {
-      "provider_id": "quality-teacher-panel-v1",
+      "provider_id": "quality-teacher-panel-v2",
       "role": "quality",
       "provider_type": "composite_model",
-      "lifecycle": "audit_only",
+      "lifecycle": "runtime_experiment",
       "artifacts": [
+        {
+          "model_id": "google/gemma-4-31b-it",
+          "revision": "build-endpoint-observed-2026-08-05",
+          "artifact_sha256": null
+        },
         {
           "model_id": "nvidia/nemotron-3-ultra-550b-a55b",
           "revision": "build-endpoint-observed-2026-08-04",
           "artifact_sha256": null
         },
         {
-          "model_id": "z-ai/glm-5.2",
+          "model_id": "minimaxai/minimax-m3",
           "revision": "build-endpoint-observed-2026-08-04",
-          "artifact_sha256": null
-        },
-        {
-          "model_id": "Qwen/Qwen3.5-9B",
-          "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
           "artifact_sha256": null
         }
       ],
-      "tokenizer_id": "Qwen/Qwen3.5-9B",
-      "tokenizer_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "tokenizer_id": null,
+      "tokenizer_revision": null,
       "normalization": "independent_q1_q4_pass_fail_abstain_consensus_without_scalar_score",
-      "output_semantics": "candidate_teacher_consensus_evidence_not_quality_truth_or_direct_deletion_authority",
-      "implementation_contract_path": "configs/quality_teacher_panel_v1.json",
-      "implementation_contract_identity_sha256": "bcfcf764b68cb0fb4ee1f4dba1edbb2ac5de1497883c086d4664f0f3ccfc68ec",
+      "output_semantics": "typed_q1_q4_consensus_evidence_with_policy_mediated_deletion_authority",
+      "implementation_contract_path": "configs/quality_teacher_panel_v2.json",
+      "implementation_contract_identity_sha256": "d845a1d24bbed7a712e9102b0d5fcfa661890ab910035d77811599a549a72090",
       "supported_routes": ["code_artifact", "mathematical_content", "general_prose", "table_structured_data"],
       "supported_languages": ["english"],
-      "policy_contribution_authority": false,
+      "policy_contribution_authority": true,
       "direct_deletion_authority": false,
       "calibration": null,
       "validation": null

@@ -82,7 +82,7 @@
   },
   "registry_references": {
     "object_registry": "configs/framework_objects_v1.json",
-    "quality_teacher_panel": "configs/quality_teacher_panel_v1.json",
+    "quality_teacher_panel": "configs/quality_teacher_panel_v2.json",
     "profile_composition": "configs/framework_profiles_v1.json",
     "runtime_bridge": "configs/framework_runtime_bridge_v1.json"
   },

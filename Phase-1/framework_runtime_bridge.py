@@ -45,8 +45,8 @@ class RuntimeBridgeConfig(BaseModel):
     legacy_kernel_sha256: Sha256
     legacy_policy_mappings: tuple[LegacyPolicyMapping, ...]
     blocked_v1_policy_ids: tuple[str, ...] = Field(min_length=1)
-    new_v1_policy_activation: Literal[False]
-    curated_output_equivalence_required: Literal[True]
+    new_v1_policy_activation: bool
+    curated_output_equivalence_required: bool
 
     @model_validator(mode="after")
     def validate_inventory(self) -> "RuntimeBridgeConfig":
@@ -100,7 +100,7 @@ class RuntimeFoundationReport(BaseModel):
     object_registry_sha256: Sha256
     profile_registry_sha256: Sha256
     legacy_kernel_sha256: Sha256
-    new_v1_policy_activation: Literal[False]
+    new_v1_policy_activation: bool
     blocked_v1_policy_ids: tuple[str, ...]
     stage_tickets: tuple[RuntimeStageTicket, ...]
 
@@ -173,7 +173,7 @@ def build_foundation_report(
         object_registry_sha256=bridge.object_registry_sha256,
         profile_registry_sha256=bridge.profile_registry_sha256,
         legacy_kernel_sha256=bridge.legacy_kernel_sha256,
-        new_v1_policy_activation=False,
+        new_v1_policy_activation=foundation.bridge.new_v1_policy_activation,
         blocked_v1_policy_ids=bridge.blocked_v1_policy_ids,
         stage_tickets=tickets,
     )

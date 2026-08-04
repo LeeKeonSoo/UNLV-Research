@@ -43,6 +43,7 @@
         "stage_c_structural_scaffold",
         "stage_c_empty_html_shell",
         "stage_c_web_chrome_only_chunk",
+        "quality.teacher_panel_v2",
         "stage_c_coverage_guard"
       ],
       "stage_c_policy_ids": [
@@ -84,6 +85,11 @@
         "coverage": {
           "enforce_materialization_invariants": true,
           "selection_authority": false
+        },
+        "quality_teacher": {
+          "panel": "configs/quality_teacher_panel_v2.json",
+          "operating_point": "normal",
+          "abstain_action": "retain"
         }
       },
       "selector": {
@@ -120,6 +126,7 @@
         "stage_c_inline_license_header_candidate",
         "stage_c_inline_license_comment_block_candidate",
         "stage_c_repeated_span_template_candidate",
+        "quality.teacher_panel_v2",
         "stage_c_coverage_guard"
       ],
       "stage_c_policy_ids": [
@@ -168,6 +175,11 @@
         "coverage": {
           "enforce_materialization_invariants": true,
           "selection_authority": false
+        },
+        "quality_teacher": {
+          "panel": "configs/quality_teacher_panel_v2.json",
+          "operating_point": "hard",
+          "abstain_action": "retain"
         }
       },
       "selector": {

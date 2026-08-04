@@ -49,7 +49,7 @@ def test_normal_and_hard_share_policy_families_with_distinct_operating_points() 
         "redundancy.symmetric_near_duplicate_candidate",
         "quality.explicit_nonpayload",
         "coverage.representative_guard",
-        "quality.teacher_panel_candidate",
+        "quality.teacher_panel_v2",
     }
     assert normal.operating_point_id == "normal_v1"
     assert hard.operating_point_id == "hard_v1"

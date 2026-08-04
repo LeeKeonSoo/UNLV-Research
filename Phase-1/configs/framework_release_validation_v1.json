@@ -12,8 +12,7 @@
     "adversarial_negative"
   ],
   "blocked_policy_ids": [
-    "redundancy.symmetric_near_duplicate_candidate",
-    "quality.teacher_panel_candidate"
+    "redundancy.symmetric_near_duplicate_candidate"
   ],
   "equivalence_records": [
     {

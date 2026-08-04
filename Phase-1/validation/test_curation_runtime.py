@@ -162,10 +162,9 @@ def main() -> int:
         foundation = report["framework_runtime"]
         assert foundation["schema_version"] == "framework-runtime-foundation-report-v1"
         assert foundation["bridge_status"] == "runtime_integrated_block_7"
-        assert foundation["new_v1_policy_activation"] is False
+        assert foundation["new_v1_policy_activation"] is True
         assert foundation["blocked_v1_policy_ids"] == [
             "redundancy.symmetric_near_duplicate_candidate",
-            "quality.teacher_panel_candidate",
         ]
         assert [
             (ticket["stage_id"], ticket["core_id"])
@@ -194,6 +193,9 @@ def main() -> int:
             "quality_teacher_panel.py",
             "quality_teacher_response.py",
             "quality_teacher_runtime.py",
+            "quality_teacher_materialization.py",
+            "quality_teacher_unit_runtime.py",
+            "quality_teacher_batch_runtime.py",
             "run_curation.py",
             "span_level_template_compaction.py",
             "stage_c_selection.py",

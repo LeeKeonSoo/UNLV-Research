@@ -51,7 +51,7 @@ def test_manifest_declares_the_complete_core_and_stage_boundary() -> None:
     assert profile["independent_operating_point_calibration_required"] is True
     assert profile["arbitrary_threshold_override_allowed"] is False
     assert manifest["registry_references"]["quality_teacher_panel"] == (
-        "configs/quality_teacher_panel_v1.json"
+        "configs/quality_teacher_panel_v2.json"
     )
 
 
