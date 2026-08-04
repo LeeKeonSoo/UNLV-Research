@@ -42,7 +42,7 @@ POLICY_FINGERPRINT_CONFIGS = (
     "configs/framework_objects_v1.json",
     "configs/framework_profiles_v1.json",
     "configs/framework_runtime_bridge_v1.json",
-    "configs/contrastive_quality_protocol_v2.json",
+    "configs/quality_teacher_panel_v1.json",
     "configs/curation_contract.json",
     "configs/core_policy_registry.json",
     "configs/policy_cards.json",

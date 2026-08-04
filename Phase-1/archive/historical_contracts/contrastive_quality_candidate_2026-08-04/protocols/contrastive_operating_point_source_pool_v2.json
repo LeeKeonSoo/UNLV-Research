@@ -1,0 +1,23 @@
+{
+  "schema_version": "contrastive-operating-point-source-pool-revision-v2",
+  "status": "revised_after_sample_size_preflight",
+  "parent_protocol": {
+    "path": "protocols/contrastive_operating_point_source_pool_v1.json",
+    "sha256": "c8f241fdf12289efe1bf1b38a372eb6d8bcb4f4b2b8fd1590fcc3740f6df5262"
+  },
+  "preflight_failure": {
+    "path": "validation/frozen_contracts/contrastive_source_pool_v1_collection_failure.json",
+    "sha256": "842f4341471c9a8de31c34e89d2fd6cd88282716498e13fb4b008c6a59ec4462"
+  },
+  "source_overrides": [
+    {
+      "source_id": "math-arxiv-papers-raw-v1",
+      "exact_token_collection_target": 5000000,
+      "collection_output": "D:/UNLV-Research/contrastive_quality_v2/sources/math_arxiv_papers_raw_v2.jsonl"
+    }
+  ],
+  "revision_basis": "sample_count_only",
+  "model_scores_read": false,
+  "benchmark_outcomes_read": false,
+  "utility_read": false
+}

@@ -18,7 +18,6 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     }
     expected.add("validation/test_inline_license_comment_block_compaction.py")
     expected.add("validation/test_python_code_evidence_audit.py")
-    expected.add("scripts/materialize_contrastive_source_pool_v1.py")
     expected.add("validation/test_coverage_invariants.py")
     expected.add("validation/test_weak_structural_quality_rules.py")
     expected.add("validation/test_weak_development_gate.py")
@@ -65,6 +64,7 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("validation/test_quality_teacher_panel_v1.py")
     expected.add("validation/test_quality_teacher_qualification_v1.py")
     expected.add("validation/test_quality_teacher_response_v1.py")
+    expected.add("validation/test_quality_candidate_authority_v1.py")
     expected.add("validation/test_positive_quality_coverage_contract.py")
     expected.add("validation/test_content_routing_quality_coverage_contract_v2.py")
     expected.add("content_router.py")
@@ -146,11 +146,6 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("quality_effect_calibration.py")
     expected.add("scripts/build_quality_effect_engine_v2_audit.py")
     expected.add("validation/test_quality_effect_engine_v2.py")
-    expected.add("contrastive_quality_provider.py")
-    expected.add("contrastive_quality_audit.py")
-    expected.add("scripts/run_contrastive_quality_provider_v1.py")
-    expected.add("validation/test_contrastive_quality_audit_v1.py")
-    expected.add("validation/test_contrastive_quality_provider_v1.py")
     expected.add("coverage_contract.py")
     expected.add("coverage_metrics.py")
     expected.add("coverage_engine.py")
@@ -197,29 +192,20 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
         {
             "framework_objects.py",
             "stage_permissions.py",
-            "contrastive_quality_contract.py",
             "framework_profiles.py",
             "framework_runtime_bridge.py",
             "framework_equivalence_fixture.py",
             "framework_release_validation.py",
             "framework_policy_ablation.py",
             "near_duplicate_calibration.py",
-            "contrastive_operating_point_gate.py",
-            "contrastive_operating_point_contract.py",
-            "contrastive_source_pool_contract.py",
-            "contrastive_source_pool_materialization.py",
             "validation/test_framework_manifest_v1.py",
             "validation/test_framework_objects_v1.py",
             "validation/test_stage_permissions_v1.py",
-            "validation/test_contrastive_quality_protocol_v2.py",
             "validation/test_framework_profiles_v1.py",
             "validation/test_framework_runtime_bridge_v1.py",
             "validation/test_framework_release_validation_v1.py",
             "validation/test_framework_policy_ablation_v1.py",
             "validation/test_near_duplicate_calibration_v1.py",
-            "validation/test_contrastive_operating_point_gate_v1.py",
-            "validation/test_contrastive_source_pool_contract_v1.py",
-            "validation/test_contrastive_source_pool_materialization_v1.py",
         }
     )
     actual = {
@@ -275,7 +261,6 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
     expected.add("validity_v2.json")
     expected.add("redundancy_v2.json")
     expected.add("quality_effect_engine_v2.json")
-    expected.add("contrastive_quality_provider_qwen3_4b_8b_v1.json")
     expected.add("coverage_engine_v2.json")
     expected.add("joint_selector_profiles_v1.json")
     expected.add("development_selection_v1.json")
@@ -284,13 +269,11 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
         {
             "curation_framework_v1.json",
             "framework_objects_v1.json",
-            "contrastive_quality_protocol_v2.json",
             "framework_profiles_v1.json",
             "framework_runtime_bridge_v1.json",
             "framework_release_validation_v1.json",
             "framework_policy_ablation_v1.json",
             "near_duplicate_calibration_v1.json",
-            "contrastive_operating_point_gate_v1.json",
             "quality_teacher_panel_v1.json",
         }
     )

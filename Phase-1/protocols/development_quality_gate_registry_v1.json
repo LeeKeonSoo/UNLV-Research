@@ -7,7 +7,7 @@
   "route_evidence_gate_path": "configs/quality_route_evidence_gate_v2.json",
   "route_evidence_gate_file_sha256": "a2b0b88ab32ea4a95b3350aeaf89b76071465c1dfd6e20df805cff0197075acb",
   "provider_registry_path": "configs/model_provider_registry_v1.json",
-  "provider_registry_file_sha256": "28923e9b7b7c81666edcf006b2e1adb8cb9a7a63f11e3a9bef39374789aaea5f",
+  "provider_registry_file_sha256": "70e814cf1978f91f44a0cdb181aef143ca7cd844573a3f4ad8227976d5b65736",
   "contract_fixture_path": "validation/frozen_contracts/quality_effect_engine_v2_contract_audit.json",
   "contract_fixture_file_sha256": "8600f210ecdfaae7f6289307545867408605da5eeee4b6f0cf4af8978dee9f87",
   "required_domains": [

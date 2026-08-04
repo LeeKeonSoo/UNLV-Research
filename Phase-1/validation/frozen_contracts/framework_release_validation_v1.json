@@ -1,13 +1,13 @@
 {
   "schema_version": "framework-release-validation-v1",
-  "protocol_sha256": "d96d7cc46375da6b99ac8ca3b45decfa66f8387d5204edec54343451ff3c2912",
+  "protocol_sha256": "93ce41e456b152036da941a718201345e3404300b60751b04a64ff9eac94d65d",
   "implementation_integrity": "passed",
   "framework_release": "blocked",
   "core_behavior": {
     "passed": true,
     "fixture_sha256": "74febac8e5f98c12375fca24e69a32336ffba01287aa7ecc29e06ec0069cd153",
     "case_matrix_sha256": "0bce07624a3ee873c41d88c46c442e9f319e29ff99ec968846aa180b42439459",
-    "policy_registry_sha256": "96778006138743fac093016eb3b67715a61e6af5e46b6905a70c49dff6748935",
+    "policy_registry_sha256": "b68e347ab8af11c60a1119e68f74012a08614b57442a9199c54008b11e64346d",
     "fixture_kinds": [
       "adversarial_negative",
       "adversarial_positive",
@@ -157,7 +157,7 @@
     "profile_contains_unpromoted_policy",
     "profile_operating_points_uncalibrated",
     "redundancy.symmetric_near_duplicate_candidate:blocked",
-    "quality.contrastive_alignment_candidate:blocked"
+    "quality.teacher_panel_candidate:blocked"
   ],
   "claim_boundary": "Block 8 validates implementation integrity and frozen fixture behavior only; it does not promote candidate policies or establish downstream effectiveness."
 }

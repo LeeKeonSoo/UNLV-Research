@@ -36,11 +36,11 @@ def test_registry_parses_complete_core_metric_policy_method_lineage() -> None:
             metric = metrics[metric_id]
             assert metric.core_id is policy.core_id
             assert metric.method_id in methods
-    contrastive = next(
-        policy for policy in registry.policies if policy.id == "quality.contrastive_alignment_candidate"
+    teacher_panel = next(
+        policy for policy in registry.policies if policy.id == "quality.teacher_panel_candidate"
     )
-    assert tuple(item.path for item in contrastive.evidence) == (
-        "validation/frozen_contracts/contrastive_operating_point_gate_v1.json",
+    assert tuple(item.path for item in teacher_panel.evidence) == (
+        "configs/quality_teacher_panel_v1.json",
     )
 
 

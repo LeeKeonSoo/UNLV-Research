@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+import hashlib
+import json
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -143,8 +145,67 @@ class ContrastiveSourcePoolProtocol(BaseModel):
         return self
 
 
+class ProtocolRef(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    path: str = Field(min_length=1)
+    sha256: Sha256
+
+
+class SourceCollectionOverride(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    source_id: str = Field(min_length=1)
+    exact_token_collection_target: int = Field(gt=0)
+    collection_output: str = Field(min_length=1)
+
+
+class ContrastiveSourcePoolRevision(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: Literal["contrastive-operating-point-source-pool-revision-v2"]
+    status: Literal["revised_after_sample_size_preflight"]
+    parent_protocol: ProtocolRef
+    preflight_failure: ProtocolRef
+    source_overrides: tuple[SourceCollectionOverride, ...] = Field(min_length=1)
+    revision_basis: Literal["sample_count_only"]
+    model_scores_read: Literal[False]
+    benchmark_outcomes_read: Literal[False]
+    utility_read: Literal[False]
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def load_source_pool_protocol(path: Path) -> ContrastiveSourcePoolProtocol:
-    return ContrastiveSourcePoolProtocol.model_validate_json(path.read_text(encoding="utf-8"))
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("schema_version") == "contrastive-operating-point-source-pool-v1":
+        return ContrastiveSourcePoolProtocol.model_validate(payload)
+    revision = ContrastiveSourcePoolRevision.model_validate(payload)
+    root = path.resolve().parents[1]
+    parent_path = root / revision.parent_protocol.path
+    failure_path = root / revision.preflight_failure.path
+    if _sha256(parent_path) != revision.parent_protocol.sha256:
+        raise ContrastiveSourcePoolError("parent_source_protocol_hash_mismatch")
+    if _sha256(failure_path) != revision.preflight_failure.sha256:
+        raise ContrastiveSourcePoolError("source_preflight_failure_hash_mismatch")
+    parent = load_source_pool_protocol(parent_path)
+    overrides = {item.source_id: item for item in revision.source_overrides}
+    if not set(overrides).issubset({item.source_id for item in parent.sources}):
+        raise ContrastiveSourcePoolError("source_override_id_unknown")
+    sources = tuple(
+        source.model_copy(
+            update={
+                "exact_token_collection_target": overrides[source.source_id].exact_token_collection_target,
+                "collection_output": overrides[source.source_id].collection_output,
+            }
+        )
+        if source.source_id in overrides
+        else source
+        for source in parent.sources
+    )
+    return parent.model_copy(update={"sources": sources})
 
 
-__all__ = ["ContrastiveSourcePoolError", "ContrastiveSourcePoolProtocol", "LocationKind", "PoolRole", "Route", "SourceSpec", "load_source_pool_protocol"]
+__all__ = ["ContrastiveSourcePoolError", "ContrastiveSourcePoolProtocol", "ContrastiveSourcePoolRevision", "LocationKind", "PoolRole", "Route", "SourceSpec", "load_source_pool_protocol"]

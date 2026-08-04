@@ -10,21 +10,13 @@
       "path": "validation/frozen_contracts/development_redundancy_gate_report_v1.json",
       "sha256": "a00c22653532794d2ebef4789549a7d56273a4aee290552bfc0337c32cf41ba5"
     },
-    "quality_gate": {
-      "path": "validation/frozen_contracts/development_quality_gate_report_v1.json",
-      "sha256": "d4b94f17fc15e45b153922b0bdf5bf98ec5db2e1e4565d86e7bb0ed255cc6823"
-    },
-    "contrastive_audit": {
-      "path": "validation/frozen_contracts/contrastive_quality_audit_qwen3_4b_8b_v1.json",
-      "sha256": "ff4508edaf8cb7a4ddc8a17b5b083f9dcca1f65a803ebabac61efecf73a65f30"
-    },
-    "contrastive_protocol": {
-      "path": "configs/contrastive_quality_protocol_v2.json",
-      "sha256": "b81fd0bfd13f724adf742fa976b00a03d89a2f0412381919b12deed3413291a8"
+    "quality_teacher_panel": {
+      "path": "configs/quality_teacher_panel_v1.json",
+      "sha256": "a225f8b4e011d1d8b54e7e83ad4df1a642c52253d0e3b76866b7fbf02d183e8b"
     }
   },
   "exact_policy_id": "redundancy.exact_text_family",
   "near_policy_id": "redundancy.symmetric_near_duplicate_candidate",
-  "contrastive_policy_id": "quality.contrastive_alignment_candidate",
+  "quality_policy_id": "quality.teacher_panel_candidate",
   "claim_boundary": "Block 9 records disjoint development decisions only. It does not read benchmark outcomes, activate runtime policies, or establish natural-budget downstream effectiveness."
 }

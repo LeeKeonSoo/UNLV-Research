@@ -36,7 +36,7 @@ def test_blocked_v1_policies_remain_compatibility_only() -> None:
     # When / Then: blocked Policies cannot be declared newly active by the bridge.
     assert set(foundation.bridge.blocked_v1_policy_ids) == {
         "redundancy.symmetric_near_duplicate_candidate",
-        "quality.contrastive_alignment_candidate",
+        "quality.teacher_panel_candidate",
     }
     assert all(lifecycle_by_id[policy_id] == "blocked" for policy_id in foundation.bridge.blocked_v1_policy_ids)
     assert all(entry.disposition == "legacy_compatibility_only" for entry in foundation.bridge.legacy_policy_mappings)

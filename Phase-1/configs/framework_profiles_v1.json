@@ -1,15 +1,15 @@
 {
   "schema_version": "framework-profiles-v1",
   "status": "runtime_integrated_block_7",
-  "framework_manifest_sha256": "fbd0d8d6765e1e146086597e81aa276d4b29926f0dc3495f36c39226a4d9b038",
-  "object_registry_sha256": "b805692cb68a7b10c8e35bb518b7c030365c40d77766d71b1b60f0bf86d23441",
+  "framework_manifest_sha256": "c5a5b649101ca7c70c9e1d68b5ee6ad1978a7fd3f7048578ca2921f8d87de2b4",
+  "object_registry_sha256": "4bbb0633f1c62949acbb5cf118991b920379900f85ceea6671a8ef0c2b821ecc",
   "policy_lifecycles": [
     {"policy_id": "validity.interpretable_text", "lifecycle": "candidate"},
     {"policy_id": "redundancy.exact_text_family", "lifecycle": "development_passed"},
     {"policy_id": "redundancy.symmetric_near_duplicate_candidate", "lifecycle": "blocked"},
     {"policy_id": "quality.explicit_nonpayload", "lifecycle": "candidate"},
     {"policy_id": "coverage.representative_guard", "lifecycle": "candidate"},
-    {"policy_id": "quality.contrastive_alignment_candidate", "lifecycle": "blocked"}
+    {"policy_id": "quality.teacher_panel_candidate", "lifecycle": "blocked"}
   ],
   "profiles": [
     {
@@ -21,7 +21,7 @@
         "redundancy.symmetric_near_duplicate_candidate",
         "quality.explicit_nonpayload",
         "coverage.representative_guard",
-        "quality.contrastive_alignment_candidate"
+        "quality.teacher_panel_candidate"
       ],
       "operating_point_id": "normal_v1",
       "strength_rank": 1,
@@ -40,7 +40,7 @@
         "redundancy.symmetric_near_duplicate_candidate",
         "quality.explicit_nonpayload",
         "coverage.representative_guard",
-        "quality.contrastive_alignment_candidate"
+        "quality.teacher_panel_candidate"
       ],
       "operating_point_id": "hard_v1",
       "strength_rank": 2,

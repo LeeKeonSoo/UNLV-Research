@@ -29,7 +29,7 @@ def main() -> int:
     assert set(decisions) == {
         "redundancy.exact_text_family",
         "redundancy.symmetric_near_duplicate_candidate",
-        "quality.contrastive_alignment_candidate",
+        "quality.teacher_panel_candidate",
     }
     exact = decisions["redundancy.exact_text_family"]
     assert exact["lifecycle_decision"] == "development_passed"
@@ -43,12 +43,14 @@ def main() -> int:
     assert near["candidate_units"] == 860
     assert "near_positive_nonexact_equivalence_missing" in near["blocker_codes"]
 
-    contrastive = decisions["quality.contrastive_alignment_candidate"]
-    assert contrastive["lifecycle_decision"] == "blocked"
-    assert contrastive["threshold_emitted"] is False
-    assert contrastive["scored_units"] == 1500
-    assert "common_baseline_missing" in contrastive["blocker_codes"]
-    assert "background_provider_unassigned" in contrastive["blocker_codes"]
+    teacher_panel = decisions["quality.teacher_panel_candidate"]
+    assert teacher_panel["lifecycle_decision"] == "blocked"
+    assert teacher_panel["operating_point_emitted"] is False
+    assert teacher_panel["teacher_count"] == 3
+    assert teacher_panel["policy_count"] == 4
+    assert teacher_panel["smoke_fixture_target"] == 512
+    assert teacher_panel["protected_fixture_target"] == 800
+    assert "quality_teacher_protected_fixture_gate_missing" in teacher_panel["blocker_codes"]
 
     assert report["hard_profile_development_ready"] is False
     assert report["block_10_authorized"] is False
@@ -64,10 +66,10 @@ def main() -> int:
     assert exact_registry_policy["evidence"] == [
         {
             "path": "validation/frozen_contracts/framework_policy_ablation_v1.json",
-            "sha256": "bbe6775eaaf4bfae995c369891884ae7b049f895d8e9da4272b7db1e1b2346cc",
+            "sha256": "d6d1f8caa55ca40c27fc43672a84645d2ec37f587678a76b69402cef3965346f",
         }
     ]
-    print("[framework-policy-ablation-v1] exact passed; near and contrastive blocked: pass")
+    print("[framework-policy-ablation-v1] exact passed; near and teacher panel blocked: pass")
     return 0
 
 

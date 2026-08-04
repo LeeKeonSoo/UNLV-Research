@@ -62,15 +62,16 @@ more conservative removal mode and Hard is stronger while preserving
 fraction, or token budget. Both redesigned operating points remain uncalibrated
 and release-disabled; the legacy-compatible selector behavior is unchanged.
 
-Block 10B adds a fail-closed Contrastive Quality operating-point gate. The
-current two-model audit cannot emit Normal or Hard thresholds. Block 10C-1 now
-preregisters an exact-revision source pool with one common Stage-A baseline and
-one shared Normal/Hard eligible pool. Each route has one baseline and two
-eligible source groups; the Math third source is independently routed arXiv
-text rather than Stack Exchange content that could overlap OpenWebMath. The
-qualified reference/background roles, measured effect bins, and natural-budget
-external evidence are still missing. These are evidence requirements, not
-runtime selector inputs.
+The sole current model-driven Quality candidate is the three-teacher Quality
+Ranker in `configs/quality_teacher_panel_v1.json`. It evaluates Q1 Correctness
+Evidence, Q2 Semantic Coherence, Q3 Substantive Payload, and Q4 Learnable
+Relations independently as `pass`, `fail`, or `abstain`. It remains blocked
+until smoke fixtures, protected-fixture false-removal bounds, consensus
+stability, and Normal/Hard operating points pass. Teacher output alone cannot
+delete data.
+
+The previous loss-gap Quality experiment is retired and preserved only under
+`archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.
 
 ## Verification
 
@@ -84,7 +85,8 @@ conda run -n research python validation\test_curation_runtime.py
 conda run -n research python validation\test_policy_profile_contract.py
 conda run -n research python validation\test_core_policy_runtime_linkage.py
 conda run -n research python validation\test_core_behavior_audit_v3.py
-conda run -n research python validation\test_contrastive_operating_point_gate_v1.py
+conda run -n research python validation\test_quality_candidate_authority_v1.py
+conda run -n research python validation\test_quality_teacher_panel_v1.py
 conda run -n research python validation\test_source_contract.py
 ```
 

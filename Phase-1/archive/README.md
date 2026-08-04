@@ -8,6 +8,9 @@ not be imported by current curation modules.
   utilities.
 - `historical_contracts/` contains superseded dataset and metric contracts that
   are not referenced by the current runtime.
+- `historical_contracts/contrastive_quality_candidate_2026-08-04/` preserves
+  the retired target/reference loss-gap Quality experiment and its negative
+  calibration evidence.
 - Documentation snapshots preserve earlier claims and terminology.
 - Historical outputs may explain prior results but cannot establish current
   behavior without an explicit replay protocol.

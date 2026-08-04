@@ -34,15 +34,15 @@ def test_registry_exposes_replaceable_roles_without_direct_deletion_authority() 
     assert all(not slot.provider_output_alone_may_delete for slot in registry.slots.values())
 
 
-def test_qwen_loss_and_embedding_candidates_are_audit_only() -> None:
+def test_teacher_panel_and_embedding_candidates_are_audit_only() -> None:
     registry = load_provider_registry(REGISTRY)
     providers = {provider.provider_id: provider for provider in registry.providers}
 
-    excess_loss = providers["qwen3-4b-8b-excess-loss-candidate"]
+    teacher_panel = providers["quality-teacher-panel-v1"]
     embedding = providers["qwen3-embedding-0.6b-semantic-candidate"]
-    assert excess_loss.lifecycle is ProviderLifecycle.AUDIT_ONLY
+    assert teacher_panel.lifecycle is ProviderLifecycle.AUDIT_ONLY
     assert embedding.lifecycle is ProviderLifecycle.AUDIT_ONLY
-    assert excess_loss.policy_contribution_authority is False
+    assert teacher_panel.policy_contribution_authority is False
     assert embedding.policy_contribution_authority is False
 
 
@@ -70,6 +70,6 @@ def test_changed_provider_fingerprint_cannot_inherit_calibration() -> None:
 
 if __name__ == "__main__":
     test_registry_exposes_replaceable_roles_without_direct_deletion_authority()
-    test_qwen_loss_and_embedding_candidates_are_audit_only()
+    test_teacher_panel_and_embedding_candidates_are_audit_only()
     test_changed_provider_fingerprint_cannot_inherit_calibration()
     print("[model-provider-contract-v1] replacement and fail-closed gates: pass")

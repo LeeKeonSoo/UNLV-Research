@@ -1,0 +1,41 @@
+{
+  "schema_version": "contrastive-source-pool-collection-failure-v1",
+  "status": "blocked_insufficient_stage_a_survivors",
+  "source_protocol_sha256": "c8f241fdf12289efe1bf1b38a372eb6d8bcb4f4b2b8fd1590fcc3740f6df5262",
+  "required_records_per_source_after_stage_a": 200,
+  "source_reports": [
+    {
+      "source_id": "code-stackoverflow-raw-v1",
+      "artifact_path": "D:/UNLV-Research/contrastive_quality_v2/sources/code_stackoverflow_raw_v1.jsonl",
+      "artifact_sha256": "ed1437696e55f3d40600a6dc12fd1078137fbdeb41001825f0bbf9a1e9b10344",
+      "record_count": 744,
+      "exact_tokens": 1003901,
+      "maximum_record_tokens": 23862,
+      "sample_requirement_met": true
+    },
+    {
+      "source_id": "math-arxiv-papers-raw-v1",
+      "artifact_path": "D:/UNLV-Research/contrastive_quality_v2/sources/math_arxiv_papers_raw_v1.jsonl",
+      "artifact_sha256": "100ce12d6f9ae7dc9e74454ffc05209a24dd369be94b2e7989c349d7003a9604",
+      "record_count": 54,
+      "exact_tokens": 1029638,
+      "maximum_record_tokens": 218329,
+      "sample_requirement_met": false
+    },
+    {
+      "source_id": "general-openwebtext-raw-v1",
+      "artifact_path": "D:/UNLV-Research/contrastive_quality_v2/sources/general_openwebtext_raw_v1.jsonl",
+      "artifact_sha256": "fb25523953c4308ec26e2947df3f9b6e05d1b3034cffd8023e688b316e42bf17",
+      "record_count": 884,
+      "exact_tokens": 1001037,
+      "maximum_record_tokens": 24739,
+      "sample_requirement_met": true
+    }
+  ],
+  "blocker_codes": ["stage_a_survivors_below_required_sample:math-arxiv-papers-raw-v1"],
+  "permitted_revision": "increase_math_collection_token_target_without_reading_model_or_benchmark_outcomes",
+  "model_scores_read": false,
+  "benchmark_outcomes_read": false,
+  "utility_read": false,
+  "runtime_activation_mutated": false
+}

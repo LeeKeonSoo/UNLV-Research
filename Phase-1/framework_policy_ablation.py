@@ -9,6 +9,8 @@ from typing import Literal, TypeAlias, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from quality_teacher_panel import TeacherPanel
+
 JsonScalar: TypeAlias = str | int | float | bool | None
 JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
 JsonMap: TypeAlias = dict[str, JsonValue]
@@ -36,9 +38,7 @@ class EvidenceBundle(BaseModel):
 
     development_admission: EvidenceRef
     redundancy_gate: EvidenceRef
-    quality_gate: EvidenceRef
-    contrastive_audit: EvidenceRef
-    contrastive_protocol: EvidenceRef
+    quality_teacher_panel: EvidenceRef
 
 
 class PolicyAblationProtocol(BaseModel):
@@ -49,7 +49,7 @@ class PolicyAblationProtocol(BaseModel):
     evidence: EvidenceBundle
     exact_policy_id: Literal["redundancy.exact_text_family"]
     near_policy_id: Literal["redundancy.symmetric_near_duplicate_candidate"]
-    contrastive_policy_id: Literal["quality.contrastive_alignment_candidate"]
+    quality_policy_id: Literal["quality.teacher_panel_candidate"]
     claim_boundary: str = Field(min_length=1)
 
 
@@ -83,49 +83,6 @@ class RedundancyEvidence(BaseModel):
     selector_membership_mutated: Literal[False]
 
 
-class QualityEvidence(BaseModel):
-    model_config = ConfigDict(extra="ignore", frozen=True)
-
-    status: Literal["blocked"]
-    provider_active: Literal[False]
-    empirical_effect_calibration_complete: Literal[False]
-    common_baseline_empirically_verified: Literal[False]
-    blocker_codes: tuple[str, ...]
-    runtime_activation: Literal[False]
-    benchmark_outcomes_read: Literal[False]
-    utility_read: Literal[False]
-    selector_membership_mutated: Literal[False]
-
-
-class ContrastiveEvidence(BaseModel):
-    model_config = ConfigDict(extra="ignore", frozen=True)
-
-    status: Literal["blocked"]
-    scored_record_count: int = Field(ge=0)
-    blocker_codes: tuple[str, ...]
-    scalar_quality_score_emitted: Literal[False]
-    threshold_decision_emitted: Literal[False]
-    benchmark_outcomes_read: Literal[False]
-    utility_read: Literal[False]
-    runtime_activation: Literal[False]
-
-
-class CalibrationEvidence(BaseModel):
-    model_config = ConfigDict(extra="ignore", frozen=True)
-
-    status: Literal["blocked"]
-    blocker_codes: tuple[str, ...]
-
-
-class ContrastiveProtocolEvidence(BaseModel):
-    model_config = ConfigDict(extra="ignore", frozen=True)
-
-    calibration: CalibrationEvidence
-    weighted_scalar_emitted: Literal[False]
-    runtime_authority: Literal[False]
-    direct_deletion_authority: Literal[False]
-
-
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -148,11 +105,7 @@ def build_policy_ablation(root: Path) -> JsonMap:
     protocol = PolicyAblationProtocol.model_validate_json(protocol_path.read_text(encoding="utf-8"))
     admission = _load_evidence(root, protocol.evidence.development_admission, AdmissionEvidence)
     redundancy = _load_evidence(root, protocol.evidence.redundancy_gate, RedundancyEvidence)
-    quality = _load_evidence(root, protocol.evidence.quality_gate, QualityEvidence)
-    contrastive = _load_evidence(root, protocol.evidence.contrastive_audit, ContrastiveEvidence)
-    contrastive_protocol = _load_evidence(
-        root, protocol.evidence.contrastive_protocol, ContrastiveProtocolEvidence
-    )
+    teacher_panel = _load_evidence(root, protocol.evidence.quality_teacher_panel, TeacherPanel)
     admission_passed = (
         admission.benchmark_exclusion_complete
         and not admission.blocker_codes
@@ -169,11 +122,14 @@ def build_policy_ablation(root: Path) -> JsonMap:
         and redundancy.cross_parent_safe_family_count == 0
     )
     near_blockers = ["near_positive_nonexact_equivalence_missing", "near_threshold_not_identifiable"]
-    contrastive_blockers = sorted(
-        set(quality.blocker_codes)
-        | set(contrastive.blocker_codes)
-        | set(contrastive_protocol.calibration.blocker_codes)
-    )
+    quality_blockers = [
+        "quality_teacher_panel_not_runtime_active",
+        "quality_teacher_smoke_fixture_matrix_missing",
+        "quality_teacher_protected_fixture_gate_missing",
+        "quality_teacher_consensus_stability_missing",
+        "quality_normal_operating_point_missing",
+        "quality_hard_operating_point_missing",
+    ]
     decisions: list[JsonValue] = [
         {
             "policy_id": protocol.exact_policy_id,
@@ -194,11 +150,14 @@ def build_policy_ablation(root: Path) -> JsonMap:
             "blocker_codes": near_blockers,
         },
         {
-            "policy_id": protocol.contrastive_policy_id,
+            "policy_id": protocol.quality_policy_id,
             "lifecycle_decision": "blocked",
-            "scored_units": contrastive.scored_record_count,
-            "threshold_emitted": False,
-            "blocker_codes": contrastive_blockers,
+            "teacher_count": len(teacher_panel.teachers),
+            "policy_count": len(teacher_panel.policies),
+            "smoke_fixture_target": teacher_panel.fixture_matrix.total,
+            "protected_fixture_target": teacher_panel.promotion_gate.protected_fixture_count,
+            "operating_point_emitted": False,
+            "blocker_codes": quality_blockers,
         },
     ]
     report: JsonMap = {

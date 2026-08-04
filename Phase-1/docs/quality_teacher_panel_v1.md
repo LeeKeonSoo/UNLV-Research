@@ -69,7 +69,11 @@ Build. The initial language scope is English. Benchmark outcomes, NLL, Utility,
 source reputation, domain quota, target retention, maximum token budget, and
 confirmatory data are forbidden teacher and runtime inputs.
 
-The NVIDIA API smoke test is blocked until `NVIDIA_API_KEY` is available. The
-hosted endpoint is `https://integrate.api.nvidia.com/v1`; model IDs and raw
-responses must be frozen because a hosted endpoint does not expose immutable
-weight artifacts in the same way as the local Hugging Face revision.
+The NVIDIA API key was detected and both hosted endpoints completed a public
+smoke request on 2026-08-04. GLM-5.2 returned JSON inside a Markdown fence, and
+Nemotron returned an out-of-contract decision enum on the first prompt. This
+confirms connectivity, not schema qualification. The production adapter must
+issue one schema-only retry and convert a second invalid response to
+`abstain`. The hosted endpoint is `https://integrate.api.nvidia.com/v1`; model
+IDs and raw response hashes must be frozen because a hosted endpoint does not
+expose immutable weight artifacts like the local Hugging Face revision.

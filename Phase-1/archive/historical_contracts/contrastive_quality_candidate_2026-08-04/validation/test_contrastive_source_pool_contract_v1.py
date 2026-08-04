@@ -10,7 +10,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from contrastive_source_pool_contract import ContrastiveSourcePoolProtocol, PoolRole, Route
+from contrastive_source_pool_contract import (
+    ContrastiveSourcePoolProtocol,
+    PoolRole,
+    Route,
+    load_source_pool_protocol,
+)
 
 
 def _protocol() -> ContrastiveSourcePoolProtocol:
@@ -74,8 +79,23 @@ def test_source_pool_freezes_exact_remote_revisions_and_disjoint_confirmatory_gr
     assert protocol.sampling.stage_a_policy == "text_only_v2"
 
 
+def test_v2_revision_changes_only_math_collection_size_after_frozen_preflight() -> None:
+    original = _protocol()
+    revised = load_source_pool_protocol(
+        ROOT / "protocols" / "contrastive_operating_point_source_pool_v2.json"
+    )
+    original_by_id = {source.source_id: source for source in original.sources}
+    revised_by_id = {source.source_id: source for source in revised.sources}
+
+    assert revised_by_id["math-arxiv-papers-raw-v1"].exact_token_collection_target == 5_000_000
+    assert revised_by_id["math-arxiv-papers-raw-v1"].collection_output.endswith("_v2.jsonl")
+    for source_id in original_by_id.keys() - {"math-arxiv-papers-raw-v1"}:
+        assert revised_by_id[source_id] == original_by_id[source_id]
+
+
 if __name__ == "__main__":
     test_frozen_source_pool_has_one_baseline_and_two_eligible_sources_per_route()
     test_source_pool_rejects_baseline_source_reused_by_an_arm()
     test_source_pool_freezes_exact_remote_revisions_and_disjoint_confirmatory_groups()
+    test_v2_revision_changes_only_math_collection_size_after_frozen_preflight()
     print("[contrastive-source-pool-v1] frozen source roles and disjointness: pass")

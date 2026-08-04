@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import sys
 from collections.abc import Iterable
@@ -24,6 +25,12 @@ from contrastive_source_pool_materialization import build_source_pools, read_jso
 from scripts.collect_huggingface_text_candidate_pool import collect_rows
 
 JsonMap = dict[str, Any]
+
+
+def _load_runtime_dependencies(importer: Any = importlib.import_module) -> tuple[Any, Any]:
+    datasets_module = importer("datasets")
+    transformers_module = importer("transformers")
+    return datasets_module.load_dataset, transformers_module.AutoTokenizer
 
 
 def _remote_url(source: SourceSpec) -> str:
@@ -59,9 +66,12 @@ def _route_filter(rows: Iterable[JsonMap], source: SourceSpec) -> Iterable[JsonM
     )
 
 
-def _remote_rows(source: SourceSpec, timestamp: str, token_counter: Any) -> list[JsonMap]:
-    from datasets import load_dataset
-
+def _remote_rows(
+    source: SourceSpec,
+    timestamp: str,
+    token_counter: Any,
+    load_dataset: Any,
+) -> list[JsonMap]:
     upstream = load_dataset(
         source.loader,
         data_files=_remote_url(source),
@@ -111,7 +121,7 @@ def main() -> int:
     parser.add_argument(
         "--protocol",
         type=Path,
-        default=ROOT / "protocols" / "contrastive_operating_point_source_pool_v1.json",
+        default=ROOT / "protocols" / "contrastive_operating_point_source_pool_v2.json",
     )
     parser.add_argument("--tokenizer-path", type=Path, required=True)
     parser.add_argument(
@@ -121,16 +131,20 @@ def main() -> int:
     )
     args = parser.parse_args()
     protocol = load_source_pool_protocol(args.protocol)
-    from transformers import AutoTokenizer
-
-    tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_path, local_files_only=True)
+    load_dataset, auto_tokenizer = _load_runtime_dependencies()
+    tokenizer = auto_tokenizer.from_pretrained(args.tokenizer_path, local_files_only=True)
     token_counter = lambda text: len(tokenizer.encode(text, add_special_tokens=False))
     rows_by_source: dict[str, Iterable[JsonMap]] = {}
     for source in protocol.sources:
         rows_by_source[source.source_id] = (
             _local_rows(source)
             if source.location_kind is LocationKind.LOCAL_JSONL
-            else _remote_rows(source, protocol.collection_timestamp_utc, token_counter)
+            else _remote_rows(
+                source,
+                protocol.collection_timestamp_utc,
+                token_counter,
+                load_dataset,
+            )
         )
     baseline, eligible, manifest = build_source_pools(protocol, rows_by_source, token_counter)
     baseline_path = Path(protocol.sampling.common_baseline_output)

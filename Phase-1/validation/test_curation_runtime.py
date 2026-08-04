@@ -165,7 +165,7 @@ def main() -> int:
         assert foundation["new_v1_policy_activation"] is False
         assert foundation["blocked_v1_policy_ids"] == [
             "redundancy.symmetric_near_duplicate_candidate",
-            "quality.contrastive_alignment_candidate",
+            "quality.teacher_panel_candidate",
         ]
         assert [
             (ticket["stage_id"], ticket["core_id"])
