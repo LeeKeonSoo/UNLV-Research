@@ -115,16 +115,16 @@
       "expected_confidence": "ambiguous_evidence"
     },
     {
-      "id": "unsupported_script_is_ood",
+      "id": "registered_greek_script_is_supported",
       "text": "\u0391\u03c5\u03c4\u03cc \u03b5\u03af\u03bd\u03b1\u03b9 \u03ad\u03bd\u03b1 \u03c0\u03b1\u03c1\u03ac\u03b4\u03b5\u03b9\u03b3\u03bc\u03b1 \u03ba\u03b5\u03b9\u03bc\u03ad\u03bd\u03bf\u03c5 \u03bc\u03b5 \u03c0\u03bf\u03bb\u03bb\u03ad\u03c2 \u03bb\u03ad\u03be\u03b5\u03b9\u03c2. \u03a0\u03b5\u03c1\u03b9\u03ad\u03c7\u03b5\u03b9 \u03ba\u03b1\u03b9 \u03b4\u03b5\u03cd\u03c4\u03b5\u03c1\u03b7 \u03c0\u03c1\u03cc\u03c4\u03b1\u03c3\u03b7 \u03b3\u03b9\u03b1 \u03ad\u03bb\u03b5\u03b3\u03c7\u03bf.",
       "expected_axes": {
         "content_format": ["prose"],
         "structural_state": ["unknown"],
-        "language_script": ["unknown"]
+        "language_script": ["greek"]
       },
       "expected_routes": ["general_prose"],
-      "expected_status": "out_of_distribution",
-      "expected_confidence": "unsupported"
+      "expected_status": "routed",
+      "expected_confidence": "closed_evidence"
     },
     {
       "id": "no_closed_evidence_is_unknown",

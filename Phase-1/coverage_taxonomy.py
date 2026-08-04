@@ -102,10 +102,22 @@ def _script(character: str) -> str | None:
         return "kana"
     if 0x0400 <= codepoint <= 0x04FF:
         return "cyrillic"
+    if 0x0370 <= codepoint <= 0x03FF:
+        return "greek"
+    if 0x0590 <= codepoint <= 0x05FF:
+        return "hebrew"
     if 0x0600 <= codepoint <= 0x06FF:
         return "arabic"
     if 0x0900 <= codepoint <= 0x097F:
         return "devanagari"
+    if 0x0980 <= codepoint <= 0x09FF:
+        return "bengali"
+    if 0x0B80 <= codepoint <= 0x0BFF:
+        return "tamil"
+    if 0x0C00 <= codepoint <= 0x0C7F:
+        return "telugu"
+    if 0x0E00 <= codepoint <= 0x0E7F:
+        return "thai"
     return None
 
 

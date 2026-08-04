@@ -1,6 +1,6 @@
 {
   "schema_version": "coverage-engine-v2",
-  "status": "block_6_engine_fixture_validated_empirical_gates_blocked",
+  "status": "semantic_v3_implemented_empirical_gates_blocked",
   "runtime_activation": false,
   "runtime_authority": "none_candidate_emits_veto_and_representative_proposals_only",
   "definition": "preserve_support_of_valid_distinct_potentially_learnable_content_under_subset_selection",
@@ -54,6 +54,11 @@
     "hidden_token_budget"
   ],
   "current_semantic_provider_state": "audit_only",
+  "semantic_coverage_contract": "configs/semantic_coverage_v3.json",
+  "semantic_primary_provider": "qwen3-embedding-0.6b-semantic-candidate",
+  "semantic_audit_provider": "bge-m3-semantic-audit-candidate",
+  "normal_hard_coverage_invariants_identical": true,
+  "explicit_required_retain_rematerialization": true,
   "current_semantic_provider_policy_contribution_authority": false,
   "real_stable_cluster_evidence_ready": false,
   "provider_bias_audit_ready": false,

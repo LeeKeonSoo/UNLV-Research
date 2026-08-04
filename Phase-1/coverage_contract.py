@@ -73,12 +73,18 @@ class RepresentativeFamily:
     family_id: str
     member_uids: frozenset[str]
     evidence_artifact_sha256: str
+    preferred_representative_uid: str | None = None
 
     def __post_init__(self) -> None:
         if not self.family_id or len(self.member_uids) < 2:
             raise CoverageContractError("Representative families require an ID and at least two members")
         if not SHA256_RE.fullmatch(self.evidence_artifact_sha256):
             raise CoverageContractError("Representative families require a frozen evidence artifact")
+        if (
+            self.preferred_representative_uid is not None
+            and self.preferred_representative_uid not in self.member_uids
+        ):
+            raise CoverageContractError("Preferred representatives must belong to their family")
 
 
 @dataclass(frozen=True, slots=True)
@@ -221,3 +227,7 @@ class CoverageDecision:
     source_identity_used: bool = False
     benchmark_outcomes_read: bool = False
     utility_read: bool = False
+
+    @property
+    def required_retain_uids(self) -> tuple[str, ...]:
+        return self.protected_uids

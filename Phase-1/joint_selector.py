@@ -9,7 +9,7 @@ from coverage_contract import (
     ExclusionEvidence,
     ExclusionKind,
 )
-from coverage_engine import evaluate_coverage
+from coverage_rematerialization import rematerialize_with_coverage
 from joint_selector_contract import (
     JointGateBundle,
     JointGateOrigin,
@@ -62,9 +62,12 @@ def _normal_candidate(
     quality_rejected = frozenset(
         uid for uid, decision in quality_by_uid.items() if decision.decision is QualityEffectDecisionName.REJECT_CANDIDATE
     )
-    family_members = frozenset(uid for family in request.redundancy_families for uid in family.member_uids)
+    family_nonrepresentatives: set[str] = set()
+    for family in request.redundancy_families:
+        representative = family.preferred_representative_uid or min(family.member_uids)
+        family_nonrepresentatives.update(family.member_uids - {representative})
     universe = frozenset(chunk.uid for chunk in request.chunks)
-    proposed = universe - family_members - quality_rejected
+    proposed = universe - family_nonrepresentatives - quality_rejected
     exclusions = tuple(
         ExclusionEvidence(
             chunk_uid=uid,
@@ -85,15 +88,16 @@ def _normal_candidate(
         provider_id=request.semantic_provider_id,
         provider_identity_sha256=request.semantic_provider_identity_sha256,
     )
-    coverage = evaluate_coverage(coverage_request, semantic_provider)
-    if coverage.status is CoverageStatus.ABSTAIN:
+    rematerialization = rematerialize_with_coverage(coverage_request, semantic_provider)
+    coverage = rematerialization.final_decision
+    if rematerialization.initial_decision.status is CoverageStatus.ABSTAIN:
         blocked_evidence = tuple(sorted({gates.identity_sha256(), *gates.evidence_artifact_hashes}))
         return _retain_base(
             request,
             profile,
             _BaseOutcome(JointSelectionStatus.BLOCKED_RETAIN_BASE, "joint_coverage_abstained", blocked_evidence),
         )
-    final = proposed | frozenset(coverage.protected_uids)
+    final = frozenset(rematerialization.final_survivor_uids)
     representatives = {choice.family_id: choice.representative_uid for choice in coverage.family_representatives}
     family_by_uid = {uid: family for family in request.redundancy_families for uid in family.member_uids}
     traces: list[JointRemovalTrace] = []
@@ -142,6 +146,8 @@ def _normal_candidate(
         tuple(traces),
         coverage,
         evidence_hashes,
+        rematerialization.required_retain_uids,
+        rematerialization.rematerialization_applied,
     )
     return finalize_joint_result(request, profile, parts)
 

@@ -34,6 +34,12 @@ current metric misses verified Code/Math equivalents and accepts General
 semantic-change counterexamples. The evidence is linked to the blocked near-
 duplicate Policy and cannot activate runtime behavior.
 
+`semantic_coverage_v3.json` defines the implemented Stage-C candidate contract:
+independent primary and audit embedding graphs, multilingual route/script/format
+views, explicit required-retain rematerialization, and identical Normal/Hard
+Coverage invariants. Its providers remain audit-only and its promotion gates
+are open, so the file does not grant production selection authority.
+
 `quality_teacher_panel_v1.json` freezes the current three-teacher Q1-Q4
 candidate, its consensus rules, forbidden inputs, fixture targets, and
 false-removal promotion bounds. It is qualification evidence only and grants no

@@ -42,7 +42,17 @@ domain quotas, a target retention fraction, or a maximum token budget.
   representative trace and a Stage-C Coverage veto check.
 - Closed deterministic non-payload rules remain the only current Quality
   behavior in the legacy-compatible selector.
-- Coverage is a non-deleting materialization veto.
+- Coverage is a non-deleting materialization veto. A veto emits typed
+  `required_retain_uids`, performs explicit rematerialization, and reruns the
+  complete Coverage contract; silent restore is forbidden.
+- Semantic Coverage v3 is implemented as a candidate using independent Qwen3
+  Embedding and BGE-M3 views plus route, script, format, and Redundancy-family
+  strata. Provider disagreement and uncertainty retain. Both providers remain
+  audit-only until empirical promotion gates pass.
+- Normal and Hard use identical Coverage invariants. Stage-B Redundancy or
+  Quality proposals are the only source of mode strength.
+- Raw-to-Curated route and language/script composition files are explanation
+  artifacts only. They do not impose target percentages or affect selection.
 - The redesigned Normal and Hard profiles remain release-disabled.
 - Implementation integrity passes, while scientific release remains blocked
   by unpromoted Policies and missing operating-point calibration.
@@ -174,8 +184,9 @@ import or authorize that archive.
 6. Run an admitted corpus-scale reason-code and compression audit.
 7. Validate the implemented witness-based Redundancy modes on disjoint behavior
    and protected false-removal fixtures; promote only a passing operating point.
-8. Validate Coverage representation invariants on Code, Math, General prose,
-   and structured data.
+8. Validate Semantic Coverage on multilingual Code, Math, General prose, and
+   structured data: provider agreement and bias, extinction recall, protected
+   false-veto bounds, and corpus-scale ANN behavior.
 9. Run Base, Normal, and Hard curation, followed by external three-seed
    natural-budget evaluation.
 
@@ -207,5 +218,5 @@ python validation\test_active_surface.py
 Generated datasets, model caches, raw API responses containing corpus text,
 benchmark outputs, and local work directories must remain untracked.
 
-The current direct validation surface contains 153 scripts and passed 153/153
-after the Quality qualification and staged-policy bridge Blocks.
+The current direct validation surface contains 159 scripts and passed 159/159
+after the Semantic Coverage v3 implementation and multilingual routing update.

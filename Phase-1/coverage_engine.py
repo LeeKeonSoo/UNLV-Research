@@ -153,8 +153,19 @@ def evaluate_coverage(request: CoverageRequest, provider: ProviderManifest) -> C
             continue
         surviving_candidates = candidates & working
         choice_pool = frozenset(surviving_candidates or candidates)
-        representative, gain = choose_by_marginal_gain(choice_pool, frozenset(working), eligible_order, request.similarities)
-        representatives.append(RepresentativeChoice(family.family_id, representative, gain))
+        preferred = family.preferred_representative_uid
+        if preferred is not None and preferred in choice_pool:
+            representative = preferred
+            gain = 0.0
+            selection_method = "stage_b_directional_preference"
+        else:
+            representative, gain = choose_by_marginal_gain(
+                choice_pool, frozenset(working), eligible_order, request.similarities
+            )
+            selection_method = "facility_location_marginal_gain_then_uid"
+        representatives.append(
+            RepresentativeChoice(family.family_id, representative, gain, selection_method)
+        )
         if not surviving_candidates:
             working.add(representative)
             protected.add(representative)

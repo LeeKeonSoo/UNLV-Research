@@ -10,6 +10,11 @@ from pathlib import Path
 from typing import Any
 
 from composition_audit import annotate_record, annotate_records, build_composition_audit
+from composition_artifacts import (
+    CompositionRecord,
+    build_composition_artifacts,
+    write_composition_artifacts,
+)
 from curation_artifacts import load_json, save_json, sha256_file
 from framework_objects import CoreId, StageId
 from framework_runtime_bridge import (
@@ -50,6 +55,11 @@ POLICY_FINGERPRINT_CONFIGS = (
 )
 POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "run_curation.py",
+    "composition_audit.py",
+    "composition_artifacts.py",
+    "content_router.py",
+    "coverage_taxonomy.py",
+    "curation_artifacts.py",
     "framework_objects.py",
     "framework_profiles.py",
     "framework_runtime_bridge.py",
@@ -69,10 +79,10 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "quality_teacher_materialization.py",
     "quality_teacher_unit_runtime.py",
     "quality_teacher_batch_runtime.py",
-    "quality_teacher_batch_runtime.py",
     "quality_teacher_adapters.py",
     "quality_teacher_local.py",
     "quality_retention.py",
+    "reason_code_audit.py",
     "stage_c_selection.py",
 )
 
@@ -751,6 +761,35 @@ def materialize(config_path: Path) -> JsonMap:
             "stage_c_curated": selected,
         }
     )
+    explanatory_composition = build_composition_artifacts(
+        tuple(
+            CompositionRecord(
+                str(row.get("candidate_id") or f"raw-{index}"),
+                str(row.get("text") or ""),
+                int(row.get("token_proxy") or len(str(row.get("text") or "").split())),
+            )
+            for index, row in enumerate(candidates)
+        ),
+        tuple(
+            CompositionRecord(
+                str(row.get("chunk_uid") or f"curated-{index}"),
+                str(row.get("text") or ""),
+                int(row.get("token_proxy") or len(str(row.get("text") or "").split())),
+            )
+            for index, row in enumerate(selected)
+        ),
+    )
+    composition_paths = write_composition_artifacts(
+        explanatory_composition, output_dir
+    )
+    paths.update(
+        {
+            "composition_audit_json": composition_paths.audit_json,
+            "composition_by_route_csv": composition_paths.route_csv,
+            "composition_by_language_csv": composition_paths.language_csv,
+            "raw_curated_composition_delta_csv": composition_paths.delta_csv,
+        }
+    )
     stage_a_role = (
         "source_agnostic_text_normalization_and_integrity_handling"
         if stage_a_policy == "text_only_v2"
@@ -825,6 +864,13 @@ def materialize(config_path: Path) -> JsonMap:
             "stage_b_hard_gate_rejection_reasons": dict(Counter(reason for row in rejected for reason in row["stage_b_hard_gate_reasons"])),
         },
         "composition_audit": composition_audit,
+        "composition_artifacts": {
+            "authority": explanatory_composition.authority,
+            "consumed_by_selection": explanatory_composition.consumed_by_selection,
+            "target_distribution_enforced": explanatory_composition.target_distribution_enforced,
+            "raw_tokens": explanatory_composition.raw_tokens,
+            "curated_tokens": explanatory_composition.curated_tokens,
+        },
         "reason_code_impact_audit": build_reason_code_impact_audit(
             quarantined, rejected, not_selected, span_transformations or None
         ),

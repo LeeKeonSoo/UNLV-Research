@@ -148,6 +148,17 @@ def main() -> int:
         assert composition["stages"]["raw_input"]["content_domain"]["records"]["mathematics"] == 1
         assert composition["stages"]["stage_c_curated"]["language_script"]["records"]["non_latin"] == 1
         assert "code" in composition["delta_from_raw"]["stage_c_curated"]["content_domain"]["token_share"]
+        explanatory = report["composition_artifacts"]
+        assert explanatory["authority"] == "audit_only"
+        assert explanatory["consumed_by_selection"] is False
+        assert explanatory["target_distribution_enforced"] is False
+        for name in (
+            "composition_audit.json",
+            "composition_by_route.csv",
+            "composition_by_language.csv",
+            "raw_curated_composition_delta.csv",
+        ):
+            assert (output_dir / name).is_file()
         reason_impact = report["reason_code_impact_audit"]
         assert reason_impact["authority"] == "audit_only"
         assert reason_impact["selector_consumes_this_audit"] is False
@@ -176,6 +187,11 @@ def main() -> int:
             ("stage_c", "coverage"),
         ]
         assert set(report["policy_fingerprint"]["runtime_modules"]) == {
+            "composition_audit.py",
+            "composition_artifacts.py",
+            "content_router.py",
+            "coverage_taxonomy.py",
+            "curation_artifacts.py",
             "framework_objects.py",
             "framework_profiles.py",
             "framework_runtime_bridge.py",
@@ -188,6 +204,7 @@ def main() -> int:
             "quality_decision_contract.py",
             "quality_rule_evidence.py",
             "quality_retention.py",
+            "reason_code_audit.py",
             "quality_teacher_adapters.py",
             "quality_teacher_local.py",
             "quality_teacher_panel.py",

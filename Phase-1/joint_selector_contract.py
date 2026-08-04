@@ -238,6 +238,8 @@ class JointSelectionResult:
     policy_artifact_hashes: tuple[str, ...]
     evidence_artifact_hashes: tuple[str, ...]
     model_provider_identity_hashes: tuple[str, ...]
+    coverage_required_retain_uids: tuple[str, ...] = ()
+    coverage_rematerialization_applied: bool = False
     may_mutate_active_runtime: bool = False
     benchmark_outcomes_read: bool = False
     utility_read: bool = False

@@ -27,6 +27,8 @@ class JointResultParts:
     removal_traces: tuple[JointRemovalTrace, ...]
     coverage_decision: CoverageDecision | None
     evidence_artifact_hashes: tuple[str, ...]
+    coverage_required_retain_uids: tuple[str, ...] = ()
+    coverage_rematerialization_applied: bool = False
 
 
 def _sha256(payload: dict[str, JsonValue]) -> str:
@@ -39,7 +41,12 @@ def _input_sha256(request: JointSelectionRequest) -> str:
         {
             "chunks": [(chunk.uid, chunk.token_count) for chunk in sorted(request.chunks, key=lambda item: item.uid)],
             "families": [
-                (family.family_id, sorted(family.member_uids), family.evidence_artifact_sha256)
+                (
+                    family.family_id,
+                    sorted(family.member_uids),
+                    family.evidence_artifact_sha256,
+                    family.preferred_representative_uid,
+                )
                 for family in sorted(request.redundancy_families, key=lambda item: item.family_id)
             ],
             "quality": [
@@ -89,6 +96,8 @@ def finalize_joint_result(
             "selected": parts.selected_uids,
             "removals": [asdict(trace) for trace in parts.removal_traces],
             "coverage": asdict(parts.coverage_decision) if parts.coverage_decision is not None else None,
+            "coverage_required_retain_uids": parts.coverage_required_retain_uids,
+            "coverage_rematerialization_applied": parts.coverage_rematerialization_applied,
             "input": input_sha,
             "policy_hashes": policy_hashes,
             "evidence_hashes": parts.evidence_artifact_hashes,
@@ -108,4 +117,6 @@ def finalize_joint_result(
         policy_artifact_hashes=policy_hashes,
         evidence_artifact_hashes=parts.evidence_artifact_hashes,
         model_provider_identity_hashes=model_hashes,
+        coverage_required_retain_uids=parts.coverage_required_retain_uids,
+        coverage_rematerialization_applied=parts.coverage_rematerialization_applied,
     )

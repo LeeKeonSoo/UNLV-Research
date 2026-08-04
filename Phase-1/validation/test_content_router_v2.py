@@ -88,10 +88,27 @@ def test_math_prose_and_code_comments_do_not_become_ambiguous_by_default() -> No
     assert code["route_status"] == "routed"
 
 
+def test_multilingual_scripts_are_registered_instead_of_marked_unsupported() -> None:
+    cases = {
+        "greek": "Αυτό είναι ελληνικό κείμενο.",
+        "hebrew": "זהו טקסט בעברית.",
+        "thai": "นี่คือข้อความภาษาไทย",
+        "bengali": "এটি একটি বাংলা পাঠ্য।",
+        "tamil": "இது ஒரு தமிழ் உரை.",
+        "telugu": "ఇది తెలుగు వచనం.",
+    }
+
+    for expected_script, sample in cases.items():
+        result = route_content(sample)
+        assert expected_script in result["language_script"]["labels"]
+        assert result["language_script"]["status"] != "out_of_distribution"
+
+
 if __name__ == "__main__":
     test_registered_cases_have_expected_routes_and_axes()
     test_router_has_metadata_authority_only()
     test_source_metadata_cannot_change_routing()
     test_registry_forbids_selection_and_source_shortcuts()
     test_math_prose_and_code_comments_do_not_become_ambiguous_by_default()
+    test_multilingual_scripts_are_registered_instead_of_marked_unsupported()
     print("[content-router-v2] observable routing without selection authority: pass")

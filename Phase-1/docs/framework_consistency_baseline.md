@@ -47,7 +47,7 @@ candidate file exists.
 | `redundancy.symmetric_near_duplicate_candidate` | blocked | Witness-based Normal/Hard implementation exists; empirical promotion evidence is incomplete |
 | `quality.explicit_nonpayload` | candidate | Closed deterministic non-payload cases |
 | `quality.teacher_panel_candidate` | blocked | Q1-Q4 teacher-panel qualification not complete |
-| `coverage.representative_guard` | candidate | Veto unexplained zero-survivor materialization |
+| `coverage.representative_guard` | candidate | Semantic v3 explicit veto/rematerialization is implemented; empirical promotion gates remain open |
 
 Normal and Hard share these Policy families. Their operating points are not
 calibrated, and both profiles are release-disabled. `Hard subset-or-equal
@@ -63,6 +63,27 @@ representative, witness kind, evidence hash, reason code, and token delta.
 These are Stage-B proposals only: Stage C must apply its Coverage veto before
 membership can change. The implementation does not promote the blocked Policy;
 protected-fixture and development-disjoint evidence remain required.
+
+## Semantic Coverage Candidate
+
+Stage C now has an explicit candidate implementation rather than a silent
+post-selection repair. It combines two independent frozen embedding views with
+deterministic route, script, format, and Redundancy-family evidence. Only
+identical non-singleton components from both semantic providers are stable;
+provider disagreement and unsupported or uncertain routing retain by default.
+Similarity retrieves a support stratum but never authorizes deletion.
+
+A Coverage veto emits typed `required_retain_uids`, rematerializes the candidate
+corpus, and reruns the complete invariant set. The Redundancy-selected
+directional representative has precedence; deterministic facility-location is
+only a fallback. Normal and Hard share these exact Coverage invariants.
+
+The primary candidate provider is Qwen3-Embedding-0.6B and the independent audit
+provider is BGE-M3. Both registry entries are audit-only. Scientific activation
+still requires multilingual stability, provider-bias checks, protected
+false-veto bounds, extinction-recall tests, and a corpus-scale ANN backend.
+Raw-to-Curated route and language composition files are explanation artifacts
+only and cannot enforce quotas or feed selection.
 
 ## Quality Ranker Candidate
 
@@ -116,7 +137,8 @@ fingerprint, or release gate references that candidate.
 - implementation integrity: `passed`;
 - framework release: `blocked`;
 - blockers: unpromoted policies, uncalibrated profile operating points,
-  blocked near-duplicate authority, and blocked Quality teacher panel.
+  blocked near-duplicate authority, blocked Quality teacher panel, and
+  unqualified semantic Coverage providers.
 
 This is a fail-closed scientific state, not evidence that the active
 legacy-compatible curation output is broken.
@@ -127,8 +149,8 @@ legacy-compatible curation output is broken.
 2. Freeze the qualification report and promote only modes that pass their exact
    one-sided false-removal bound.
 3. Execute the witness-based Redundancy behavior and protected false-removal gates.
-4. Complete route-spanning Coverage validation and enable its veto only after
-   semantic-provider qualification.
+4. Complete multilingual provider-agreement, provider-bias, extinction-recall,
+   protected false-veto, and corpus-scale ANN Coverage validation.
 5. Run admitted corpus-scale Base, Normal, and Hard curation audits.
 6. Run external three-seed natural-budget evaluation of frozen outputs.
 

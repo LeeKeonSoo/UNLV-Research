@@ -1,6 +1,6 @@
 # Formal Definition of Quality and Coverage
 
-Status: design contract v2, 2026-08-04
+Status: implementation contract v3, 2026-08-05
 
 This document defines the two Cores that must not be inferred from their names.
 It separates the scientific target, runtime-observable evidence, and decision
@@ -112,8 +112,10 @@ chunk good?" It also does not prescribe a desired Code/Math/General percentage.
 Coverage is a corpus-level constraint Core. Redundancy proposes family
 compaction; Quality proposes explicit non-payload removal; Coverage verifies
 that their combined materialization has not produced an orphaned or unexplained
-loss. It has veto-only authority: it may abort materialization, but it may not
-rank, delete, quota-select, or silently restore records.
+loss. It has veto-only authority: it may abort materialization or return typed
+`required_retain_uids` for explicit rematerialization and a complete second
+Coverage check. It may not rank, delete, quota-select, or silently restore
+records.
 
 ### 3.2 Coverage universe
 
@@ -122,12 +124,19 @@ Coverage is evaluated over multiple nonexclusive views of `V`:
 - redundancy families defined by the active exact or symmetric policy;
 - content-route labels with `unknown` retained as a valid label;
 - language/script, format, and structural-family labels;
-- semantic clusters only when their model, snapshot, and clustering contract
-  are frozen;
+- semantic strata built only from agreement between a frozen primary embedding
+  provider and an independently frozen audit provider;
 - transformed chunks and their residual payload links.
 
 Source identity is an optional audit dimension, not a selection axis. Rare does
 not imply useful, and common does not imply removable.
+
+The v3 candidate uses mutual-kNN graphs from both providers. A non-singleton
+connected component is stable only when both providers produce the identical
+member set. Provider disagreement, singletons, unknown routing, and unstable
+tags enter an uncertainty stratum that retains by default. Embedding similarity
+alone never authorizes deletion. Normal and Hard use exactly the same Coverage
+invariants; their difference remains limited to Stage-B removal proposals.
 
 ### 3.3 Mandatory runtime invariants
 
@@ -155,6 +164,12 @@ min_f I_rep(f) = 1 and min_t I_res(t) = 1
 
 These are non-compensatory constraints. Strong performance in another stratum
 cannot cancel a missing representative.
+
+When Redundancy supplies a directional representative, Coverage preserves that
+representative if it is eligible. Facility-location selection is only a
+deterministic fallback. A veto must identify every required retained unit,
+rematerialize explicitly, and rerun the complete invariant set. The second
+decision must pass; hidden restoration is forbidden and audited as false.
 
 ### 3.4 Distribution audit
 
@@ -189,10 +204,19 @@ compensating weighted sum:
 Coverage_min = min(normalized components of CoverageVector)
 ```
 
+The runtime also emits `composition_audit.json`, `composition_by_route.csv`,
+`composition_by_language.csv`, and `raw_curated_composition_delta.csv`. Primary
+route share is exclusive; route and language/script incidence are multi-label
+and may sum above 100%. These artifacts explain Raw-to-Curated change and are
+never target distributions or selector inputs.
+
 No distributional threshold has runtime veto authority until its taxonomy,
 unknown handling, confidence interval, false-positive fixtures, and development
-ablation are frozen. The current runtime veto is limited to representative
-linkage, zero-survivor explanation, and residual-payload integrity.
+ablation are frozen. The implemented semantic v3 candidate is limited to
+representative linkage, provider-agreed stable strata, zero-survivor
+explanation, and residual-payload integrity. Its model providers remain
+audit-only until multilingual stability, provider-bias, false-veto, extinction
+recall, and corpus-scale ANN gates pass.
 
 ### 3.5 Boundary with the other Cores
 
@@ -216,8 +240,10 @@ is the final validity condition for the corpus-level result.
 
 ## 5. Current Claim
 
-The implementation may claim an auditable, domain-agnostic curation interface
-and an executable Q1-Q4 Quality measurement protocol. It may not yet claim that
-the Quality Policy is runtime-qualified or that it improves every domain.
-Those claims require completed protected-fixture, Coverage, corpus-scale, and
-independent external evidence under the gates above.
+The implementation may claim an auditable, domain-agnostic curation interface,
+an executable Q1-Q4 Quality measurement protocol, and an implemented Semantic
+Coverage qualification candidate. It may not claim that either model-driven
+Core is scientifically promoted, production-ready, or effective in every
+domain. Those claims require completed protected-fixture, multilingual
+provider-stability, corpus-scale ANN, and independent external evidence under
+the gates above.

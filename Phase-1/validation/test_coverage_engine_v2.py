@@ -199,12 +199,14 @@ def test_report_is_a_vector_without_intrinsic_coverage_score() -> None:
 def test_contract_blocks_quota_source_and_real_activation() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
 
-    assert contract["status"] == "block_6_engine_fixture_validated_empirical_gates_blocked"
+    assert contract["status"] == "semantic_v3_implemented_empirical_gates_blocked"
     assert contract["runtime_activation"] is False
     assert contract["fixed_domain_quota"] is False
     assert contract["source_selection_axis"] is False
     assert contract["single_coverage_score"] is False
     assert contract["current_semantic_provider_state"] == "audit_only"
+    assert contract["normal_hard_coverage_invariants_identical"] is True
+    assert contract["explicit_required_retain_rematerialization"] is True
 
 
 def test_candidate_registry_preserves_the_active_materialization_guard() -> None:

@@ -93,9 +93,32 @@
       "tokenizer_id": "Qwen/Qwen3-Embedding-0.6B",
       "tokenizer_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
       "normalization": "l2_normalized_1024d_embedding",
-      "output_semantics": "semantic_neighborhood_and_support_candidate",
-      "supported_routes": ["development_probe_only"],
-      "supported_languages": ["undeclared_until_bias_audit"],
+      "output_semantics": "primary_multilingual_semantic_neighborhood_candidate_for_consensus_coverage",
+      "supported_routes": ["general_prose", "code_artifact", "mathematical_content", "technical_documentation", "conversation", "instruction", "table_structured_data", "mixed", "unknown"],
+      "supported_languages": ["100_plus_language_model_capability_pending_framework_bias_audit"],
+      "policy_contribution_authority": false,
+      "direct_deletion_authority": false,
+      "calibration": null,
+      "validation": null
+    },
+    {
+      "provider_id": "bge-m3-semantic-audit-candidate",
+      "role": "semantic",
+      "provider_type": "model",
+      "lifecycle": "audit_only",
+      "artifacts": [
+        {
+          "model_id": "BAAI/bge-m3",
+          "revision": "ecf34d3096437e53f2c163f370b4135980d2e024",
+          "artifact_sha256": null
+        }
+      ],
+      "tokenizer_id": "BAAI/bge-m3",
+      "tokenizer_revision": "ecf34d3096437e53f2c163f370b4135980d2e024",
+      "normalization": "l2_normalized_1024d_dense_embedding",
+      "output_semantics": "independent_multilingual_component_stability_audit_only",
+      "supported_routes": ["general_prose", "code_artifact", "mathematical_content", "technical_documentation", "conversation", "instruction", "table_structured_data", "mixed", "unknown"],
+      "supported_languages": ["100_plus_language_model_capability_pending_framework_bias_audit"],
       "policy_contribution_authority": false,
       "direct_deletion_authority": false,
       "calibration": null,

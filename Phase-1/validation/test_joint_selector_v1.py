@@ -172,6 +172,8 @@ def test_normal_applies_all_cores_atomically_with_complete_traces() -> None:
     assert traces["e"].reason_code == "quality_nonpositive_effect_supported"
     assert all(trace.evidence_artifact_hashes for trace in first.removal_traces)
     assert first.coverage_decision is not None
+    assert first.coverage_required_retain_uids == ()
+    assert first.coverage_rematerialization_applied is False
     assert first.profile_sha256 == profile.identity_sha256()
     assert first.input_sha256
     assert first.manifest_sha256

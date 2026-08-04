@@ -42,10 +42,14 @@ def test_teacher_panel_is_runtime_experiment_and_embedding_remains_audit_only() 
 
     teacher_panel = providers["quality-teacher-panel-v2"]
     embedding = providers["qwen3-embedding-0.6b-semantic-candidate"]
+    audit_embedding = providers["bge-m3-semantic-audit-candidate"]
     assert teacher_panel.lifecycle is ProviderLifecycle.RUNTIME_EXPERIMENT
     assert embedding.lifecycle is ProviderLifecycle.AUDIT_ONLY
+    assert audit_embedding.lifecycle is ProviderLifecycle.AUDIT_ONLY
     assert teacher_panel.policy_contribution_authority is True
     assert embedding.policy_contribution_authority is False
+    assert audit_embedding.policy_contribution_authority is False
+    assert embedding.artifacts[0].model_id != audit_embedding.artifacts[0].model_id
 
 
 def test_teacher_provider_registry_matches_active_panel_identity() -> None:

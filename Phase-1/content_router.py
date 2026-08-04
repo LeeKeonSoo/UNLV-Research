@@ -160,7 +160,26 @@ def _structural_state(text: str, formats: RouterAxis) -> RouterAxis:
 
 
 def _language_axis(text: str) -> RouterAxis:
-    result = _adapt_axis(language_script(text), ("latin", "hangul", "han", "kana", "cyrillic", "arabic", "devanagari", "mixed", "unknown"))
+    result = _adapt_axis(
+        language_script(text),
+        (
+            "latin",
+            "hangul",
+            "han",
+            "kana",
+            "cyrillic",
+            "greek",
+            "hebrew",
+            "arabic",
+            "devanagari",
+            "bengali",
+            "tamil",
+            "telugu",
+            "thai",
+            "mixed",
+            "unknown",
+        ),
+    )
     known_labels = [label for label in result["labels"] if label != "unknown"]
     if len(known_labels) >= 2:
         result["labels"].insert(-1 if "unknown" in result["labels"] else len(result["labels"]), "mixed")

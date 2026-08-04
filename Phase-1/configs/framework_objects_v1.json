@@ -5,9 +5,9 @@
   "framework_manifest_sha256": "6bb8e1294e28ed6df7961ff139518da271a78a9f4b2d234851ba59d8c49cfcbb",
   "methods": [
     {"id": "validity.candidate_processing", "version": "v1", "implementation_path": "ingestion/candidate_processing.py", "implementation_sha256": "9178cd02a69e020959bf803d4998e37be8cdc11d1606937ec33536038e69e3d0", "deterministic": true},
-    {"id": "redundancy.current_runtime", "version": "v1", "implementation_path": "run_curation.py", "implementation_sha256": "78a3fdca7c388ff5373e43561ef5ce9c1dcc96e7d3121a92db3436c3d0859cb0", "deterministic": true},
+    {"id": "redundancy.current_runtime", "version": "v1", "implementation_path": "run_curation.py", "implementation_sha256": "8975606b642ec716237c125c8bfa511dd1f24aa614e32552891537ae96d7b02f", "deterministic": true},
     {"id": "quality.retention_contract", "version": "v1", "implementation_path": "quality_retention.py", "implementation_sha256": "1bf11fcede83dc9e50f317551bd6e72f235c9c82c2713126699285992fe6cc33", "deterministic": true},
-    {"id": "coverage.materialization_contract", "version": "v1", "implementation_path": "coverage_contract.py", "implementation_sha256": "d8ba5c0ee46c5350c4b7f6ac6d851d5c448e2a76a4a7d3a00295ec192f0e33fe", "deterministic": true},
+    {"id": "coverage.materialization_contract", "version": "v1", "implementation_path": "coverage_contract.py", "implementation_sha256": "aff92e72bb034f48f25b6d51fb250544c091d38872536fac5db191d54d6336e5", "deterministic": true},
     {"id": "quality.teacher_panel_consensus", "version": "v2", "implementation_path": "quality_teacher_batch_runtime.py", "implementation_sha256": "b511fb454e8558de71059823ae38ee77534e6396c169427a41212ce479b4166c", "deterministic": false},
     {"id": "quality.teacher_panel_materialization", "version": "v2", "implementation_path": "quality_teacher_materialization.py", "implementation_sha256": "07573d1679f35223690caf3264774fd46f7520e3a3829e45cf2a4418fc794189", "deterministic": false},
     {"id": "framework.runtime_bridge", "version": "v1", "implementation_path": "framework_runtime_bridge.py", "implementation_sha256": "b470bb6849ae4b6e42d65db0c60eb577310792c4c6069bb61b19de366d72fefe", "deterministic": true}

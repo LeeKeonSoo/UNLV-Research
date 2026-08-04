@@ -107,6 +107,21 @@ protected, and Stage C must veto or accept every family proposal before final
 materialization. This candidate remains release-disabled until its disjoint
 behavior and protected false-removal gates pass.
 
+Semantic Coverage v3 is implemented as the Stage-C qualification candidate.
+It requires agreement between independently frozen Qwen3-Embedding-0.6B and
+BGE-M3 semantic graphs and combines that evidence with deterministic route,
+script, format, and Redundancy-family strata. A veto returns explicit required
+retentions, rematerializes, and reruns the complete Coverage contract. Provider
+disagreement and uncertainty retain; embedding similarity never deletes. The
+same Coverage invariants apply to Normal and Hard. Both providers remain
+audit-only until multilingual stability, provider-bias, false-veto,
+extinction-recall, and corpus-scale ANN gates pass.
+
+Every curation run now emits explanatory Raw-to-Curated route and
+language/script composition JSON/CSV artifacts. They are audit-only, may be
+multi-label, and never enforce a target domain distribution or enter the
+selector.
+
 ## Verification
 
 From `Phase-1` in the `research` environment:

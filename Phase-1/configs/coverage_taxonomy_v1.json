@@ -18,7 +18,7 @@
   ],
   "axes": {
     "semantic_domain": ["code", "math", "science", "medicine", "law", "finance_economics", "history_humanities", "general_knowledge", "unknown"],
-    "language_script": ["latin", "hangul", "han", "kana", "cyrillic", "arabic", "devanagari", "unknown"],
+    "language_script": ["latin", "hangul", "han", "kana", "cyrillic", "greek", "hebrew", "arabic", "devanagari", "bengali", "tamil", "telugu", "thai", "unknown"],
     "format_genre": ["source_code", "dialogue", "question_answer", "table", "list", "formula", "markup", "link_directory", "prose", "unknown"],
     "content_morphology": ["explanation", "procedure", "reference", "implementation", "argument", "transactional_ui", "unknown"]
   },
