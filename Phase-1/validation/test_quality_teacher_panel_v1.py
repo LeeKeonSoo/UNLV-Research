@@ -48,6 +48,7 @@ def test_panel_contract_freezes_diverse_two_hosted_one_local_teachers() -> None:
     assert panel.teacher_output_alone_may_delete is False
     assert panel.response_contract.maximum_schema_retries == 1
     assert panel.response_contract.invalid_response_action == "abstain"
+    assert panel.response_contract.reason_code_pattern == "^[a-z][a-z0-9_]{0,63}$"
 
 
 def test_first_pass_unanimity_produces_panel_decision() -> None:

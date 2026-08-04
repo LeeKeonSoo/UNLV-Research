@@ -7,7 +7,7 @@
     "passed": true,
     "fixture_sha256": "74febac8e5f98c12375fca24e69a32336ffba01287aa7ecc29e06ec0069cd153",
     "case_matrix_sha256": "0bce07624a3ee873c41d88c46c442e9f319e29ff99ec968846aa180b42439459",
-    "policy_registry_sha256": "b68e347ab8af11c60a1119e68f74012a08614b57442a9199c54008b11e64346d",
+    "policy_registry_sha256": "8ab6796c4bfe93f764fc121b76e06d6958960281f2718c96a5496b745549e424",
     "fixture_kinds": [
       "adversarial_negative",
       "adversarial_positive",

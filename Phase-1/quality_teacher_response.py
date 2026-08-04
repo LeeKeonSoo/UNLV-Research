@@ -2,17 +2,24 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
 
 from quality_teacher_panel import PolicyDecision, TeacherVote
+
+
+ReasonCode = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=64, pattern=r"^[a-z][a-z0-9_]*$"),
+]
 
 
 class TeacherResponsePayload(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     decision: PolicyDecision
-    reason_codes: tuple[str, ...] = Field(min_length=1, max_length=8)
+    reason_codes: tuple[ReasonCode, ...] = Field(min_length=1, max_length=8)
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,7 +30,7 @@ class TeacherResponseAttempt:
     retry_raw: str | None
 
 
-def _parse_response(raw: str) -> TeacherResponsePayload | None:
+def parse_teacher_response(raw: str) -> TeacherResponsePayload | None:
     try:
         payload = json.loads(raw)
         return TeacherResponsePayload.model_validate(payload)
@@ -32,7 +39,7 @@ def _parse_response(raw: str) -> TeacherResponsePayload | None:
 
 
 def resolve_teacher_response(attempt: TeacherResponseAttempt) -> TeacherVote:
-    first = _parse_response(attempt.first_raw)
+    first = parse_teacher_response(attempt.first_raw)
     if first is not None:
         return TeacherVote(
             teacher_id=attempt.teacher_id,
@@ -40,7 +47,7 @@ def resolve_teacher_response(attempt: TeacherResponseAttempt) -> TeacherVote:
             decision=first.decision,
             reason_codes=first.reason_codes,
         )
-    retry = _parse_response(attempt.retry_raw) if attempt.retry_raw is not None else None
+    retry = parse_teacher_response(attempt.retry_raw) if attempt.retry_raw is not None else None
     if retry is not None:
         return TeacherVote(
             teacher_id=attempt.teacher_id,

@@ -63,8 +63,29 @@ def test_two_invalid_responses_fail_closed_to_abstain() -> None:
     assert vote.reason_codes == ("invalid_teacher_response_schema",)
 
 
+def test_sentence_reason_code_requires_schema_retry() -> None:
+    # Given: the first output uses explanatory prose where a reason code is required.
+    attempt = TeacherResponseAttempt(
+        teacher_id="local",
+        policy_id="q3_substantive_payload",
+        first_raw=(
+            '{"decision":"fail","reason_codes":'
+            '["The unit has no substantive content beyond boilerplate."]}'
+        ),
+        retry_raw='{"decision":"fail","reason_codes":["no_substantive_payload"]}',
+    )
+
+    # When: the response boundary resolves the attempt.
+    vote = resolve_teacher_response(attempt)
+
+    # Then: prose cannot silently become a machine reason code.
+    assert vote.decision is PolicyDecision.FAIL
+    assert vote.reason_codes == ("no_substantive_payload",)
+
+
 if __name__ == "__main__":
     test_valid_enum_response_is_parsed_without_retry()
     test_invalid_boolean_decision_uses_valid_retry()
     test_two_invalid_responses_fail_closed_to_abstain()
+    test_sentence_reason_code_requires_schema_retry()
     print("[quality-teacher-response-v1] schema retry and abstention: pass")

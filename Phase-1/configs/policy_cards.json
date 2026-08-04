@@ -123,7 +123,10 @@
         "model_provider_contract.py",
         "quality_teacher_panel.py",
         "quality_teacher_response.py",
-        "quality_teacher_qualification.py"
+        "quality_teacher_qualification.py",
+        "quality_teacher_runtime.py",
+        "quality_teacher_adapters.py",
+        "quality_teacher_local.py"
       ],
       "empirical_status": "engine_contract_fixture_validated_all_real_routes_and_providers_blocked_not_runtime_active"
     },

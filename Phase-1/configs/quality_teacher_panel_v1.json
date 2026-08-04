@@ -95,6 +95,7 @@
       "abstain"
     ],
     "reason_codes_required": true,
+    "reason_code_pattern": "^[a-z][a-z0-9_]{0,63}$",
     "maximum_schema_retries": 1,
     "invalid_response_action": "abstain"
   },

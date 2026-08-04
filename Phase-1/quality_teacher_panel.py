@@ -103,6 +103,7 @@ class ResponseContract(BaseModel):
 
     decision_enum: tuple[Literal["pass"], Literal["fail"], Literal["abstain"]]
     reason_codes_required: Literal[True]
+    reason_code_pattern: Literal["^[a-z][a-z0-9_]{0,63}$"]
     maximum_schema_retries: Literal[1]
     invalid_response_action: Literal["abstain"]
 

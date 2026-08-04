@@ -63,6 +63,11 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "ingestion/candidate_processing.py",
     "quality_decision_contract.py",
     "quality_rule_evidence.py",
+    "quality_teacher_panel.py",
+    "quality_teacher_response.py",
+    "quality_teacher_runtime.py",
+    "quality_teacher_adapters.py",
+    "quality_teacher_local.py",
     "quality_retention.py",
     "stage_c_selection.py",
 )

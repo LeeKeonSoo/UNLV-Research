@@ -15,9 +15,8 @@ curation runtime, and no teacher response may delete a unit by itself.
 
 The local teacher uses bitsandbytes int8 inference on GPU 0, the RTX 4060 Ti.
 The frozen revision was downloaded to `D:\hf_cache\hub` and all 16 Hub files
-passed checksum verification. An observed text-only smoke test used 10.76 GiB
-maximum allocated VRAM and returned the required enum JSON after the schema was
-made explicit.
+passed checksum verification. The common adapter loads the model in about 11.2
+GiB of VRAM in the observed text-only smoke path.
 
 ## Quality policies
 
@@ -37,9 +36,10 @@ missing context must produce `abstain`.
 
 ## Response and consensus contract
 
-Each teacher must return one JSON object with a decision enum and non-empty
-reason-code list. One schema-only retry is allowed. A second invalid response
-becomes `abstain` and cannot contribute a pass or fail label.
+Each teacher must return one JSON object with a decision enum and a non-empty
+reason-code list. Reason codes must match `^[a-z][a-z0-9_]{0,63}$`; explanatory
+sentences are invalid. One schema-only retry is allowed. A second invalid
+response becomes `abstain` and cannot contribute a pass or fail label.
 
 First-pass unanimity is accepted. A 2-of-3 result triggers a blinded second
 pass using the same teachers. It is accepted only when the same decision and at
@@ -69,11 +69,12 @@ Build. The initial language scope is English. Benchmark outcomes, NLL, Utility,
 source reputation, domain quota, target retention, maximum token budget, and
 confirmatory data are forbidden teacher and runtime inputs.
 
-The NVIDIA API key was detected and both hosted endpoints completed a public
-smoke request on 2026-08-04. GLM-5.2 returned JSON inside a Markdown fence, and
-Nemotron returned an out-of-contract decision enum on the first prompt. This
-confirms connectivity, not schema qualification. The production adapter must
-issue one schema-only retry and convert a second invalid response to
-`abstain`. The hosted endpoint is `https://integrate.api.nvidia.com/v1`; model
-IDs and raw response hashes must be frozen because a hosted endpoint does not
-expose immutable weight artifacts like the local Hugging Face revision.
+The common hosted/local adapter and retry path completed a public Q3 smoke run
+on 2026-08-04. First pass produced Nemotron `abstain` after two invalid schema
+responses, GLM `pass`, and local Qwen `pass`; the required blinded second pass
+ended with two schema-invalid abstentions and one pass, so the panel correctly
+returned `abstain`. This proves connectivity, dispatch, retry, and fail-closed
+consensus behavior, not teacher qualification. The hosted endpoint is
+`https://integrate.api.nvidia.com/v1`; model IDs and raw-response hashes are
+recorded because a hosted endpoint does not expose immutable weight artifacts
+like the local Hugging Face revision.

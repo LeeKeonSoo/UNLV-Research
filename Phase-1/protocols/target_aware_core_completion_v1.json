@@ -591,11 +591,11 @@
     "development_quality_gate": {
       "status": "blocked_empirical_effects_missing",
       "registry": "protocols/development_quality_gate_registry_v1.json",
-      "registry_sha256": "9fb20e79d64ba92c4d5a5fa66d5f2a2a997219d1ce27b89e1af1b50426ef35f0",
-      "registry_file_sha256": "7346aff0c597c40eb6236e94e275b0b196fc907655ab50f1f7b7d5721d5c6594",
+      "registry_sha256": "7f6a55299c79f47b688aa5c92bc0eba3daed6beed7b6466f30db73f1dd831133",
+      "registry_file_sha256": "e447304ee15129203dc22c59a1ed1bb92eb1b30b9ae8a029bfab37c34d972a19",
       "report": "validation/frozen_contracts/development_quality_gate_report_v1.json",
-      "report_sha256": "16ab3bf83f5a3d5ab90f26c5f5875d027b082008ecc6895b2a4bcc2e98a778f4",
-      "report_file_sha256": "d0533d798e023de236c2d14f7acc0f247845f2004f2ebae8085624a9bed562b2",
+      "report_sha256": "d086deb84f57e9026f627deb726d72f88801e7856799bb513917192e76530d19",
+      "report_file_sha256": "b891ee387506328c63d0c20ca98f26e9414cec58e4e3830533b37ac2cec2931f",
       "required_domains": [
         "code",
         "math",

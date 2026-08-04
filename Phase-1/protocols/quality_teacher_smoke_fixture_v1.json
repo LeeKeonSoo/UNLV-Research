@@ -1,0 +1,8 @@
+{
+  "unit_id": "public-synthetic-rectangle-001",
+  "text": "A rectangle with width 3 and height 4 has area 12 because area equals width times height.",
+  "declared_context": "English synthetic educational prose released for public calibration use.",
+  "attached_evidence": [
+    "3 * 4 = 12"
+  ]
+}

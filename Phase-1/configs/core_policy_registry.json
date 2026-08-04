@@ -260,7 +260,10 @@
         "model_provider_contract.py",
         "quality_teacher_panel.py",
         "quality_teacher_response.py",
-        "quality_teacher_qualification.py"
+        "quality_teacher_qualification.py",
+        "quality_teacher_runtime.py",
+        "quality_teacher_adapters.py",
+        "quality_teacher_local.py"
       ],
       "scope": "candidate-only Q1-Q4 teacher-panel evidence; no panel response has runtime deletion authority before protected-fixture qualification and policy promotion",
       "blocking_conditions": [

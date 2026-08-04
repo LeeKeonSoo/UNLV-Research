@@ -59,11 +59,16 @@ The frozen three-teacher panel is:
 | GLM-5.2 | NVIDIA Build | Endpoint observed 2026-08-04 |
 | Qwen3.5-9B | Local RTX 4060 Ti | Revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`, int8 |
 
-The local teacher loaded and generated successfully with 10.76 GiB observed
-maximum allocated VRAM. Both NVIDIA endpoints responded to a public smoke
-request. Their raw output formats were not uniformly schema-compliant, so the
-next implementation must use one strict schema-only retry and otherwise
-convert the vote to `abstain`.
+The common hosted/local adapter, strict response parser, one schema-only retry,
+blinded second pass, and Q1-Q4 independent fail-gate aggregation are now
+implemented. Reason codes must be lower snake case rather than explanatory
+prose. The local teacher loaded in about 11.2 GiB observed VRAM.
+
+A public Q3 three-teacher smoke run completed end to end on 2026-08-04. First
+pass was Nemotron `abstain`, GLM `pass`, and Qwen `pass`; the blinded second
+pass ended with two schema-invalid abstentions and one pass, so the final panel
+decision correctly remained `abstain`. This verifies connectivity and
+fail-closed execution only. It is not qualification evidence.
 
 Teacher output alone has no deletion authority. The candidate remains
 `blocked` until fixture, consensus-stability, false-removal, and operating-point
@@ -81,18 +86,17 @@ import or authorize that archive.
 
 ## Next Authorized Work
 
-1. Implement one hosted/local teacher adapter and strict Q1-Q4 response schema.
-2. Build and execute the 512-item controlled smoke fixture matrix.
-3. Build at least 800 protected fixtures and measure exact one-sided
+1. Build and execute the 512-item controlled smoke fixture matrix.
+2. Build at least 800 protected fixtures and measure exact one-sided
    false-removal bounds.
-4. Validate first-pass and blinded second-pass consensus stability.
-5. Freeze separate Normal and Hard operating points without a token budget.
-6. Integrate only a promoted Quality provider into Stage B.
-7. Redesign near-duplicate authority around route-appropriate equivalence
+3. Validate first-pass and blinded second-pass consensus stability.
+4. Freeze separate Normal and Hard operating points without a token budget.
+5. Integrate only a promoted Quality provider into Stage B.
+6. Redesign near-duplicate authority around route-appropriate equivalence
    witnesses rather than a similarity threshold alone.
-8. Validate Coverage representation invariants on Code, Math, General prose,
+7. Validate Coverage representation invariants on Code, Math, General prose,
    and structured data.
-9. Run Base, Normal, and Hard curation, followed by external three-seed
+8. Run Base, Normal, and Hard curation, followed by external three-seed
    natural-budget evaluation.
 
 ## Verification
@@ -103,6 +107,8 @@ Run from `Phase-1` with the repository on `PYTHONPATH`:
 python validation\test_quality_candidate_authority_v1.py
 python validation\test_quality_teacher_panel_v1.py
 python validation\test_quality_teacher_response_v1.py
+python validation\test_quality_teacher_adapters_v1.py
+python validation\test_quality_teacher_runtime_v1.py
 python validation\test_quality_teacher_qualification_v1.py
 python validation\test_framework_manifest_v1.py
 python validation\test_framework_objects_v1.py
@@ -115,3 +121,6 @@ python validation\test_active_surface.py
 
 Generated datasets, model caches, raw API responses containing corpus text,
 benchmark outputs, and local work directories must remain untracked.
+
+The current direct validation surface contains 147 scripts and passed 147/147
+after the common teacher-adapter Block.
