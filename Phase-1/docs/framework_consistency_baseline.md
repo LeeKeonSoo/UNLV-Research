@@ -62,11 +62,17 @@ A 2-of-3 first pass requires the same majority and at least two stable teachers
 on a blinded second pass. All other outcomes abstain.
 
 The first hosted/local panel is frozen as a failed candidate after 143/512
-behavior tasks. The all-hosted replacement candidate (Mistral Medium 3.5,
+behavior tasks. A historical all-hosted candidate (Mistral Medium 3.5,
 Nemotron 3 Ultra, and DeepSeek V4 Pro) matched 64/64 development cells, but
-seven unavailable provider traces were observed. This is provider-selection
-evidence only: the replacement has not passed a fresh disjoint behavior gate
-or the protected false-removal gate, so Quality remains blocked and inactive.
+seven unavailable provider traces were observed.
+
+The active runtime-experiment panel is GLM-5.2, Nemotron 3 Ultra, and MiniMax
+M3. GLM-5.2 accepted the production Q1-Q4 JSON request and returned a
+schema-valid response, but endpoint probes observed 237.971 and 409.265 second
+successes plus one 300.508 second timeout. Its transport timeout is therefore
+600 seconds with one retry. This is endpoint and schema evidence only. The new
+provider identity cannot inherit either historical panel's behavior or
+false-removal evidence, so Quality promotion remains blocked.
 
 The candidate cannot delete data by itself. Promotion requires:
 

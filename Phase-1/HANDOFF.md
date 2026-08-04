@@ -65,7 +65,7 @@ tasks exactly, but two Q2 Code protected PASS constructions resolved to
 `validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`. Those
 fixtures are spent and must not be used to tune a replacement panel.
 
-The current replacement candidate is the all-hosted v2 panel:
+The historical all-hosted provider-selection candidate was:
 
 | Teacher | Location | Frozen identity |
 |---|---|---|
@@ -83,13 +83,29 @@ development check passed, but provider operational readiness did not. The
 frozen boundary is
 `validation/frozen_contracts/quality_teacher_development_gate_v2.json`.
 
+The current runtime-experiment panel in
+`configs/quality_teacher_panel_v2.json` is:
+
+| Teacher | Location | Frozen identity |
+|---|---|---|
+| Z.ai GLM-5.2 | NVIDIA Build | Endpoint observed 2026-08-05; 600-second timeout, one retry |
+| NVIDIA Nemotron 3 Ultra 550B A55B | NVIDIA Build | Endpoint observed 2026-08-04, thinking disabled |
+| MiniMax M3 | NVIDIA Build | Endpoint observed 2026-08-04 |
+
+GLM-5.2 accepted the production batched Q1-Q4 response schema. Synthetic
+endpoint probes observed successes at 237.971 and 409.265 seconds and one
+timeout at 300.508 seconds. This establishes adapter compatibility, not
+latency readiness or Quality validity. The provider change invalidates all
+inherited calibration and requires fresh disjoint behavior and protected
+false-removal evidence.
+
 The common hosted/local adapter, strict response parser, one schema-only retry,
 blinded second pass, and Q1-Q4 independent fail-gate aggregation are now
 implemented. Reason codes come from a closed Policy-specific vocabulary.
-Hosted transport retries are disabled, unavailable teachers produce an audited
-`abstain`, and the local teacher loaded in about 11.2 GiB observed VRAM. The
-local backend is now lazy-loaded, so verifier-resolved Q1 tasks do not allocate
-the 9B model.
+Hosted transport retries are normally disabled; GLM-5.2 alone receives one
+transport retry because the free endpoint exceeded 300 seconds in observed
+health probes. Unavailable teachers produce an audited `abstain`. The retired
+local panel remains lazy-loaded in its historical implementation.
 
 Q1 has a deterministic evidence precedence rule. When a typed declared
 verifier supplies a versioned `pass` or `fail` result and evidence hash, that
@@ -110,8 +126,9 @@ gates pass.
 The deterministic 512-item behavior matrix and 800-item protected set are
 implemented. The resumable executor, qualification report, Normal/Hard
 consensus operating points, and Stage-B proposal/Stage-C Coverage-veto bridge
-are also implemented. Full teacher observations are not complete, so runtime
-activation remains false.
+are also implemented. Runtime materialization is enabled only as an experiment;
+full teacher observations are incomplete and scientific promotion remains
+blocked.
 
 The first pre-precedence Q1 diagnostic exposed teachers overruling a trivial
 declared verifier result. Those `quality-teacher-observation-v1` records are
@@ -120,8 +137,8 @@ Its first eight controlled Q1 tasks completed 8/8 `pass` from
 `declared_verifier` with zero model-generation traces. This validates evidence
 precedence and resume isolation, not full Quality promotion.
 
-Normal and Hard remain unqualified, and runtime activation remains false. The
-v2 all-hosted panel has not run a fresh disjoint 512-item behavior gate or the
+Normal and Hard remain unqualified for release. The active v2 panel has not run
+a fresh disjoint 512-item behavior gate or the
 3,200-policy protected run. Do not weaken the gate or reuse spent confirmatory
 fixtures; provider changes require development evidence followed by a fresh
 disjoint confirmatory set.

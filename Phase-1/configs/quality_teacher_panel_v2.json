@@ -20,23 +20,23 @@
   ],
   "teachers": [
     {
-      "teacher_id": "gemma-4-31b-it-build-v2",
-      "organization": "Google",
+      "teacher_id": "glm-5-2-build-v2",
+      "organization": "Z.ai",
       "location": "nvidia_build",
-      "model_id": "google/gemma-4-31b-it",
+      "model_id": "z-ai/glm-5.2",
       "revision": "build-endpoint-observed-2026-08-05",
-      "model_card_url": "https://build.nvidia.com/google/gemma-4-31b-it/modelcard",
+      "model_card_url": "https://build.nvidia.com/z-ai/glm-5.2/modelcard",
       "endpoint_base_url": "https://integrate.api.nvidia.com/v1",
       "api_key_environment_variable": "NVIDIA_API_KEY",
       "reasoning_mode": "disabled",
       "inference_precision": "endpoint_managed",
       "maximum_new_tokens": 1024,
-      "request_timeout_seconds": 60,
-      "maximum_transport_retries": 0,
+      "request_timeout_seconds": 600,
+      "maximum_transport_retries": 1,
       "structured_output_mode": "json_object",
       "temperature": 1.0,
-      "top_p": 0.95,
-      "reasoning_control": "enable_thinking_false"
+      "top_p": 1.0,
+      "reasoning_control": "none"
     },
     {
       "teacher_id": "nemotron-3-ultra-build-v2",

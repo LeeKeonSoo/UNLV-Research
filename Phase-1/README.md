@@ -63,11 +63,13 @@ fraction, or token budget. Both redesigned operating points remain uncalibrated
 and release-disabled; the legacy-compatible selector behavior is unchanged.
 
 The sole current model-driven Quality candidate is the three-teacher Quality
-Ranker in `configs/quality_teacher_panel_v1.json`. It evaluates Q1 Correctness
+Ranker in `configs/quality_teacher_panel_v2.json`. Its active runtime-experiment
+panel is GLM-5.2, Nemotron 3 Ultra, and MiniMax M3. It evaluates Q1 Correctness
 Evidence, Q2 Semantic Coherence, Q3 Substantive Payload, and Q4 Learnable
 Relations independently as `pass`, `fail`, or `abstain`. It remains blocked
-until smoke fixtures, protected-fixture false-removal bounds, consensus
-stability, and Normal/Hard operating points pass. Teacher output alone cannot
+from scientific promotion until fresh behavior fixtures, protected-fixture
+false-removal bounds, consensus stability, and Normal/Hard operating points
+pass. Runtime execution is experimental, and teacher output alone cannot
 delete data.
 
 The shared hosted/local adapter, closed Policy-specific reason-code schema,
@@ -88,6 +90,10 @@ controlled tasks, but Q2 produced two PASS-to-ABSTAIN mismatches by task 143.
 Because exact behavior was preregistered, the protected run was not started and
 both operating points remain blocked. See
 `validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`.
+
+Those results belong to a replaced provider panel and cannot qualify the active
+GLM-5.2/Nemotron/MiniMax panel. GLM-5.2 has passed endpoint and schema smoke
+only; its observed NVIDIA Build latency remains a release blocker.
 
 The previous loss-gap Quality experiment is retired and preserved only under
 `archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.

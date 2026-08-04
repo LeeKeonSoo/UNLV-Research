@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import sys
 from pathlib import Path
 
@@ -18,6 +19,7 @@ from model_provider_contract import (
 
 
 REGISTRY = ROOT / "configs" / "model_provider_registry_v1.json"
+ACTIVE_PANEL = ROOT / "configs" / "quality_teacher_panel_v2.json"
 
 
 def test_registry_exposes_replaceable_roles_without_direct_deletion_authority() -> None:
@@ -46,6 +48,22 @@ def test_teacher_panel_is_runtime_experiment_and_embedding_remains_audit_only() 
     assert embedding.policy_contribution_authority is False
 
 
+def test_teacher_provider_registry_matches_active_panel_identity() -> None:
+    registry = load_provider_registry(REGISTRY)
+    teacher_panel = next(
+        provider for provider in registry.providers if provider.provider_id == "quality-teacher-panel-v2"
+    )
+
+    assert [artifact.model_id for artifact in teacher_panel.artifacts] == [
+        "z-ai/glm-5.2",
+        "nvidia/nemotron-3-ultra-550b-a55b",
+        "minimaxai/minimax-m3",
+    ]
+    assert teacher_panel.implementation_contract_identity_sha256 == hashlib.sha256(
+        ACTIVE_PANEL.read_bytes()
+    ).hexdigest()
+
+
 def test_changed_provider_fingerprint_cannot_inherit_calibration() -> None:
     registry = load_provider_registry(REGISTRY)
     current = next(provider for provider in registry.providers if provider.role.value == "semantic")
@@ -71,5 +89,6 @@ def test_changed_provider_fingerprint_cannot_inherit_calibration() -> None:
 if __name__ == "__main__":
     test_registry_exposes_replaceable_roles_without_direct_deletion_authority()
     test_teacher_panel_is_runtime_experiment_and_embedding_remains_audit_only()
+    test_teacher_provider_registry_matches_active_panel_identity()
     test_changed_provider_fingerprint_cannot_inherit_calibration()
     print("[model-provider-contract-v1] replacement and fail-closed gates: pass")

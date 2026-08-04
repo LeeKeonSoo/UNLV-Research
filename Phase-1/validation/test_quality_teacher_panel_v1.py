@@ -21,6 +21,7 @@ from quality_teacher_panel import (
 
 
 CONFIG = ROOT / "configs" / "quality_teacher_panel_v1.json"
+ACTIVE_CONFIG_V2 = ROOT / "configs" / "quality_teacher_panel_v2.json"
 CONFIG_V2 = ROOT / "validation" / "candidate_contracts" / "quality_teacher_panel_v2.json"
 DEVELOPMENT_GATE_V2 = (
     ROOT / "validation" / "frozen_contracts" / "quality_teacher_development_gate_v2.json"
@@ -87,6 +88,21 @@ def test_v2_panel_freezes_three_independent_frontier_endpoints() -> None:
     assert all(teacher.maximum_transport_retries == 0 for teacher in panel.teachers)
     assert panel.teachers[0].reasoning_control == "reasoning_effort_none"
     assert panel.runtime_activation is False
+
+
+def test_active_v2_panel_uses_glm_with_slow_endpoint_transport_budget() -> None:
+    panel = load_teacher_panel(ACTIVE_CONFIG_V2)
+
+    assert [teacher.model_id for teacher in panel.teachers] == [
+        "z-ai/glm-5.2",
+        "nvidia/nemotron-3-ultra-550b-a55b",
+        "minimaxai/minimax-m3",
+    ]
+    glm = panel.teachers[0]
+    assert glm.request_timeout_seconds == 600
+    assert glm.maximum_transport_retries == 1
+    assert glm.reasoning_control == "none"
+    assert panel.runtime_activation is True
 
 
 def test_v2_development_success_does_not_activate_quality() -> None:
@@ -172,6 +188,7 @@ def test_vote_set_rejects_missing_or_duplicate_teachers() -> None:
 if __name__ == "__main__":
     test_panel_contract_freezes_diverse_two_hosted_one_local_teachers()
     test_v2_panel_freezes_three_independent_frontier_endpoints()
+    test_active_v2_panel_uses_glm_with_slow_endpoint_transport_budget()
     test_v2_development_success_does_not_activate_quality()
     test_first_pass_unanimity_produces_panel_decision()
     test_stable_two_of_three_requires_blinded_second_pass()

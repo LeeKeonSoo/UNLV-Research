@@ -84,7 +84,7 @@ class TeacherSpec(BaseModel):
     reasoning_mode: Literal["disabled", "bounded"]
     inference_precision: Literal["endpoint_managed", "bitsandbytes_int8"]
     maximum_new_tokens: int = Field(gt=0, le=4096)
-    request_timeout_seconds: int | None = Field(default=None, gt=0, le=300)
+    request_timeout_seconds: int | None = Field(default=None, gt=0, le=900)
     maximum_transport_retries: int | None = Field(default=None, ge=0, le=2)
     structured_output_mode: Literal["json_object"] | None
     temperature: float = Field(default=0.0, ge=0.0, le=2.0)
