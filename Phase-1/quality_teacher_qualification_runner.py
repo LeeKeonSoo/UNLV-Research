@@ -165,6 +165,34 @@ def load_completed_task_ids(path: Path) -> set[str]:
     return completed
 
 
+def append_task_records(
+    path: Path,
+    panel: TeacherPanel,
+    adapters: Mapping[str, TeacherAdapter],
+    tasks: tuple[QualificationTask, ...],
+    *,
+    completed_task_ids: set[str],
+) -> int:
+    """Appends and flushes each task so a later interruption remains resumable."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    new_records = 0
+    with path.open("a", encoding="utf-8", newline="\n") as handle:
+        for task in tasks:
+            records = run_tasks(
+                panel,
+                adapters,
+                (task,),
+                completed_task_ids=completed_task_ids,
+            )
+            if not records:
+                continue
+            handle.write(json.dumps(records[0], ensure_ascii=True, sort_keys=True) + "\n")
+            handle.flush()
+            completed_task_ids.add(task.task_id)
+            new_records += 1
+    return new_records
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run resumable Quality teacher qualification tasks.")
     parser.add_argument("--panel", type=Path, required=True)
@@ -185,18 +213,14 @@ def main() -> int:
     if args.limit is not None:
         tasks = tasks[: args.limit]
     adapters = _build_adapters(panel, args.local_model_path)
-    records = run_tasks(
+    new_records = append_task_records(
+        args.output,
         panel,
         adapters,
         tasks,
         completed_task_ids=load_completed_task_ids(args.output),
     )
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("a", encoding="utf-8", newline="\n") as handle:
-        for record in records:
-            handle.write(json.dumps(record, ensure_ascii=True, sort_keys=True) + "\n")
-            handle.flush()
-    print(json.dumps({"kind": args.kind, "new_records": len(records)}))
+    print(json.dumps({"kind": args.kind, "new_records": new_records}))
     return 0
 
 

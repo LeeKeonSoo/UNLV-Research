@@ -14,6 +14,7 @@ from quality_teacher_panel import load_teacher_panel
 from quality_teacher_qualification_runner import (
     IncompatibleObservationError,
     OBSERVATION_SCHEMA_VERSION,
+    append_task_records,
     build_qualification_tasks,
     load_completed_task_ids,
     run_tasks,
@@ -32,6 +33,13 @@ class PolicyAwareAdapter:
         self.calls.append(request.unit_id)
         reason = request.pass_reason_codes[0]
         return f'{{"decision":"pass","reason_codes":["{reason}"]}}'
+
+
+class InterruptAfterOneAdapter(PolicyAwareAdapter):
+    def generate(self, request: TeacherGenerationRequest) -> str:
+        if len(self.calls) == 1:
+            raise RuntimeError("intentional qualification interruption")
+        return super().generate(request)
 
 
 def test_runner_is_resumable_and_emits_no_raw_model_text() -> None:
@@ -75,6 +83,31 @@ def test_resume_rejects_observations_from_an_older_runtime_contract() -> None:
             raise AssertionError("Legacy observations must not enter the v2 qualification run")
 
 
+def test_append_flushes_each_completed_task_before_a_later_interruption() -> None:
+    panel = load_teacher_panel(CONFIG)
+    tasks = tuple(
+        task
+        for task in build_qualification_tasks("behavior")
+        if task.policy_id == "q2_semantic_coherence"
+    )[:2]
+    adapters = {
+        panel.teachers[0].teacher_id: InterruptAfterOneAdapter(),
+        panel.teachers[1].teacher_id: PolicyAwareAdapter(),
+        panel.teachers[2].teacher_id: PolicyAwareAdapter(),
+    }
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "observations.jsonl"
+
+        try:
+            append_task_records(path, panel, adapters, tasks, completed_task_ids=set())
+        except RuntimeError as error:
+            assert str(error) == "intentional qualification interruption"
+        else:
+            raise AssertionError("The fixture must interrupt the second task")
+
+        assert load_completed_task_ids(path) == {tasks[0].task_id}
+
+
 def test_protected_tasks_apply_all_four_policies() -> None:
     tasks = build_qualification_tasks("protected")
 
@@ -92,5 +125,6 @@ def test_protected_tasks_apply_all_four_policies() -> None:
 if __name__ == "__main__":
     test_runner_is_resumable_and_emits_no_raw_model_text()
     test_resume_rejects_observations_from_an_older_runtime_contract()
+    test_append_flushes_each_completed_task_before_a_later_interruption()
     test_protected_tasks_apply_all_four_policies()
     print("[quality-qualification-runner-v1] resumable behavior/protected execution: pass")
