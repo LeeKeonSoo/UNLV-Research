@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -19,6 +21,10 @@ from quality_teacher_panel import (
 
 
 CONFIG = ROOT / "configs" / "quality_teacher_panel_v1.json"
+CONFIG_V2 = ROOT / "validation" / "candidate_contracts" / "quality_teacher_panel_v2.json"
+DEVELOPMENT_GATE_V2 = (
+    ROOT / "validation" / "frozen_contracts" / "quality_teacher_development_gate_v2.json"
+)
 
 
 def _vote(teacher_id: str, decision: PolicyDecision) -> TeacherVote:
@@ -64,6 +70,35 @@ def test_panel_contract_freezes_diverse_two_hosted_one_local_teachers() -> None:
     )
     assert all(policy.reason_codes.pass_ for policy in panel.policies)
     assert all(policy.reason_codes.abstain for policy in panel.policies)
+
+
+def test_v2_panel_freezes_three_independent_frontier_endpoints() -> None:
+    panel = load_teacher_panel(CONFIG_V2)
+
+    assert panel.schema_version == "quality-teacher-panel-v2"
+    assert [teacher.model_id for teacher in panel.teachers] == [
+        "mistralai/mistral-medium-3.5-128b",
+        "nvidia/nemotron-3-ultra-550b-a55b",
+        "deepseek-ai/deepseek-v4-pro",
+    ]
+    assert len({teacher.organization for teacher in panel.teachers}) == 3
+    assert all(teacher.location.value == "nvidia_build" for teacher in panel.teachers)
+    assert all(teacher.request_timeout_seconds == 180 for teacher in panel.teachers)
+    assert all(teacher.maximum_transport_retries == 0 for teacher in panel.teachers)
+    assert panel.teachers[0].reasoning_control == "reasoning_effort_none"
+    assert panel.runtime_activation is False
+
+
+def test_v2_development_success_does_not_activate_quality() -> None:
+    report = json.loads(DEVELOPMENT_GATE_V2.read_text(encoding="utf-8"))
+
+    assert report["teacher_panel"]["sha256"] == hashlib.sha256(CONFIG_V2.read_bytes()).hexdigest()
+    assert report["development_matrix"]["panel_exact_matches"] == 64
+    assert report["gates"]["development_behavior_exact_passed"] is True
+    assert report["gates"]["provider_operational_gate_passed"] is False
+    assert report["gates"]["fresh_disjoint_behavior_gate_run"] is False
+    assert report["gates"]["protected_false_removal_gate_run"] is False
+    assert report["gates"]["runtime_activation_allowed"] is False
 
 
 def test_first_pass_unanimity_produces_panel_decision() -> None:
@@ -136,6 +171,8 @@ def test_vote_set_rejects_missing_or_duplicate_teachers() -> None:
 
 if __name__ == "__main__":
     test_panel_contract_freezes_diverse_two_hosted_one_local_teachers()
+    test_v2_panel_freezes_three_independent_frontier_endpoints()
+    test_v2_development_success_does_not_activate_quality()
     test_first_pass_unanimity_produces_panel_decision()
     test_stable_two_of_three_requires_blinded_second_pass()
     test_changed_or_unresolved_second_pass_abstains()

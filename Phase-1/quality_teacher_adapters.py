@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Iterable, Literal, Protocol
+from typing import Iterable, Literal, Protocol, assert_never
 
-from quality_teacher_panel import TeacherSpec
+from quality_teacher_panel import ReasoningControl, TeacherSpec
 from quality_teacher_runtime import TeacherGenerationRequest, TeacherGenerationUnavailable
 
 
@@ -29,6 +29,9 @@ class CompletionRequest:
     messages: tuple[ChatMessage, ChatMessage]
     maximum_new_tokens: int
     response_format: StructuredResponseFormat
+    temperature: float = 0.0
+    top_p: float = 1.0
+    reasoning_control: ReasoningControl = "none"
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +42,22 @@ class StructuredResponseFormat:
 
 class CompletionBackend(Protocol):
     def complete(self, request: CompletionRequest) -> str: ...
+
+
+def build_reasoning_extra_body(
+    control: ReasoningControl,
+) -> dict[str, object]:
+    match control:
+        case "none":
+            return {}
+        case "enable_thinking_false":
+            return {"chat_template_kwargs": {"enable_thinking": False}}
+        case "thinking_false":
+            return {"chat_template_kwargs": {"thinking": False}}
+        case "reasoning_effort_none":
+            return {"reasoning_effort": "none"}
+        case unreachable:
+            assert_never(unreachable)
 
 
 def collect_stream_content(chunks: Iterable[object]) -> str:
@@ -142,6 +161,9 @@ class TeacherModelAdapter:
                         + request.abstain_reason_codes
                     ),
                 ),
+                temperature=self.teacher.temperature,
+                top_p=self.teacher.top_p,
+                reasoning_control=self.teacher.reasoning_control,
             )
         )
 
@@ -170,7 +192,8 @@ class NvidiaBuildBackend:
         )
 
     def complete(self, request: CompletionRequest) -> str:
-        from openai import APIConnectionError, APIStatusError, APITimeoutError
+        from httpx import TimeoutException
+        from openai import APIConnectionError, APIError, APIStatusError, APITimeoutError
 
         try:
             completion = self._client.chat.completions.create(
@@ -179,13 +202,17 @@ class NvidiaBuildBackend:
                     {"role": message.role, "content": message.content}
                     for message in request.messages
                 ],
-                temperature=0.0,
+                temperature=request.temperature,
+                top_p=request.top_p,
                 max_tokens=request.maximum_new_tokens,
                 response_format={"type": request.response_format.type},
+                extra_body=build_reasoning_extra_body(request.reasoning_control),
                 stream=True,
             )
             content = collect_stream_content(completion)
         except APITimeoutError as error:
+            raise TeacherGenerationUnavailable(request.model_id, "read_timeout") from error
+        except TimeoutException as error:
             raise TeacherGenerationUnavailable(request.model_id, "read_timeout") from error
         except APIConnectionError as error:
             raise TeacherGenerationUnavailable(request.model_id, "connection_error") from error
@@ -193,6 +220,11 @@ class NvidiaBuildBackend:
             raise TeacherGenerationUnavailable(
                 request.model_id,
                 f"http_status_{error.status_code}",
+            ) from error
+        except APIError as error:
+            raise TeacherGenerationUnavailable(
+                request.model_id,
+                f"api_error_{type(error).__name__.lower()}",
             ) from error
         if not content:
             raise TeacherAdapterContractError(

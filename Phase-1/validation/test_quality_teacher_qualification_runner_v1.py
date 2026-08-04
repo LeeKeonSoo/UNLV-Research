@@ -122,9 +122,44 @@ def test_protected_tasks_apply_all_four_policies() -> None:
     assert {task.expected_decision for task in tasks} == {"pass"}
 
 
+def test_development_matrix_can_sample_one_fixture_per_cell() -> None:
+    tasks = build_qualification_tasks("behavior", samples_per_cell=1)
+
+    assert len(tasks) == 4 * 4 * 4
+    assert len({(task.policy_id, task.route, task.fixture_class) for task in tasks}) == 64
+
+
+def test_parallel_append_flushes_each_unique_task() -> None:
+    panel = load_teacher_panel(CONFIG)
+    tasks = tuple(
+        task
+        for task in build_qualification_tasks("behavior", samples_per_cell=1)
+        if task.policy_id == "q2_semantic_coherence"
+    )[:4]
+    adapters = {teacher.teacher_id: PolicyAwareAdapter() for teacher in panel.teachers}
+
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "parallel-observations.jsonl"
+        completed: set[str] = set()
+        count = append_task_records(
+            path,
+            panel,
+            adapters,
+            tasks,
+            completed_task_ids=completed,
+            task_workers=2,
+        )
+
+        assert count == 4
+        assert completed == {task.task_id for task in tasks}
+        assert load_completed_task_ids(path) == completed
+
+
 if __name__ == "__main__":
     test_runner_is_resumable_and_emits_no_raw_model_text()
     test_resume_rejects_observations_from_an_older_runtime_contract()
     test_append_flushes_each_completed_task_before_a_later_interruption()
     test_protected_tasks_apply_all_four_policies()
+    test_development_matrix_can_sample_one_fixture_per_cell()
+    test_parallel_append_flushes_each_unique_task()
     print("[quality-qualification-runner-v1] resumable behavior/protected execution: pass")

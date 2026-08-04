@@ -1,0 +1,72 @@
+{
+  "schema_version": "quality-teacher-development-gate-v2",
+  "observed_at": "2026-08-04",
+  "status": "candidate_blocked_provider_operational_evidence",
+  "scope": "development_only_not_confirmatory",
+  "teacher_panel": {
+    "path": "validation/candidate_contracts/quality_teacher_panel_v2.json",
+    "sha256": "391c25e59df3be664607f86a9b5a786354d5cdc94c2e406daf51ff3d894141e0",
+    "models": [
+      "mistralai/mistral-medium-3.5-128b",
+      "nvidia/nemotron-3-ultra-550b-a55b",
+      "deepseek-ai/deepseek-v4-pro"
+    ]
+  },
+  "observation_bundle": {
+    "path": "outputs/validation/quality_teacher_panel_v2_development_matrix.jsonl",
+    "sha256": "e1db988b9fd5a459256b0ccfe9c82b9ee4305b75169e43a55007d9486df35590",
+    "tracked_in_git": false
+  },
+  "development_matrix": {
+    "policies": 4,
+    "routes": 4,
+    "fixture_classes": 4,
+    "samples_per_cell": 1,
+    "task_count": 64,
+    "panel_exact_matches": 64,
+    "panel_mismatches": 0,
+    "second_pass_task_count": 6,
+    "generation_trace_count": 175,
+    "schema_retry_count": 1,
+    "unavailable_trace_count": 7
+  },
+  "teacher_diagnostics": [
+    {
+      "teacher_id": "mistral-medium-3-5-build-v2",
+      "first_pass_votes": 52,
+      "first_pass_expected_matches": 52,
+      "successful_traces": 58,
+      "unavailable_traces": 0,
+      "latency_milliseconds": {"p50": 61668, "p95": 150064, "maximum": 184410}
+    },
+    {
+      "teacher_id": "nemotron-3-ultra-build-v2",
+      "first_pass_votes": 52,
+      "first_pass_expected_matches": 46,
+      "successful_traces": 51,
+      "unavailable_traces": 7,
+      "latency_milliseconds": {"p50": 1407, "p95": 15494, "maximum": 42743}
+    },
+    {
+      "teacher_id": "deepseek-v4-pro-build-v2",
+      "first_pass_votes": 52,
+      "first_pass_expected_matches": 51,
+      "successful_traces": 59,
+      "unavailable_traces": 0,
+      "latency_milliseconds": {"p50": 8552, "p95": 27379, "maximum": 38805}
+    }
+  ],
+  "gates": {
+    "development_behavior_exact_passed": true,
+    "provider_operational_gate_passed": false,
+    "fresh_disjoint_behavior_gate_run": false,
+    "protected_false_removal_gate_run": false,
+    "runtime_activation_allowed": false
+  },
+  "blocking_reasons": [
+    "hosted_provider_unavailability_observed",
+    "fresh_disjoint_512_fixture_behavior_gate_not_run",
+    "protected_800_fixture_false_removal_gate_not_run"
+  ],
+  "claim_boundary": "The three-frontier-model panel matched all 64 development cells, but this is provider-selection evidence only. Quality remains inactive and teacher output alone cannot delete data."
+}

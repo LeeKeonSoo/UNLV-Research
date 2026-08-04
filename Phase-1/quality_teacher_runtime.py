@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Literal, Mapping, Protocol
 from uuid import uuid4
@@ -179,8 +180,8 @@ def _run_pass(
     pass_index: Literal[1, 2],
     blind_run_id: str,
 ) -> tuple[TeacherVote, ...]:
-    return tuple(
-        evaluate_teacher(
+    def evaluate(teacher: TeacherSpec) -> TeacherVote:
+        return evaluate_teacher(
             adapters[teacher.teacher_id],
             teacher,
             policy,
@@ -188,8 +189,9 @@ def _run_pass(
             pass_index=pass_index,
             blind_run_id=blind_run_id,
         )
-        for teacher in panel.teachers
-    )
+
+    with ThreadPoolExecutor(max_workers=len(panel.teachers)) as executor:
+        return tuple(executor.map(evaluate, panel.teachers))
 
 
 def evaluate_panel_policy(

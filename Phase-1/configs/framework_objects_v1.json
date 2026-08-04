@@ -8,7 +8,7 @@
     {"id": "redundancy.current_runtime", "version": "v1", "implementation_path": "run_curation.py", "implementation_sha256": "1455efbf3fd51865a56e9beac4eee3fae605c8cad011ed0925b667d3c8327120", "deterministic": true},
     {"id": "quality.retention_contract", "version": "v1", "implementation_path": "quality_retention.py", "implementation_sha256": "1bf11fcede83dc9e50f317551bd6e72f235c9c82c2713126699285992fe6cc33", "deterministic": true},
     {"id": "coverage.materialization_contract", "version": "v1", "implementation_path": "coverage_contract.py", "implementation_sha256": "d8ba5c0ee46c5350c4b7f6ac6d851d5c448e2a76a4a7d3a00295ec192f0e33fe", "deterministic": true},
-    {"id": "quality.teacher_panel_consensus", "version": "v1", "implementation_path": "quality_teacher_runtime.py", "implementation_sha256": "3fe50dff1ad9f3a1a9c8ae40586789b3be3fb7a34e4b41777327d1a52be292b8", "deterministic": false},
+    {"id": "quality.teacher_panel_consensus", "version": "v1", "implementation_path": "quality_teacher_runtime.py", "implementation_sha256": "02162b0b7c9bf75a5d22585d1884cb23dc1cb49fc7aef2d109c82e18c406faec", "deterministic": false},
     {"id": "framework.runtime_bridge", "version": "v1", "implementation_path": "framework_runtime_bridge.py", "implementation_sha256": "e423adaf8c82a59d72e61cbc9fcb9c65977eec0f5a5a1aebc0486d47dfe9faf5", "deterministic": true}
   ],
   "metrics": [

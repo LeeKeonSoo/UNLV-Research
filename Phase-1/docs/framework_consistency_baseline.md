@@ -61,9 +61,16 @@ Each teacher returns `pass`, `fail`, or `abstain` plus reason codes for Q1-Q4.
 A 2-of-3 first pass requires the same majority and at least two stable teachers
 on a blinded second pass. All other outcomes abstain.
 
+The first hosted/local panel is frozen as a failed candidate after 143/512
+behavior tasks. The all-hosted replacement candidate (Mistral Medium 3.5,
+Nemotron 3 Ultra, and DeepSeek V4 Pro) matched 64/64 development cells, but
+seven unavailable provider traces were observed. This is provider-selection
+evidence only: the replacement has not passed a fresh disjoint behavior gate
+or the protected false-removal gate, so Quality remains blocked and inactive.
+
 The candidate cannot delete data by itself. Promotion requires:
 
-- a 512-item smoke fixture matrix;
+- a fresh, development-disjoint 512-item behavior fixture matrix;
 - at least 800 protected fixtures;
 - one-sided 95% exact false-removal upper bounds no greater than 0.5% for
   Normal and 2.0% for Hard;

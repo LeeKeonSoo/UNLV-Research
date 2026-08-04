@@ -51,13 +51,37 @@ score:
 3. Q3 Substantive Payload
 4. Q4 Learnable Relations
 
-The frozen three-teacher panel is:
+The blocked v1 three-teacher panel was:
 
 | Teacher | Location | Frozen identity |
 |---|---|---|
 | Google Gemma 4 31B IT | NVIDIA Build | Endpoint observed 2026-08-04 |
 | Meta Llama 3.1 8B Instruct | NVIDIA Build | Endpoint observed 2026-08-04 |
 | Qwen3.5-9B | Local RTX 4060 Ti | Revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`, int8 |
+
+That panel failed its behavior gate after 143/512 tasks. Q1 completed all 128
+tasks exactly, but two Q2 Code protected PASS constructions resolved to
+`abstain`. The frozen failure evidence is
+`validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`. Those
+fixtures are spent and must not be used to tune a replacement panel.
+
+The current replacement candidate is the all-hosted v2 panel:
+
+| Teacher | Location | Frozen identity |
+|---|---|---|
+| Mistral Medium 3.5 128B | NVIDIA Build | Endpoint observed 2026-08-04, reasoning disabled |
+| NVIDIA Nemotron 3 Ultra 550B A55B | NVIDIA Build | Endpoint observed 2026-08-04, thinking disabled |
+| DeepSeek V4 Pro | NVIDIA Build | Endpoint observed 2026-08-04, thinking disabled |
+
+Its candidate contract is outside the active config surface at
+`validation/candidate_contracts/quality_teacher_panel_v2.json`. The 64-cell
+provider-selection matrix matched 64/64 expected panel decisions. Mistral,
+Nemotron, and DeepSeek first-pass expected-decision matches were 52/52, 46/52,
+and 51/52 respectively. Seven Nemotron generation traces were unavailable;
+Mistral p50/p95 latency was 61.668/150.064 seconds. Therefore the behavior
+development check passed, but provider operational readiness did not. The
+frozen boundary is
+`validation/frozen_contracts/quality_teacher_development_gate_v2.json`.
 
 The common hosted/local adapter, strict response parser, one schema-only retry,
 blinded second pass, and Q1-Q4 independent fail-gate aggregation are now
@@ -74,15 +98,10 @@ when no declared verifier is available. This prevents probabilistic teachers
 from overruling locally checkable evidence while preserving `abstain` for
 unsupported correctness claims.
 
-Historical endpoint probes showed that the earlier 70B/753B hosted pair could
-exceed 120 seconds per small fixture. The current Gemma/Llama hosted pair was
-selected for observable endpoint availability; model adequacy is not assumed
-and must be established by the same qualification matrix.
-
-The current panel completed a public Q3 smoke on 2026-08-04 with first-pass
-unanimous `pass`. Observed generation times were 5.67 seconds for Gemma, 0.48
-seconds for Llama, and 20.16 seconds for local Qwen. This verifies the current
-endpoint, prompt, closed reason-code, and local inference path only.
+Historical endpoint probes remain development diagnostics only. Hosted model
+availability is not inferred from an NVIDIA catalog entry; every replacement
+must pass the same endpoint, schema, behavior, latency, and protected-fixture
+gates.
 
 Teacher output alone has no deletion authority. The candidate remains
 `blocked` until fixture, consensus-stability, false-removal, and operating-point
@@ -101,16 +120,11 @@ Its first eight controlled Q1 tasks completed 8/8 `pass` from
 `declared_verifier` with zero model-generation traces. This validates evidence
 precedence and resume isolation, not full Quality promotion.
 
-The v2 behavior qualification then stopped after 143/512 tasks because the
-preregistered exact gate had become unreachable. Q1 completed all 128 tasks
-exactly. In Q2 Code, two protected PASS constructions resolved to `abstain`:
-one due to repeated local-Qwen FAIL plus a Gemma timeout, and one due to
-second-pass instability. The result is frozen in
-`validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`. Normal
-and Hard remain unqualified, the 3,200-policy protected run was correctly not
-started, and runtime activation remains false. Do not weaken the gate or tune
-on these confirmatory fixtures; panel changes require new development evidence
-and a fresh disjoint confirmatory set.
+Normal and Hard remain unqualified, and runtime activation remains false. The
+v2 all-hosted panel has not run a fresh disjoint 512-item behavior gate or the
+3,200-policy protected run. Do not weaken the gate or reuse spent confirmatory
+fixtures; provider changes require development evidence followed by a fresh
+disjoint confirmatory set.
 
 ## Retired Contrastive Research
 
@@ -124,18 +138,21 @@ import or authorize that archive.
 
 ## Next Authorized Work
 
-1. Execute the generated 512-item behavior matrix through the frozen panel.
-2. Execute all four Policies on the 800 protected fixtures and measure exact
+1. Stabilize or replace the unavailable v2 provider and freeze a practical
+   provider operational gate without changing Q1-Q4 semantics.
+2. Generate a fresh, hash-disjoint 512-item behavior matrix and execute it once
+   through the frozen replacement panel.
+3. Execute all four Policies on 800 fresh protected fixtures and measure exact
    one-sided false-removal bounds.
-3. Freeze the resulting report and promote only passing Normal/Hard modes.
-4. Activate the existing Stage-B proposal/Stage-C Coverage-veto bridge only
+4. Freeze the resulting report and promote only passing Normal/Hard modes.
+5. Activate the existing Stage-B proposal/Stage-C Coverage-veto bridge only
    for a promoted mode.
-5. Run an admitted corpus-scale reason-code and compression audit.
-6. Redesign near-duplicate authority around route-appropriate equivalence
+6. Run an admitted corpus-scale reason-code and compression audit.
+7. Redesign near-duplicate authority around route-appropriate equivalence
    witnesses rather than a similarity threshold alone.
-7. Validate Coverage representation invariants on Code, Math, General prose,
+8. Validate Coverage representation invariants on Code, Math, General prose,
    and structured data.
-8. Run Base, Normal, and Hard curation, followed by external three-seed
+9. Run Base, Normal, and Hard curation, followed by external three-seed
    natural-budget evaluation.
 
 ## Verification

@@ -59,6 +59,7 @@ class AuditedAdapter:
                 {
                     "teacher_id": request.teacher_id,
                     "policy_id": request.policy_id,
+                    "unit_id": request.unit_id,
                     "pass_index": request.pass_index,
                     "schema_retry": request.schema_retry,
                     "elapsed_milliseconds": round((self.clock() - started) * 1000),
@@ -71,6 +72,7 @@ class AuditedAdapter:
             {
                 "teacher_id": request.teacher_id,
                 "policy_id": request.policy_id,
+                "unit_id": request.unit_id,
                 "pass_index": request.pass_index,
                 "schema_retry": request.schema_retry,
                 "elapsed_milliseconds": round((self.clock() - started) * 1000),

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final, Literal, Mapping
@@ -50,8 +51,13 @@ class QualificationTask:
 
 def build_qualification_tasks(
     kind: Literal["behavior", "protected"],
+    *,
+    samples_per_cell: int | None = None,
 ) -> tuple[QualificationTask, ...]:
     if kind == "behavior":
+        fixture_count = 8 if samples_per_cell is None else samples_per_cell
+        if fixture_count < 1:
+            raise ValueError("samples_per_cell must be positive")
         return tuple(
             QualificationTask(
                 task_id=fixture.fixture_id,
@@ -62,8 +68,10 @@ def build_qualification_tasks(
                 fixture_class=fixture.fixture_class.value,
                 unit=fixture.unit,
             )
-            for fixture in build_behavior_fixture_matrix()
+            for fixture in build_behavior_fixture_matrix(fixture_count)
         )
+    if samples_per_cell is not None:
+        raise ValueError("samples_per_cell is only valid for behavior qualification")
     return tuple(
         QualificationTask(
             task_id=f"{fixture.fixture_id}-{policy_id}",
@@ -98,21 +106,20 @@ def _votes(result: PanelPolicyResult, pass_name: str) -> list[dict[str, object]]
     ]
 
 
-def _trace_offsets(adapters: Mapping[str, TeacherAdapter]) -> dict[str, int]:
-    return {
-        teacher_id: len(getattr(adapter, "traces", ()))
-        for teacher_id, adapter in adapters.items()
-    }
-
-
-def _new_traces(
+def _task_traces(
     adapters: Mapping[str, TeacherAdapter],
-    offsets: Mapping[str, int],
+    *,
+    unit_id: str,
+    policy_id: str,
 ) -> list[dict[str, object]]:
     traces: list[dict[str, object]] = []
-    for teacher_id, adapter in adapters.items():
+    for adapter in adapters.values():
         available = getattr(adapter, "traces", ())
-        traces.extend(dict(trace) for trace in available[offsets[teacher_id] :])
+        traces.extend(
+            dict(trace)
+            for trace in available
+            if trace.get("unit_id") == unit_id and trace.get("policy_id") == policy_id
+        )
     return traces
 
 
@@ -128,7 +135,6 @@ def run_tasks(
     for task in tasks:
         if task.task_id in completed:
             continue
-        offsets = _trace_offsets(adapters)
         result = evaluate_panel_policy(panel, adapters, _policy(panel, task.policy_id), task.unit)
         records.append(
             {
@@ -144,7 +150,11 @@ def run_tasks(
                 "decision_reason_codes": list(result.reason_codes),
                 "first_pass": _votes(result, "first"),
                 "second_pass": _votes(result, "second"),
-                "generation_traces": _new_traces(adapters, offsets),
+                "generation_traces": _task_traces(
+                    adapters,
+                    unit_id=task.unit.unit_id,
+                    policy_id=task.policy_id,
+                ),
             }
         )
     return records
@@ -172,24 +182,35 @@ def append_task_records(
     tasks: tuple[QualificationTask, ...],
     *,
     completed_task_ids: set[str],
+    task_workers: int = 1,
 ) -> int:
     """Appends and flushes each task so a later interruption remains resumable."""
     path.parent.mkdir(parents=True, exist_ok=True)
     new_records = 0
+    pending = tuple(task for task in tasks if task.task_id not in completed_task_ids)
     with path.open("a", encoding="utf-8", newline="\n") as handle:
-        for task in tasks:
-            records = run_tasks(
-                panel,
-                adapters,
-                (task,),
-                completed_task_ids=completed_task_ids,
+        if task_workers == 1:
+            task_groups = ((task, run_tasks(panel, adapters, (task,))) for task in pending)
+        else:
+            executor = ThreadPoolExecutor(max_workers=task_workers)
+            futures = {
+                executor.submit(run_tasks, panel, adapters, (task,)): task
+                for task in pending
+            }
+            task_groups = (
+                (futures[future], future.result()) for future in as_completed(futures)
             )
-            if not records:
-                continue
-            handle.write(json.dumps(records[0], ensure_ascii=True, sort_keys=True) + "\n")
-            handle.flush()
-            completed_task_ids.add(task.task_id)
-            new_records += 1
+        try:
+            for task, records in task_groups:
+                if not records:
+                    continue
+                handle.write(json.dumps(records[0], ensure_ascii=True, sort_keys=True) + "\n")
+                handle.flush()
+                completed_task_ids.add(task.task_id)
+                new_records += 1
+        finally:
+            if task_workers != 1:
+                executor.shutdown(wait=True)
     return new_records
 
 
@@ -202,6 +223,8 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--limit", type=int)
+    parser.add_argument("--samples-per-cell", type=int)
+    parser.add_argument("--task-workers", type=int, default=1)
     args = parser.parse_args()
 
     if not load_dotenv(args.dotenv):
@@ -209,7 +232,12 @@ def main() -> int:
     panel = load_teacher_panel(args.panel)
     from quality_teacher_smoke import _build_adapters
 
-    tasks = build_qualification_tasks(args.kind)[args.offset :]
+    if args.task_workers < 1:
+        raise ValueError("task_workers must be positive")
+    tasks = build_qualification_tasks(
+        args.kind,
+        samples_per_cell=args.samples_per_cell,
+    )[args.offset :]
     if args.limit is not None:
         tasks = tasks[: args.limit]
     adapters = _build_adapters(panel, args.local_model_path)
@@ -219,6 +247,7 @@ def main() -> int:
         adapters,
         tasks,
         completed_task_ids=load_completed_task_ids(args.output),
+        task_workers=args.task_workers,
     )
     print(json.dumps({"kind": args.kind, "new_records": new_records}))
     return 0

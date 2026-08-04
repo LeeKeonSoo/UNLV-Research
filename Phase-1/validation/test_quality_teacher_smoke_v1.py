@@ -77,6 +77,7 @@ def test_audited_adapter_records_failed_generation_without_swallowing_error() ->
         {
             "teacher_id": "teacher-a",
             "policy_id": "q3_substantive_payload",
+            "unit_id": "fixture-001",
             "pass_index": 1,
             "schema_retry": False,
             "elapsed_milliseconds": 750,

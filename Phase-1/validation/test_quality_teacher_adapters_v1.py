@@ -15,6 +15,7 @@ from quality_teacher_adapters import (
     StructuredResponseFormat,
     TeacherAdapterContractError,
     TeacherModelAdapter,
+    build_reasoning_extra_body,
     build_teacher_messages,
     collect_stream_content,
 )
@@ -107,6 +108,46 @@ def test_teacher_model_adapter_routes_frozen_model_and_returns_raw_response() ->
     )
 
 
+def test_frontier_adapter_routes_model_specific_inference_controls() -> None:
+    teacher = load_teacher_panel(
+        ROOT / "validation" / "candidate_contracts" / "quality_teacher_panel_v2.json"
+    ).teachers[1]
+    backend = RecordingBackend('{"decision":"pass","reason_codes":["observable_evidence"]}')
+    adapter = TeacherModelAdapter(teacher, backend, teacher.maximum_new_tokens)
+
+    adapter.generate(
+        _request(teacher_id=teacher.teacher_id, model_id=teacher.model_id, schema_retry=False)
+    )
+
+    request = backend.requests[0]
+    assert request.temperature == 1.0
+    assert request.top_p == 0.95
+    assert request.reasoning_control == "enable_thinking_false"
+    assert build_reasoning_extra_body(request.reasoning_control) == {
+        "chat_template_kwargs": {"enable_thinking": False}
+    }
+
+
+def test_mistral_frontier_adapter_disables_reasoning_for_bounded_json() -> None:
+    teacher = load_teacher_panel(
+        ROOT / "validation" / "candidate_contracts" / "quality_teacher_panel_v2.json"
+    ).teachers[0]
+    backend = RecordingBackend('{"decision":"pass","reason_codes":["observable_evidence"]}')
+    adapter = TeacherModelAdapter(teacher, backend, teacher.maximum_new_tokens)
+
+    adapter.generate(
+        _request(teacher_id=teacher.teacher_id, model_id=teacher.model_id, schema_retry=False)
+    )
+
+    request = backend.requests[0]
+    assert request.temperature == 0.0
+    assert request.top_p == 1.0
+    assert request.reasoning_control == "reasoning_effort_none"
+    assert build_reasoning_extra_body(request.reasoning_control) == {
+        "reasoning_effort": "none"
+    }
+
+
 def test_teacher_model_adapter_rejects_cross_teacher_dispatch() -> None:
     # Given: an adapter bound to one teacher but a request naming another teacher.
     teacher = load_teacher_panel(CONFIG).teachers[0]
@@ -179,6 +220,8 @@ def test_local_backend_is_loaded_only_on_first_generation() -> None:
 if __name__ == "__main__":
     test_prompt_builder_emits_machine_readable_policy_and_schema_contract()
     test_teacher_model_adapter_routes_frozen_model_and_returns_raw_response()
+    test_frontier_adapter_routes_model_specific_inference_controls()
+    test_mistral_frontier_adapter_disables_reasoning_for_bounded_json()
     test_teacher_model_adapter_rejects_cross_teacher_dispatch()
     test_local_chat_template_extracts_input_ids_from_batch_encoding()
     test_stream_collector_ignores_empty_transport_events()

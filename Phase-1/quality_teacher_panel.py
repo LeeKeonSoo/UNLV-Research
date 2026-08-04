@@ -33,6 +33,12 @@ PolicyReasonCode = Annotated[
     str,
     StringConstraints(min_length=1, max_length=64, pattern=r"^[a-z][a-z0-9_]*$"),
 ]
+ReasoningControl = Literal[
+    "none",
+    "enable_thinking_false",
+    "thinking_false",
+    "reasoning_effort_none",
+]
 
 
 class PolicyReasonCodes(BaseModel):
@@ -81,6 +87,9 @@ class TeacherSpec(BaseModel):
     request_timeout_seconds: int | None = Field(default=None, gt=0, le=300)
     maximum_transport_retries: int | None = Field(default=None, ge=0, le=2)
     structured_output_mode: Literal["json_object"] | None
+    temperature: float = Field(default=0.0, ge=0.0, le=2.0)
+    top_p: float = Field(default=1.0, gt=0.0, le=1.0)
+    reasoning_control: ReasoningControl = "none"
 
     @model_validator(mode="after")
     def validate_location_contract(self) -> "TeacherSpec":
@@ -163,7 +172,7 @@ class ResponseContract(BaseModel):
 class TeacherPanel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    schema_version: Literal["quality-teacher-panel-v1"]
+    schema_version: Literal["quality-teacher-panel-v1", "quality-teacher-panel-v2"]
     lifecycle: Literal["candidate_qualification"]
     runtime_activation: Literal[False]
     teacher_output_alone_may_delete: Literal[False]
@@ -184,8 +193,19 @@ class TeacherPanel(BaseModel):
         if len({teacher.organization for teacher in self.teachers}) != 3:
             raise PanelContractError("Teacher organizations must be independent")
         locations = Counter(teacher.location for teacher in self.teachers)
-        if locations != Counter({TeacherLocation.NVIDIA_BUILD: 2, TeacherLocation.LOCAL: 1}):
-            raise PanelContractError("Panel requires exactly two NVIDIA Build and one local teacher")
+        match self.schema_version:
+            case "quality-teacher-panel-v1":
+                expected_locations = Counter(
+                    {TeacherLocation.NVIDIA_BUILD: 2, TeacherLocation.LOCAL: 1}
+                )
+            case "quality-teacher-panel-v2":
+                expected_locations = Counter({TeacherLocation.NVIDIA_BUILD: 3})
+            case unreachable:
+                assert_never(unreachable)
+        if locations != expected_locations:
+            raise PanelContractError(
+                f"{self.schema_version} has an invalid teacher-location topology"
+            )
         expected_policies = {
             "q1_correctness_evidence",
             "q2_semantic_coherence",
