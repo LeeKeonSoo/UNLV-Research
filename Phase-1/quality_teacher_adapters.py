@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Literal, Protocol
+from typing import Iterable, Literal, Protocol
 
 from quality_teacher_panel import TeacherSpec
 from quality_teacher_runtime import TeacherGenerationRequest, TeacherGenerationUnavailable
@@ -41,6 +41,19 @@ class CompletionBackend(Protocol):
     def complete(self, request: CompletionRequest) -> str: ...
 
 
+def collect_stream_content(chunks: Iterable[object]) -> str:
+    parts: list[str] = []
+    for chunk in chunks:
+        choices = getattr(chunk, "choices", None)
+        if not choices:
+            continue
+        delta = getattr(choices[0], "delta", None)
+        content = getattr(delta, "content", None)
+        if content:
+            parts.append(str(content))
+    return "".join(parts).strip()
+
+
 def build_teacher_messages(
     request: TeacherGenerationRequest,
 ) -> tuple[ChatMessage, ChatMessage]:
@@ -64,9 +77,10 @@ def build_teacher_messages(
             "schema_retry": request.schema_retry,
             "prior_panel_votes_available": False,
         },
-        "response_schema": {
-            "decision": ["pass", "fail", "abstain"],
-            "reason_codes_by_decision": {
+        "response_contract": {
+            "required_object_keys": ["decision", "reason_codes"],
+            "allowed_decisions": ["pass", "fail", "abstain"],
+            "allowed_reason_codes_by_decision": {
                 "pass": list(request.pass_reason_codes),
                 "fail": list(request.fail_reason_codes),
                 "abstain": list(request.abstain_reason_codes),
@@ -83,7 +97,9 @@ def build_teacher_messages(
     system = (
         "You are one independent evaluator in a data-curation qualification panel. Evaluate only "
         "the supplied policy and observable unit evidence. Never infer other panel votes. Use abstain "
-        f"when the policy boundary requires unavailable evidence. {retry_instruction}"
+        "when the policy boundary requires unavailable evidence. The output object must contain "
+        'exactly two keys named "decision" and "reason_codes". Do not output the allowed-code '
+        f"mapping or any schema description. {retry_instruction}"
     )
     return (
         ChatMessage(role="system", content=system),
@@ -166,7 +182,9 @@ class NvidiaBuildBackend:
                 temperature=0.0,
                 max_tokens=request.maximum_new_tokens,
                 response_format={"type": request.response_format.type},
+                stream=True,
             )
+            content = collect_stream_content(completion)
         except APITimeoutError as error:
             raise TeacherGenerationUnavailable(request.model_id, "read_timeout") from error
         except APIConnectionError as error:
@@ -176,10 +194,9 @@ class NvidiaBuildBackend:
                 request.model_id,
                 f"http_status_{error.status_code}",
             ) from error
-        content = completion.choices[0].message.content
-        if content is None or not content.strip():
+        if not content:
             raise TeacherAdapterContractError(
                 teacher_id=request.model_id,
                 detail="endpoint returned no textual completion",
             )
-        return content.strip()
+        return content

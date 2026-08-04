@@ -1,5 +1,11 @@
 # Aggressive Quality Curation Program
 
+> Historical design note. Current Quality authority is
+> `docs/quality_teacher_panel_v1.md` together with
+> `configs/quality_teacher_panel_v1.json`. References below to verified
+> learnable-payload density or deterministic-only Quality do not override the
+> final Q1-Q4 independent Policy contract.
+
 ## Decision
 
 The framework will optimize **verified learnable-payload density**, not a

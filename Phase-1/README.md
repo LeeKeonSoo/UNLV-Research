@@ -70,11 +70,12 @@ until smoke fixtures, protected-fixture false-removal bounds, consensus
 stability, and Normal/Hard operating points pass. Teacher output alone cannot
 delete data.
 
-The shared hosted/local adapter, strict lower-snake-case response schema,
-single schema retry, and blinded consensus runner are implemented. A public Q3
-smoke completed through all three teachers and correctly abstained after the
-second pass was not schema-stable. This is execution evidence, not policy
-promotion or evidence that the teachers measure Quality correctly.
+The shared hosted/local adapter, closed Policy-specific reason-code schema,
+single schema retry, blinded consensus runner, deterministic 512-item behavior
+matrix, 800-item protected set, resumable qualification executor, exact
+false-removal report, and Normal/Hard staged-policy bridge are implemented.
+The bridge remains inactive until the full observations pass and Stage C
+Coverage evidence can veto support loss.
 
 The previous loss-gap Quality experiment is retired and preserved only under
 `archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.
@@ -95,6 +96,11 @@ conda run -n research python validation\test_quality_candidate_authority_v1.py
 conda run -n research python validation\test_quality_teacher_panel_v1.py
 conda run -n research python validation\test_quality_teacher_adapters_v1.py
 conda run -n research python validation\test_quality_teacher_runtime_v1.py
+conda run -n research python validation\test_quality_teacher_fixture_matrix_v1.py
+conda run -n research python validation\test_quality_teacher_qualification_runner_v1.py
+conda run -n research python validation\test_quality_qualification_report_v1.py
+conda run -n research python validation\test_quality_operating_points_v1.py
+conda run -n research python validation\test_quality_stage_bridge_v1.py
 conda run -n research python validation\test_source_contract.py
 ```
 

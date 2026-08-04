@@ -99,11 +99,13 @@ legacy-compatible curation output is broken.
 
 ## Next Exit Gates
 
-1. Complete strict teacher adapters and retry behavior.
-2. Complete smoke and protected fixture qualification.
-3. Freeze Normal and Hard Quality operating points.
-4. Complete witness-based near-duplicate redesign.
-5. Complete route-spanning Coverage validation.
-6. Run Base, Normal, and Hard external three-seed natural-budget evaluation.
+1. Execute the implemented 512 behavior tasks and 3,200 protected Policy tasks.
+2. Freeze the qualification report and promote only modes that pass their exact
+   one-sided false-removal bound.
+3. Complete witness-based near-duplicate redesign.
+4. Complete route-spanning Coverage validation and enable its veto only after
+   semantic-provider qualification.
+5. Run admitted corpus-scale Base, Normal, and Hard curation audits.
+6. Run external three-seed natural-budget evaluation of frozen outputs.
 
 Only after those gates pass may the release claim or paper claim be expanded.

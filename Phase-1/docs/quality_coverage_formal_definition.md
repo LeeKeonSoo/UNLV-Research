@@ -1,6 +1,6 @@
 # Formal Definition of Quality and Coverage
 
-Status: design contract v1, 2026-08-01
+Status: design contract v2, 2026-08-04
 
 This document defines the two Cores that must not be inferred from their names.
 It separates the scientific target, runtime-observable evidence, and decision
@@ -21,86 +21,59 @@ validate a frozen policy after curation; they never reselect the same corpus.
 
 ## 2. Quality
 
-### 2.1 Scientific definition
+### 2.1 Operational definition
 
-Quality is **expected learning contribution per training token under a declared
-LM training objective and evaluation distribution**. It is not an intrinsic
-property of a document.
-
-For model initialization `m`, training seed `s`, current training corpus `D`,
-evaluation distribution `T`, and chunk `x`, define marginal learning gain:
+Quality is an **evidence-bounded decision vector** over four independent
+questions about one training unit. It is not a scalar, a source reputation, a
+human preference score, or a claim that usefulness is intrinsic to a document.
 
 ```text
-Delta_T(x | D, m, s)
-  = [L_T(theta(D; m, s)) - L_T(theta(D plus x; m, s))] / tau(x)
+QualityEvidence(x) = (Q1(x), Q2(x), Q3(x), Q4(x))
+Qi(x) in {pass, fail, abstain}
 ```
 
-`L_T` is a declared external evaluation loss or preregistered task risk and
-`tau(x)` is the exact tokenizer token count. Positive `Delta_T` means that
-adding `x` reduced evaluation risk per token. The population target is:
+The four coordinates are fixed:
 
-```text
-Q_T(x | D) = E_{m,s}[Delta_T(x | D, m, s)]
-```
+1. `Q1 Correctness Evidence`: locally observable or attached verifier evidence
+   supports the payload under its declared context.
+2. `Q2 Semantic Coherence`: the parts form a consistent, recoverable semantic
+   unit.
+3. `Q3 Substantive Payload`: substantive content remains after navigation,
+   metadata, boilerplate, or an empty template is excluded.
+4. `Q4 Learnable Relations`: at least one recoverable relation exists among
+   entities, operations, claims, conditions, or outcomes.
 
-This definition is conditional on `D`, `T`, model family, tokenizer, and
-training procedure. Interactions between chunks mean that document Quality is
-not additive and no universal context-free Quality score exists.
-
-At corpus level, the externally measured learning efficiency is:
-
-```text
-Eff_T(C) = E_{m,s}[L_T(theta_0) - L_T(theta(C; m, s))] / Tau(C)
-```
-
-This quantity is evidence for a frozen curation policy. It is not a selector
-input.
+A Policy fails only on its named closed boundary. Missing external knowledge,
+undeclared execution assumptions, missing context, or specialized notation
+produce `abstain`, not deletion. The runtime never averages the four decisions.
+External natural-budget training and benchmarks evaluate a frozen Policy after
+curation and are not part of `QualityEvidence(x)`.
 
 ### 2.2 Runtime meaning
 
-The active runtime does **not** claim to observe `Q_T`. Quality has deletion
-authority only when a named, versioned policy provides reproducible evidence
-that the unit is non-payload for the declared training interface. Examples are
-an empty HTML shell or a separable control/license span with residual payload.
+Three frozen teacher organizations evaluate each Policy independently. A
+first-pass 3-of-3 decision is accepted. A 2-of-3 result is accepted only when a
+blinded second pass preserves the decision and at least two of the same
+teachers. Invalid output and teacher unavailability abstain.
 
-Every Quality decision is one of:
+Normal and Hard use identical Policy semantics:
 
-| Decision | Meaning | Runtime action |
-|---|---|---|
-| `reject` | A promoted policy proves an explicit non-payload condition | Remove the chunk or declared span and emit the full trace |
-| `keep` | A separately promoted positive retention policy proves its condition | Retain; currently no positive provider is active |
-| `abstain_retain` | Neither proof exists | Retain without calling the chunk high quality |
+| Mode | Stage-B removal proposal |
+|---|---|
+| Normal | At least one Policy has a first-pass unanimous FAIL |
+| Hard | At least one Policy has a unanimous FAIL or stable repeated 2-of-3 FAIL |
 
-Shortness, lexical diversity, model perplexity, source reputation, and a
-handwritten weighted sum are not deletion proofs.
+All other outcomes retain. Stage C may veto a removal to preserve Coverage.
+Teacher output has no authority before the fixture and false-removal gates pass.
+Shortness, perplexity, source reputation, lexical diversity, weighted formulas,
+Utility, NLL, benchmarks, domain quotas, and token budgets are not Policy inputs.
 
-### 2.3 Permissible future mathematical estimator
+### 2.3 Measurement output
 
-A future scalar must estimate the latent target rather than redefine it. Given
-an evidence vector `E(x)` and declared content route `r`, the candidate is:
-
-```text
-q_hat_r(x) = P(Q_T(x | D) > delta | E(x), r)
-```
-
-or an estimated gain with a calibrated interval `[LCB_r(x), UCB_r(x)]`.
-Weights must be learned and calibrated on a development corpus disjoint by
-stable record ID and normalized-text hash from confirmatory corpora. Human
-labels are optional diagnostics, never the sole ground truth. Perturbation
-pairs, explicit artifact fixtures, frozen proxy-model evidence, and external
-natural-budget training provide the development evidence.
-
-Promotion may use the following non-compensatory decision rule:
-
-```text
-reject candidate: UCB_r(x) <= 0 and an explicit negative policy trigger exists
-keep candidate:   LCB_r(x) > 0 and a positive policy has been validated
-otherwise:        abstain_retain
-```
-
-Normal and Hard may differ only through separately frozen confidence levels or
-additional promoted policies. They may not share arbitrary weights and merely
-change a score threshold.
+The framework reports the four Policy decisions, teacher votes, closed reason
+codes, blinded-pass stability, model identities, response hashes, transport
+status, and Coverage outcome. This auditable vector is the Quality measurement.
+No `overall_quality_score` is produced.
 
 ### 2.4 Quality validation gate
 
@@ -109,13 +82,14 @@ A Quality rule becomes enabled only after all of the following pass:
 1. versioned trigger and non-trigger conditions;
 2. positive, false-positive, adversarial, and clean-corpus fixtures;
 3. reason code, policy hash, original-text hash, and token-delta trace;
-4. rule-off versus rule-on development ablation;
-5. Coverage invariants and distribution-impact report;
-6. benchmark-disjoint, three-seed, natural-budget external evaluation;
-7. a preregistered non-inferiority or improvement criterion.
+4. exact expected behavior on the deterministic 512-task matrix;
+5. at least 800 protected fixtures with a one-sided 95% false-removal upper
+   bound at most 0.5% for Normal or 2.0% for Hard;
+6. Coverage invariants and distribution-impact report;
+7. benchmark-disjoint external evaluation of the frozen curation result.
 
-The current active system therefore supports **evidence-bounded non-payload
-removal**, not universal document Quality scoring.
+The current implementation provides the complete measurement and qualification
+path, but runtime activation remains blocked until the observations pass.
 
 ## 3. Coverage
 
@@ -224,11 +198,11 @@ linkage, zero-survivor explanation, and residual-payload integrity.
 
 ## 4. Stage Placement
 
-1. Stage A adapts input and performs source-agnostic text integrity handling.
-2. Stage B chunks the released text and applies hard invalid/exact-duplicate
-   gates under the immutable profile.
-3. Stage C applies enabled Redundancy and Quality policies, then runs Coverage
-   invariants before writing the curated corpus.
+1. Stage A applies Validity and quarantines closed observable failures.
+2. Stage B applies Redundancy and promoted Quality Policies to create
+   reason-coded removal proposals.
+3. Stage C applies Coverage invariants and may veto unexplained support loss
+   before writing the curated corpus.
 
 Coverage is therefore part of curation even though it does not delete data. It
 is the final validity condition for the corpus-level result.
@@ -236,8 +210,7 @@ is the final validity condition for the corpus-level result.
 ## 5. Current Claim
 
 The implementation may claim an auditable, domain-agnostic curation interface
-with immutable profiles, reason-coded structural policies, and Coverage
-materialization invariants. It may not yet claim a universal mathematical
-Quality estimator or domain-general downstream improvement. Those claims
-require a calibrated estimator and independent Code, Math, and General
-confirmatory evidence under the gates above.
+and an executable Q1-Q4 Quality measurement protocol. It may not yet claim that
+the Quality Policy is runtime-qualified or that it improves every domain.
+Those claims require completed protected-fixture, Coverage, corpus-scale, and
+independent external evidence under the gates above.

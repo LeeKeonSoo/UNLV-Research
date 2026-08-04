@@ -55,24 +55,35 @@ The frozen three-teacher panel is:
 
 | Teacher | Location | Frozen identity |
 |---|---|---|
-| Nemotron 3 Ultra 550B | NVIDIA Build | Endpoint observed 2026-08-04 |
-| GLM-5.2 | NVIDIA Build | Endpoint observed 2026-08-04 |
+| Google Gemma 4 31B IT | NVIDIA Build | Endpoint observed 2026-08-04 |
+| Meta Llama 3.1 8B Instruct | NVIDIA Build | Endpoint observed 2026-08-04 |
 | Qwen3.5-9B | Local RTX 4060 Ti | Revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`, int8 |
 
 The common hosted/local adapter, strict response parser, one schema-only retry,
 blinded second pass, and Q1-Q4 independent fail-gate aggregation are now
-implemented. Reason codes must be lower snake case rather than explanatory
-prose. The local teacher loaded in about 11.2 GiB observed VRAM.
+implemented. Reason codes come from a closed Policy-specific vocabulary.
+Hosted transport retries are disabled, unavailable teachers produce an audited
+`abstain`, and the local teacher loaded in about 11.2 GiB observed VRAM.
 
-A public Q3 three-teacher smoke run completed end to end on 2026-08-04. First
-pass was Nemotron `abstain`, GLM `pass`, and Qwen `pass`; the blinded second
-pass ended with two schema-invalid abstentions and one pass, so the final panel
-decision correctly remained `abstain`. This verifies connectivity and
-fail-closed execution only. It is not qualification evidence.
+Historical endpoint probes showed that the earlier 70B/753B hosted pair could
+exceed 120 seconds per small fixture. The current Gemma/Llama hosted pair was
+selected for observable endpoint availability; model adequacy is not assumed
+and must be established by the same qualification matrix.
+
+The current panel completed a public Q3 smoke on 2026-08-04 with first-pass
+unanimous `pass`. Observed generation times were 5.67 seconds for Gemma, 0.48
+seconds for Llama, and 20.16 seconds for local Qwen. This verifies the current
+endpoint, prompt, closed reason-code, and local inference path only.
 
 Teacher output alone has no deletion authority. The candidate remains
 `blocked` until fixture, consensus-stability, false-removal, and operating-point
 gates pass.
+
+The deterministic 512-item behavior matrix and 800-item protected set are
+implemented. The resumable executor, qualification report, Normal/Hard
+consensus operating points, and Stage-B proposal/Stage-C Coverage-veto bridge
+are also implemented. Full teacher observations are not complete, so runtime
+activation remains false.
 
 ## Retired Contrastive Research
 
@@ -86,12 +97,13 @@ import or authorize that archive.
 
 ## Next Authorized Work
 
-1. Build and execute the 512-item controlled smoke fixture matrix.
-2. Build at least 800 protected fixtures and measure exact one-sided
-   false-removal bounds.
-3. Validate first-pass and blinded second-pass consensus stability.
-4. Freeze separate Normal and Hard operating points without a token budget.
-5. Integrate only a promoted Quality provider into Stage B.
+1. Execute the generated 512-item behavior matrix through the frozen panel.
+2. Execute all four Policies on the 800 protected fixtures and measure exact
+   one-sided false-removal bounds.
+3. Freeze the resulting report and promote only passing Normal/Hard modes.
+4. Activate the existing Stage-B proposal/Stage-C Coverage-veto bridge only
+   for a promoted mode.
+5. Run an admitted corpus-scale reason-code and compression audit.
 6. Redesign near-duplicate authority around route-appropriate equivalence
    witnesses rather than a similarity threshold alone.
 7. Validate Coverage representation invariants on Code, Math, General prose,
@@ -110,6 +122,11 @@ python validation\test_quality_teacher_response_v1.py
 python validation\test_quality_teacher_adapters_v1.py
 python validation\test_quality_teacher_runtime_v1.py
 python validation\test_quality_teacher_qualification_v1.py
+python validation\test_quality_teacher_fixture_matrix_v1.py
+python validation\test_quality_teacher_qualification_runner_v1.py
+python validation\test_quality_qualification_report_v1.py
+python validation\test_quality_operating_points_v1.py
+python validation\test_quality_stage_bridge_v1.py
 python validation\test_framework_manifest_v1.py
 python validation\test_framework_objects_v1.py
 python validation\test_framework_profiles_v1.py
@@ -122,5 +139,5 @@ python validation\test_active_surface.py
 Generated datasets, model caches, raw API responses containing corpus text,
 benchmark outputs, and local work directories must remain untracked.
 
-The current direct validation surface contains 147 scripts and passed 147/147
-after the common teacher-adapter Block.
+The current direct validation surface contains 153 scripts and passed 153/153
+after the Quality qualification and staged-policy bridge Blocks.

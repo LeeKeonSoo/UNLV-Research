@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import sys
+from types import SimpleNamespace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +15,7 @@ from quality_teacher_adapters import (
     TeacherAdapterContractError,
     TeacherModelAdapter,
     build_teacher_messages,
+    collect_stream_content,
 )
 from quality_teacher_panel import load_teacher_panel
 from quality_teacher_runtime import EvaluationUnit, TeacherGenerationRequest
@@ -72,10 +74,12 @@ def test_prompt_builder_emits_machine_readable_policy_and_schema_contract() -> N
     assert payload["execution"]["pass_index"] == 1
     assert payload["execution"]["blind_run_id"] == "blind-001"
     assert payload["execution"]["schema_retry"] is False
-    assert payload["response_schema"]["decision"] == ["pass", "fail", "abstain"]
-    assert payload["response_schema"]["reason_codes_by_decision"]["fail"] == [
+    assert payload["response_contract"]["required_object_keys"] == ["decision", "reason_codes"]
+    assert payload["response_contract"]["allowed_decisions"] == ["pass", "fail", "abstain"]
+    assert payload["response_contract"]["allowed_reason_codes_by_decision"]["fail"] == [
         "reproducible_contradiction"
     ]
+    assert "Do not output the allowed-code mapping" in messages[0].content
 
 
 def test_teacher_model_adapter_routes_frozen_model_and_returns_raw_response() -> None:
@@ -131,9 +135,20 @@ def test_local_chat_template_extracts_input_ids_from_batch_encoding() -> None:
     assert input_ids is expected_ids
 
 
+def test_stream_collector_ignores_empty_transport_events() -> None:
+    chunks = (
+        SimpleNamespace(choices=[]),
+        SimpleNamespace(choices=[SimpleNamespace(delta=SimpleNamespace(content='{"decision":'))]),
+        SimpleNamespace(choices=[SimpleNamespace(delta=SimpleNamespace(content='"pass"}'))]),
+    )
+
+    assert collect_stream_content(chunks) == '{"decision":"pass"}'
+
+
 if __name__ == "__main__":
     test_prompt_builder_emits_machine_readable_policy_and_schema_contract()
     test_teacher_model_adapter_routes_frozen_model_and_returns_raw_response()
     test_teacher_model_adapter_rejects_cross_teacher_dispatch()
     test_local_chat_template_extracts_input_ids_from_batch_encoding()
+    test_stream_collector_ignores_empty_transport_events()
     print("[quality-teacher-adapters-v1] prompt and model routing contract: pass")

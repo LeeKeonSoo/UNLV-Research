@@ -66,7 +66,7 @@ def main() -> int:
     assert exact_registry_policy["evidence"] == [
         {
             "path": "validation/frozen_contracts/framework_policy_ablation_v1.json",
-            "sha256": "cb5323cb038c70fb5cdc7b8768b88011b660896a709c3c2b665cc6e90467a7e6",
+            "sha256": "7d841c98ee88f418f8bed4bb5c5ec1bbe1c5662d48e0a51b5a0a91475db631d7",
         }
     ]
     print("[framework-policy-ablation-v1] exact passed; near and teacher panel blocked: pass")

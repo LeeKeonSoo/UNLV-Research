@@ -37,8 +37,8 @@ def test_panel_contract_freezes_diverse_two_hosted_one_local_teachers() -> None:
 
     # Then: the panel is diverse, non-runtime, and has the intended topology.
     assert [teacher.model_id for teacher in panel.teachers] == [
-        "meta/llama-3.3-70b-instruct",
-        "z-ai/glm-5.2",
+        "google/gemma-4-31b-it",
+        "meta/llama-3.1-8b-instruct",
         "Qwen/Qwen3.5-9B",
     ]
     assert len({teacher.organization for teacher in panel.teachers}) == 3
@@ -53,7 +53,7 @@ def test_panel_contract_freezes_diverse_two_hosted_one_local_teachers() -> None:
     hosted = tuple(
         teacher for teacher in panel.teachers if teacher.location.value == "nvidia_build"
     )
-    assert all(teacher.request_timeout_seconds == 120 for teacher in hosted)
+    assert all(teacher.request_timeout_seconds == 30 for teacher in hosted)
     assert all(teacher.maximum_transport_retries == 0 for teacher in hosted)
     assert all(teacher.structured_output_mode == "json_object" for teacher in hosted)
     assert panel.policies[0].reason_codes.fail == (

@@ -2,7 +2,7 @@
   "schema_version": "framework-profiles-v1",
   "status": "runtime_integrated_block_7",
   "framework_manifest_sha256": "c5a5b649101ca7c70c9e1d68b5ee6ad1978a7fd3f7048578ca2921f8d87de2b4",
-  "object_registry_sha256": "7a7f5727c66668ab98064bcbf42e48b796833eb22d0622153dfcdfb756e71cd5",
+  "object_registry_sha256": "fbc3ffcc4e1d7e5cb7c405e96715e665d1d7a33440fc9d3c995e9f60b5e06d0f",
   "policy_lifecycles": [
     {"policy_id": "validity.interpretable_text", "lifecycle": "candidate"},
     {"policy_id": "redundancy.exact_text_family", "lifecycle": "development_passed"},

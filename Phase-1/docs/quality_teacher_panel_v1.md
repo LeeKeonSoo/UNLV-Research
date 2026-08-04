@@ -9,8 +9,8 @@ curation runtime, and no teacher response may delete a unit by itself.
 
 | Slot | Model | Location | Purpose |
 |---|---|---|---|
-| Teacher A | `nvidia/nemotron-3-ultra-550b-a55b` | NVIDIA Build | Broad reasoning over code, math, technical text, and general prose |
-| Teacher B | `z-ai/glm-5.2` | NVIDIA Build | Independent model-family judgment and structured-output cross-check |
+| Teacher A | `google/gemma-4-31b-it` | NVIDIA Build | Independent broad judgment over code, math, structured data, and prose |
+| Teacher B | `meta/llama-3.1-8b-instruct` | NVIDIA Build | Independent model-family judgment and structured-output cross-check |
 | Teacher C | `Qwen/Qwen3.5-9B` at `c202236235762e1c871ad0ccb60c8ee5ba337b9a` | Local | Reproducible and private local judgment |
 
 The local teacher uses bitsandbytes int8 inference on GPU 0, the RTX 4060 Ti.
@@ -37,9 +37,10 @@ missing context must produce `abstain`.
 ## Response and consensus contract
 
 Each teacher must return one JSON object with a decision enum and a non-empty
-reason-code list. Reason codes must match `^[a-z][a-z0-9_]{0,63}$`; explanatory
-sentences are invalid. One schema-only retry is allowed. A second invalid
-response becomes `abstain` and cannot contribute a pass or fail label.
+reason-code list drawn from the closed vocabulary for that Policy and decision.
+Lower-snake-case syntax alone is insufficient. One schema-only retry is
+allowed. A second invalid response or transport unavailability becomes an
+audited `abstain` and cannot contribute a pass or fail label.
 
 First-pass unanimity is accepted. A 2-of-3 result triggers a blinded second
 pass using the same teachers. It is accepted only when the same decision and at
@@ -47,9 +48,10 @@ least two of the same teachers remain stable. All other outcomes abstain.
 
 ## Qualification and promotion
 
-The 512-item controlled fixture matrix contains four policies, four routes,
-four fixture classes, and eight samples per cell. It is a smoke qualification
-suite, not activation evidence.
+The 512-item controlled fixture matrix contains four Policies, four routes,
+four fixture classes, and eight samples per cell. Labels come from deterministic
+constructions and attached local verifiers rather than subjective document
+ratings. Exact behavior on all 512 tasks is required.
 
 Normal activation requires at least 800 protected fixtures and a one-sided 95%
 exact false-removal upper bound no greater than 0.5%. Hard uses the same frozen
@@ -62,6 +64,11 @@ verifiers where possible, rather than subjective document-quality annotation.
 The final protected set remains disjoint from teacher prompt development and
 student-ranker training.
 
+Normal and Hard use the same four Policies. Normal removes only a first-pass
+3-of-3 Policy FAIL. Hard additionally admits a 2-of-3 FAIL only when the same
+decision and at least two of the same teachers survive a blinded second pass.
+An abstention always retains. Stage C may veto either mode to preserve Coverage.
+
 ## Data and runtime boundary
 
 Only public, license-compatible calibration samples may be sent to NVIDIA
@@ -69,12 +76,12 @@ Build. The initial language scope is English. Benchmark outcomes, NLL, Utility,
 source reputation, domain quota, target retention, maximum token budget, and
 confirmatory data are forbidden teacher and runtime inputs.
 
-The common hosted/local adapter and retry path completed a public Q3 smoke run
-on 2026-08-04. First pass produced Nemotron `abstain` after two invalid schema
-responses, GLM `pass`, and local Qwen `pass`; the required blinded second pass
-ended with two schema-invalid abstentions and one pass, so the panel correctly
-returned `abstain`. This proves connectivity, dispatch, retry, and fail-closed
-consensus behavior, not teacher qualification. The hosted endpoint is
+The current hosted/local adapter completed a public Q3 smoke run on 2026-08-04.
+Gemma, Llama, and local Qwen all returned first-pass `pass` with the closed
+`substantive_payload_present` reason code. Observed generation latency was
+5.67, 0.48, and 20.16 seconds respectively. This proves current connectivity,
+dispatch, schema, and consensus behavior, not teacher qualification. The
+hosted endpoint is
 `https://integrate.api.nvidia.com/v1`; model IDs and raw-response hashes are
 recorded because a hosted endpoint does not expose immutable weight artifacts
 like the local Hugging Face revision.
