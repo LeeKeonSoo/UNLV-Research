@@ -147,7 +147,9 @@ def test_contract_keeps_redundancy_v2_out_of_active_runtime() -> None:
     assert contract["development_gate_registry_sha256"] == "eb27475d77414f36173448d44c9e53871e5c22195d265890be024f7af43b1c41"
     assert contract["development_gate_report_sha256"] == "5d9d99d117f4f88bb1fca2e34f52d3444b53c52e9db8e2f979895d1700f00e51"
     assert contract["safe_family_relations"] == ["exact_equivalent", "formatting_equivalent"]
-    assert contract["representative_selection"] == "deferred_to_stage_c_quality_and_coverage"
+    assert contract["representative_selection"] == (
+        "stage_b_proposes_payload_superset_then_stable_uid_and_stage_c_coverage_finalizes"
+    )
     assert contract["single_global_similarity_threshold"] is False
 
 

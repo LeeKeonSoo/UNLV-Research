@@ -98,6 +98,15 @@ only; its observed NVIDIA Build latency remains a release blocker.
 The previous loss-gap Quality experiment is retired and preserved only under
 `archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.
 
+Redundancy also has a witness-based Normal/Hard implementation candidate.
+Similarity and embedding retrieval only produce candidate pairs. Normal may
+propose removal for exact or narrowly bounded formatting equivalence; Hard may
+also use exact token containment, token-preserving prose reflow, or a versioned
+declared equivalence verifier. All uncertainty retains, substantive changes are
+protected, and Stage C must veto or accept every family proposal before final
+materialization. This candidate remains release-disabled until its disjoint
+behavior and protected false-removal gates pass.
+
 ## Verification
 
 From `Phase-1` in the `research` environment:

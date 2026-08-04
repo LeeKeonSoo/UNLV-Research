@@ -32,7 +32,14 @@ domain quotas, a target retention fraction, or a maximum token budget.
 - Normal and Hard contain the same Policy families. Hard must retain a subset
   of or the same units as Normal.
 - Exact-text family removal is `development_passed`.
-- Symmetric near-duplicate removal is `blocked`; no safe threshold was found.
+- Symmetric near-duplicate removal remains `blocked`; a witness-based
+  Normal/Hard implementation candidate now exists, but has not passed its
+  development-disjoint and protected false-removal gates.
+- Redundancy similarity retrieval has no deletion authority. Normal accepts
+  exact and narrowly bounded formatting witnesses. Hard additionally accepts
+  exact token containment, token-preserving prose reflow, and versioned
+  declared equivalence evidence. Every proposed removal requires a stable
+  representative trace and a Stage-C Coverage veto check.
 - Closed deterministic non-payload rules remain the only current Quality
   behavior in the legacy-compatible selector.
 - Coverage is a non-deleting materialization veto.
@@ -165,8 +172,8 @@ import or authorize that archive.
 5. Activate the existing Stage-B proposal/Stage-C Coverage-veto bridge only
    for a promoted mode.
 6. Run an admitted corpus-scale reason-code and compression audit.
-7. Redesign near-duplicate authority around route-appropriate equivalence
-   witnesses rather than a similarity threshold alone.
+7. Validate the implemented witness-based Redundancy modes on disjoint behavior
+   and protected false-removal fixtures; promote only a passing operating point.
 8. Validate Coverage representation invariants on Code, Math, General prose,
    and structured data.
 9. Run Base, Normal, and Hard curation, followed by external three-seed

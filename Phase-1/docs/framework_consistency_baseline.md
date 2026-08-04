@@ -44,7 +44,7 @@ candidate file exists.
 |---|---|---|
 | `validity.interpretable_text` | candidate | Closed observable input failures only |
 | `redundancy.exact_text_family` | development_passed | Exact family representatives validated in development |
-| `redundancy.symmetric_near_duplicate_candidate` | blocked | No safe non-exact equivalence boundary identified |
+| `redundancy.symmetric_near_duplicate_candidate` | blocked | Witness-based Normal/Hard implementation exists; empirical promotion evidence is incomplete |
 | `quality.explicit_nonpayload` | candidate | Closed deterministic non-payload cases |
 | `quality.teacher_panel_candidate` | blocked | Q1-Q4 teacher-panel qualification not complete |
 | `coverage.representative_guard` | candidate | Veto unexplained zero-survivor materialization |
@@ -52,6 +52,17 @@ candidate file exists.
 Normal and Hard share these Policy families. Their operating points are not
 calibrated, and both profiles are release-disabled. `Hard subset-or-equal
 Normal` is a mandatory materialized-output invariant.
+
+The Redundancy implementation now separates similarity retrieval from deletion
+authority. Normal authorizes only exact-text and narrowly bounded formatting
+equivalence. Hard can additionally propose removal for exact token containment,
+token-preserving prose reflow, or a versioned declared equivalence verifier.
+Numeric, operator, negation, answer-label, code-identifier, and named-entity
+differences retain by default. Every proposal records one stable family,
+representative, witness kind, evidence hash, reason code, and token delta.
+These are Stage-B proposals only: Stage C must apply its Coverage veto before
+membership can change. The implementation does not promote the blocked Policy;
+protected-fixture and development-disjoint evidence remain required.
 
 ## Quality Ranker Candidate
 
@@ -115,7 +126,7 @@ legacy-compatible curation output is broken.
 1. Execute the implemented 512 behavior tasks and 3,200 protected Policy tasks.
 2. Freeze the qualification report and promote only modes that pass their exact
    one-sided false-removal bound.
-3. Complete witness-based near-duplicate redesign.
+3. Execute the witness-based Redundancy behavior and protected false-removal gates.
 4. Complete route-spanning Coverage validation and enable its veto only after
    semantic-provider qualification.
 5. Run admitted corpus-scale Base, Normal, and Hard curation audits.

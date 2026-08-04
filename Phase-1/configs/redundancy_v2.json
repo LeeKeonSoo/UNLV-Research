@@ -2,6 +2,9 @@
   "schema_version": "redundancy-v2-contract-v1",
   "status": "block_8_e2_development_gate_passed_candidate",
   "runtime_activation": false,
+  "mode_policy_status": "implementation_candidate_validation_pending",
+  "equivalence_witness_implementation": "redundancy_equivalence.py",
+  "mode_policy_implementation": "redundancy_mode_policy.py",
   "development_ablation_ready": true,
   "development_gate_registry": "protocols/development_redundancy_gate_registry_v1.json",
   "development_gate_registry_sha256": "eb27475d77414f36173448d44c9e53871e5c22195d265890be024f7af43b1c41",
@@ -63,9 +66,52 @@
   "family_contract": {
     "silent_transitive_near_duplicate_union": false,
     "safe_union_relations_only": true,
-    "every_future_removal_requires_final_survivor_link": true
+    "safe_union_definition": "mode-authorized equivalence witness; retrieval similarity or relation label alone never unions a family",
+    "every_future_removal_requires_final_survivor_link": true,
+    "shared_family_id_and_evidence_hash": true,
+    "stage_b_output_is_a_removal_proposal": true,
+    "stage_c_coverage_veto_required_before_materialization": true
   },
-  "representative_selection": "deferred_to_stage_c_quality_and_coverage",
+  "operating_points": {
+    "normal": {
+      "authorized_witnesses": [
+        "exact_text",
+        "formatting_canonical"
+      ],
+      "uncertain_action": "retain"
+    },
+    "hard": {
+      "authorized_witnesses": [
+        "exact_text",
+        "formatting_canonical",
+        "token_preserving_prose_reflow",
+        "declared_equivalence_verifier",
+        "exact_token_containment"
+      ],
+      "uncertain_action": "retain",
+      "coverage_veto_required": true
+    }
+  },
+  "declared_equivalence_verifier_contract": {
+    "verifier_id_required": true,
+    "verifier_version_required": true,
+    "artifact_sha256_required": true,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "substantive_difference_default": "retain"
+  },
+  "mode_policy_reason_codes": [
+    "redundancy_exact_equivalence_witness",
+    "redundancy_formatting_equivalence_witness",
+    "redundancy_token_preserving_reflow_witness",
+    "redundancy_declared_equivalence_witness",
+    "redundancy_exact_containment_witness",
+    "redundancy_substantive_difference_protected",
+    "redundancy_equivalence_unproved_retain",
+    "redundancy_equivalent_family_nonrepresentative",
+    "redundancy_contained_payload_nonrepresentative"
+  ],
+  "representative_selection": "stage_b_proposes_payload_superset_then_stable_uid_and_stage_c_coverage_finalizes",
   "repeated_span_action": "exact_line_structure_preserving_span_candidate_only_with_valid_residual",
   "forbidden_inputs": [
     "benchmark_outcomes",
@@ -77,5 +123,11 @@
     "target_retention_fraction",
     "hidden_token_budget"
   ],
-  "activation_deferred_to": "Block 8 joint-profile freeze after Quality and Coverage gates"
+  "mode_policy_promotion_requires": [
+    "development_disjoint_witness_behavior_audit",
+    "protected_false_removal_bound",
+    "coverage_compatibility",
+    "frozen_operating_point"
+  ],
+  "activation_deferred_to": "joint-profile freeze after Redundancy, Quality, and Coverage gates"
 }
