@@ -12,7 +12,7 @@
     },
     "quality_teacher_panel": {
       "path": "configs/quality_teacher_panel_v1.json",
-      "sha256": "15004b662157e16ac58209983e2ee606368ef079737e73c3c9380907dd5b81c7"
+      "sha256": "ce933186aeecac16de220d8f250edce2b8b3192e439b6fbbd747d35dd9949835"
     }
   },
   "exact_policy_id": "redundancy.exact_text_family",

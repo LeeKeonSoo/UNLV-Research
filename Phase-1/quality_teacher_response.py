@@ -6,7 +6,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
 
-from quality_teacher_panel import PolicyDecision, TeacherVote
+from quality_teacher_panel import PolicyDecision, QualityPolicy, TeacherVote
 
 
 ReasonCode = Annotated[
@@ -25,7 +25,7 @@ class TeacherResponsePayload(BaseModel):
 @dataclass(frozen=True, slots=True)
 class TeacherResponseAttempt:
     teacher_id: str
-    policy_id: str
+    policy: QualityPolicy
     first_raw: str
     retry_raw: str | None
 
@@ -38,26 +38,38 @@ def parse_teacher_response(raw: str) -> TeacherResponsePayload | None:
         return None
 
 
+def _parse_policy_response(raw: str, policy: QualityPolicy) -> TeacherResponsePayload | None:
+    payload = parse_teacher_response(raw)
+    if payload is None:
+        return None
+    allowed = set(policy.reason_codes.for_decision(payload.decision))
+    return payload if set(payload.reason_codes) <= allowed else None
+
+
 def resolve_teacher_response(attempt: TeacherResponseAttempt) -> TeacherVote:
-    first = parse_teacher_response(attempt.first_raw)
+    first = _parse_policy_response(attempt.first_raw, attempt.policy)
     if first is not None:
         return TeacherVote(
             teacher_id=attempt.teacher_id,
-            policy_id=attempt.policy_id,
+            policy_id=attempt.policy.policy_id,
             decision=first.decision,
             reason_codes=first.reason_codes,
         )
-    retry = parse_teacher_response(attempt.retry_raw) if attempt.retry_raw is not None else None
+    retry = (
+        _parse_policy_response(attempt.retry_raw, attempt.policy)
+        if attempt.retry_raw is not None
+        else None
+    )
     if retry is not None:
         return TeacherVote(
             teacher_id=attempt.teacher_id,
-            policy_id=attempt.policy_id,
+            policy_id=attempt.policy.policy_id,
             decision=retry.decision,
             reason_codes=retry.reason_codes,
         )
     return TeacherVote(
         teacher_id=attempt.teacher_id,
-        policy_id=attempt.policy_id,
+        policy_id=attempt.policy.policy_id,
         decision=PolicyDecision.ABSTAIN,
         reason_codes=("invalid_teacher_response_schema",),
     )

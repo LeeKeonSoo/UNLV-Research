@@ -42,6 +42,9 @@ def _request(*, teacher_id: str, model_id: str, schema_retry: bool) -> TeacherGe
         policy_question="Is correctness supported by observable evidence?",
         fail_boundary="Fail only on a reproducible contradiction.",
         abstain_boundary="Abstain when required evidence is unavailable.",
+        pass_reason_codes=("observable_correctness_evidence",),
+        fail_reason_codes=("reproducible_contradiction",),
+        abstain_reason_codes=("external_knowledge_required",),
         unit_id="public-fixture-001",
         unit_text="Two plus two equals four.",
         declared_context="English educational prose.",
@@ -70,6 +73,9 @@ def test_prompt_builder_emits_machine_readable_policy_and_schema_contract() -> N
     assert payload["execution"]["blind_run_id"] == "blind-001"
     assert payload["execution"]["schema_retry"] is False
     assert payload["response_schema"]["decision"] == ["pass", "fail", "abstain"]
+    assert payload["response_schema"]["reason_codes_by_decision"]["fail"] == [
+        "reproducible_contradiction"
+    ]
 
 
 def test_teacher_model_adapter_routes_frozen_model_and_returns_raw_response() -> None:
@@ -88,6 +94,12 @@ def test_teacher_model_adapter_routes_frozen_model_and_returns_raw_response() ->
     assert len(backend.requests) == 1
     assert backend.requests[0].model_id == teacher.model_id
     assert backend.requests[0].maximum_new_tokens == 192
+    assert backend.requests[0].response_format.type == "json_object"
+    assert backend.requests[0].response_format.allowed_reason_codes == (
+        "observable_correctness_evidence",
+        "reproducible_contradiction",
+        "external_knowledge_required",
+    )
 
 
 def test_teacher_model_adapter_rejects_cross_teacher_dispatch() -> None:

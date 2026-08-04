@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 from quality_teacher_panel import PanelDecision, load_teacher_panel
 from quality_teacher_runtime import (
     EvaluationUnit,
+    TeacherGenerationUnavailable,
     TeacherGenerationRequest,
     evaluate_quality_unit,
     evaluate_panel_policy,
@@ -35,6 +36,14 @@ class ScriptedAdapter:
         return self._responses.popleft()
 
 
+class UnavailableAdapter:
+    def generate(self, request: TeacherGenerationRequest) -> str:
+        raise TeacherGenerationUnavailable(
+            teacher_id=request.teacher_id,
+            reason="read_timeout",
+        )
+
+
 def _unit() -> EvaluationUnit:
     return EvaluationUnit(
         unit_id="public-fixture-001",
@@ -47,7 +56,7 @@ def _unit() -> EvaluationUnit:
 def test_teacher_runtime_stops_after_schema_valid_first_response() -> None:
     # Given: a teacher returns a schema-valid decision immediately.
     panel = load_teacher_panel(CONFIG)
-    adapter = ScriptedAdapter(('{"decision":"pass","reason_codes":["observable_relation"]}',))
+    adapter = ScriptedAdapter(('{"decision":"pass","reason_codes":["recoverable_relation_present"]}',))
 
     # When: one teacher evaluates one policy.
     vote = evaluate_teacher(adapter, panel.teachers[0], panel.policies[3], _unit(), pass_index=1)
@@ -63,8 +72,8 @@ def test_teacher_runtime_retries_schema_once_without_changing_policy() -> None:
     panel = load_teacher_panel(CONFIG)
     adapter = ScriptedAdapter(
         (
-            '{"decision":"ACCEPT","reason_codes":["observable_relation"]}',
-            '{"decision":"pass","reason_codes":["observable_relation"]}',
+            '{"decision":"ACCEPT","reason_codes":["recoverable_relation_present"]}',
+            '{"decision":"pass","reason_codes":["recoverable_relation_present"]}',
         )
     )
 
@@ -98,26 +107,44 @@ def test_teacher_runtime_abstains_after_two_invalid_responses() -> None:
     assert len(adapter.requests) == 2
 
 
+def test_teacher_runtime_abstains_when_generation_is_unavailable() -> None:
+    # Given: one hosted teacher times out before returning a response.
+    panel = load_teacher_panel(CONFIG)
+
+    # When: the unavailable teacher evaluates one policy.
+    vote = evaluate_teacher(
+        UnavailableAdapter(),
+        panel.teachers[0],
+        panel.policies[2],
+        _unit(),
+        pass_index=1,
+    )
+
+    # Then: the teacher abstains without terminating the whole panel.
+    assert vote.decision.value == "abstain"
+    assert vote.reason_codes == ("teacher_generation_unavailable",)
+
+
 def test_panel_runtime_repeats_nonunanimous_majority_blinded() -> None:
     # Given: first-pass 2/3 agreement remains stable on a second blinded pass.
     panel = load_teacher_panel(CONFIG)
     adapters = {
         panel.teachers[0].teacher_id: ScriptedAdapter(
             (
-                '{"decision":"fail","reason_codes":["no_payload"]}',
-                '{"decision":"fail","reason_codes":["no_payload"]}',
+                '{"decision":"fail","reason_codes":["no_substantive_residual"]}',
+                '{"decision":"fail","reason_codes":["no_substantive_residual"]}',
             )
         ),
         panel.teachers[1].teacher_id: ScriptedAdapter(
             (
-                '{"decision":"fail","reason_codes":["no_payload"]}',
-                '{"decision":"fail","reason_codes":["no_payload"]}',
+                '{"decision":"fail","reason_codes":["no_substantive_residual"]}',
+                '{"decision":"fail","reason_codes":["no_substantive_residual"]}',
             )
         ),
         panel.teachers[2].teacher_id: ScriptedAdapter(
             (
-                '{"decision":"pass","reason_codes":["specialized_payload"]}',
-                '{"decision":"abstain","reason_codes":["insufficient_context"]}',
+                '{"decision":"pass","reason_codes":["substantive_payload_present"]}',
+                '{"decision":"abstain","reason_codes":["specialized_payload_uncertain"]}',
             )
         ),
     }
@@ -139,20 +166,20 @@ def test_panel_runtime_repeats_majority_with_one_abstention() -> None:
     adapters = {
         panel.teachers[0].teacher_id: ScriptedAdapter(
             (
-                '{"decision":"pass","reason_codes":["coherent_unit"]}',
-                '{"decision":"pass","reason_codes":["coherent_unit"]}',
+                '{"decision":"pass","reason_codes":["recoverable_semantic_unit"]}',
+                '{"decision":"pass","reason_codes":["recoverable_semantic_unit"]}',
             )
         ),
         panel.teachers[1].teacher_id: ScriptedAdapter(
             (
-                '{"decision":"pass","reason_codes":["coherent_unit"]}',
-                '{"decision":"pass","reason_codes":["coherent_unit"]}',
+                '{"decision":"pass","reason_codes":["recoverable_semantic_unit"]}',
+                '{"decision":"pass","reason_codes":["recoverable_semantic_unit"]}',
             )
         ),
         panel.teachers[2].teacher_id: ScriptedAdapter(
             (
-                '{"decision":"abstain","reason_codes":["insufficient_context"]}',
-                '{"decision":"abstain","reason_codes":["insufficient_context"]}',
+                '{"decision":"abstain","reason_codes":["missing_context_may_repair_coherence"]}',
+                '{"decision":"abstain","reason_codes":["missing_context_may_repair_coherence"]}',
             )
         ),
     }
@@ -169,9 +196,14 @@ def test_panel_runtime_repeats_majority_with_one_abstention() -> None:
 def test_quality_runtime_evaluates_q1_to_q4_as_independent_gates() -> None:
     # Given: every teacher returns one valid pass for each of four policies.
     panel = load_teacher_panel(CONFIG)
-    response = '{"decision":"pass","reason_codes":["observable_policy_evidence"]}'
+    responses = (
+        '{"decision":"pass","reason_codes":["observable_correctness_evidence"]}',
+        '{"decision":"pass","reason_codes":["recoverable_semantic_unit"]}',
+        '{"decision":"pass","reason_codes":["substantive_payload_present"]}',
+        '{"decision":"pass","reason_codes":["recoverable_relation_present"]}',
+    )
     adapters = {
-        teacher.teacher_id: ScriptedAdapter((response, response, response, response))
+        teacher.teacher_id: ScriptedAdapter(responses)
         for teacher in panel.teachers
     }
 
@@ -189,10 +221,14 @@ def test_quality_runtime_evaluates_q1_to_q4_as_independent_gates() -> None:
 def test_quality_gate_fails_when_any_independent_policy_fails() -> None:
     # Given: Q1-Q3 pass while Q4 has a stable unanimous failure.
     panel = load_teacher_panel(CONFIG)
-    pass_raw = '{"decision":"pass","reason_codes":["observable_policy_evidence"]}'
-    fail_raw = '{"decision":"fail","reason_codes":["no_recoverable_relation"]}'
+    responses = (
+        '{"decision":"pass","reason_codes":["observable_correctness_evidence"]}',
+        '{"decision":"pass","reason_codes":["recoverable_semantic_unit"]}',
+        '{"decision":"pass","reason_codes":["substantive_payload_present"]}',
+        '{"decision":"fail","reason_codes":["fragment_set_without_relation"]}',
+    )
     adapters = {
-        teacher.teacher_id: ScriptedAdapter((pass_raw, pass_raw, pass_raw, fail_raw))
+        teacher.teacher_id: ScriptedAdapter(responses)
         for teacher in panel.teachers
     }
 
@@ -207,6 +243,7 @@ if __name__ == "__main__":
     test_teacher_runtime_stops_after_schema_valid_first_response()
     test_teacher_runtime_retries_schema_once_without_changing_policy()
     test_teacher_runtime_abstains_after_two_invalid_responses()
+    test_teacher_runtime_abstains_when_generation_is_unavailable()
     test_panel_runtime_repeats_nonunanimous_majority_blinded()
     test_panel_runtime_repeats_majority_with_one_abstention()
     test_quality_runtime_evaluates_q1_to_q4_as_independent_gates()

@@ -3,9 +3,9 @@ from __future__ import annotations
 from collections import Counter
 from enum import Enum
 from pathlib import Path
-from typing import Literal, assert_never
+from typing import Annotated, Literal, assert_never
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 
 class PanelContractError(RuntimeError):
@@ -29,6 +29,41 @@ class PanelDecision(str, Enum):
     ABSTAIN = "abstain"
 
 
+PolicyReasonCode = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=64, pattern=r"^[a-z][a-z0-9_]*$"),
+]
+
+
+class PolicyReasonCodes(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, populate_by_name=True)
+
+    pass_: tuple[PolicyReasonCode, ...] = Field(alias="pass", min_length=1)
+    fail: tuple[PolicyReasonCode, ...] = Field(min_length=1)
+    abstain: tuple[PolicyReasonCode, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_disjoint_codes(self) -> "PolicyReasonCodes":
+        groups = (set(self.pass_), set(self.fail), set(self.abstain))
+        if sum(len(group) for group in groups) != len(set().union(*groups)):
+            raise PanelContractError("Policy reason-code decision groups must be disjoint")
+        return self
+
+    def for_decision(self, decision: PolicyDecision) -> tuple[str, ...]:
+        match decision:
+            case PolicyDecision.PASS:
+                return self.pass_
+            case PolicyDecision.FAIL:
+                return self.fail
+            case PolicyDecision.ABSTAIN:
+                return self.abstain
+            case unreachable:
+                assert_never(unreachable)
+
+    def all(self) -> tuple[str, ...]:
+        return self.pass_ + self.fail + self.abstain
+
+
 class TeacherSpec(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -42,6 +77,10 @@ class TeacherSpec(BaseModel):
     api_key_environment_variable: str | None
     reasoning_mode: Literal["disabled", "bounded"]
     inference_precision: Literal["endpoint_managed", "bitsandbytes_int8"]
+    maximum_new_tokens: int = Field(gt=0, le=256)
+    request_timeout_seconds: int | None = Field(default=None, gt=0, le=300)
+    maximum_transport_retries: int | None = Field(default=None, ge=0, le=2)
+    structured_output_mode: Literal["json_object"] | None
 
     @model_validator(mode="after")
     def validate_location_contract(self) -> "TeacherSpec":
@@ -51,11 +90,23 @@ class TeacherSpec(BaseModel):
                     raise PanelContractError("NVIDIA Build teachers require endpoint and API-key variable")
                 if self.inference_precision != "endpoint_managed":
                     raise PanelContractError("NVIDIA Build teachers must use endpoint-managed precision")
+                if (
+                    self.request_timeout_seconds is None
+                    or self.maximum_transport_retries is None
+                    or self.structured_output_mode is None
+                ):
+                    raise PanelContractError("NVIDIA Build teachers require frozen transport controls")
             case TeacherLocation.LOCAL:
                 if self.endpoint_base_url is not None or self.api_key_environment_variable is not None:
                     raise PanelContractError("Local teachers cannot declare a hosted endpoint or API key")
                 if self.inference_precision != "bitsandbytes_int8":
                     raise PanelContractError("The frozen local teacher requires bitsandbytes int8 inference")
+                if (
+                    self.request_timeout_seconds is not None
+                    or self.maximum_transport_retries is not None
+                    or self.structured_output_mode is not None
+                ):
+                    raise PanelContractError("Local teachers cannot declare hosted transport controls")
             case unreachable:
                 assert_never(unreachable)
         return self
@@ -69,6 +120,7 @@ class QualityPolicy(BaseModel):
     question: str = Field(min_length=1)
     fail_boundary: str = Field(min_length=1)
     abstain_boundary: str = Field(min_length=1)
+    reason_codes: PolicyReasonCodes
 
 
 class FixtureMatrix(BaseModel):

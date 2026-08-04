@@ -7,7 +7,8 @@ import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Mapping, assert_never
+from time import perf_counter
+from typing import Callable, Mapping, assert_never
 
 from dotenv import load_dotenv
 
@@ -28,6 +29,7 @@ from quality_teacher_runtime import (
     PanelPolicyResult,
     TeacherAdapter,
     TeacherGenerationRequest,
+    TeacherGenerationUnavailable,
     evaluate_panel_policy,
 )
 
@@ -46,15 +48,33 @@ class AuditedAdapter:
 
     delegate: TeacherAdapter
     traces: list[dict[str, str | int | bool]] = field(default_factory=list)
+    clock: Callable[[], float] = perf_counter
 
     def generate(self, request: TeacherGenerationRequest) -> str:
-        raw = self.delegate.generate(request)
+        started = self.clock()
+        try:
+            raw = self.delegate.generate(request)
+        except TeacherGenerationUnavailable as error:
+            self.traces.append(
+                {
+                    "teacher_id": request.teacher_id,
+                    "policy_id": request.policy_id,
+                    "pass_index": request.pass_index,
+                    "schema_retry": request.schema_retry,
+                    "elapsed_milliseconds": round((self.clock() - started) * 1000),
+                    "status": "unavailable",
+                    "error_reason": error.reason,
+                }
+            )
+            raise
         self.traces.append(
             {
                 "teacher_id": request.teacher_id,
                 "policy_id": request.policy_id,
                 "pass_index": request.pass_index,
                 "schema_retry": request.schema_retry,
+                "elapsed_milliseconds": round((self.clock() - started) * 1000),
+                "status": "success",
                 "response_sha256": hashlib.sha256(raw.encode("utf-8")).hexdigest(),
             }
         )
@@ -86,7 +106,19 @@ def _build_adapters(
                 if environment_variable is None or endpoint is None:
                     raise SmokeContractError(detail=f"hosted contract incomplete: {teacher.teacher_id}")
                 api_key = os.environ.get(environment_variable, "")
-                backend = NvidiaBuildBackend(api_key=api_key, base_url=endpoint)
+                if (
+                    teacher.request_timeout_seconds is None
+                    or teacher.maximum_transport_retries is None
+                ):
+                    raise SmokeContractError(
+                        detail=f"hosted transport contract incomplete: {teacher.teacher_id}"
+                    )
+                backend = NvidiaBuildBackend(
+                    api_key=api_key,
+                    base_url=endpoint,
+                    timeout_seconds=teacher.request_timeout_seconds,
+                    maximum_transport_retries=teacher.maximum_transport_retries,
+                )
             case TeacherLocation.LOCAL:
                 if local_backend is None:
                     local_backend = QwenLocalBackend(local_model_path)
@@ -97,7 +129,7 @@ def _build_adapters(
             delegate=TeacherModelAdapter(
                 teacher=teacher,
                 backend=backend,
-                maximum_new_tokens=256,
+                maximum_new_tokens=teacher.maximum_new_tokens,
             )
         )
     return adapters

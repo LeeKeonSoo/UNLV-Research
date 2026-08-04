@@ -23,6 +23,15 @@ from quality_teacher_response import (
 )
 
 
+@dataclass(frozen=True, slots=True)
+class TeacherGenerationUnavailable(RuntimeError):
+    teacher_id: str
+    reason: str
+
+    def __str__(self) -> str:
+        return f"Teacher generation unavailable for {self.teacher_id}: {self.reason}"
+
+
 class EvaluationUnit(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -42,6 +51,9 @@ class TeacherGenerationRequest(BaseModel):
     policy_question: str = Field(min_length=1)
     fail_boundary: str = Field(min_length=1)
     abstain_boundary: str = Field(min_length=1)
+    pass_reason_codes: tuple[str, ...] = Field(min_length=1)
+    fail_reason_codes: tuple[str, ...] = Field(min_length=1)
+    abstain_reason_codes: tuple[str, ...] = Field(min_length=1)
     unit_id: str = Field(min_length=1)
     unit_text: str = Field(min_length=1)
     declared_context: str | None
@@ -80,6 +92,9 @@ def _request(
         policy_question=policy.question,
         fail_boundary=policy.fail_boundary,
         abstain_boundary=policy.abstain_boundary,
+        pass_reason_codes=policy.reason_codes.pass_,
+        fail_reason_codes=policy.reason_codes.fail,
+        abstain_reason_codes=policy.reason_codes.abstain,
         unit_id=unit.unit_id,
         unit_text=unit.text,
         declared_context=unit.declared_context,
@@ -108,14 +123,36 @@ def evaluate_teacher(
         blind_run_id=run_id,
         schema_retry=False,
     )
-    first_raw = adapter.generate(first_request)
+    try:
+        first_raw = adapter.generate(first_request)
+    except TeacherGenerationUnavailable:
+        return TeacherVote(
+            teacher_id=teacher.teacher_id,
+            policy_id=policy.policy_id,
+            decision=PolicyDecision.ABSTAIN,
+            reason_codes=("teacher_generation_unavailable",),
+        )
     retry_raw: str | None = None
-    if parse_teacher_response(first_raw) is None:
-        retry_raw = adapter.generate(first_request.model_copy(update={"schema_retry": True}))
+    first_payload = parse_teacher_response(first_raw)
+    first_valid = (
+        first_payload is not None
+        and set(first_payload.reason_codes)
+        <= set(policy.reason_codes.for_decision(first_payload.decision))
+    )
+    if not first_valid:
+        try:
+            retry_raw = adapter.generate(first_request.model_copy(update={"schema_retry": True}))
+        except TeacherGenerationUnavailable:
+            return TeacherVote(
+                teacher_id=teacher.teacher_id,
+                policy_id=policy.policy_id,
+                decision=PolicyDecision.ABSTAIN,
+                reason_codes=("teacher_generation_unavailable",),
+            )
     return resolve_teacher_response(
         TeacherResponseAttempt(
             teacher_id=teacher.teacher_id,
-            policy_id=policy.policy_id,
+            policy=policy,
             first_raw=first_raw,
             retry_raw=retry_raw,
         )

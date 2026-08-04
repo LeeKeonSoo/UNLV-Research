@@ -22,16 +22,20 @@
   ],
   "teachers": [
     {
-      "teacher_id": "nemotron-ultra-build-v1",
-      "organization": "NVIDIA",
+      "teacher_id": "llama-3-3-70b-build-v1",
+      "organization": "Meta",
       "location": "nvidia_build",
-      "model_id": "nvidia/nemotron-3-ultra-550b-a55b",
+      "model_id": "meta/llama-3.3-70b-instruct",
       "revision": "build-endpoint-observed-2026-08-04",
-      "model_card_url": "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard",
+      "model_card_url": "https://build.nvidia.com/meta/llama-3_3-70b-instruct/modelcard",
       "endpoint_base_url": "https://integrate.api.nvidia.com/v1",
       "api_key_environment_variable": "NVIDIA_API_KEY",
       "reasoning_mode": "disabled",
-      "inference_precision": "endpoint_managed"
+      "inference_precision": "endpoint_managed",
+      "maximum_new_tokens": 96,
+      "request_timeout_seconds": 120,
+      "maximum_transport_retries": 0,
+      "structured_output_mode": "json_object"
     },
     {
       "teacher_id": "glm-5-2-build-v1",
@@ -43,7 +47,11 @@
       "endpoint_base_url": "https://integrate.api.nvidia.com/v1",
       "api_key_environment_variable": "NVIDIA_API_KEY",
       "reasoning_mode": "bounded",
-      "inference_precision": "endpoint_managed"
+      "inference_precision": "endpoint_managed",
+      "maximum_new_tokens": 96,
+      "request_timeout_seconds": 120,
+      "maximum_transport_retries": 0,
+      "structured_output_mode": "json_object"
     },
     {
       "teacher_id": "qwen3-5-9b-int8-local-v1",
@@ -55,7 +63,11 @@
       "endpoint_base_url": null,
       "api_key_environment_variable": null,
       "reasoning_mode": "disabled",
-      "inference_precision": "bitsandbytes_int8"
+      "inference_precision": "bitsandbytes_int8",
+      "maximum_new_tokens": 96,
+      "request_timeout_seconds": null,
+      "maximum_transport_retries": null,
+      "structured_output_mode": null
     }
   ],
   "policies": [
@@ -64,28 +76,48 @@
       "name": "Correctness Evidence",
       "question": "Does locally observable or attached verifier evidence support that the payload is correct under its declared context?",
       "fail_boundary": "Fail only on a reproducible contradiction, impossible derivation, failed declared verifier, or locally checkable incorrect result.",
-      "abstain_boundary": "Abstain when correctness requires unavailable external knowledge or undeclared execution assumptions."
+      "abstain_boundary": "Abstain when correctness requires unavailable external knowledge or undeclared execution assumptions.",
+      "reason_codes": {
+        "pass": ["observable_correctness_evidence"],
+        "fail": ["reproducible_contradiction", "impossible_derivation", "declared_verifier_failed", "locally_checkable_incorrect_result"],
+        "abstain": ["external_knowledge_required", "undeclared_execution_assumption", "insufficient_correctness_evidence"]
+      }
     },
     {
       "policy_id": "q2_semantic_coherence",
       "name": "Semantic Coherence",
       "question": "Do the payload's parts form a consistent and recoverable semantic unit?",
       "fail_boundary": "Fail only when incompatible fragments, broken dependencies, or internal contradictions prevent a coherent interpretation.",
-      "abstain_boundary": "Abstain when missing context could plausibly repair the apparent discontinuity."
+      "abstain_boundary": "Abstain when missing context could plausibly repair the apparent discontinuity.",
+      "reason_codes": {
+        "pass": ["recoverable_semantic_unit"],
+        "fail": ["incompatible_fragments", "broken_required_dependency", "internal_semantic_contradiction"],
+        "abstain": ["missing_context_may_repair_coherence", "specialized_semantics_unavailable"]
+      }
     },
     {
       "policy_id": "q3_substantive_payload",
       "name": "Substantive Payload",
       "question": "Does the unit contain substantive content beyond navigation, metadata, boilerplate, or an uninstantiated template?",
       "fail_boundary": "Fail only when no substantive residual payload remains after observable boilerplate is excluded.",
-      "abstain_boundary": "Abstain when a short unit may carry domain-specific meaning that the panel cannot verify."
+      "abstain_boundary": "Abstain when a short unit may carry domain-specific meaning that the panel cannot verify.",
+      "reason_codes": {
+        "pass": ["substantive_payload_present"],
+        "fail": ["navigation_only", "metadata_only", "boilerplate_only", "uninstantiated_template_only", "no_substantive_residual"],
+        "abstain": ["short_domain_payload_uncertain", "specialized_payload_uncertain"]
+      }
     },
     {
       "policy_id": "q4_learnable_relations",
       "name": "Learnable Relations",
       "question": "Does the unit expose at least one recoverable relation among entities, operations, claims, conditions, or outcomes?",
       "fail_boundary": "Fail only when the payload is an unconnected token, label, or fragment set with no recoverable relation.",
-      "abstain_boundary": "Abstain when specialized notation may encode a relation unavailable to the panel."
+      "abstain_boundary": "Abstain when specialized notation may encode a relation unavailable to the panel.",
+      "reason_codes": {
+        "pass": ["recoverable_relation_present"],
+        "fail": ["unconnected_token_set", "label_only_without_relation", "fragment_set_without_relation"],
+        "abstain": ["specialized_notation_relation_uncertain", "missing_context_relation_uncertain"]
+      }
     }
   ],
   "response_contract": {

@@ -37,7 +37,7 @@ def test_panel_contract_freezes_diverse_two_hosted_one_local_teachers() -> None:
 
     # Then: the panel is diverse, non-runtime, and has the intended topology.
     assert [teacher.model_id for teacher in panel.teachers] == [
-        "nvidia/nemotron-3-ultra-550b-a55b",
+        "meta/llama-3.3-70b-instruct",
         "z-ai/glm-5.2",
         "Qwen/Qwen3.5-9B",
     ]
@@ -49,6 +49,21 @@ def test_panel_contract_freezes_diverse_two_hosted_one_local_teachers() -> None:
     assert panel.response_contract.maximum_schema_retries == 1
     assert panel.response_contract.invalid_response_action == "abstain"
     assert panel.response_contract.reason_code_pattern == "^[a-z][a-z0-9_]{0,63}$"
+    assert all(teacher.maximum_new_tokens == 96 for teacher in panel.teachers)
+    hosted = tuple(
+        teacher for teacher in panel.teachers if teacher.location.value == "nvidia_build"
+    )
+    assert all(teacher.request_timeout_seconds == 120 for teacher in hosted)
+    assert all(teacher.maximum_transport_retries == 0 for teacher in hosted)
+    assert all(teacher.structured_output_mode == "json_object" for teacher in hosted)
+    assert panel.policies[0].reason_codes.fail == (
+        "reproducible_contradiction",
+        "impossible_derivation",
+        "declared_verifier_failed",
+        "locally_checkable_incorrect_result",
+    )
+    assert all(policy.reason_codes.pass_ for policy in panel.policies)
+    assert all(policy.reason_codes.abstain for policy in panel.policies)
 
 
 def test_first_pass_unanimity_produces_panel_decision() -> None:

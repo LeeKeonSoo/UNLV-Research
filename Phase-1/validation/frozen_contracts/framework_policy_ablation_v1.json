@@ -1,7 +1,7 @@
 {
   "schema_version": "framework-policy-ablation-v1",
   "status": "block_9_complete_no_hard_policy_promoted",
-  "protocol_sha256": "8bd83fc517c4a1585506ae225c0377ad9e038306baca7831382e488dff3b7d60",
+  "protocol_sha256": "ba6fe743874fe22c5031b384cd4506e7a4803447a7bd15d3bc2bceb2e883e252",
   "development_admission": {
     "passed": true,
     "benchmark_contaminated_records": 0,
@@ -11,7 +11,7 @@
   "evidence_sha256": {
     "development_admission": "f105a757e9618461f84dca773caf88b5705b456c53578cde4b9df32f5ed0b9c3",
     "redundancy_gate": "a00c22653532794d2ebef4789549a7d56273a4aee290552bfc0337c32cf41ba5",
-    "quality_teacher_panel": "15004b662157e16ac58209983e2ee606368ef079737e73c3c9380907dd5b81c7"
+    "quality_teacher_panel": "ce933186aeecac16de220d8f250edce2b8b3192e439b6fbbd747d35dd9949835"
   },
   "policy_decisions": [
     {
@@ -57,5 +57,5 @@
   "utility_read": false,
   "runtime_activation_mutated": false,
   "claim_boundary": "Block 9 records disjoint development decisions only. It does not read benchmark outcomes, activate runtime policies, or establish natural-budget downstream effectiveness.",
-  "report_sha256": "cb6ede6d9628b1b48071840b428dec55bc13fc9f7574a29a018bec4b3cadfc6f"
+  "report_sha256": "6d76f1f180b9fbb3470719e25d70ca2e47f3b98575580e01e21979a9c8282d53"
 }
