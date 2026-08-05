@@ -1,8 +1,8 @@
 {
   "schema_version": "redundancy-v2-contract-v1",
-  "status": "block_8_e2_development_gate_passed_candidate",
-  "runtime_activation": false,
-  "mode_policy_status": "implementation_candidate_validation_pending",
+  "status": "all_policy_runtime_experiment_v1",
+  "runtime_activation": true,
+  "mode_policy_status": "frozen_runtime_experiment_pending_external_validation",
   "equivalence_witness_implementation": "redundancy_equivalence.py",
   "mode_policy_implementation": "redundancy_mode_policy.py",
   "development_ablation_ready": true,
@@ -12,7 +12,7 @@
   "development_gate_report": "validation/frozen_contracts/development_redundancy_gate_report_v1.json",
   "development_gate_report_sha256": "5d9d99d117f4f88bb1fca2e34f52d3444b53c52e9db8e2f979895d1700f00e51",
   "development_gate_report_file_sha256": "a00c22653532794d2ebef4789549a7d56273a4aee290552bfc0337c32cf41ba5",
-  "runtime_authority": "none_candidate_cannot_select_transform_or_remove",
+  "runtime_authority": "stage_b_policy_may_propose_removal_subject_to_stage_c_coverage_veto",
   "single_global_similarity_threshold": false,
   "relations": [
     "exact_equivalent",
@@ -30,10 +30,12 @@
     "formatting_equivalent"
   ],
   "formatting_equivalence_boundary": "line_ending_encoding_and_one_terminal_newline_only; trailing whitespace, indentation, internal spacing, and line structure are preserved",
-  "candidate_only_relations": [
+  "runtime_operational_relations": [
     "near_substitute",
     "contained_payload",
-    "superset_payload",
+    "superset_payload"
+  ],
+  "candidate_only_relations": [
     "repeated_span",
     "semantic_duplicate_candidate"
   ],
@@ -76,7 +78,10 @@
     "normal": {
       "authorized_witnesses": [
         "exact_text",
-        "formatting_canonical"
+        "formatting_canonical",
+        "bounded_near_substitute",
+        "token_preserving_prose_reflow",
+        "exact_token_containment"
       ],
       "uncertain_action": "retain"
     },
@@ -84,6 +89,7 @@
       "authorized_witnesses": [
         "exact_text",
         "formatting_canonical",
+        "bounded_near_substitute",
         "token_preserving_prose_reflow",
         "declared_equivalence_verifier",
         "exact_token_containment"
@@ -104,6 +110,7 @@
     "redundancy_exact_equivalence_witness",
     "redundancy_formatting_equivalence_witness",
     "redundancy_token_preserving_reflow_witness",
+    "redundancy_bounded_near_substitute_witness",
     "redundancy_declared_equivalence_witness",
     "redundancy_exact_containment_witness",
     "redundancy_substantive_difference_protected",
@@ -129,5 +136,5 @@
     "coverage_compatibility",
     "frozen_operating_point"
   ],
-  "activation_deferred_to": "joint-profile freeze after Redundancy, Quality, and Coverage gates"
+  "activation_deferred_to": null
 }

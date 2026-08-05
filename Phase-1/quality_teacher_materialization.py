@@ -98,6 +98,11 @@ def _result_to_mapping(result: PanelPolicyResult) -> JsonMap:
     }
 
 
+def panel_policy_result_to_mapping(result: PanelPolicyResult) -> JsonMap:
+    """Serialize one frozen panel result for the Stage-B audit trail."""
+    return _result_to_mapping(result)
+
+
 def _result_from_mapping(payload: Mapping[str, Any]) -> PanelPolicyResult:
     second = payload.get("second_pass")
     return PanelPolicyResult(
@@ -217,10 +222,12 @@ def score_quality_rows(
     expected_policy_ids = tuple(policy.policy_id for policy in panel.policies)
     adapters = _build_policy_set_adapters(panel)
     pending: list[tuple[str, str, EvaluationUnit]] = []
+    required_task_ids: list[str] = []
     for row in rows:
         unit = _evaluation_unit(row)
         text_digest = _text_sha256(unit.text)
         task_id = _task_id(panel_sha256, unit.unit_id, text_digest)
+        required_task_ids.append(task_id)
         if task_id not in cache:
             pending.append((task_id, text_digest, unit))
 
@@ -268,7 +275,9 @@ def score_quality_rows(
                     print(
                         json.dumps(
                             {
-                                "quality_progress": len(cache),
+                                "quality_progress": sum(
+                                    task_id in cache for task_id in required_task_ids
+                                ),
                                 "required": len(rows),
                             }
                         ),
@@ -286,15 +295,16 @@ def score_quality_rows(
         if tuple(result.policy_id for result in results) != expected_policy_ids:
             raise RuntimeError(f"Quality policy order mismatch in cache: {chunk_uid}")
         results_by_chunk[chunk_uid] = results
+    used_observations = tuple(cache[task_id] for task_id in required_task_ids)
     availability_counts = {
         teacher.teacher_id: {
             "available_units": sum(
                 teacher.teacher_id in tuple(observation.get("available_teacher_ids") or ())
-                for observation in cache.values()
+                for observation in used_observations
             ),
             "unavailable_units": sum(
                 teacher.teacher_id in tuple(observation.get("unavailable_teacher_ids") or ())
-                for observation in cache.values()
+                for observation in used_observations
             ),
         }
         for teacher in panel.teachers
@@ -313,11 +323,11 @@ def score_quality_rows(
         "teacher_availability": availability_counts,
         "units_with_three_available_teachers": sum(
             len(tuple(observation.get("available_teacher_ids") or ())) == 3
-            for observation in cache.values()
+            for observation in used_observations
         ),
         "units_with_two_available_teachers": sum(
             len(tuple(observation.get("available_teacher_ids") or ())) == 2
-            for observation in cache.values()
+            for observation in used_observations
         ),
         "observation_cache_path": str(cache_path),
         "observation_cache_sha256": _sha256(cache_path),

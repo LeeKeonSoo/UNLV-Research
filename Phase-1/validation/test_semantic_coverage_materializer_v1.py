@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from coverage_contract import CoverageExecutionScope
+from coverage_contract import RepresentativeFamily
 from model_provider_contract import ProviderLifecycle, ProviderManifest, ProviderRole
 from semantic_coverage_materializer import materialize_semantic_coverage
 
@@ -78,6 +79,14 @@ def test_stage_c_restores_only_an_extinct_support_representative() -> None:
             graph_path=graph,
             provider=provider,
             execution_scope=CoverageExecutionScope.CONFIRMATORY,
+            representative_families=(
+                RepresentativeFamily(
+                    family_id="redundancy-family-a-b",
+                    member_uids=frozenset({"a", "b"}),
+                    evidence_artifact_sha256="4" * 64,
+                    preferred_representative_uid="a",
+                ),
+            ),
         )
 
     assert {row["chunk_uid"] for row in final} == {"a", "c"}
@@ -87,6 +96,7 @@ def test_stage_c_restores_only_an_extinct_support_representative() -> None:
     assert audit["execution_scope"] == "confirmatory"
     assert audit["provider_id"] == provider.provider_id
     assert audit["scientific_promotion_claimed"] is False
+    assert audit["explicit_representative_families_consumed"] == 1
 
 
 if __name__ == "__main__":

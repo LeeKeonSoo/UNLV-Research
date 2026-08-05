@@ -45,7 +45,7 @@ def _witness(left: str, right: str) -> DeclaredEquivalenceWitness:
     )
 
 
-def test_normal_and_hard_share_exact_policy_but_use_different_witness_authority() -> None:
+def test_normal_and_hard_share_containment_policy_with_different_threshold_settings() -> None:
     base = "A deterministic record keeps its input hash and final representative linkage for audit."
     longer = f"Introduction. {base} Appendix material remains attached to the same record."
     units = (RedundancyUnit("short", base), RedundancyUnit("long", longer))
@@ -53,7 +53,7 @@ def test_normal_and_hard_share_exact_policy_but_use_different_witness_authority(
     normal = build_redundancy_plan(units, RedundancySettings(), RedundancyMode.NORMAL, exhaustive=True)
     hard = build_redundancy_plan(units, RedundancySettings(), RedundancyMode.HARD, exhaustive=True)
 
-    assert normal.proposed_survivor_uids == ("long", "short")
+    assert normal.proposed_survivor_uids == ("long",)
     assert hard.proposed_survivor_uids == ("long",)
     assert hard.removals[0].removed_uid == "short"
     assert hard.removals[0].representative_uid == "long"
@@ -61,7 +61,7 @@ def test_normal_and_hard_share_exact_policy_but_use_different_witness_authority(
     assert hard.removals[0].coverage_veto_required is True
 
 
-def test_hard_accepts_token_preserving_prose_reflow_but_normal_retains_it() -> None:
+def test_normal_and_hard_accept_token_preserving_prose_reflow() -> None:
     left_text = _long_prose()
     right_text = left_text.replace(" context20 ", "\ncontext20 ", 1)
     units = (RedundancyUnit("a", left_text), RedundancyUnit("b", right_text))
@@ -72,9 +72,9 @@ def test_hard_accepts_token_preserving_prose_reflow_but_normal_retains_it() -> N
 
     assert authority.witness is not None
     assert authority.witness.kind is WitnessKind.TOKEN_PRESERVING_PROSE_REFLOW
-    assert authority.normal_authority is False
+    assert authority.normal_authority is True
     assert authority.hard_authority is True
-    assert len(normal.proposed_survivor_uids) == 2
+    assert normal.proposed_survivor_uids == ("a",)
     assert hard.proposed_survivor_uids == ("a",)
 
 
@@ -106,7 +106,7 @@ def test_declared_verifier_can_authorize_hard_near_equivalence_only() -> None:
     assert authority.witness.source_artifact_sha256 == declared.artifact_sha256
 
 
-def test_substantive_changes_and_unproved_similarity_never_receive_authority() -> None:
+def test_substantive_changes_are_protected_but_bounded_near_substitutes_receive_authority() -> None:
     long = _long_prose()
     numeric_left = RedundancyUnit("numeric-a", f"{long} The frozen value is 200.")
     numeric_right = RedundancyUnit("numeric-b", f"{long} The frozen value is 404.")
@@ -120,9 +120,10 @@ def test_substantive_changes_and_unproved_similarity_never_receive_authority() -
 
     assert "numeric_constant_changed" in numeric.relation.evidence.substantive_difference_codes
     assert numeric.hard_authority is False
-    assert lexical.hard_authority is False
+    assert lexical.hard_authority is True
     assert numeric.witness is None
-    assert lexical.witness is None
+    assert lexical.witness is not None
+    assert lexical.witness.kind is WitnessKind.BOUNDED_NEAR_SUBSTITUTE
 
 
 def test_repeated_span_and_semantic_candidates_do_not_delete_whole_records() -> None:
@@ -180,11 +181,11 @@ def test_transitive_family_uses_one_stable_id_and_representative_trace() -> None
     }
 
 
-def test_mode_contract_is_candidate_only_and_has_no_external_selector_inputs() -> None:
+def test_mode_contract_is_runtime_active_and_has_no_external_selector_inputs() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
 
-    assert contract["runtime_activation"] is False
-    assert contract["mode_policy_status"] == "implementation_candidate_validation_pending"
+    assert contract["runtime_activation"] is True
+    assert contract["mode_policy_status"] == "frozen_runtime_experiment_pending_external_validation"
     assert contract["operating_points"]["normal"]["uncertain_action"] == "retain"
     assert contract["operating_points"]["hard"]["coverage_veto_required"] is True
     assert contract["declared_equivalence_verifier_contract"]["benchmark_outcomes_read"] is False
@@ -194,12 +195,12 @@ def test_mode_contract_is_candidate_only_and_has_no_external_selector_inputs() -
 
 
 if __name__ == "__main__":
-    test_normal_and_hard_share_exact_policy_but_use_different_witness_authority()
-    test_hard_accepts_token_preserving_prose_reflow_but_normal_retains_it()
+    test_normal_and_hard_share_containment_policy_with_different_threshold_settings()
+    test_normal_and_hard_accept_token_preserving_prose_reflow()
     test_declared_verifier_can_authorize_hard_near_equivalence_only()
-    test_substantive_changes_and_unproved_similarity_never_receive_authority()
+    test_substantive_changes_are_protected_but_bounded_near_substitutes_receive_authority()
     test_repeated_span_and_semantic_candidates_do_not_delete_whole_records()
     test_hard_survivors_are_always_a_subset_of_normal_survivors()
     test_transitive_family_uses_one_stable_id_and_representative_trace()
-    test_mode_contract_is_candidate_only_and_has_no_external_selector_inputs()
+    test_mode_contract_is_runtime_active_and_has_no_external_selector_inputs()
     print("[redundancy-mode-policy-v1] witness authority and mode containment: pass")

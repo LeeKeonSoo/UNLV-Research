@@ -70,6 +70,7 @@ def materialize_semantic_coverage(
     graph_path: Path,
     provider: ProviderManifest,
     execution_scope: CoverageExecutionScope,
+    representative_families: tuple[RepresentativeFamily, ...] = (),
 ) -> tuple[list[JsonMap], JsonMap]:
     graph = json.loads(graph_path.read_text(encoding="utf-8"))
     corpus_sha = _sha256(corpus_path)
@@ -117,7 +118,12 @@ def materialize_semantic_coverage(
         ),
         proposed_survivors=proposed_ids,
         strata=semantic_strata + build_multiview_strata(tags, corpus_sha),
-        redundancy_families=_families(removal_proposals),
+        redundancy_families=tuple(
+            {
+                family.family_id: family
+                for family in (*_families(removal_proposals), *representative_families)
+            }.values()
+        ),
         similarities=tuple(
             FrozenSimilarity(
                 edge["left_uid"], edge["right_uid"], float(edge["similarity"]), graph_hash
@@ -162,5 +168,6 @@ def materialize_semantic_coverage(
         "scientific_promotion_claimed": False,
         "benchmark_outcomes_read": False,
         "utility_read": False,
+        "explicit_representative_families_consumed": len(representative_families),
     }
     return final, audit

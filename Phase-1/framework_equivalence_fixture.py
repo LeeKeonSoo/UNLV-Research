@@ -8,6 +8,8 @@ from typing import TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from quality_teacher_panel import PanelDecision, PolicyDecision, TeacherVote
+from quality_teacher_runtime import PanelPolicyResult
 from run_curation import materialize
 
 JsonScalar: TypeAlias = str | int | float | bool | None
@@ -19,6 +21,40 @@ class EquivalenceRecord(BaseModel):
 
     id: str = Field(min_length=1)
     text: str = Field(min_length=1)
+
+
+QUALITY_POLICY_IDS = (
+    "q1_correctness_evidence",
+    "q2_semantic_coherence",
+    "q3_substantive_payload",
+    "q4_learnable_relations",
+)
+
+
+def _fixture_quality_scorer(rows, **_kwargs):
+    results = {}
+    for row in rows:
+        policy_results = []
+        for policy_id in QUALITY_POLICY_IDS:
+            votes = tuple(
+                TeacherVote(
+                    teacher_id=f"fixture-teacher-{index}",
+                    policy_id=policy_id,
+                    decision=PolicyDecision.PASS,
+                    reason_codes=("fixture_pass",),
+                )
+                for index in range(3)
+            )
+            policy_results.append(
+                PanelPolicyResult(
+                    policy_id=policy_id,
+                    decision=PanelDecision.PASS,
+                    first_pass=votes,
+                    second_pass=None,
+                )
+            )
+        results[str(row["chunk_uid"])] = tuple(policy_results)
+    return results, {"fixture": True, "input_chunks": len(rows)}
 
 
 def _sha256(path: Path) -> str:
@@ -71,7 +107,7 @@ def curated_projection_hash(records: tuple[EquivalenceRecord, ...]) -> str:
             ),
             encoding="utf-8",
         )
-        materialize(config)
+        materialize(config, quality_scorer=_fixture_quality_scorer)
         rows = [
             json.loads(line)
             for line in (output / "stage_c_curated_chunks.jsonl").read_text(encoding="utf-8").splitlines()

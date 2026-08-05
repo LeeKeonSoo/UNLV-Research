@@ -70,7 +70,7 @@
       "normalization": "independent_q1_q4_pass_fail_abstain_consensus_without_scalar_score",
       "output_semantics": "typed_q1_q4_consensus_evidence_with_policy_mediated_deletion_authority",
       "implementation_contract_path": "configs/quality_teacher_panel_v2.json",
-      "implementation_contract_identity_sha256": "0406df184ed1719234cfe3c1de356e13a70fa15b990a13bf21e6d02b6091a4ab",
+      "implementation_contract_identity_sha256": "1ae79acad8faa316a03b96bd8e4254978d8a323b2ed49081b7717f393228ee6a",
       "supported_routes": ["code_artifact", "mathematical_content", "general_prose", "table_structured_data"],
       "supported_languages": ["english"],
       "policy_contribution_authority": true,

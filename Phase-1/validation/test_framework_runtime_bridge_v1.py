@@ -28,17 +28,16 @@ def test_runtime_foundation_loads_every_redesign_contract() -> None:
     assert all(not profile.release_enabled for profile in foundation.profiles.profiles)
 
 
-def test_blocked_v1_policies_remain_compatibility_only() -> None:
+def test_final_runtime_has_no_declared_policy_left_blocked_or_legacy_mapped() -> None:
     # Given: the compatibility bridge and typed Policy registry.
     foundation = load_runtime_foundation(ROOT)
     lifecycle_by_id = {policy.id: policy.lifecycle.value for policy in foundation.objects.policies}
 
-    # When / Then: blocked Policies cannot be declared newly active by the bridge.
-    assert set(foundation.bridge.blocked_v1_policy_ids) == {
-        "redundancy.symmetric_near_duplicate_candidate",
-    }
-    assert all(lifecycle_by_id[policy_id] == "blocked" for policy_id in foundation.bridge.blocked_v1_policy_ids)
-    assert all(entry.disposition == "legacy_compatibility_only" for entry in foundation.bridge.legacy_policy_mappings)
+    # When / Then: the final experimental runtime has no hidden blocked branch.
+    assert foundation.bridge.blocked_v1_policy_ids == ()
+    assert foundation.bridge.legacy_policy_mappings == ()
+    assert lifecycle_by_id["redundancy.symmetric_near_duplicate_candidate"] == "candidate"
+    assert lifecycle_by_id["quality.teacher_panel_v2"] == "candidate"
 
 
 def test_runtime_stage_ticket_is_issued_from_central_permissions() -> None:
@@ -67,6 +66,6 @@ def test_runtime_stage_ticket_is_issued_from_central_permissions() -> None:
 
 if __name__ == "__main__":
     test_runtime_foundation_loads_every_redesign_contract()
-    test_blocked_v1_policies_remain_compatibility_only()
+    test_final_runtime_has_no_declared_policy_left_blocked_or_legacy_mapped()
     test_runtime_stage_ticket_is_issued_from_central_permissions()
-    print("[framework-runtime-bridge-v1] identities, blocked policies, Stage tickets: pass")
+    print("[framework-runtime-bridge-v1] identities, active candidates, Stage tickets: pass")

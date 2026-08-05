@@ -59,15 +59,16 @@ Normal and Hard now expose the same immutable Policy families. Their intended
 difference is a separately calibrated versioned operating point: Normal is the
 more conservative removal mode and Hard is stronger while preserving
 `Hard subset-or-equal Normal`. Neither accepts a run-local threshold, retention
-fraction, or token budget. Both redesigned operating points remain uncalibrated
-and release-disabled; the legacy-compatible selector behavior is unchanged.
+fraction, or token budget. Both redesigned operating points are now wired into
+the final runtime experiment but remain uncalibrated and release-disabled.
 
 The sole current model-driven Quality candidate is the three-teacher Quality
 Ranker in `configs/quality_teacher_panel_v2.json`. Its active runtime-experiment
 panel is GLM-5.2, Nemotron 3 Ultra, and MiniMax M3. It evaluates Q1 Correctness
 Evidence, Q2 Semantic Coherence, Q3 Substantive Payload, and Q4 Learnable
-Relations independently as `pass`, `fail`, or `abstain`. It remains blocked
-from scientific promotion until fresh behavior fixtures, protected-fixture
+Relations independently as `pass`, `fail`, or `abstain`. Its frozen Policy now
+has Stage-B proposal authority, subject to Stage-C Coverage veto. It remains
+unpromoted until fresh behavior fixtures, protected-fixture
 false-removal bounds, consensus stability, and Normal/Hard operating points
 pass. Runtime execution is experimental, and teacher output alone cannot
 delete data.
@@ -76,8 +77,8 @@ The shared hosted/local adapter, closed Policy-specific reason-code schema,
 single schema retry, blinded consensus runner, deterministic 512-item behavior
 matrix, 800-item protected set, resumable qualification executor, exact
 false-removal report, and Normal/Hard staged-policy bridge are implemented.
-The bridge remains inactive until the full observations pass and Stage C
-Coverage evidence can veto support loss.
+The bridge is active in the all-policy runtime experiment. Stage C receives
+every typed removal proposal and can veto support loss before final output.
 
 Q1 uses typed declared-verifier evidence before model judgment. A declared
 verifier result bypasses teacher generation; the panel is used only when that
@@ -98,14 +99,15 @@ only; its observed NVIDIA Build latency remains a release blocker.
 The previous loss-gap Quality experiment is retired and preserved only under
 `archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.
 
-Redundancy also has a witness-based Normal/Hard implementation candidate.
+Redundancy uses the witness-based Normal/Hard runtime experiment.
 Similarity and embedding retrieval only produce candidate pairs. Normal may
-propose removal for exact or narrowly bounded formatting equivalence; Hard may
-also use exact token containment, token-preserving prose reflow, or a versioned
-declared equivalence verifier. All uncertainty retains, substantive changes are
+propose removal for exact, formatting, strict bounded near-substitute, exact
+containment, and token-preserving reflow witnesses. Hard executes the same
+families with broader frozen changed-token bounds and may also consume a
+versioned declared equivalence verifier. Near edges are pairwise rather than
+silently transitively closed. All uncertainty retains, substantive changes are
 protected, and Stage C must veto or accept every family proposal before final
-materialization. This candidate remains release-disabled until its disjoint
-behavior and protected false-removal gates pass.
+materialization. The Policy remains release-disabled pending external evidence.
 
 Semantic Coverage v3 is implemented as the Stage-C qualification candidate.
 It builds local support groups from reciprocal-neighbor evidence shared by
@@ -121,9 +123,9 @@ language/script composition JSON/CSV artifacts. They are audit-only, may be
 multi-label, and never enforce a target domain distribution or enter the
 selector.
 
-## Current Final-Test Evidence
+## Previous Structural Snapshot
 
-The current Code 7M candidate run materialized both Normal and Hard through
+The previous Code 7M candidate run materialized both Normal and Hard through
 Stages A-B-C. Stage A released 4,889 records, Stage B produced 8,024 chunks and
 40 removal proposals, and Stage C restored 15 support representatives. The
 result is 7,999 retained chunks in each mode. Normal reports a 2,571,572
@@ -131,7 +133,14 @@ whitespace-token proxy; Hard reports 2,461,632 because Hard also performs
 span-level compaction. Frozen Qwen3-4B stream-token counts are 6,984,438 Raw,
 6,961,249 Normal, and 6,747,888 Hard. Relative to Raw, Normal removes 0.33% and
 Hard removes 3.39%. The packed natural-budget totals are 6,979,584, 6,946,816,
-and 6,733,824 respectively.
+and 6,733,824 respectively. These numbers predate active Quality-panel and
+witness-based Near-duplicate deletion and are not the final all-policy result.
+
+The final run contracts are
+`configs/code_7m_all_policy_final_normal_v1.json` and
+`configs/code_7m_all_policy_final_hard_v1.json`. They execute every declared
+Validity, Redundancy, Quality, and Coverage Policy. Hosted Quality observations
+are resumable and shared by exact `(panel, chunk UID, text)` identity.
 
 The mixed Code/Math/General Coverage audit contains 768 records. Its mean
 cross-provider mutual-neighbor Jaccard is 0.2178, with 499 records in stable

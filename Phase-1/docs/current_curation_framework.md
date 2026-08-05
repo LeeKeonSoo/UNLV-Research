@@ -51,9 +51,9 @@ Historical artifact identifiers may retain older labels only in the explicit
 | Core | Observable metric | Policy authority in the active implementation |
 | --- | --- | --- |
 | Validity | closed text-contract evidence | Stage A quarantines only payload absence, declared text-contract violation, unrecoverable corruption, or acquisition failure; Stage B rejects only invalid chunk results |
-| Redundancy | exact post-Stage-A text digest plus candidate formatting, containment, and symmetric near-duplicate witnesses | Stage B may propose a nonrepresentative removal only for an authorized family witness and stable representative. Near-duplicate authority remains blocked |
-| Quality | explicit non-payload evidence and separately validated positive retention evidence | Normal enables four closed-set rejection rules: explicit generated-and-do-not-edit artifacts, license-comment-only chunks, empty HTML shells, and cookie-control chrome-only chunks. It has no positive-retention provider, so all other cases abstain and retain. Quality never means an intrinsic score, weighted priority score, source identity, or target fraction |
-| Coverage | representative linkage, residual-payload preservation, and composition audit | Applies a veto-only materialization invariant: unexplained representative or residual-payload loss aborts output. It cannot rank, delete, restore by quota, or enforce a target mix |
+| Redundancy | exact identity plus formatting, bounded changed-token near-substitute, exact containment, token-preserving reflow, and optional declared-verifier witnesses | Stage B proposes only nonrepresentative removal with a stable family, witness, evidence hash, and representative. Near edges are non-transitive pairwise matches; retrieval similarity alone cannot delete |
+| Quality | four independent Q1-Q4 panel decisions plus closed deterministic non-payload evidence | Stage B applies frozen Normal/Hard fail gates. Normal requires unanimous first-pass failure; Hard accepts stable 2-of-3 failure. Abstention retains, and provider output alone cannot delete |
+| Coverage | representative linkage, semantic support extinction, residual-payload preservation, and composition audit | Stage C originates no deletion. It accepts Stage-B proposals or veto-restores the minimum required support, rematerializes, and reruns the complete invariant set; quotas and target mixes are forbidden |
 
 Content domain and language/script are separate audit axes. For example,
 `Math 10%` and `Code 10%` belong to content-domain composition, while a
@@ -137,25 +137,22 @@ Utility, or benchmark outcome.
 
 ## Normal And Hard Profiles
 
-The active user-facing mode is **Normal**. `curation_mode: "normal"` resolves
-to `normal_structural_v1`, which uses only the reason-coded text-structural
-policies declared above. `curation_mode: "hard"` is available only with
-`execution_scope: "development"`: `hard_structural_v1` runs Normal plus its
-frozen span policies and writes a transformation JSONL plus residual-payload
-audit. N4 fixture ablation has validated its deterministic behavior, but it
-remains fail-closed for production curation until confirmatory external
-evaluation closes. Once promoted, Hard will be a strict containment
-profile (`Hard subset Normal`) made of Normal plus validated structural
-policies; it will not use model-relative scores, source or domain metadata,
-Quality scalars, or retention targets.
+`curation_mode: "normal"` and `curation_mode: "hard"` execute the same four
+Cores and the same Policy families. Normal uses strict Near-duplicate and
+unanimous Quality-fail operating points. Hard uses broader bounded-change
+limits, stable-majority Quality failure, and deterministic span compaction.
+Both are available for development/confirmatory runtime experiments and remain
+release-disabled. Neither uses model-relative scalar scores, source or domain
+metadata, retention fractions, or token budgets.
 
 The frozen Hard v1 inventory is deliberately small: prefix-license header
 spans, self-contained license comment-block spans, and long exact repeated
 template spans. Each requires an explicit trigger, a useful non-trigger
 fixture, a Stage-B-valid residual, a reason code/token delta, and a
-representative or span trace. Hard inherits Normal's frozen 0.95 symmetric
-near-duplicate rule; threshold sweeps, model-relative proxies, source metadata
-rules, and parser adapters are not in the runtime surface.
+representative or span trace. Hard inherits every Normal rule and changes only
+frozen strength parameters. The retired 0.95 shingle selector, model-relative
+proxies, source metadata rules, and parser adapters are not in the final
+runtime surface.
 
 The earlier Stage C2 proxy, Mid estimator, token-budget planner, and three-arm
 materializer remain archived candidate research. They have no user-facing mode

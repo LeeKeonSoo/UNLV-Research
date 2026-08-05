@@ -29,7 +29,7 @@ def main() -> int:
         {
             "chunk_uid": "scaffold-copy",
             "stage_a_record_id": "scaffold-record",
-            "stage_c_selection": {
+            "stage_b_policy": {
                 "removed_reason": "structural_scaffold_representative_retained",
                 "representative_chunk_uid": "representative",
             },
@@ -70,7 +70,7 @@ def main() -> int:
         {
             "chunk_uid": "license-representative",
             "stage_a_record_id": "license-record",
-            "stage_c_selection": {"removed_reason": "license_comment_only_chunk"},
+            "stage_b_policy": {"removed_reason": "license_comment_only_chunk"},
         }
     ]
     resolved = _coverage_impact_audit(
@@ -115,7 +115,7 @@ def main() -> int:
             {
                 "chunk_uid": "intermediate-representative",
                 "stage_a_record_id": "intermediate-record",
-                "stage_c_selection": {
+                "stage_b_policy": {
                     "removed_reason": "near_duplicate_representative_retained",
                     "representative_chunk_uid": "final-representative",
                 },
@@ -134,6 +134,27 @@ def main() -> int:
             "terminal_chunk_uid": "final-representative",
         }
     ]
+
+    quality_removed = _coverage_impact_audit(
+        passed=[{"chunk_uid": "quality-fail", "stage_a_record_id": "quality-record"}],
+        selected=[],
+        rejected=[],
+        not_selected=[
+            {
+                "chunk_uid": "quality-fail",
+                "stage_a_record_id": "quality-record",
+                "stage_b_policy": {
+                    "removed_reason": "quality_normal_unanimous_fail",
+                    "failed_policy_ids": ["q3_substantive_payload"],
+                },
+            }
+        ],
+        span_transformations=[],
+        minimum_residual_chars=40,
+        composition_audit=_composition_audit(),
+    )
+    assert quality_removed["zero_survivor_invariant"]["passed"] is True
+    assert quality_removed["passed"] is True
     print("[coverage-invariants] materialization representative linkage: pass")
     return 0
 

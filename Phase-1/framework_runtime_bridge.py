@@ -44,7 +44,7 @@ class RuntimeBridgeConfig(BaseModel):
     legacy_kernel_path: str = Field(min_length=1)
     legacy_kernel_sha256: Sha256
     legacy_policy_mappings: tuple[LegacyPolicyMapping, ...]
-    blocked_v1_policy_ids: tuple[str, ...] = Field(min_length=1)
+    blocked_v1_policy_ids: tuple[str, ...]
     new_v1_policy_activation: bool
     curated_output_equivalence_required: bool
 
@@ -58,8 +58,8 @@ class RuntimeBridgeConfig(BaseModel):
             raise RuntimeBridgeError("runtime_bridge_v1_policy_duplicate")
         if len(set(self.blocked_v1_policy_ids)) != len(self.blocked_v1_policy_ids):
             raise RuntimeBridgeError("runtime_bridge_blocked_policy_duplicate")
-        if not v1_ids <= set(self.blocked_v1_policy_ids):
-            raise RuntimeBridgeError("runtime_bridge_compatibility_policy_not_blocked")
+        if v1_ids & set(self.blocked_v1_policy_ids):
+            raise RuntimeBridgeError("runtime_bridge_active_legacy_mapping_marked_blocked")
         return self
 
 

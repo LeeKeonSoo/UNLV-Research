@@ -2,14 +2,14 @@
   "schema_version": "framework-profiles-v1",
   "status": "runtime_integrated_block_7",
   "framework_manifest_sha256": "6bb8e1294e28ed6df7961ff139518da271a78a9f4b2d234851ba59d8c49cfcbb",
-  "object_registry_sha256": "efc846f7aa4965ba9b8f8ba69edcbede27f6f77cd650edf2b296277072a527a3",
+  "object_registry_sha256": "cb2914820fe99b9518facd8cb3687515e831b9399eb9614d31391e2f19a363dd",
   "policy_lifecycles": [
     {"policy_id": "validity.interpretable_text", "lifecycle": "candidate"},
     {"policy_id": "redundancy.exact_text_family", "lifecycle": "development_passed"},
-    {"policy_id": "redundancy.symmetric_near_duplicate_candidate", "lifecycle": "blocked"},
+    {"policy_id": "redundancy.symmetric_near_duplicate_candidate", "lifecycle": "candidate"},
     {"policy_id": "quality.explicit_nonpayload", "lifecycle": "candidate"},
     {"policy_id": "coverage.representative_guard", "lifecycle": "candidate"},
-    {"policy_id": "quality.teacher_panel_v2", "lifecycle": "blocked"}
+    {"policy_id": "quality.teacher_panel_v2", "lifecycle": "candidate"}
   ],
   "profiles": [
     {

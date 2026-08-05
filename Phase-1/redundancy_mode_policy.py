@@ -113,6 +113,33 @@ def _representative_targets(
             parents[max(left_root, right_root)] = min(left_root, right_root)
     targets = {uid: find(uid) for uid in by_uid if find(uid) != uid}
 
+    # Bounded near-substitute edges are intentionally pairwise. They do not
+    # receive a silent transitive closure because A~B and B~C does not prove A~C.
+    occupied_near_roots: set[str] = set()
+    near_decisions = sorted(
+        (
+            decision
+            for decision in decisions
+            if decision.authorized(mode)
+            and decision.witness is not None
+            and decision.witness.kind is WitnessKind.BOUNDED_NEAR_SUBSTITUTE
+        ),
+        key=lambda decision: (
+            decision.relation.evidence.changed_ratio,
+            decision.relation.left_uid,
+            decision.relation.right_uid,
+        ),
+    )
+    for decision in near_decisions:
+        left_root = find(decision.relation.left_uid)
+        right_root = find(decision.relation.right_uid)
+        if left_root == right_root or left_root in occupied_near_roots or right_root in occupied_near_roots:
+            continue
+        representative = min(left_root, right_root)
+        removed = max(left_root, right_root)
+        targets[removed] = representative
+        occupied_near_roots.update((left_root, right_root))
+
     containment: dict[str, list[tuple[str, EquivalenceAuthority]]] = {}
     for decision in decisions:
         if (

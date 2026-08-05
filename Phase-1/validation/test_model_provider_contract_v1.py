@@ -36,7 +36,7 @@ def test_registry_exposes_replaceable_roles_without_direct_deletion_authority() 
     assert all(not slot.provider_output_alone_may_delete for slot in registry.slots.values())
 
 
-def test_teacher_panel_is_runtime_experiment_and_embedding_remains_audit_only() -> None:
+def test_teacher_panel_and_primary_embedding_are_runtime_experiments() -> None:
     registry = load_provider_registry(REGISTRY)
     providers = {provider.provider_id: provider for provider in registry.providers}
 
@@ -44,10 +44,10 @@ def test_teacher_panel_is_runtime_experiment_and_embedding_remains_audit_only() 
     embedding = providers["qwen3-embedding-0.6b-semantic-candidate"]
     audit_embedding = providers["bge-m3-semantic-audit-candidate"]
     assert teacher_panel.lifecycle is ProviderLifecycle.RUNTIME_EXPERIMENT
-    assert embedding.lifecycle is ProviderLifecycle.AUDIT_ONLY
+    assert embedding.lifecycle is ProviderLifecycle.RUNTIME_EXPERIMENT
     assert audit_embedding.lifecycle is ProviderLifecycle.AUDIT_ONLY
     assert teacher_panel.policy_contribution_authority is True
-    assert embedding.policy_contribution_authority is False
+    assert embedding.policy_contribution_authority is True
     assert audit_embedding.policy_contribution_authority is False
     assert embedding.artifacts[0].model_id != audit_embedding.artifacts[0].model_id
 
@@ -75,6 +75,7 @@ def test_changed_provider_fingerprint_cannot_inherit_calibration() -> None:
     changed_payload["artifacts"][0]["revision"] = "different-frozen-revision"
     changed_payload["artifacts"][0]["artifact_sha256"] = "b" * 64
     changed_payload["lifecycle"] = ProviderLifecycle.CALIBRATED.value
+    changed_payload["policy_contribution_authority"] = False
     changed_payload["calibration"] = {
         "artifact_path": "outputs/calibration/semantic.json",
         "artifact_sha256": "a" * 64,
@@ -92,7 +93,7 @@ def test_changed_provider_fingerprint_cannot_inherit_calibration() -> None:
 
 if __name__ == "__main__":
     test_registry_exposes_replaceable_roles_without_direct_deletion_authority()
-    test_teacher_panel_is_runtime_experiment_and_embedding_remains_audit_only()
+    test_teacher_panel_and_primary_embedding_are_runtime_experiments()
     test_teacher_provider_registry_matches_active_panel_identity()
     test_changed_provider_fingerprint_cannot_inherit_calibration()
     print("[model-provider-contract-v1] replacement and fail-closed gates: pass")

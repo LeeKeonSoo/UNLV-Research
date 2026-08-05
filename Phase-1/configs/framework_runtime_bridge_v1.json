@@ -4,21 +4,13 @@
   "framework_manifest_path": "configs/curation_framework_v1.json",
   "framework_manifest_sha256": "6bb8e1294e28ed6df7961ff139518da271a78a9f4b2d234851ba59d8c49cfcbb",
   "object_registry_path": "configs/framework_objects_v1.json",
-  "object_registry_sha256": "efc846f7aa4965ba9b8f8ba69edcbede27f6f77cd650edf2b296277072a527a3",
+  "object_registry_sha256": "cb2914820fe99b9518facd8cb3687515e831b9399eb9614d31391e2f19a363dd",
   "profile_registry_path": "configs/framework_profiles_v1.json",
-  "profile_registry_sha256": "93d33915bc8f1d37df715f1b100866432cf21cd90b56f8a3397001f099acc4bf",
+  "profile_registry_sha256": "48d7bdb6ad1ad3ac00d1f4f0102d3bdc7fa26d9fec2a2dc60b3cfd78a926b0ad",
   "legacy_kernel_path": "run_curation.py",
-  "legacy_kernel_sha256": "a3e63ee05229ab73c5c0cbf2c75be33d0d77b209b15d2aeb3ecae4334b400049",
-  "legacy_policy_mappings": [
-    {
-      "legacy_policy_id": "stage_c_symmetric_near_duplicate",
-      "v1_policy_id": "redundancy.symmetric_near_duplicate_candidate",
-      "disposition": "legacy_compatibility_only"
-    }
-  ],
-  "blocked_v1_policy_ids": [
-    "redundancy.symmetric_near_duplicate_candidate"
-  ],
+  "legacy_kernel_sha256": "dffbe5ff2cd250329ea41716cf49659fee3775647317ba602f51982828cde161",
+  "legacy_policy_mappings": [],
+  "blocked_v1_policy_ids": [],
   "new_v1_policy_activation": true,
   "curated_output_equivalence_required": false
 }

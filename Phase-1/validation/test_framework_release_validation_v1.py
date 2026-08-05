@@ -57,9 +57,9 @@ def main() -> int:
         "profile_operating_points_uncalibrated",
         "coverage.representative_guard:candidate",
         "quality.explicit_nonpayload:candidate",
-        "quality.teacher_panel_v2:blocked",
+        "quality.teacher_panel_v2:candidate",
         "redundancy.exact_text_family:development_passed",
-        "redundancy.symmetric_near_duplicate_candidate:blocked",
+        "redundancy.symmetric_near_duplicate_candidate:candidate",
         "validity.interpretable_text:candidate",
     ]
     print("[framework-release-validation-v1] integrity pass, scientific release blocked: pass")

@@ -16,7 +16,7 @@
     "domain_quota",
     "target_retention_fraction",
     "maximum_token_budget",
-    "confirmatory_corpus"
+    "confirmatory_benchmark_outcomes"
   ],
   "teachers": [
     {

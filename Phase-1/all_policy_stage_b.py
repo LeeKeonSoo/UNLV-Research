@@ -1,0 +1,191 @@
+from __future__ import annotations
+
+from collections import Counter
+from dataclasses import asdict, dataclass
+from typing import Any, Mapping
+
+from quality_operating_points import CurationMode, QualityAction
+from quality_stage_bridge import propose_quality_removals
+from quality_teacher_materialization import panel_policy_result_to_mapping
+from quality_teacher_runtime import PanelPolicyResult
+from redundancy_equivalence import RedundancyMode
+from redundancy_mode_policy import RedundancyPlan, build_redundancy_plan
+from redundancy_v2 import RedundancySettings, RedundancyUnit
+
+
+JsonMap = dict[str, Any]
+
+
+@dataclass(frozen=True, slots=True)
+class RedundancyPolicyResult:
+    survivors: tuple[JsonMap, ...]
+    removals: tuple[JsonMap, ...]
+    plan: RedundancyPlan
+    audit: JsonMap
+
+
+@dataclass(frozen=True, slots=True)
+class QualityPolicyResult:
+    survivors: tuple[JsonMap, ...]
+    removals: tuple[JsonMap, ...]
+    audit: JsonMap
+
+
+def _removal_trace(row: Mapping[str, Any], reason_code: str) -> JsonMap:
+    previous = row.get("stage_b_policy")
+    return {
+        "action": "remove",
+        "removed_reason": reason_code,
+        "prior_structural_trace": dict(previous) if isinstance(previous, dict) else None,
+        "benchmark_outcomes_read": False,
+        "utility_read": False,
+        "token_budget_read": False,
+    }
+
+
+def apply_redundancy_policy(
+    rows: tuple[JsonMap, ...] | list[JsonMap],
+    *,
+    mode: RedundancyMode,
+    settings: RedundancySettings,
+) -> RedundancyPolicyResult:
+    units = tuple(
+        RedundancyUnit(uid=str(row["chunk_uid"]), text=str(row["text"])) for row in rows
+    )
+    plan = build_redundancy_plan(units, settings, mode)
+    proposal_by_uid = {proposal.removed_uid: proposal for proposal in plan.removals}
+    survivors: list[JsonMap] = []
+    removals: list[JsonMap] = []
+    for source in rows:
+        row = dict(source)
+        uid = str(row["chunk_uid"])
+        proposal = proposal_by_uid.get(uid)
+        if proposal is None:
+            row["stage_b_redundancy_v2"] = {
+                "action": "retain",
+                "mode": mode.value,
+                "reason_code": "redundancy_no_authorized_equivalent",
+                "benchmark_outcomes_read": False,
+                "utility_read": False,
+            }
+            survivors.append(row)
+            continue
+        trace = {
+            "action": "remove",
+            "mode": mode.value,
+            "reason_code": proposal.reason_code,
+            "representative_chunk_uid": proposal.representative_uid,
+            "family_id": proposal.family_id,
+            "witness_kind": proposal.witness_kind.value,
+            "evidence_sha256": proposal.evidence_sha256,
+            "removed_token_count": proposal.removed_token_count,
+            "coverage_veto_required": proposal.coverage_veto_required,
+            "benchmark_outcomes_read": proposal.benchmark_outcomes_read,
+            "utility_read": proposal.utility_read,
+        }
+        row["stage_b_redundancy_v2"] = trace
+        row["stage_b_policy"] = {
+            **_removal_trace(row, proposal.reason_code),
+            "representative_chunk_uid": proposal.representative_uid,
+            "family_id": proposal.family_id,
+            "witness_kind": proposal.witness_kind.value,
+            "evidence_sha256": proposal.evidence_sha256,
+        }
+        removals.append(row)
+    witness_counts = Counter(proposal.witness_kind.value for proposal in plan.removals)
+    relation_counts = Counter(
+        decision.relation.relation.value for decision in plan.authority_decisions
+    )
+    return RedundancyPolicyResult(
+        survivors=tuple(survivors),
+        removals=tuple(removals),
+        plan=plan,
+        audit={
+            "schema_version": "stage-b-redundancy-v2-runtime-audit-v1",
+            "mode": mode.value,
+            "input_chunks": len(rows),
+            "candidate_pairs_evaluated": len(plan.authority_decisions),
+            "removed_chunks": len(removals),
+            "retained_chunks": len(survivors),
+            "family_count": len(plan.families),
+            "removal_witness_counts": dict(sorted(witness_counts.items())),
+            "relation_counts": dict(sorted(relation_counts.items())),
+            "all_removals_have_representative": all(
+                proposal.representative_uid for proposal in plan.removals
+            ),
+            "benchmark_outcomes_read": False,
+            "utility_read": False,
+            "token_budget_read": False,
+        },
+    )
+
+
+def apply_quality_policy(
+    rows: tuple[JsonMap, ...] | list[JsonMap],
+    *,
+    results_by_chunk: Mapping[str, tuple[PanelPolicyResult, ...]],
+    mode: CurationMode,
+) -> QualityPolicyResult:
+    input_uids = {str(row["chunk_uid"]) for row in rows}
+    if set(results_by_chunk) != input_uids:
+        raise RuntimeError("Quality results must cover every Stage-B input chunk exactly once")
+    decisions = propose_quality_removals(results_by_chunk, mode)
+    survivors: list[JsonMap] = []
+    removals: list[JsonMap] = []
+    reason_counts: Counter[str] = Counter()
+    failed_policy_counts: Counter[str] = Counter()
+    panel_decision_counts: Counter[str] = Counter()
+    chunks_with_any_abstain = 0
+    chunks_with_all_policy_pass = 0
+    for source in rows:
+        row = dict(source)
+        uid = str(row["chunk_uid"])
+        decision = decisions[uid]
+        row["quality_teacher_evidence"] = [
+            panel_policy_result_to_mapping(result) for result in results_by_chunk[uid]
+        ]
+        panel_decision_counts.update(result.decision.value for result in results_by_chunk[uid])
+        if any(result.decision.value == "abstain" for result in results_by_chunk[uid]):
+            chunks_with_any_abstain += 1
+        if all(result.decision.value == "pass" for result in results_by_chunk[uid]):
+            chunks_with_all_policy_pass += 1
+        row["quality_stage_decision"] = asdict(decision)
+        if decision.stage_b_action == QualityAction.REMOVE.value:
+            row["stage_b_policy"] = {
+                **_removal_trace(row, decision.stage_b_reason_code),
+                "failed_policy_ids": list(decision.failed_policy_ids),
+            }
+            removals.append(row)
+            reason_counts[decision.stage_b_reason_code] += 1
+            failed_policy_counts.update(decision.failed_policy_ids)
+        else:
+            survivors.append(row)
+    return QualityPolicyResult(
+        survivors=tuple(survivors),
+        removals=tuple(removals),
+        audit={
+            "schema_version": "stage-b-quality-panel-runtime-audit-v1",
+            "mode": mode.value,
+            "input_chunks": len(rows),
+            "retained_chunks": len(survivors),
+            "removed_chunks": len(removals),
+            "reason_code_counts": dict(sorted(reason_counts.items())),
+            "failed_policy_counts": dict(sorted(failed_policy_counts.items())),
+            "panel_policy_decision_counts": dict(sorted(panel_decision_counts.items())),
+            "chunks_with_any_abstain": chunks_with_any_abstain,
+            "chunks_with_all_policy_pass": chunks_with_all_policy_pass,
+            "all_input_chunks_received_quality_decision": set(decisions) == input_uids,
+            "abstain_action": "retain",
+            "benchmark_outcomes_read": False,
+            "utility_read": False,
+            "token_budget_read": False,
+        },
+    )
+
+
+__all__ = [
+    "QualityPolicyResult",
+    "RedundancyPolicyResult",
+    "apply_quality_policy",
+    "apply_redundancy_policy",
+]

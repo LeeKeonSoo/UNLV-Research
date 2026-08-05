@@ -42,7 +42,7 @@ def test_registry_parses_complete_core_metric_policy_method_lineage() -> None:
     assert tuple(item.path for item in teacher_panel.evidence) == (
         "configs/quality_teacher_panel_v2.json",
     )
-    assert teacher_panel.lifecycle.value == "blocked"
+    assert teacher_panel.lifecycle.value == "candidate"
     assert teacher_panel.decision_authority.value == "quality_decision"
     coverage = next(
         policy for policy in registry.policies if policy.id == "coverage.representative_guard"

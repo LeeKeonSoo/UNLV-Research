@@ -56,6 +56,8 @@ def test_policy_profile_contract() -> None:
         "normalization_context_default": "preserve",
     }
     assert normal["runtime_policy"]["stage_b"]["deduplicate_stage_a_text_exactly"] is True
+    assert normal["runtime_policy"]["redundancy_v2"]["runtime_activation"] is True
+    assert normal["runtime_policy"]["quality_teacher"]["runtime_required"] is True
     assert normal["runtime_policy"]["stage_b_policy"]["near_duplicate_compaction"]["candidate_enabled"] is False
     assert normal["runtime_policy"]["stage_b_policy"]["structural_scaffold_compaction"]["enabled"] is True
     assert normal["runtime_policy"]["stage_b_policy"]["structural_artifact_rules"] == {
@@ -71,6 +73,8 @@ def test_policy_profile_contract() -> None:
     assert hard["user_facing_mode"] == "hard"
     assert hard["selector"]["kind"] == "development_only_reason_coded_structural_span_compaction"
     assert hard["forbids_implicit_fixed_fraction"] is True
+    assert hard["runtime_policy"]["redundancy_v2"]["runtime_activation"] is True
+    assert hard["runtime_policy"]["quality_teacher"]["runtime_required"] is True
 
     calibrated = by_id["calibrated_selector_template_v1"]
     assert calibrated["status"] == "retired_not_runnable"

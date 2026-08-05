@@ -8,10 +8,47 @@ import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+from quality_teacher_panel import PanelDecision, PolicyDecision, TeacherVote
+from quality_teacher_runtime import PanelPolicyResult
+
+
+QUALITY_POLICY_IDS = (
+    "q1_correctness_evidence",
+    "q2_semantic_coherence",
+    "q3_substantive_payload",
+    "q4_learnable_relations",
+)
+
+
+def _all_pass_quality_scorer(rows, **_kwargs):
+    results = {}
+    for row in rows:
+        uid = str(row["chunk_uid"])
+        policy_results = []
+        for policy_id in QUALITY_POLICY_IDS:
+            votes = tuple(
+                TeacherVote(
+                    teacher_id=f"teacher-{index}",
+                    policy_id=policy_id,
+                    decision=PolicyDecision.PASS,
+                    reason_codes=("fixture_pass",),
+                )
+                for index in range(3)
+            )
+            policy_results.append(
+                PanelPolicyResult(
+                    policy_id=policy_id,
+                    decision=PanelDecision.PASS,
+                    first_pass=votes,
+                    second_pass=None,
+                )
+            )
+        results[uid] = tuple(policy_results)
+    return results, {"fixture": True, "input_chunks": len(rows)}
 
 
 def _load_module() -> object:
@@ -125,7 +162,9 @@ def main() -> int:
         )
 
         module = _load_module()
-        report = module.materialize(config_path)
+        report = module.materialize(
+            config_path, quality_scorer=_all_pass_quality_scorer
+        )
 
         assert report["summary"]["input_records"] == 3
         assert report["summary"]["stage_a_release_records"] == 3
@@ -136,8 +175,8 @@ def main() -> int:
         assert report["stage_contract"]["stage_b"] == "redundancy_and_quality_removal_proposals"
         assert report["stage_contract"]["stage_c"] == "coverage_veto_and_final_materialization"
         assert report["summary"]["stage_b_explicit_non_payload_rejected_chunks"] == 0
-        assert report["summary"]["stage_b_positive_quality_kept_chunks"] == 0
-        assert report["summary"]["stage_b_quality_abstain_retained_chunks"] == 3
+        assert report["summary"]["stage_b_quality_teacher_removed_chunks"] == 0
+        assert report["stage_b_quality_teacher"]["retained_chunks"] == 3
         assert report["curation_mode"]["mode"] == "normal"
         assert report["curation_mode"]["profile_id"] == "normal_structural_v1"
         assert len(report["curation_mode"]["effective_policy_sha256"]) == 64
@@ -180,9 +219,7 @@ def main() -> int:
         assert foundation["schema_version"] == "framework-runtime-foundation-report-v1"
         assert foundation["bridge_status"] == "runtime_integrated_block_7"
         assert foundation["new_v1_policy_activation"] is True
-        assert foundation["blocked_v1_policy_ids"] == [
-            "redundancy.symmetric_near_duplicate_candidate",
-        ]
+        assert foundation["blocked_v1_policy_ids"] == []
         assert [
             (ticket["stage_id"], ticket["core_id"])
             for ticket in foundation["stage_tickets"]
@@ -195,12 +232,14 @@ def main() -> int:
         assert set(report["policy_fingerprint"]["runtime_modules"]) == {
             "composition_audit.py",
             "composition_artifacts.py",
+            "all_policy_stage_b.py",
             "content_router.py",
             "coverage_contract.py",
             "coverage_engine.py",
             "coverage_metrics.py",
             "coverage_rematerialization.py",
             "coverage_taxonomy.py",
+            "coverage_redundancy_bridge.py",
             "curation_artifacts.py",
             "framework_objects.py",
             "framework_profiles.py",
@@ -216,6 +255,10 @@ def main() -> int:
             "quality_rule_evidence.py",
             "quality_retention.py",
             "reason_code_audit.py",
+            "redundancy_equivalence.py",
+            "redundancy_mode_policy.py",
+            "redundancy_v2.py",
+            "redundancy_v2_retrieval.py",
             "quality_teacher_adapters.py",
             "quality_teacher_local.py",
             "quality_teacher_panel.py",
@@ -242,6 +285,9 @@ def main() -> int:
         assert code_chunk["quality_retention_decision"]["decision"] == "abstain_retain"
         assert code_chunk["quality_retention_decision"]["schema_version"] == "quality-retention-decision-v2"
         assert code_chunk["quality_retention_decision"]["routing_precondition"]["quality_evidence"] is False
+        assert code_chunk["stage_b_redundancy_v2"]["action"] == "retain"
+        assert len(code_chunk["quality_teacher_evidence"]) == 4
+        assert code_chunk["quality_stage_decision"]["stage_b_action"] == "retain"
         assert code_chunk["stage_b_policy_metadata"] == {}
         assert code_chunk["stage_b_selector_visible"]["source_name"] is False
         assert code_chunk["stage_b_selector_visible"]["declared_artifact_context"] is False

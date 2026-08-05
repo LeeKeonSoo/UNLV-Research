@@ -44,6 +44,7 @@ class WitnessKind(StrEnum):
     EXACT_TEXT = "exact_text"
     FORMATTING_CANONICAL = "formatting_canonical"
     TOKEN_PRESERVING_PROSE_REFLOW = "token_preserving_prose_reflow"
+    BOUNDED_NEAR_SUBSTITUTE = "bounded_near_substitute"
     DECLARED_EQUIVALENCE_VERIFIER = "declared_equivalence_verifier"
     EXACT_TOKEN_CONTAINMENT = "exact_token_containment"
 
@@ -160,13 +161,13 @@ def evaluate_equivalence_authority(
         kind = WitnessKind.EXACT_TOKEN_CONTAINMENT
         witness = EquivalenceWitness(kind, _hash_evidence(kind, left, right), right.uid)
         return EquivalenceAuthority(
-            relation, witness, False, True, "redundancy_exact_containment_witness"
+            relation, witness, True, True, "redundancy_exact_containment_witness"
         )
     if relation.relation is RelationType.SUPERSET_PAYLOAD:
         kind = WitnessKind.EXACT_TOKEN_CONTAINMENT
         witness = EquivalenceWitness(kind, _hash_evidence(kind, left, right), left.uid)
         return EquivalenceAuthority(
-            relation, witness, False, True, "redundancy_exact_containment_witness"
+            relation, witness, True, True, "redundancy_exact_containment_witness"
         )
 
     declared_blockers = set(relation.evidence.substantive_difference_codes) - {
@@ -201,7 +202,13 @@ def evaluate_equivalence_authority(
         kind = WitnessKind.TOKEN_PRESERVING_PROSE_REFLOW
         witness = EquivalenceWitness(kind, _hash_evidence(kind, left, right), stable)
         return EquivalenceAuthority(
-            relation, witness, False, True, "redundancy_token_preserving_reflow_witness"
+            relation, witness, True, True, "redundancy_token_preserving_reflow_witness"
+        )
+    if relation.relation is RelationType.NEAR_SUBSTITUTE:
+        kind = WitnessKind.BOUNDED_NEAR_SUBSTITUTE
+        witness = EquivalenceWitness(kind, _hash_evidence(kind, left, right), stable)
+        return EquivalenceAuthority(
+            relation, witness, True, True, "redundancy_bounded_near_substitute_witness"
         )
     return EquivalenceAuthority(
         relation, None, False, False, "redundancy_equivalence_unproved_retain"

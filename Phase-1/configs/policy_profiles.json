@@ -61,6 +61,23 @@
         "stage_b": {
           "deduplicate_stage_a_text_exactly": true
         },
+        "redundancy_v2": {
+          "contract": "configs/redundancy_v2.json",
+          "runtime_activation": true,
+          "settings": {
+            "short_exact_only_max_tokens": 32,
+            "near_min_tokens": 96,
+            "near_max_changed_ratio": 0.01,
+            "near_max_changed_tokens": 2,
+            "containment_min_tokens": 24,
+            "repeated_span_min_lexical_tokens": 12,
+            "complementary_overlap_floor": 0.18,
+            "retrieval_min_tokens": 24,
+            "retrieval_shingle_size": 5,
+            "retrieval_signature_size": 32,
+            "retrieval_bands": 8
+          }
+        },
         "stage_b_policy": {
           "near_duplicate_compaction": {
             "candidate_enabled": false,
@@ -88,7 +105,8 @@
         "quality_teacher": {
           "panel": "configs/quality_teacher_panel_v2.json",
           "operating_point": "normal",
-          "abstain_action": "retain"
+          "abstain_action": "retain",
+          "runtime_required": true
         }
       },
       "selector": {
@@ -145,6 +163,23 @@
         "stage_b": {
           "deduplicate_stage_a_text_exactly": true
         },
+        "redundancy_v2": {
+          "contract": "configs/redundancy_v2.json",
+          "runtime_activation": true,
+          "settings": {
+            "short_exact_only_max_tokens": 32,
+            "near_min_tokens": 64,
+            "near_max_changed_ratio": 0.02,
+            "near_max_changed_tokens": 4,
+            "containment_min_tokens": 12,
+            "repeated_span_min_lexical_tokens": 12,
+            "complementary_overlap_floor": 0.18,
+            "retrieval_min_tokens": 24,
+            "retrieval_shingle_size": 5,
+            "retrieval_signature_size": 32,
+            "retrieval_bands": 8
+          }
+        },
         "stage_b_policy": {
           "near_duplicate_compaction": {
             "candidate_enabled": false,
@@ -177,7 +212,8 @@
         "quality_teacher": {
           "panel": "configs/quality_teacher_panel_v2.json",
           "operating_point": "hard",
-          "abstain_action": "retain"
+          "abstain_action": "retain",
+          "runtime_required": true
         }
       },
       "selector": {

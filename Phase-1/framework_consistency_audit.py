@@ -44,7 +44,7 @@ def build_consistency_audit(root: Path, coverage_report: Path | None = None) -> 
         "quality_lifecycle_registry_alignment": (
             policy_lifecycle.get("quality.teacher_panel_v2")
             == profile_lifecycle.get("quality.teacher_panel_v2")
-            == "blocked"
+            == "candidate"
         ),
         "profiles_release_disabled": all(not profile["release_enabled"] for profile in profiles["profiles"]),
         "external_evaluation_hidden": manifest["external_evaluation"]["selector_visible"] is False,

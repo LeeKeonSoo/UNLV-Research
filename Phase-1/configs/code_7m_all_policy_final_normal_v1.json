@@ -1,0 +1,34 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "execution_scope": "confirmatory",
+  "input": {
+    "candidate_files": [
+      "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl"
+    ],
+    "text_fields": ["text", "content", "document", "body"],
+    "defaults": {}
+  },
+  "output_dir": "D:/UNLV-Research/final_all_policy_v1/normal",
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+  "stage_b": {
+    "max_chunk_chars": 6000
+  },
+  "quality_runtime": {
+    "dotenv_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/.env",
+    "observation_cache_path": "D:/UNLV-Research/final_all_policy_v1/quality/teacher_observations_v1.jsonl",
+    "task_workers": 8
+  },
+  "stage_c": {
+    "minimum_residual_chars": 120,
+    "no_binding_budget_action": "selection_without_binding_budget",
+    "semantic_coverage": {
+      "provider_registry_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/Phase-1/configs/model_provider_registry_v1.json",
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "corpus_path": "D:/UNLV-Research/final_framework_test_v1/semantic_coverage/normal/corpus.jsonl",
+      "graph_path": "D:/UNLV-Research/final_framework_test_v1/semantic_coverage/normal/semantic_coverage_graph.json"
+    }
+  },
+  "claim_boundary": "Final all-policy Code confirmatory materialization. Stage A Validity, Stage B structural rules plus witness-based Near-duplicate and Q1-Q4 Quality panel, and Stage C Semantic Coverage are all executed. Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets are forbidden runtime inputs."
+}

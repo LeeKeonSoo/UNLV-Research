@@ -32,16 +32,16 @@ domain quotas, a target retention fraction, or a maximum token budget.
 - Normal and Hard contain the same Policy families. Hard must retain a subset
   of or the same units as Normal.
 - Exact-text family removal is `development_passed`.
-- Symmetric near-duplicate removal remains `blocked`; a witness-based
-  Normal/Hard implementation candidate now exists, but has not passed its
-  development-disjoint and protected false-removal gates.
-- Redundancy similarity retrieval has no deletion authority. Normal accepts
-  exact and narrowly bounded formatting witnesses. Hard additionally accepts
-  exact token containment, token-preserving prose reflow, and versioned
-  declared equivalence evidence. Every proposed removal requires a stable
-  representative trace and a Stage-C Coverage veto check.
-- Closed deterministic non-payload rules remain the only current Quality
-  behavior in the legacy-compatible selector.
+- Witness-based symmetric Near-duplicate removal is active in the final
+  runtime experiment. It remains a release-disabled candidate until external
+  validation closes.
+- Retrieval similarity alone has no deletion authority. Normal and Hard both
+  execute exact, formatting, bounded near-substitute, containment, and
+  token-preserving reflow witnesses; Hard uses broader frozen bounds. Every
+  proposal has a stable representative trace and Stage-C Coverage veto check.
+- Closed deterministic non-payload rules and the GLM-5.2/Nemotron/MiniMax
+  Q1-Q4 panel both execute in Stage B. Provider output is evidence; frozen
+  Normal/Hard Policy consensus owns the removal proposal.
 - Coverage is a non-deleting materialization veto. A veto emits typed
   `required_retain_uids`, performs explicit rematerialization, and reruns the
   complete Coverage contract; silent restore is forbidden.
@@ -58,7 +58,7 @@ domain quotas, a target retention fraction, or a maximum token budget.
 - Implementation integrity passes, while scientific release remains blocked
   by unpromoted Policies and missing operating-point calibration.
 
-## Final Code Candidate Snapshot
+## Previous Structural Snapshot
 
 The final candidate paths are under
 `D:/UNLV-Research/final_framework_test_v1/`. Normal and Hard each receive the
@@ -73,6 +73,10 @@ The mixed 768-record Code/Math/General semantic audit passes its implementation
 gate but not scientific promotion. Mean provider-neighbor Jaccard is 0.2178;
 this supports fail-closed local consensus, not a domain-general semantic
 taxonomy claim.
+
+These measurements predate all-policy Quality and witness Redundancy execution.
+The replacement outputs are under `D:/UNLV-Research/final_all_policy_v1/` and
+must not reuse the old token totals as final results.
 
 `final_experiment_preflight_v1.json` reports framework materialization ready
 and external confirmatory ready. Paper-claim and production-release readiness
@@ -157,8 +161,9 @@ availability is not inferred from an NVIDIA catalog entry; every replacement
 must pass the same endpoint, schema, behavior, latency, and protected-fixture
 gates.
 
-Teacher output alone has no deletion authority. The candidate remains
-`blocked` until fixture, consensus-stability, false-removal, and operating-point
+Teacher output alone has no deletion authority. The frozen Stage-B Policy now
+uses panel consensus in the runtime experiment; scientific promotion remains
+blocked until fixture, consensus-stability, false-removal, and operating-point
 gates pass.
 
 The deterministic 512-item behavior matrix and 800-item protected set are
@@ -200,10 +205,10 @@ import or authorize that archive.
 3. Execute all four Policies on 800 fresh protected fixtures and measure exact
    one-sided false-removal bounds.
 4. Freeze the resulting report and promote only passing Normal/Hard modes.
-5. Activate the existing Stage-B proposal/Stage-C Coverage-veto bridge only
-   for a promoted mode.
+5. Complete the current all-policy 7M runtime and freeze its reason-code,
+   removal, restoration, and exact-token report.
 6. Run an admitted corpus-scale reason-code and compression audit.
-7. Validate the implemented witness-based Redundancy modes on disjoint behavior
+7. Validate the active witness-based Redundancy modes on disjoint behavior
    and protected false-removal fixtures; promote only a passing operating point.
 8. Validate Semantic Coverage on multilingual Code, Math, General prose, and
    structured data: provider agreement and bias, extinction recall, protected
