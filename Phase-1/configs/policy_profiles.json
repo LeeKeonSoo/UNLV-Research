@@ -79,12 +79,6 @@
           }
         },
         "stage_b_policy": {
-          "near_duplicate_compaction": {
-            "candidate_enabled": false,
-            "shingle_size": 5,
-            "minimum_lexical_tokens": 40,
-            "symmetric_overlap_threshold": 0.95
-          },
           "structural_scaffold_compaction": {
             "enabled": true
           },
@@ -181,12 +175,6 @@
           }
         },
         "stage_b_policy": {
-          "near_duplicate_compaction": {
-            "candidate_enabled": false,
-            "shingle_size": 5,
-            "minimum_lexical_tokens": 40,
-            "symmetric_overlap_threshold": 0.95
-          },
           "structural_scaffold_compaction": {
             "enabled": true
           },

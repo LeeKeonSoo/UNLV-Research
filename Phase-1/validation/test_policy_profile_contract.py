@@ -58,7 +58,7 @@ def test_policy_profile_contract() -> None:
     assert normal["runtime_policy"]["stage_b"]["deduplicate_stage_a_text_exactly"] is True
     assert normal["runtime_policy"]["redundancy_v2"]["runtime_activation"] is True
     assert normal["runtime_policy"]["quality_teacher"]["runtime_required"] is True
-    assert normal["runtime_policy"]["stage_b_policy"]["near_duplicate_compaction"]["candidate_enabled"] is False
+    assert "near_duplicate_compaction" not in normal["runtime_policy"]["stage_b_policy"]
     assert normal["runtime_policy"]["stage_b_policy"]["structural_scaffold_compaction"]["enabled"] is True
     assert normal["runtime_policy"]["stage_b_policy"]["structural_artifact_rules"] == {
         "explicit_generated_artifact": True,
