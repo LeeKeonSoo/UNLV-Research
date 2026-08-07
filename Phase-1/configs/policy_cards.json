@@ -122,6 +122,7 @@
         "quality_effect_calibration.py",
         "model_provider_contract.py",
         "quality_teacher_panel.py",
+        "quality_teacher_json.py",
         "quality_teacher_response.py",
         "quality_teacher_qualification.py",
         "quality_teacher_runtime.py",
@@ -655,6 +656,7 @@
       "rollback_behavior": "retain the chunk when required panel evidence is unavailable",
       "runtime_implementation": [
         "quality_teacher_materialization.py",
+        "quality_teacher_json.py",
         "quality_teacher_batch_runtime.py",
         "all_policy_stage_b.py"
       ],

@@ -134,6 +134,9 @@ def test_combined_response_requires_each_policy_exactly_once() -> None:
     )
     assert parse_policy_set_response(missing_q4, panel.policies) is None
 
+    wrapped = f"Result follows:\n```json\n{complete}\n```"
+    assert parse_policy_set_response(wrapped, panel.policies) is not None
+
 
 def test_two_available_teachers_can_create_only_stable_majority_fail() -> None:
     panel = load_teacher_panel(PANEL)
@@ -200,6 +203,9 @@ def test_batch_transport_preserves_unit_and_policy_matrix() -> None:
     parsed = parse_policy_set_batch_response(raw, units, panel.policies)
     assert parsed is not None
     assert set(parsed) == {"unit-0", "unit-1"}
+
+    wrapped = f"```json\n{raw}\n```"
+    assert parse_policy_set_batch_response(wrapped, units, panel.policies) is not None
 
     missing = json.loads(raw)
     missing["units"].pop()

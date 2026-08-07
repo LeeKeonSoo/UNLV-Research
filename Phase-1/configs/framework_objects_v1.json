@@ -10,7 +10,7 @@
     {"id": "quality.retention_contract", "version": "v1", "implementation_path": "quality_retention.py", "implementation_sha256": "1bf11fcede83dc9e50f317551bd6e72f235c9c82c2713126699285992fe6cc33", "deterministic": true},
     {"id": "coverage.materialization_contract", "version": "v1", "implementation_path": "coverage_contract.py", "implementation_sha256": "e87a4ad37e85b0cc643f2bfec5512deb6f542bf1f799c8a80da0201cf8edc8e7", "deterministic": true},
     {"id": "coverage.semantic_materialization", "version": "v1", "implementation_path": "semantic_coverage_materializer.py", "implementation_sha256": "e6bbcc0c3cf4a0533966ea1e20a565cf3d5fcb7763d67450360114d13a642dfb", "deterministic": true},
-    {"id": "quality.teacher_panel_consensus", "version": "v2", "implementation_path": "quality_teacher_batch_runtime.py", "implementation_sha256": "6173178a3123d9d767901166bbeea843a890ec82e91709ac8631adbd43dc5119", "deterministic": false},
+    {"id": "quality.teacher_panel_consensus", "version": "v2", "implementation_path": "quality_teacher_batch_runtime.py", "implementation_sha256": "0368bd1c1eccbd892a261a78659096b4f29a8ead7e0540dcd7eda6672409171f", "deterministic": false},
     {"id": "quality.teacher_panel_materialization", "version": "v2", "implementation_path": "quality_teacher_materialization.py", "implementation_sha256": "b6772546ab81c382a4a199fb66165f599d68872367be550c755eb246e5c868f6", "deterministic": false},
     {"id": "framework.runtime_bridge", "version": "v1", "implementation_path": "framework_runtime_bridge.py", "implementation_sha256": "eb4bbc0e3903bdda6c1939272a74ec1ef170163f9cb6abf8606512bc0cc3c851", "deterministic": true}
   ],

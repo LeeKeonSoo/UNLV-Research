@@ -137,6 +137,7 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "quality_decision_contract.py",
     "quality_rule_evidence.py",
     "quality_teacher_panel.py",
+    "quality_teacher_json.py",
     "quality_teacher_response.py",
     "quality_teacher_runtime.py",
     "quality_teacher_materialization.py",

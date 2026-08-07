@@ -62,6 +62,7 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("quality_teacher_adapters.py")
     expected.add("quality_teacher_local.py")
     expected.add("quality_teacher_qualification.py")
+    expected.add("quality_teacher_json.py")
     expected.add("quality_teacher_response.py")
     expected.add("quality_teacher_runtime.py")
     expected.add("quality_teacher_smoke.py")

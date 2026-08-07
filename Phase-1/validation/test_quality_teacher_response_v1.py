@@ -44,6 +44,50 @@ def test_valid_enum_response_is_parsed_without_retry() -> None:
     assert vote.reason_codes == ("navigation_only",)
 
 
+def test_markdown_wrapped_response_is_normalized_without_retry() -> None:
+    attempt = _attempt(
+        first_raw=(
+            "Here is the result:\n```json\n"
+            '{"decision":"fail","reason_codes":["navigation_only"]}'
+            "\n```"
+        ),
+        retry_raw='{"decision":"pass","reason_codes":["substantive_payload_present"]}',
+    )
+
+    vote = resolve_teacher_response(attempt)
+
+    assert vote.decision is PolicyDecision.FAIL
+    assert vote.reason_codes == ("navigation_only",)
+
+
+def test_multiple_valid_response_objects_fail_closed() -> None:
+    attempt = _attempt(
+        first_raw=(
+            '{"decision":"fail","reason_codes":["navigation_only"]}\n'
+            '{"decision":"fail","reason_codes":["boilerplate_only"]}'
+        ),
+        retry_raw=None,
+    )
+
+    vote = resolve_teacher_response(attempt)
+
+    assert vote.decision is PolicyDecision.ABSTAIN
+    assert vote.reason_codes == ("invalid_teacher_response_schema",)
+
+
+def test_repeated_identical_response_objects_fail_closed() -> None:
+    response = '{"decision":"fail","reason_codes":["navigation_only"]}'
+    attempt = _attempt(
+        first_raw=f"{response}\n{response}",
+        retry_raw=None,
+    )
+
+    vote = resolve_teacher_response(attempt)
+
+    assert vote.decision is PolicyDecision.ABSTAIN
+    assert vote.reason_codes == ("invalid_teacher_response_schema",)
+
+
 def test_invalid_boolean_decision_uses_valid_retry() -> None:
     # Given: the observed local-model failure is followed by a valid retry.
     attempt = _attempt(
@@ -109,6 +153,9 @@ def test_out_of_policy_reason_code_requires_schema_retry() -> None:
 
 if __name__ == "__main__":
     test_valid_enum_response_is_parsed_without_retry()
+    test_markdown_wrapped_response_is_normalized_without_retry()
+    test_multiple_valid_response_objects_fail_closed()
+    test_repeated_identical_response_objects_fail_closed()
     test_invalid_boolean_decision_uses_valid_retry()
     test_two_invalid_responses_fail_closed_to_abstain()
     test_sentence_reason_code_requires_schema_retry()

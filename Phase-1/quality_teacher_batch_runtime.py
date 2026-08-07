@@ -8,9 +8,10 @@ from time import perf_counter
 from typing import Final, Literal, Mapping, Protocol
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field
 
 from quality_teacher_adapters import ChatMessage, CompletionBackend, CompletionRequest, StructuredResponseFormat
+from quality_teacher_json import parse_unique_json_model
 from quality_teacher_panel import (
     PanelDecision,
     PolicyDecision,
@@ -73,9 +74,8 @@ def parse_policy_set_batch_response(
     units: tuple[EvaluationUnit, ...],
     policies: tuple[QualityPolicy, ...],
 ) -> dict[str, tuple[PolicyVotePayload, ...]] | None:
-    try:
-        payload = PolicySetBatchPayload.model_validate(json.loads(raw))
-    except (json.JSONDecodeError, ValidationError):
+    payload = parse_unique_json_model(raw, PolicySetBatchPayload)
+    if payload is None:
         return None
     expected_units = {unit.unit_id for unit in units}
     observed_units = {unit.unit_id: unit for unit in payload.units}

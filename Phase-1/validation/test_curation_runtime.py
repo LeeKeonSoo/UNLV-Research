@@ -338,6 +338,7 @@ def main() -> int:
             "redundancy_v2_retrieval.py",
             "quality_teacher_adapters.py",
             "quality_teacher_panel.py",
+            "quality_teacher_json.py",
             "quality_teacher_response.py",
             "quality_teacher_runtime.py",
             "quality_teacher_materialization.py",

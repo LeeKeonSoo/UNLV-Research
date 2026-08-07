@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
+from quality_teacher_json import parse_unique_json_model
 from quality_teacher_panel import PolicyDecision, QualityPolicy, TeacherVote
 
 
@@ -31,11 +31,7 @@ class TeacherResponseAttempt:
 
 
 def parse_teacher_response(raw: str) -> TeacherResponsePayload | None:
-    try:
-        payload = json.loads(raw)
-        return TeacherResponsePayload.model_validate(payload)
-    except (json.JSONDecodeError, ValidationError):
-        return None
+    return parse_unique_json_model(raw, TeacherResponsePayload)
 
 
 def _parse_policy_response(raw: str, policy: QualityPolicy) -> TeacherResponsePayload | None:

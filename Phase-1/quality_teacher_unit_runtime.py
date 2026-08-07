@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Literal, Mapping, Protocol
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field
 
 from quality_teacher_adapters import (
     ChatMessage,
@@ -15,6 +15,7 @@ from quality_teacher_adapters import (
     CompletionRequest,
     StructuredResponseFormat,
 )
+from quality_teacher_json import parse_unique_json_model
 from quality_teacher_panel import (
     PanelDecision,
     PolicyDecision,
@@ -81,9 +82,8 @@ def parse_policy_set_response(
     raw: str,
     policies: tuple[QualityPolicy, ...],
 ) -> tuple[PolicyVotePayload, ...] | None:
-    try:
-        payload = PolicySetPayload.model_validate(json.loads(raw))
-    except (json.JSONDecodeError, ValidationError):
+    payload = parse_unique_json_model(raw, PolicySetPayload)
+    if payload is None:
         return None
     expected = {policy.policy_id: policy for policy in policies}
     observed = {vote.policy_id: vote for vote in payload.policies}
