@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 
 from quality_operating_points import CurationMode, QualityAction
 from quality_stage_bridge import apply_coverage_veto, propose_quality_removals
-from quality_teacher_adapters import NvidiaBuildBackend
+from quality_teacher_adapters import ConcurrencyLimitedBackend, NvidiaBuildBackend
 from quality_teacher_panel import (
     PanelDecision,
     PolicyDecision,
@@ -190,15 +190,25 @@ def _build_policy_set_adapters(panel: Any) -> Mapping[str, PolicySetBatchAdapter
         endpoint = teacher.endpoint_base_url
         timeout = teacher.request_timeout_seconds
         retries = teacher.maximum_transport_retries
-        if environment_variable is None or endpoint is None or timeout is None or retries is None:
+        concurrency = teacher.maximum_concurrent_requests
+        if (
+            environment_variable is None
+            or endpoint is None
+            or timeout is None
+            or retries is None
+            or concurrency is None
+        ):
             raise RuntimeError(f"Incomplete hosted teacher contract: {teacher.teacher_id}")
         adapters[teacher.teacher_id] = HostedPolicySetBatchAdapter(
             teacher=teacher,
-            backend=NvidiaBuildBackend(
-                api_key=os.environ.get(environment_variable, ""),
-                base_url=endpoint,
-                timeout_seconds=timeout,
-                maximum_transport_retries=retries,
+            backend=ConcurrencyLimitedBackend(
+                backend=NvidiaBuildBackend(
+                    api_key=os.environ.get(environment_variable, ""),
+                    base_url=endpoint,
+                    timeout_seconds=timeout,
+                    maximum_transport_retries=retries,
+                ),
+                maximum_concurrent_requests=concurrency,
             ),
         )
     return adapters

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import sys
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event, Lock
 from types import SimpleNamespace
 from pathlib import Path
 
@@ -12,6 +14,7 @@ if str(ROOT) not in sys.path:
 
 from quality_teacher_adapters import (
     CompletionRequest,
+    ConcurrencyLimitedBackend,
     StructuredResponseFormat,
     TeacherAdapterContractError,
     TeacherModelAdapter,
@@ -35,6 +38,27 @@ class RecordingBackend:
     def complete(self, request: CompletionRequest) -> str:
         self.requests.append(request)
         return self.response
+
+
+class BlockingBackend:
+    def __init__(self) -> None:
+        self.release = Event()
+        self.started = Event()
+        self.lock = Lock()
+        self.active = 0
+        self.maximum_active = 0
+        self.calls = 0
+
+    def complete(self, request: CompletionRequest) -> str:
+        with self.lock:
+            self.active += 1
+            self.calls += 1
+            self.maximum_active = max(self.maximum_active, self.active)
+            self.started.set()
+        self.release.wait(timeout=5)
+        with self.lock:
+            self.active -= 1
+        return request.model_id
 
 
 def _request(*, teacher_id: str, model_id: str, schema_retry: bool) -> TeacherGenerationRequest:
@@ -165,6 +189,36 @@ def test_teacher_model_adapter_rejects_cross_teacher_dispatch() -> None:
     assert backend.requests == []
 
 
+def test_concurrency_limited_backend_serializes_requests_at_provider_cap() -> None:
+    # Given: four callers share a provider whose observed cap is one request.
+    backend = BlockingBackend()
+    limited = ConcurrencyLimitedBackend(backend=backend, maximum_concurrent_requests=1)
+    request = CompletionRequest(
+        model_id="provider-cap-one",
+        messages=build_teacher_messages(
+            _request(teacher_id="teacher-a", model_id="provider-cap-one", schema_retry=False)
+        ),
+        maximum_new_tokens=8,
+        response_format=StructuredResponseFormat(
+            type="json_object",
+            allowed_reason_codes=("observable_correctness_evidence",),
+        ),
+    )
+
+    # When: all callers enter the same backend concurrently.
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = tuple(executor.submit(limited.complete, request) for _ in range(4))
+        assert backend.started.wait(timeout=1)
+
+        # Then: only one provider request is admitted until the permit is released.
+        assert backend.calls == 1
+        assert backend.maximum_active == 1
+        backend.release.set()
+        assert [future.result(timeout=2) for future in futures] == [request.model_id] * 4
+    assert backend.calls == 4
+    assert backend.maximum_active == 1
+
+
 def test_local_chat_template_extracts_input_ids_from_batch_encoding() -> None:
     # Given: Qwen3.5 returns a BatchEncoding-shaped mapping instead of a raw tensor.
     expected_ids = (101, 102, 103)
@@ -223,6 +277,7 @@ if __name__ == "__main__":
     test_frontier_adapter_routes_model_specific_inference_controls()
     test_mistral_frontier_adapter_disables_reasoning_for_bounded_json()
     test_teacher_model_adapter_rejects_cross_teacher_dispatch()
+    test_concurrency_limited_backend_serializes_requests_at_provider_cap()
     test_local_chat_template_extracts_input_ids_from_batch_encoding()
     test_stream_collector_ignores_empty_transport_events()
     test_local_backend_is_loaded_only_on_first_generation()

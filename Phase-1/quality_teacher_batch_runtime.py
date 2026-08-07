@@ -5,7 +5,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from time import perf_counter
-from typing import Literal, Mapping, Protocol
+from typing import Final, Literal, Mapping, Protocol
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -61,6 +61,11 @@ class PolicySetBatchPayload(BaseModel):
 class UnitBatchResult:
     unit_id: str
     evidence: CombinedUnitResult
+
+
+NON_EVIDENCE_REASON_CODES: Final = frozenset(
+    {"teacher_generation_unavailable", "invalid_teacher_response_schema"}
+)
 
 
 def parse_policy_set_batch_response(
@@ -288,6 +293,14 @@ def _needs_second(votes: tuple[TeacherVote, ...]) -> bool:
     ) == 2
 
 
+def _teacher_batch_available(batch: Mapping[str, tuple[TeacherVote, ...]]) -> bool:
+    return any(
+        not NON_EVIDENCE_REASON_CODES.intersection(vote.reason_codes)
+        for unit_votes in batch.values()
+        for vote in unit_votes
+    )
+
+
 def evaluate_quality_units_batched(
     panel: TeacherPanel,
     adapters: Mapping[str, PolicySetBatchAdapter],
@@ -297,11 +310,7 @@ def evaluate_quality_units_batched(
     available = tuple(
         teacher.teacher_id
         for teacher, batch in zip(panel.teachers, first, strict=True)
-        if not all(
-            "teacher_generation_unavailable" in vote.reason_codes
-            for unit_votes in batch.values()
-            for vote in unit_votes
-        )
+        if _teacher_batch_available(batch)
     )
     if len(available) < 2:
         raise InsufficientTeacherAvailability(",".join(unit.unit_id for unit in units), len(available))

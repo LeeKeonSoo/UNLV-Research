@@ -107,6 +107,19 @@ def test_active_v2_panel_uses_glm_with_slow_endpoint_transport_budget() -> None:
     assert all(teacher.maximum_new_tokens == 4096 for teacher in panel.teachers)
 
 
+def test_active_v2_panel_freezes_observed_provider_concurrency_caps() -> None:
+    panel = load_teacher_panel(ACTIVE_CONFIG_V2)
+
+    assert {
+        teacher.model_id: teacher.maximum_concurrent_requests
+        for teacher in panel.teachers
+    } == {
+        "z-ai/glm-5.2": 4,
+        "nvidia/nemotron-3-ultra-550b-a55b": 4,
+        "minimaxai/minimax-m3": 1,
+    }
+
+
 def test_v2_development_success_does_not_activate_quality() -> None:
     report = json.loads(DEVELOPMENT_GATE_V2.read_text(encoding="utf-8"))
 
@@ -191,6 +204,7 @@ if __name__ == "__main__":
     test_panel_contract_freezes_diverse_two_hosted_one_local_teachers()
     test_v2_panel_freezes_three_independent_frontier_endpoints()
     test_active_v2_panel_uses_glm_with_slow_endpoint_transport_budget()
+    test_active_v2_panel_freezes_observed_provider_concurrency_caps()
     test_v2_development_success_does_not_activate_quality()
     test_first_pass_unanimity_produces_panel_decision()
     test_stable_two_of_three_requires_blinded_second_pass()

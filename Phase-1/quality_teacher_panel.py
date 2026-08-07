@@ -86,6 +86,7 @@ class TeacherSpec(BaseModel):
     maximum_new_tokens: int = Field(gt=0, le=4096)
     request_timeout_seconds: int | None = Field(default=None, gt=0, le=900)
     maximum_transport_retries: int | None = Field(default=None, ge=0, le=2)
+    maximum_concurrent_requests: int | None = Field(default=None, ge=1, le=16)
     structured_output_mode: Literal["json_object"] | None
     temperature: float = Field(default=0.0, ge=0.0, le=2.0)
     top_p: float = Field(default=1.0, gt=0.0, le=1.0)
@@ -113,6 +114,7 @@ class TeacherSpec(BaseModel):
                 if (
                     self.request_timeout_seconds is not None
                     or self.maximum_transport_retries is not None
+                    or self.maximum_concurrent_requests is not None
                     or self.structured_output_mode is not None
                 ):
                     raise PanelContractError("Local teachers cannot declare hosted transport controls")
@@ -205,6 +207,12 @@ class TeacherPanel(BaseModel):
         if self.runtime_activation and self.unit_batch_size not in {4, 8, 16}:
             raise PanelContractError(
                 "Runtime Quality deletion requires a frozen 4, 8, or 16-unit batch"
+            )
+        if self.runtime_activation and any(
+            teacher.maximum_concurrent_requests is None for teacher in self.teachers
+        ):
+            raise PanelContractError(
+                "Runtime Quality deletion requires provider concurrency limits"
             )
         if len({teacher.teacher_id for teacher in self.teachers}) != 3:
             raise PanelContractError("Teacher IDs must be unique")

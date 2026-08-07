@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from threading import BoundedSemaphore
 from typing import Iterable, Literal, Protocol, assert_never
 
 from quality_teacher_panel import ReasoningControl, TeacherSpec
@@ -42,6 +43,30 @@ class StructuredResponseFormat:
 
 class CompletionBackend(Protocol):
     def complete(self, request: CompletionRequest) -> str: ...
+
+
+class ConcurrencyLimitedBackend:
+    """Admit no more than the provider-specific number of concurrent requests."""
+
+    __slots__ = ("_backend", "_limiter")
+
+    def __init__(
+        self,
+        *,
+        backend: CompletionBackend,
+        maximum_concurrent_requests: int,
+    ) -> None:
+        if maximum_concurrent_requests < 1:
+            raise TeacherAdapterContractError(
+                teacher_id="concurrency-limiter",
+                detail="maximum_concurrent_requests must be positive",
+            )
+        self._backend = backend
+        self._limiter = BoundedSemaphore(maximum_concurrent_requests)
+
+    def complete(self, request: CompletionRequest) -> str:
+        with self._limiter:
+            return self._backend.complete(request)
 
 
 def build_reasoning_extra_body(

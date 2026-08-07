@@ -44,6 +44,10 @@ def test_registry_parses_complete_core_metric_policy_method_lineage() -> None:
     )
     assert teacher_panel.lifecycle.value == "candidate"
     assert teacher_panel.decision_authority.value == "quality_decision"
+    quality_provider = next(
+        provider for provider in registry.providers if provider.id == "quality.teacher_panel_v2"
+    )
+    assert quality_provider.identity_sha256 == teacher_panel.evidence[0].sha256
     coverage = next(
         policy for policy in registry.policies if policy.id == "coverage.representative_guard"
     )

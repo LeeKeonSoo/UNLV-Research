@@ -96,15 +96,24 @@ def _batch_response(unit_ids: tuple[str, ...]) -> str:
 
 
 class ControlledBatchAdapter:
-    def __init__(self, teacher_id: str, *, unavailable: bool = False) -> None:
+    def __init__(
+        self,
+        teacher_id: str,
+        *,
+        unavailable: bool = False,
+        invalid_schema: bool = False,
+    ) -> None:
         self.teacher_id = teacher_id
         self.unavailable = unavailable
+        self.invalid_schema = invalid_schema
         self.calls: list[PolicySetBatchGenerationRequest] = []
 
     def generate_policy_batch(self, request: PolicySetBatchGenerationRequest) -> str:
         self.calls.append(request)
         if self.unavailable:
             raise TeacherGenerationUnavailable(self.teacher_id, "controlled_unavailable")
+        if self.invalid_schema:
+            return "{}"
         return _batch_response(tuple(unit.unit_id for unit in request.units))
 
 
@@ -217,9 +226,34 @@ def test_batch_transport_preserves_unit_and_policy_matrix() -> None:
     assert all(len(adapter.calls) == 2 for adapter in adapters.values())
 
 
+def test_batch_invalid_schema_does_not_count_as_teacher_availability() -> None:
+    panel = load_teacher_panel(PANEL)
+    unit = EvaluationUnit(
+        unit_id="invalid-schema-availability",
+        text="A valid synthetic payload.",
+        declared_context=None,
+        attached_evidence=(),
+    )
+    adapters = {
+        teacher.teacher_id: ControlledBatchAdapter(
+            teacher.teacher_id,
+            invalid_schema=index != 0,
+        )
+        for index, teacher in enumerate(panel.teachers)
+    }
+
+    try:
+        evaluate_quality_units_batched(panel, adapters, (unit,))
+    except InsufficientTeacherAvailability as error:
+        assert error.available_teachers == 1
+    else:
+        raise AssertionError("schema-invalid teachers must not satisfy the availability gate")
+
+
 if __name__ == "__main__":
     test_combined_response_requires_each_policy_exactly_once()
     test_two_available_teachers_can_create_only_stable_majority_fail()
     test_one_available_teacher_cannot_produce_cacheable_evidence()
     test_batch_transport_preserves_unit_and_policy_matrix()
+    test_batch_invalid_schema_does_not_count_as_teacher_availability()
     print("[quality-teacher-unit-runtime-v1] combined independent policy contract: pass")

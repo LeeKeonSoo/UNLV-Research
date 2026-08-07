@@ -30,7 +30,7 @@ def test_teacher_panel_is_the_only_current_model_quality_authority() -> None:
     panel = load_teacher_panel(ROOT / registry_references["quality_teacher_panel"])
     assert panel.runtime_activation is True
     assert panel.transport_mode == "all_policies_per_unit_request"
-    assert panel.unit_batch_size == 4
+    assert panel.unit_batch_size == 16
 
     policy_ids = {policy["id"] for policy in objects["policies"]}
     provider_ids = {provider["id"] for provider in objects["providers"]}
