@@ -10,12 +10,12 @@
       "status": "historical_frozen",
       "description": "Historical provenance-and-safety profile retained only for reproducing v1 experiments. It is not the default source-agnostic runtime.",
       "stage_c_policy_ids": [
-        "stage_c_symmetric_near_duplicate",
-        "stage_c_explicit_generated_artifact",
-        "stage_c_license_comment_only",
-        "stage_c_structural_scaffold",
-        "stage_c_empty_html_shell",
-        "stage_c_web_chrome_only_chunk"
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk"
       ],
       "selector": {
         "kind": "reason_coded_only",
@@ -30,7 +30,7 @@
       "id": "normal_structural_v1",
       "status": "confirmatory_candidate_release_blocked",
       "user_facing_mode": "normal",
-      "description": "Default source-agnostic A-B-C profile. It uses high-precision reason-coded text-structural rules only; source, rights, hazard, language, and path fields are audit-only when supplied.",
+      "description": "Default source-agnostic A-B-C profile. It uses reason-coded structural evidence plus the frozen three-teacher Quality panel; source, rights, hazard, language, and path fields are audit-only when supplied.",
       "stage_a_policy": "text_only_v2",
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
@@ -43,6 +43,7 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
+        "stage_b_quality_teacher_panel_v2",
         "stage_c_coverage_guard"
       ],
       "stage_b_policy_ids": [
@@ -75,7 +76,8 @@
             "retrieval_min_tokens": 24,
             "retrieval_shingle_size": 5,
             "retrieval_signature_size": 32,
-            "retrieval_bands": 8
+            "retrieval_bands": 8,
+            "retrieve_repeated_span_candidates": false
           }
         },
         "stage_b_policy": {
@@ -104,7 +106,7 @@
         }
       },
       "selector": {
-        "kind": "reason_coded_text_structural_only",
+        "kind": "reason_coded_structural_and_teacher_evidence",
         "reads_utility": false,
         "reads_benchmark_outcomes": false,
         "reads_target_retention_fraction": false,
@@ -120,7 +122,7 @@
       "id": "hard_structural_v1",
       "status": "confirmatory_candidate_release_blocked",
       "user_facing_mode": "hard",
-      "description": "Stronger confirmatory candidate. It contains Normal plus three frozen deterministic span rules and remains unavailable for production curation until its promotion gates close.",
+      "description": "Stronger confirmatory candidate. It uses the same policy families as Normal with stricter frozen Redundancy and Quality operating points.",
       "stage_a_policy": "text_only_v2",
       "inherits_profile": "normal_structural_v1",
       "enabled_policy_ids": [
@@ -134,15 +136,16 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_inline_license_header_candidate",
-        "stage_b_inline_license_comment_block_candidate",
-        "stage_b_repeated_span_template_candidate",
+        "stage_b_quality_teacher_panel_v2",
         "stage_c_coverage_guard"
       ],
       "stage_b_policy_ids": [
-        "stage_b_inline_license_header_candidate",
-        "stage_b_inline_license_comment_block_candidate",
-        "stage_b_repeated_span_template_candidate"
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk"
       ],
       "candidate_policy_ids": [
         "stage_b_inline_license_header_candidate",
@@ -171,7 +174,8 @@
             "retrieval_min_tokens": 24,
             "retrieval_shingle_size": 5,
             "retrieval_signature_size": 32,
-            "retrieval_bands": 8
+            "retrieval_bands": 8,
+            "retrieve_repeated_span_candidates": false
           }
         },
         "stage_b_policy": {
@@ -186,11 +190,6 @@
           },
           "quality_span_candidate_rules": {
             "web_control_and_url_directory": false
-          },
-          "hard_span_compaction": {
-            "inline_license_header": true,
-            "inline_license_comment_block": true,
-            "repeated_span_template": true
           }
         },
         "coverage": {
@@ -205,7 +204,7 @@
         }
       },
       "selector": {
-        "kind": "development_only_reason_coded_structural_span_compaction",
+        "kind": "reason_coded_structural_and_teacher_evidence",
         "reads_utility": false,
         "reads_benchmark_outcomes": false,
         "reads_target_retention_fraction": false,
@@ -213,7 +212,7 @@
         "reads_domain": false
       },
       "forbids_implicit_fixed_fraction": true,
-      "output": "development_only_reason_coded_curated_pool"
+      "output": "full_reason_coded_curated_pool"
     },
     {
       "id": "calibrated_selector_template_v1",

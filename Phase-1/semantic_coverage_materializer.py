@@ -37,6 +37,56 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _validated_artifacts(
+    universe: tuple[JsonMap, ...],
+    corpus_path: Path,
+    graph_path: Path,
+    provider: ProviderManifest,
+) -> tuple[JsonMap, str, dict[str, JsonMap]]:
+    if not corpus_path.is_file() or not graph_path.is_file():
+        raise SemanticCoverageMaterializationError(
+            "Semantic Coverage corpus or graph is missing"
+        )
+    graph = json.loads(graph_path.read_text(encoding="utf-8"))
+    corpus_sha = _sha256(corpus_path)
+    if graph.get("corpus_sha256") != corpus_sha:
+        raise SemanticCoverageMaterializationError("Coverage graph and corpus hashes differ")
+    if graph.get("primary_provider_id") != provider.provider_id:
+        raise SemanticCoverageMaterializationError("Coverage graph provider ID differs")
+    if graph.get("primary_provider_identity_sha256") != provider.identity_sha256():
+        raise SemanticCoverageMaterializationError("Coverage graph provider identity differs")
+    by_uid = {str(row["chunk_uid"]): row for row in universe}
+    if len(by_uid) != len(universe):
+        raise SemanticCoverageMaterializationError("Coverage materialization universe is invalid")
+    corpus_rows = [
+        json.loads(line) for line in corpus_path.read_text(encoding="utf-8").splitlines()
+    ]
+    corpus_text = {str(row["uid"]): str(row["text"]) for row in corpus_rows}
+    if corpus_text != {uid: str(row["text"]) for uid, row in by_uid.items()}:
+        raise SemanticCoverageMaterializationError("Coverage graph text universe differs")
+    return graph, corpus_sha, by_uid
+
+
+def validate_semantic_coverage_artifacts(
+    *,
+    universe: tuple[JsonMap, ...],
+    corpus_path: Path,
+    graph_path: Path,
+    provider: ProviderManifest,
+) -> JsonMap:
+    graph, corpus_sha, _ = _validated_artifacts(
+        universe, corpus_path, graph_path, provider
+    )
+    return {
+        "status": "semantic_coverage_artifacts_ready",
+        "corpus_sha256": corpus_sha,
+        "graph_sha256": str(graph["graph_sha256"]),
+        "provider_id": provider.provider_id,
+        "provider_identity_sha256": provider.identity_sha256(),
+        "universe_chunks": len(universe),
+    }
+
+
 def _families(proposals: tuple[JsonMap, ...]) -> tuple[RepresentativeFamily, ...]:
     members: dict[str, set[str]] = {}
     for row in proposals:
@@ -72,22 +122,12 @@ def materialize_semantic_coverage(
     execution_scope: CoverageExecutionScope,
     representative_families: tuple[RepresentativeFamily, ...] = (),
 ) -> tuple[list[JsonMap], JsonMap]:
-    graph = json.loads(graph_path.read_text(encoding="utf-8"))
-    corpus_sha = _sha256(corpus_path)
-    if graph.get("corpus_sha256") != corpus_sha:
-        raise SemanticCoverageMaterializationError("Coverage graph and corpus hashes differ")
-    if graph.get("primary_provider_id") != provider.provider_id:
-        raise SemanticCoverageMaterializationError("Coverage graph provider ID differs")
-    if graph.get("primary_provider_identity_sha256") != provider.identity_sha256():
-        raise SemanticCoverageMaterializationError("Coverage graph provider identity differs")
-    by_uid = {str(row["chunk_uid"]): row for row in universe}
+    graph, corpus_sha, by_uid = _validated_artifacts(
+        universe, corpus_path, graph_path, provider
+    )
     proposed_ids = frozenset(str(row["chunk_uid"]) for row in proposed_survivors)
-    if len(by_uid) != len(universe) or not proposed_ids <= set(by_uid):
+    if not proposed_ids <= set(by_uid):
         raise SemanticCoverageMaterializationError("Coverage materialization universe is invalid")
-    corpus_rows = [json.loads(line) for line in corpus_path.read_text(encoding="utf-8").splitlines()]
-    corpus_text = {str(row["uid"]): str(row["text"]) for row in corpus_rows}
-    if corpus_text != {uid: str(row["text"]) for uid, row in by_uid.items()}:
-        raise SemanticCoverageMaterializationError("Coverage graph text universe differs")
     graph_hash = str(graph["graph_sha256"])
     semantic_strata = tuple(
         CoverageStratum(

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 from pathlib import Path
@@ -13,6 +12,43 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from run_curation import materialize, resolve_curation_mode
+from quality_teacher_panel import PanelDecision, PolicyDecision, TeacherVote
+from quality_teacher_runtime import PanelPolicyResult
+
+
+QUALITY_POLICY_IDS = (
+    "q1_correctness_evidence",
+    "q2_semantic_coherence",
+    "q3_substantive_payload",
+    "q4_learnable_relations",
+)
+
+
+def _all_pass_quality_scorer(rows, **_kwargs):
+    results = {}
+    for row in rows:
+        uid = str(row["chunk_uid"])
+        policy_results = []
+        for policy_id in QUALITY_POLICY_IDS:
+            votes = tuple(
+                TeacherVote(
+                    teacher_id=f"teacher-{index}",
+                    policy_id=policy_id,
+                    decision=PolicyDecision.PASS,
+                    reason_codes=("fixture_pass",),
+                )
+                for index in range(3)
+            )
+            policy_results.append(
+                PanelPolicyResult(
+                    policy_id=policy_id,
+                    decision=PanelDecision.PASS,
+                    first_pass=votes,
+                    second_pass=None,
+                )
+            )
+        results[uid] = tuple(policy_results)
+    return results, {"fixture": True, "input_chunks": len(rows)}
 
 
 def _write_jsonl(path: Path, rows: list[dict[str, object]]) -> None:
@@ -34,7 +70,7 @@ def test_hard_mode_is_development_only_until_ablation_promotion() -> None:
     assert mode["effective_policy_sha256"]
 
 
-def test_hard_runtime_compacts_only_declared_spans_and_emits_audit_traces() -> None:
+def test_final_hard_runtime_does_not_execute_unpromoted_span_candidates() -> None:
     repeated = "This repeated transport template documents retries, timeouts, authentication, and stable generated client behavior."
     rows = [
         {
@@ -79,32 +115,24 @@ def test_hard_runtime_compacts_only_declared_spans_and_emits_audit_traces() -> N
             encoding="utf-8",
         )
 
-        report = materialize(config_path)
-        transformations = [
-            json.loads(line)
-            for line in (output_dir / "stage_b_hard_transformations.jsonl").read_text(encoding="utf-8").splitlines()
-        ]
+        report = materialize(config_path, quality_scorer=_all_pass_quality_scorer)
         curated = [
             json.loads(line)
             for line in (output_dir / "stage_c_curated_chunks.jsonl").read_text(encoding="utf-8").splitlines()
         ]
 
     assert report["curation_mode"]["authorization"] == "development_candidate_release_blocked"
-    assert report["summary"]["stage_b_hard_span_transformations"] == 3
-    assert {item["reason_code"] for item in transformations} == {
-        "inline_license_header_removed",
-        "inline_license_comment_block_removed",
-        "repeated_exact_template_span_removed",
-    }
-    assert all(item["post_token_proxy"] < item["pre_token_proxy"] for item in transformations)
-    assert report["coverage_impact_audit"]["residual_payload"]["span_rewrite_active"] is True
+    assert "stage_b_hard_span_transformations" not in report["summary"]
+    assert "hard_runtime_audit" not in report
+    assert report["summary"]["stage_b_total_span_transformations"] == 0
+    assert report["coverage_impact_audit"]["residual_payload"]["span_rewrite_active"] is False
     assert report["coverage_impact_audit"]["residual_payload"]["passed"] is True
-    assert "SPDX-License-Identifier" not in next(row["text"] for row in curated if row["chunk_uid"].startswith("a::"))
-    assert repeated not in next(row["text"] for row in curated if row["chunk_uid"].startswith("b::"))
+    assert "SPDX-License-Identifier" in next(row["text"] for row in curated if row["chunk_uid"].startswith("a::"))
+    assert repeated in next(row["text"] for row in curated if row["chunk_uid"].startswith("b::"))
     assert next(row["text"] for row in curated if row["chunk_uid"].startswith("short-snippet::")) == "x = 1"
 
 
 if __name__ == "__main__":
     test_hard_mode_is_development_only_until_ablation_promotion()
-    test_hard_runtime_compacts_only_declared_spans_and_emits_audit_traces()
-    print("[hard-structural-runtime] development-only span compaction: pass")
+    test_final_hard_runtime_does_not_execute_unpromoted_span_candidates()
+    print("[hard-structural-runtime] final Hard excludes unpromoted span candidates: pass")

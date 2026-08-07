@@ -1,17 +1,17 @@
 {
   "schema_version": "hard-policy-inventory-v1",
-  "status": "development_runtime_pending_n4_ablation",
+  "status": "candidate_archive_not_in_final_runtime",
   "base_profile": "normal_structural_v1",
-  "runtime_authorization": "development_only_pending_n4_ablation",
-  "selection_principle": "Hard v1 may add only deterministic, text-only, payload-preserving structural compactions to Normal. It must not force a retention target or rank documents by intrinsic Quality.",
+  "runtime_authorization": "none_candidates_cannot_select_transform_or_remove",
+  "selection_principle": "Normal and Hard execute the same active policy families. These deterministic span policies remain explicit development candidates and cannot enter either final runtime without independent promotion evidence.",
   "selected_initial_candidates": [
-    "stage_c_inline_license_header_candidate",
-    "stage_c_inline_license_comment_block_candidate",
-    "stage_c_repeated_span_template_candidate"
+    "stage_b_inline_license_header_candidate",
+    "stage_b_inline_license_comment_block_candidate",
+    "stage_b_repeated_span_template_candidate"
   ],
   "candidate_contracts": [
     {
-      "policy_id": "stage_c_inline_license_header_candidate",
+      "policy_id": "stage_b_inline_license_header_candidate",
       "core": "quality",
       "decision_unit": "prefix comment span",
       "trigger": "explicit license marker in a contiguous prefix comment header",
@@ -20,7 +20,7 @@
       "trace": ["chunk_uid", "header_sha256", "header_token_proxy", "pre_token_proxy", "post_token_proxy"]
     },
     {
-      "policy_id": "stage_c_inline_license_comment_block_candidate",
+      "policy_id": "stage_b_inline_license_comment_block_candidate",
       "core": "quality",
       "decision_unit": "contiguous comment-block span",
       "trigger": "explicit license marker in a self-contained contiguous comment block",
@@ -29,7 +29,7 @@
       "trace": ["chunk_uid", "block_sha256", "block_token_proxy", "pre_token_proxy", "post_token_proxy"]
     },
     {
-      "policy_id": "stage_c_repeated_span_template_candidate",
+      "policy_id": "stage_b_repeated_span_template_candidate",
       "core": "quality",
       "decision_unit": "exact normalized paragraph span",
       "trigger": "long exact repeated span with a stable representative occurrence",
@@ -65,5 +65,5 @@
     "code_math_general_development_ablation",
     "benchmark_disjoint_confirmatory_evaluation"
   ],
-  "claim_boundary": "This inventory defines the candidate scope for a development-only stronger structural profile. It may not be used for production curation or downstream claims until N4 and confirmatory validation close."
+  "claim_boundary": "This inventory is a candidate archive only. None of its policies execute in the final Normal or Hard runtime unless a later promotion changes the frozen active-policy contract."
 }

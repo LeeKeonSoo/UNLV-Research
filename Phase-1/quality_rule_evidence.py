@@ -13,10 +13,10 @@ ERROR_NAVIGATION_ONLY_REASON = "explicit_error_navigation_only_chunk"
 URL_DIRECTORY_ONLY_REASON = "url_directory_only_chunk"
 
 POLICY_IDS = {
-    "explicit_generated_artifact": "stage_c_explicit_generated_artifact",
-    "license_comment_only_chunk": "stage_c_license_comment_only",
-    "empty_html_shell": "stage_c_empty_html_shell",
-    "web_chrome_only_chunk": "stage_c_web_chrome_only_chunk",
+    "explicit_generated_artifact": "stage_b_explicit_generated_artifact",
+    "license_comment_only_chunk": "stage_b_license_comment_only",
+    "empty_html_shell": "stage_b_empty_html_shell",
+    "web_chrome_only_chunk": "stage_b_web_chrome_only_chunk",
     "explicit_error_navigation_only_chunk_candidate": (
         "stage_c_explicit_error_navigation_only_candidate"
     ),

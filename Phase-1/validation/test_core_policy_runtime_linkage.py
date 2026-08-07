@@ -11,7 +11,6 @@ if str(ROOT) not in sys.path:
 
 from ingestion.candidate_processing import STAGE_A_POLICY_REASON_CODES
 from run_curation import STAGE_B_POLICY_REASON_CODES
-from stage_c_selection import STAGE_C_POLICY_REASON_CODES
 
 
 def _active_registry_reason_codes() -> dict[str, frozenset[str]]:
@@ -28,7 +27,6 @@ def main() -> int:
     runtime_reason_codes = {
         **STAGE_A_POLICY_REASON_CODES,
         **STAGE_B_POLICY_REASON_CODES,
-        **STAGE_C_POLICY_REASON_CODES,
     }
     assert registry_reason_codes == runtime_reason_codes
     print("[core-policy-runtime-linkage] active Registry and runtime reason codes: pass")

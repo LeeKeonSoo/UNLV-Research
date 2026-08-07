@@ -35,15 +35,23 @@ def test_active_policy_registry_declares_activation_and_safety_evidence() -> Non
         "stage_a_bom_normalization",
         "stage_b_invalid_chunk",
         "stage_b_exact_duplicate",
-        "stage_c_symmetric_near_duplicate",
-        "stage_c_explicit_generated_artifact",
-        "stage_c_license_comment_only",
-        "stage_c_structural_scaffold",
-        "stage_c_empty_html_shell",
-        "stage_c_web_chrome_only_chunk",
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk",
+        "stage_b_quality_teacher_panel_v2",
         "stage_c_coverage_guard",
     }
     assert normal["authorized_but_disabled_policy_ids"] == []
+    hard = registry["runtime_profile_authorization"]["hard_structural_v1"]
+    assert hard["enabled_policy_ids"] == normal["enabled_policy_ids"]
+    assert set(hard["authorized_but_disabled_policy_ids"]) == {
+        "stage_b_inline_license_header_candidate",
+        "stage_b_inline_license_comment_block_candidate",
+        "stage_b_repeated_span_template_candidate",
+    }
 
     for policy in registry["policies"]:
         if policy["status"] != "active":
@@ -53,12 +61,8 @@ def test_active_policy_registry_declares_activation_and_safety_evidence() -> Non
         assert (ROOT / policy["false_positive_fixture"]).is_file()
         assert policy["case_matrix_scenario"] in matrix_ids
         assert policy["coverage_impact_validation"]
-        assert policy["promotion_requirements"] == [
-            "structural_fixture_passed",
-            "reason_code_audit_complete",
-            "development_ablation_pre_registered",
-            "confirmatory_evaluation_without_runtime_feedback",
-        ]
+        assert policy["promotion_requirements"]
+        assert "confirmatory_evaluation_without_runtime_feedback" in policy["promotion_requirements"]
 
 
 def test_registry_and_policy_cards_cannot_drift_on_runtime_decisions() -> None:

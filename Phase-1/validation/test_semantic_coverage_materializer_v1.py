@@ -15,7 +15,11 @@ if str(ROOT) not in sys.path:
 from coverage_contract import CoverageExecutionScope
 from coverage_contract import RepresentativeFamily
 from model_provider_contract import ProviderLifecycle, ProviderManifest, ProviderRole
-from semantic_coverage_materializer import materialize_semantic_coverage
+from semantic_coverage_materializer import (
+    SemanticCoverageMaterializationError,
+    materialize_semantic_coverage,
+    validate_semantic_coverage_artifacts,
+)
 
 
 def _provider() -> ProviderManifest:
@@ -99,6 +103,24 @@ def test_stage_c_restores_only_an_extinct_support_representative() -> None:
     assert audit["explicit_representative_families_consumed"] == 1
 
 
+def test_semantic_artifact_preflight_fails_before_expensive_policy_work() -> None:
+    rows = ({"chunk_uid": "a", "text": "payload", "token_proxy": 1},)
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        try:
+            validate_semantic_coverage_artifacts(
+                universe=rows,
+                corpus_path=root / "missing-corpus.jsonl",
+                graph_path=root / "missing-graph.json",
+                provider=_provider(),
+            )
+        except SemanticCoverageMaterializationError as error:
+            assert "missing" in str(error).lower()
+        else:
+            raise AssertionError("Missing Stage-C artifacts must fail preflight")
+
+
 if __name__ == "__main__":
     test_stage_c_restores_only_an_extinct_support_representative()
+    test_semantic_artifact_preflight_fails_before_expensive_policy_work()
     print("[semantic-coverage-materializer-v1] explicit veto and recheck: pass")

@@ -119,10 +119,62 @@ def test_retrieval_recovers_equivalence_near_containment_and_span_candidates() -
         units.extend((RedundancyUnit(left_uid, str(case["left"])), RedundancyUnit(right_uid, str(case["right"]))))
         expected_pairs.add((left_uid, right_uid))
 
-    retrieved = retrieve_candidate_pairs(tuple(units), RedundancySettings())
+    retrieved = retrieve_candidate_pairs(
+        tuple(units),
+        RedundancySettings(retrieve_repeated_span_candidates=True),
+    )
     observed = {(pair.left_uid, pair.right_uid) for pair in retrieved}
 
     assert expected_pairs <= observed
+
+
+def test_runtime_retrieval_does_not_expand_candidate_only_repeated_spans() -> None:
+    repeated = "one two three four five six seven eight nine ten eleven twelve"
+    units = (
+        RedundancyUnit("a", f"alpha\n\n{repeated}"),
+        RedundancyUnit("b", f"beta\n\n{repeated}"),
+        RedundancyUnit("c", f"gamma\n\n{repeated}"),
+    )
+
+    runtime_pairs = retrieve_candidate_pairs(
+        units,
+        RedundancySettings(containment_min_tokens=24),
+    )
+    candidate_pairs = retrieve_candidate_pairs(
+        units,
+        RedundancySettings(
+            containment_min_tokens=24,
+            retrieve_repeated_span_candidates=True,
+        ),
+    )
+
+    assert runtime_pairs == ()
+    assert len(candidate_pairs) == 3
+    assert all(
+        pair.retrieval_reasons == ("repeated_paragraph_digest",)
+        for pair in candidate_pairs
+    )
+
+
+def test_containment_retrieval_requires_both_payload_anchors() -> None:
+    shared = " ".join(f"shared{index}" for index in range(12))
+    units = tuple(
+        RedundancyUnit(
+            uid,
+            f"{shared} " + " ".join(f"{uid}_unique{index}" for index in range(20)),
+        )
+        for uid in ("a", "b", "c")
+    )
+
+    retrieved = retrieve_candidate_pairs(
+        units,
+        RedundancySettings(
+            containment_min_tokens=12,
+            retrieval_min_tokens=1_000,
+        ),
+    )
+
+    assert retrieved == ()
 
 
 def test_fixture_audit_has_zero_safe_family_false_positives() -> None:
@@ -138,11 +190,17 @@ def test_fixture_audit_has_zero_safe_family_false_positives() -> None:
     assert report.passed is True
 
 
-def test_contract_keeps_redundancy_v2_out_of_active_runtime() -> None:
+def test_contract_activates_redundancy_v2_with_coverage_veto() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
 
-    assert contract["status"] == "block_8_e2_development_gate_passed_candidate"
-    assert contract["runtime_activation"] is False
+    assert contract["status"] == "all_policy_runtime_experiment_v1"
+    assert contract["runtime_activation"] is True
+    assert contract["mode_policy_status"] == (
+        "frozen_runtime_experiment_pending_external_validation"
+    )
+    assert contract["runtime_authority"] == (
+        "stage_b_policy_may_propose_removal_subject_to_stage_c_coverage_veto"
+    )
     assert contract["development_ablation_ready"] is True
     assert contract["development_gate_registry_sha256"] == "eb27475d77414f36173448d44c9e53871e5c22195d265890be024f7af43b1c41"
     assert contract["development_gate_report_sha256"] == "5d9d99d117f4f88bb1fca2e34f52d3444b53c52e9db8e2f979895d1700f00e51"
@@ -157,6 +215,8 @@ if __name__ == "__main__":
     test_typed_relations_preserve_substantive_differences()
     test_family_graph_uses_only_equivalence_edges_and_defers_representative()
     test_retrieval_recovers_equivalence_near_containment_and_span_candidates()
+    test_runtime_retrieval_does_not_expand_candidate_only_repeated_spans()
+    test_containment_retrieval_requires_both_payload_anchors()
     test_fixture_audit_has_zero_safe_family_false_positives()
-    test_contract_keeps_redundancy_v2_out_of_active_runtime()
+    test_contract_activates_redundancy_v2_with_coverage_veto()
     print("[redundancy-v2] typed relation, retrieval, and family contract: pass")

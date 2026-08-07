@@ -17,11 +17,11 @@ def main() -> int:
 
     assert inventory["schema_version"] == "hard-policy-inventory-v1"
     assert inventory["base_profile"] == "normal_structural_v1"
-    assert inventory["runtime_authorization"] == "development_only_pending_n4_ablation"
+    assert inventory["runtime_authorization"] == "none_candidates_cannot_select_transform_or_remove"
     assert inventory["selected_initial_candidates"] == [
-        "stage_c_inline_license_header_candidate",
-        "stage_c_inline_license_comment_block_candidate",
-        "stage_c_repeated_span_template_candidate",
+        "stage_b_inline_license_header_candidate",
+        "stage_b_inline_license_comment_block_candidate",
+        "stage_b_repeated_span_template_candidate",
     ]
     assert inventory["promotion_requirements"] == [
         "positive_false_positive_adversarial_clean_fixtures",

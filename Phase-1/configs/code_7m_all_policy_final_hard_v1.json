@@ -27,9 +27,9 @@
     "semantic_coverage": {
       "provider_registry_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/Phase-1/configs/model_provider_registry_v1.json",
       "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
-      "corpus_path": "D:/UNLV-Research/final_framework_test_v1/semantic_coverage/hard/corpus.jsonl",
-      "graph_path": "D:/UNLV-Research/final_framework_test_v1/semantic_coverage/hard/semantic_coverage_graph.json"
+      "corpus_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/hard/corpus.jsonl",
+      "graph_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/hard/semantic_coverage_graph.json"
     }
   },
-  "claim_boundary": "Final all-policy Code confirmatory materialization. Hard executes the same four Cores and rule families as Normal with stronger frozen operating points and deterministic span compaction. Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets are forbidden runtime inputs."
+  "claim_boundary": "Final all-policy Code confirmatory materialization. Hard executes the same four Cores and rule families as Normal with stronger frozen Redundancy and Quality operating points. Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets are forbidden runtime inputs."
 }

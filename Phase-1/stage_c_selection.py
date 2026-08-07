@@ -22,13 +22,12 @@ STAGE_C_LICENSE_COMMENT_ONLY_REASON = LICENSE_COMMENT_ONLY_REASON
 STAGE_C_STRUCTURAL_SCAFFOLD_REASON = "structural_scaffold_representative_retained"
 STAGE_C_EMPTY_HTML_SHELL_REASON = EMPTY_HTML_SHELL_REASON
 STAGE_C_WEB_CHROME_ONLY_REASON = WEB_CHROME_ONLY_REASON
-STAGE_C_POLICY_REASON_CODES = {
-    "stage_c_symmetric_near_duplicate": frozenset({STAGE_C_NEAR_DUPLICATE_REASON}),
-    "stage_c_explicit_generated_artifact": frozenset({STAGE_C_GENERATED_ARTIFACT_REASON}),
-    "stage_c_license_comment_only": frozenset({STAGE_C_LICENSE_COMMENT_ONLY_REASON}),
-    "stage_c_structural_scaffold": frozenset({STAGE_C_STRUCTURAL_SCAFFOLD_REASON}),
-    "stage_c_empty_html_shell": frozenset({STAGE_C_EMPTY_HTML_SHELL_REASON}),
-    "stage_c_web_chrome_only_chunk": frozenset({STAGE_C_WEB_CHROME_ONLY_REASON}),
+STRUCTURAL_POLICY_REASON_CODES = {
+    "stage_b_explicit_generated_artifact": frozenset({STAGE_C_GENERATED_ARTIFACT_REASON}),
+    "stage_b_license_comment_only": frozenset({STAGE_C_LICENSE_COMMENT_ONLY_REASON}),
+    "stage_b_structural_scaffold": frozenset({STAGE_C_STRUCTURAL_SCAFFOLD_REASON}),
+    "stage_b_empty_html_shell": frozenset({STAGE_C_EMPTY_HTML_SHELL_REASON}),
+    "stage_b_web_chrome_only_chunk": frozenset({STAGE_C_WEB_CHROME_ONLY_REASON}),
 }
 TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 IMPORT_RE = re.compile(r"^(?:from\s+\S+\s+import\s+|import\s+|require\s*\(|include\s+|using\s+)")
@@ -208,17 +207,21 @@ def select_chunks(chunks: Iterable[JsonMap], config: JsonMap) -> tuple[list[Json
     buckets: dict[bytes, list[int]] = defaultdict(list)
     for raw in sorted(chunks, key=lambda row: str(row["chunk_uid"])):
         row = dict(raw)
-        tokens = TOKEN_RE.findall(str(row["text"]))
-        signature = _token_shingles(str(row["text"]), shingle_size) if len(tokens) >= min_tokens else frozenset()
-        candidates = {index for key in _index_keys(signature) for index in buckets[key]}
-        representative_index = (
-            next(
-                (index for index in sorted(candidates) if _is_near_duplicate(signature, signatures[index], threshold)),
+        signature: frozenset[bytes] = frozenset()
+        representative_index = None
+        if near_duplicate_enabled:
+            tokens = TOKEN_RE.findall(str(row["text"]))
+            if len(tokens) >= min_tokens:
+                signature = _token_shingles(str(row["text"]), shingle_size)
+            candidates = {index for key in _index_keys(signature) for index in buckets[key]}
+            representative_index = next(
+                (
+                    index
+                    for index in sorted(candidates)
+                    if _is_near_duplicate(signature, signatures[index], threshold)
+                ),
                 None,
             )
-            if near_duplicate_enabled
-            else None
-        )
         if representative_index is None:
             row["stage_c_selection"] = _selection_trace(
                 accepted=True,
@@ -226,10 +229,11 @@ def select_chunks(chunks: Iterable[JsonMap], config: JsonMap) -> tuple[list[Json
                 non_trigger_boundary="symmetric_overlap_below_declared_threshold",
             )
             selected.append(row)
-            signatures.append(signature)
-            representative_ids.append(str(row["chunk_uid"]))
-            for key in _index_keys(signature):
-                buckets[key].append(len(signatures) - 1)
+            if near_duplicate_enabled:
+                signatures.append(signature)
+                representative_ids.append(str(row["chunk_uid"]))
+                for key in _index_keys(signature):
+                    buckets[key].append(len(signatures) - 1)
             continue
         row["stage_c_selection"] = _selection_trace(
             accepted=False,

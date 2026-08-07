@@ -75,9 +75,10 @@
       "adversarial_case_ids": []
     },
     {
-      "policy_id": "stage_c_symmetric_near_duplicate",
+      "policy_id": "stage_b_symmetric_near_duplicate",
       "positive_case_ids": [
-        "near-duplicate-positive"
+        "near-duplicate-positive",
+        "near-duplicate-contained-positive"
       ],
       "false_positive_case_ids": [
         "near-duplicate-negative"
@@ -85,7 +86,7 @@
       "adversarial_case_ids": []
     },
     {
-      "policy_id": "stage_c_explicit_generated_artifact",
+      "policy_id": "stage_b_explicit_generated_artifact",
       "positive_case_ids": [
         "generated-positive"
       ],
@@ -97,7 +98,7 @@
       ]
     },
     {
-      "policy_id": "stage_c_license_comment_only",
+      "policy_id": "stage_b_license_comment_only",
       "positive_case_ids": [
         "license-comment-positive"
       ],
@@ -107,7 +108,7 @@
       "adversarial_case_ids": []
     },
     {
-      "policy_id": "stage_c_structural_scaffold",
+      "policy_id": "stage_b_structural_scaffold",
       "positive_case_ids": [
         "scaffold-positive"
       ],
@@ -117,7 +118,7 @@
       "adversarial_case_ids": []
     },
     {
-      "policy_id": "stage_c_empty_html_shell",
+      "policy_id": "stage_b_empty_html_shell",
       "positive_case_ids": [
         "empty-html-shell-positive"
       ],
@@ -127,7 +128,7 @@
       "adversarial_case_ids": []
     },
     {
-      "policy_id": "stage_c_web_chrome_only_chunk",
+      "policy_id": "stage_b_web_chrome_only_chunk",
       "positive_case_ids": [
         "web-chrome-positive"
       ],
@@ -135,6 +136,19 @@
         "web-chrome-negative"
       ],
       "adversarial_case_ids": []
+    },
+    {
+      "policy_id": "stage_b_quality_teacher_panel_v2",
+      "positive_case_ids": [
+        "quality-panel-normal-positive",
+        "quality-panel-hard-positive"
+      ],
+      "false_positive_case_ids": [
+        "quality-panel-normal-majority-negative"
+      ],
+      "adversarial_case_ids": [
+        "quality-panel-abstain-negative"
+      ]
     },
     {
       "policy_id": "stage_c_coverage_guard",

@@ -63,6 +63,16 @@ def behavior_invariants(core: str, expected: bool, event: JsonMap) -> JsonMap:
 
 def _quality_authority_passed(event: JsonMap) -> bool:
     decision = event.get("quality_decision") or {}
+    if event.get("quality_authority_kind") == "teacher_panel":
+        return (
+            decision.get("stage_b_action") == "remove"
+            and decision.get("stage_b_reason_code")
+            in {"quality_normal_unanimous_fail", "quality_hard_stable_majority_fail"}
+            and bool(decision.get("failed_policy_ids"))
+            and decision.get("benchmark_outcomes_read") is False
+            and decision.get("utility_read") is False
+            and decision.get("token_budget_read") is False
+        )
     routing = decision.get("routing_precondition") or {}
     required = (
         "policy_id",

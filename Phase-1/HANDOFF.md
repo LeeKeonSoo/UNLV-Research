@@ -64,7 +64,8 @@ The final candidate paths are under
 `D:/UNLV-Research/final_framework_test_v1/`. Normal and Hard each receive the
 same 8,024 Stage-B chunks and 40 removal proposals. Stage C restores 15 support
 representatives and emits 7,999 chunks. Normal has a 2,571,572 whitespace-token
-proxy; Hard has 2,461,632 after span compaction. Exact Qwen3-4B stream-token
+proxy; the then-development Hard candidate had 2,461,632 after span compaction.
+Those span candidates are disabled in the final runtime. Exact Qwen3-4B stream-token
 counts are 6,984,438 Raw, 6,961,249 Normal, and 6,747,888 Hard. Packed totals
 are 6,979,584, 6,946,816, and 6,733,824. The authoritative report is
 `training_inputs_v2/training_inputs_report.json`.

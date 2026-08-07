@@ -44,6 +44,7 @@ class RedundancySettings:
     retrieval_shingle_size: int = 5
     retrieval_signature_size: int = 32
     retrieval_bands: int = 8
+    retrieve_repeated_span_candidates: bool = False
 
     def __post_init__(self) -> None:
         if self.short_exact_only_max_tokens < 1 or self.near_min_tokens <= self.short_exact_only_max_tokens:

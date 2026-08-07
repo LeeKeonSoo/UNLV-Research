@@ -352,39 +352,53 @@
     },
     {
       "id": "near-duplicate-positive",
-      "policy_id": "stage_c_symmetric_near_duplicate",
-      "executor": "stage_c_removal",
-      "expected_code": "near_duplicate_representative_retained",
+      "policy_id": "stage_b_symmetric_near_duplicate",
+      "executor": "stage_b_redundancy_v2",
+      "expected_code": "redundancy_equivalent_family_nonrepresentative",
       "expected_trigger": true,
       "config": {
-        "near_duplicate_compaction": {
-          "candidate_enabled": true
-        }
+        "mode": "normal"
       },
       "chunks": [
         {
           "chunk_uid": "d1",
-          "text": {
-            "repeat_token": "duplicate",
-            "count": 50
-          }
+          "text": "A reproducible training corpus preserves every observable condition and conclusion context0 context1 context2 context3 context4 context5 context6 context7 context8 context9 context10 context11 context12 context13 context14 context15 context16 context17 context18 context19 context20 context21 context22 context23 context24 context25 context26 context27 context28 context29 context30 context31 context32 context33 context34 context35 context36 context37 context38 context39 context40 context41 context42 context43 context44 context45 context46 context47 context48 context49 context50 context51 context52 context53 context54 context55 context56 context57 context58 context59 context60 context61 context62 context63 context64 context65 context66 context67 context68 context69 context70 context71 context72 context73 context74 context75 context76 context77 context78 context79"
         },
         {
           "chunk_uid": "d2",
-          "text": {
-            "repeat_token": "duplicate",
-            "count": 50
-          }
+          "text": "A reproducible training corpus preserves every observable condition and conclusion context0 context1 context2 context3 context4 context5 context6 context7 context8 context9 context10 context11 context12 context13 context14 context15 context16 context17 context18 context19\ncontext20 context21 context22 context23 context24 context25 context26 context27 context28 context29 context30 context31 context32 context33 context34 context35 context36 context37 context38 context39 context40 context41 context42 context43 context44 context45 context46 context47 context48 context49 context50 context51 context52 context53 context54 context55 context56 context57 context58 context59 context60 context61 context62 context63 context64 context65 context66 context67 context68 context69 context70 context71 context72 context73 context74 context75 context76 context77 context78 context79"
+        }
+      ]
+    },
+    {
+      "id": "near-duplicate-contained-positive",
+      "policy_id": "stage_b_symmetric_near_duplicate",
+      "executor": "stage_b_redundancy_v2",
+      "expected_code": "redundancy_contained_payload_nonrepresentative",
+      "expected_trigger": true,
+      "config": {
+        "mode": "normal"
+      },
+      "chunks": [
+        {
+          "chunk_uid": "contained-short",
+          "text": "A deterministic record keeps its input hash and final representative linkage for audit."
+        },
+        {
+          "chunk_uid": "contained-long",
+          "text": "Introduction. A deterministic record keeps its input hash and final representative linkage for audit. Appendix material remains attached to the same record."
         }
       ]
     },
     {
       "id": "near-duplicate-negative",
-      "policy_id": "stage_c_symmetric_near_duplicate",
-      "executor": "stage_c_removal",
-      "expected_code": "near_duplicate_representative_retained",
+      "policy_id": "stage_b_symmetric_near_duplicate",
+      "executor": "stage_b_redundancy_v2",
+      "expected_code": "redundancy_equivalent_family_nonrepresentative",
       "expected_trigger": false,
-      "config": {},
+      "config": {
+        "mode": "normal"
+      },
       "chunks": [
         {
           "chunk_uid": "d3",
@@ -404,8 +418,8 @@
     },
     {
       "id": "generated-positive",
-      "policy_id": "stage_c_explicit_generated_artifact",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_explicit_generated_artifact",
+      "executor": "stage_b_structural_removal",
       "expected_code": "explicit_generated_artifact",
       "expected_trigger": true,
       "config": {
@@ -423,8 +437,8 @@
     },
     {
       "id": "generated-negative",
-      "policy_id": "stage_c_explicit_generated_artifact",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_explicit_generated_artifact",
+      "executor": "stage_b_structural_removal",
       "expected_code": "explicit_generated_artifact",
       "expected_trigger": false,
       "fixture_kind": "adversarial_negative",
@@ -443,8 +457,8 @@
     },
     {
       "id": "declared-generated-negative",
-      "policy_id": "stage_c_explicit_generated_artifact",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_explicit_generated_artifact",
+      "executor": "stage_b_structural_removal",
       "expected_code": "explicit_generated_artifact",
       "expected_trigger": false,
       "config": {
@@ -466,8 +480,8 @@
     },
     {
       "id": "license-comment-positive",
-      "policy_id": "stage_c_license_comment_only",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_license_comment_only",
+      "executor": "stage_b_structural_removal",
       "expected_code": "license_comment_only_chunk",
       "expected_trigger": true,
       "config": {
@@ -487,8 +501,8 @@
     },
     {
       "id": "license-comment-negative",
-      "policy_id": "stage_c_license_comment_only",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_license_comment_only",
+      "executor": "stage_b_structural_removal",
       "expected_code": "license_comment_only_chunk",
       "expected_trigger": false,
       "config": {
@@ -508,8 +522,8 @@
     },
     {
       "id": "scaffold-positive",
-      "policy_id": "stage_c_structural_scaffold",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_structural_scaffold",
+      "executor": "stage_b_structural_removal",
       "expected_code": "structural_scaffold_representative_retained",
       "expected_trigger": true,
       "config": {
@@ -530,8 +544,8 @@
     },
     {
       "id": "scaffold-negative",
-      "policy_id": "stage_c_structural_scaffold",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_structural_scaffold",
+      "executor": "stage_b_structural_removal",
       "expected_code": "structural_scaffold_representative_retained",
       "expected_trigger": false,
       "fixture_kind": "adversarial_negative",
@@ -545,8 +559,8 @@
     },
     {
       "id": "scaffold-distinct-family-negative",
-      "policy_id": "stage_c_structural_scaffold",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_structural_scaffold",
+      "executor": "stage_b_structural_removal",
       "expected_code": "structural_scaffold_representative_retained",
       "expected_trigger": false,
       "config": {},
@@ -615,8 +629,8 @@
     },
     {
       "id": "empty-html-shell-positive",
-      "policy_id": "stage_c_empty_html_shell",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_empty_html_shell",
+      "executor": "stage_b_structural_removal",
       "expected_code": "empty_html_shell",
       "expected_trigger": true,
       "config": {
@@ -633,8 +647,8 @@
     },
     {
       "id": "empty-html-shell-negative",
-      "policy_id": "stage_c_empty_html_shell",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_empty_html_shell",
+      "executor": "stage_b_structural_removal",
       "expected_code": "empty_html_shell",
       "expected_trigger": false,
       "config": {
@@ -651,8 +665,8 @@
     },
     {
       "id": "web-chrome-positive",
-      "policy_id": "stage_c_web_chrome_only_chunk",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_web_chrome_only_chunk",
+      "executor": "stage_b_structural_removal",
       "expected_code": "explicit_web_chrome_only_chunk",
       "expected_trigger": true,
       "config": {
@@ -669,8 +683,8 @@
     },
     {
       "id": "web-chrome-negative",
-      "policy_id": "stage_c_web_chrome_only_chunk",
-      "executor": "stage_c_removal",
+      "policy_id": "stage_b_web_chrome_only_chunk",
+      "executor": "stage_b_structural_removal",
       "expected_code": "explicit_web_chrome_only_chunk",
       "expected_trigger": false,
       "config": {
@@ -684,6 +698,70 @@
           "text": "This guide explains how cookie preferences affect browser storage and consent withdrawal."
         }
       ]
+    },
+    {
+      "id": "quality-panel-normal-positive",
+      "policy_id": "stage_b_quality_teacher_panel_v2",
+      "executor": "stage_b_quality_panel",
+      "expected_code": "quality_normal_unanimous_fail",
+      "expected_trigger": true,
+      "config": {
+        "mode": "normal"
+      },
+      "policy_result": {
+        "policy_id": "q3_substantive_payload",
+        "decision": "fail",
+        "first_pass": ["fail", "fail", "fail"]
+      }
+    },
+    {
+      "id": "quality-panel-hard-positive",
+      "policy_id": "stage_b_quality_teacher_panel_v2",
+      "executor": "stage_b_quality_panel",
+      "expected_code": "quality_hard_stable_majority_fail",
+      "expected_trigger": true,
+      "config": {
+        "mode": "hard"
+      },
+      "policy_result": {
+        "policy_id": "q3_substantive_payload",
+        "decision": "fail",
+        "first_pass": ["fail", "fail", "pass"],
+        "second_pass": ["fail", "fail", "pass"]
+      }
+    },
+    {
+      "id": "quality-panel-normal-majority-negative",
+      "policy_id": "stage_b_quality_teacher_panel_v2",
+      "executor": "stage_b_quality_panel",
+      "expected_code": "quality_normal_unanimous_fail",
+      "expected_trigger": false,
+      "fixture_kind": "false_positive_guard",
+      "config": {
+        "mode": "normal"
+      },
+      "policy_result": {
+        "policy_id": "q3_substantive_payload",
+        "decision": "fail",
+        "first_pass": ["fail", "fail", "pass"],
+        "second_pass": ["fail", "fail", "pass"]
+      }
+    },
+    {
+      "id": "quality-panel-abstain-negative",
+      "policy_id": "stage_b_quality_teacher_panel_v2",
+      "executor": "stage_b_quality_panel",
+      "expected_code": "quality_hard_stable_majority_fail",
+      "expected_trigger": false,
+      "fixture_kind": "adversarial_negative",
+      "config": {
+        "mode": "hard"
+      },
+      "policy_result": {
+        "policy_id": "q3_substantive_payload",
+        "decision": "abstain",
+        "first_pass": ["fail", "pass", "abstain"]
+      }
     },
     {
       "id": "coverage-representative-linkage-positive",

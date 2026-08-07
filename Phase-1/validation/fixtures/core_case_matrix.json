@@ -50,11 +50,11 @@
       ]
     },
     {
-      "id": "near_duplicate_family",
+      "id": "witness_based_near_substitute_family",
       "core": "redundancy",
       "expected": "stable_representative_retained",
       "policy_ids": [
-        "stage_c_symmetric_near_duplicate"
+        "stage_b_symmetric_near_duplicate"
       ]
     },
     {
@@ -62,7 +62,7 @@
       "core": "quality",
       "expected": "whole_record_reason_coded_removal",
       "policy_ids": [
-        "stage_c_explicit_generated_artifact"
+        "stage_b_explicit_generated_artifact"
       ]
     },
     {
@@ -70,7 +70,7 @@
       "core": "quality",
       "expected": "reason_coded_removal_of_self_contained_license_chunk",
       "policy_ids": [
-        "stage_c_license_comment_only"
+        "stage_b_license_comment_only"
       ]
     },
     {
@@ -78,7 +78,7 @@
       "core": "redundancy",
       "expected": "one_representative_retained",
       "policy_ids": [
-        "stage_c_structural_scaffold"
+        "stage_b_structural_scaffold"
       ]
     },
     {
@@ -110,7 +110,7 @@
       "core": "quality",
       "expected": "reason_coded_removal_of_complete_html_shell_without_visible_text",
       "policy_ids": [
-        "stage_c_empty_html_shell"
+        "stage_b_empty_html_shell"
       ]
     },
     {
@@ -118,7 +118,15 @@
       "core": "quality",
       "expected": "reason_coded_removal_when_all_lines_are_explicit_cookie_controls",
       "policy_ids": [
-        "stage_c_web_chrome_only_chunk"
+        "stage_b_web_chrome_only_chunk"
+      ]
+    },
+    {
+      "id": "three_teacher_q1_q4_consensus",
+      "core": "quality",
+      "expected": "mode_specific_reason_coded_removal_with_abstain_retention",
+      "policy_ids": [
+        "stage_b_quality_teacher_panel_v2"
       ]
     }
   ]

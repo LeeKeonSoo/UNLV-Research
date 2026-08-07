@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCAFFOLD_POLICY_ID = "stage_c_structural_scaffold"
+SCAFFOLD_POLICY_ID = "stage_b_structural_scaffold"
 def test_representative_family_rules_and_near_duplicates_belong_to_redundancy() -> None:
     registry = json.loads((ROOT / "configs" / "core_policy_registry.json").read_text(encoding="utf-8"))
     cards = json.loads((ROOT / "configs" / "policy_cards.json").read_text(encoding="utf-8"))

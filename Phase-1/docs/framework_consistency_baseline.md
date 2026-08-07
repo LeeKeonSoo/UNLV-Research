@@ -153,15 +153,16 @@ The final-test readiness states are deliberately separate:
 
 | State | Meaning | Current state |
 |---|---|---|
-| Framework materialization | Frozen A-B-C code emits audited Normal/Hard datasets | Pass after final v2 materialization |
-| External confirmatory | Exact tokenizer inputs exist for Raw/Normal/Hard | Ready |
+| Framework materialization | Frozen A-B-C code emits audited Normal/Hard datasets | Implementation ready; final all-policy run pending |
+| External confirmatory | Exact tokenizer inputs exist for Raw/Normal/Hard | Pending final all-policy outputs |
 | Paper claim | Promoted Policies plus confirmatory results support the stated claim | Blocked |
 | Production release | All active Policies and providers are promoted | Blocked |
 
-The exact Qwen3-4B stream-token counts are 6,984,438 Raw, 6,961,249 Normal,
-and 6,747,888 Hard. This corresponds to 0.33% Normal and 3.39% Hard compression
-relative to Raw on this already curated Code corpus. It is a measured corpus
-result, not a target retention rate or evidence of downstream benefit.
+The previous pre-all-policy Qwen3-4B stream-token counts were 6,984,438 Raw,
+6,961,249 Normal, and 6,747,888 Hard. They are historical diagnostics only and
+must not be reused as the final Quality/Redundancy/Coverage result. The final
+counts will be read only from `D:/UNLV-Research/final_all_policy_v1/` after both
+profiles complete.
 
 ## Next Exit Gates
 

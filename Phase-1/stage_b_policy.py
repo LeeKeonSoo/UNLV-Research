@@ -3,10 +3,11 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
-from stage_c_selection import select_chunks
+from stage_c_selection import STRUCTURAL_POLICY_REASON_CODES, select_chunks
 
 
 JsonMap = dict[str, Any]
+STAGE_B_STRUCTURAL_POLICY_REASON_CODES = STRUCTURAL_POLICY_REASON_CODES
 
 
 def _stage_b_policy_id(value: object) -> object:

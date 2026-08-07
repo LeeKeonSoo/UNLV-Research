@@ -11,7 +11,24 @@ if str(ROOT) not in sys.path:
 
 
 def main() -> int:
-    from stage_c_selection import select_chunks
+    import stage_c_selection
+
+    select_chunks = stage_c_selection.select_chunks
+
+    original_shingles = stage_c_selection._token_shingles
+
+    def forbidden_shingles(text: str, size: int):
+        raise AssertionError("Disabled legacy near-duplicate policy must skip shingling")
+
+    stage_c_selection._token_shingles = forbidden_shingles
+    try:
+        selected_without_near, _, _ = select_chunks(
+            [{"chunk_uid": "disabled-near", "text": "payload " * 100}],
+            {"near_duplicate_compaction": {"candidate_enabled": False}},
+        )
+    finally:
+        stage_c_selection._token_shingles = original_shingles
+    assert len(selected_without_near) == 1
 
     base = " ".join(f"token{index}" for index in range(100))
     chunks = [

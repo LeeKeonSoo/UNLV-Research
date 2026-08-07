@@ -31,7 +31,6 @@ from framework_runtime_bridge import (
 )
 from general_web_span_compaction import build_plan as build_web_span_plan
 from general_web_span_compaction import materialize_candidate_plan as materialize_web_span_plan
-from hard_structural_runtime import apply_development_hard_policies
 from ingestion.candidate_processing import process_candidate
 from ingestion.input_adapter import adapt_raw_records
 from model_provider_contract import load_provider_registry
@@ -42,8 +41,11 @@ from reason_code_audit import build_reason_code_impact_audit
 from redundancy_equivalence import RedundancyMode
 from redundancy_checkpoint import load_or_build_redundancy
 from redundancy_v2 import RedundancySettings
-from stage_b_policy import propose_stage_b_removals
-from semantic_coverage_materializer import materialize_semantic_coverage
+from stage_b_policy import STAGE_B_STRUCTURAL_POLICY_REASON_CODES, propose_stage_b_removals
+from semantic_coverage_materializer import (
+    materialize_semantic_coverage,
+    validate_semantic_coverage_artifacts,
+)
 
 
 JsonMap = dict[str, Any]
@@ -52,6 +54,16 @@ STAGE_B_EXACT_DUPLICATE_REASON = "normalized_exact_duplicate"
 STAGE_B_POLICY_REASON_CODES = {
     "stage_b_invalid_chunk": frozenset({STAGE_B_INVALID_CHUNK_REASON}),
     "stage_b_exact_duplicate": frozenset({STAGE_B_EXACT_DUPLICATE_REASON}),
+    "stage_b_symmetric_near_duplicate": frozenset(
+        {
+            "redundancy_equivalent_family_nonrepresentative",
+            "redundancy_contained_payload_nonrepresentative",
+        }
+    ),
+    "stage_b_quality_teacher_panel_v2": frozenset(
+        {"quality_normal_unanimous_fail", "quality_hard_stable_majority_fail"}
+    ),
+    **STAGE_B_STRUCTURAL_POLICY_REASON_CODES,
 }
 USER_FACING_MODE_PROFILES = {"normal": "normal_structural_v1", "hard": "hard_structural_v1"}
 POLICY_FINGERPRINT_CONFIGS = (
@@ -119,10 +131,6 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "framework_runtime_bridge.py",
     "model_provider_contract.py",
     "stage_permissions.py",
-    "hard_structural_runtime.py",
-    "inline_license_header_compaction.py",
-    "inline_license_comment_block_compaction.py",
-    "span_level_template_compaction.py",
     "general_web_span_compaction.py",
     "ingestion/input_adapter.py",
     "ingestion/candidate_processing.py",
@@ -135,7 +143,6 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "quality_teacher_unit_runtime.py",
     "quality_teacher_batch_runtime.py",
     "quality_teacher_adapters.py",
-    "quality_teacher_local.py",
     "quality_retention.py",
     "reason_code_audit.py",
     "redundancy_checkpoint.py",
@@ -621,7 +628,7 @@ def _coverage_impact_audit(
     residual_payload_passed = all(
         len(str(row.get("text") or "").strip()) >= minimum_residual_chars
         for row in passed
-        if row.get("stage_b_hard_transformations") or row.get("stage_b_quality_candidate_transformations")
+        if row.get("stage_b_quality_candidate_transformations")
     )
     invariant_passed = not (
         missing_links
@@ -650,14 +657,13 @@ def _coverage_impact_audit(
                 str(row["chunk_uid"])
                 for row in passed
                 if (
-                    row.get("stage_b_hard_transformations")
-                    or row.get("stage_b_quality_candidate_transformations")
+                    row.get("stage_b_quality_candidate_transformations")
                 )
                 and len(str(row.get("text") or "").strip()) < minimum_residual_chars
             ],
             "passed": residual_payload_passed,
             "zero_survivor_exception_allowed": False,
-            "note": "Hard span rewrites retain every chunk and must preserve the declared Stage-B residual boundary.",
+            "note": "Any promoted span rewrite must retain its chunk and preserve the declared Stage-B residual boundary.",
         },
         "zero_survivor_invariant": {
             "zero_survivor_records": zero_survivor_records,
@@ -768,23 +774,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     stage_c_settings = config.get("stage_c") if isinstance(config.get("stage_c"), dict) else {}
     minimum_residual_chars = int(stage_c_settings["minimum_residual_chars"])
     span_transformations: list[JsonMap] = []
-    hard_transformations: list[JsonMap] = []
     quality_candidate_transformations: list[JsonMap] = []
-    hard_runtime_audit: JsonMap | None = None
-    if mode["mode"] == "hard":
-        hard_runtime_audit = apply_development_hard_policies(
-            passed, minimum_residual_chars=minimum_residual_chars
-        )
-        transformation_by_chunk: dict[str, list[JsonMap]] = {}
-        for transformation in hard_runtime_audit["transformations"]:
-            transformation_by_chunk.setdefault(str(transformation["chunk_uid"]), []).append(transformation)
-        passed = [dict(row) for row in hard_runtime_audit["records"]]
-        for row in passed:
-            traces = transformation_by_chunk.get(str(row["chunk_uid"]))
-            if traces:
-                row["stage_b_hard_transformations"] = traces
-        hard_transformations = hard_runtime_audit["transformations"]
-        span_transformations.extend(hard_transformations)
     removal_policy = effective_policy["stage_b_policy"]
     stage_tickets.append(
         authorize_runtime_stage(
@@ -828,6 +818,29 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     selected, structural_not_selected, selection_audit = propose_stage_b_removals(
         passed, removal_policy
     )
+    semantic_settings = stage_c_settings.get("semantic_coverage")
+    semantic_provider = None
+    semantic_artifact_preflight: JsonMap = {
+        "status": "deterministic_lineage_guard_only"
+    }
+    if isinstance(semantic_settings, dict):
+        registry_path = Path(str(semantic_settings["provider_registry_path"]))
+        registry = load_provider_registry(registry_path)
+        provider_id = str(semantic_settings["provider_id"])
+        semantic_provider = next(
+            (item for item in registry.providers if item.provider_id == provider_id), None
+        )
+        if semantic_provider is None:
+            raise RuntimeError(f"Unknown semantic Coverage provider: {provider_id}")
+        structural_universe = _stage_b_materialization_universe(
+            passed, selected, structural_not_selected
+        )
+        semantic_artifact_preflight = validate_semantic_coverage_artifacts(
+            universe=structural_universe,
+            corpus_path=Path(str(semantic_settings["corpus_path"])),
+            graph_path=Path(str(semantic_settings["graph_path"])),
+            provider=semantic_provider,
+        )
     redundancy_settings_payload = dict(effective_policy["redundancy_v2"]["settings"])
     checkpointed_redundancy = load_or_build_redundancy(
         selected,
@@ -877,28 +890,22 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
             ),
         )
     )
-    semantic_settings = stage_c_settings.get("semantic_coverage")
     semantic_coverage_audit: JsonMap = {
         "status": "deterministic_lineage_guard_only",
         "semantic_graph_consumed": False,
         "scientific_promotion_claimed": False,
+        "artifact_preflight": semantic_artifact_preflight,
     }
     if isinstance(semantic_settings, dict):
-        registry_path = Path(str(semantic_settings["provider_registry_path"]))
-        registry = load_provider_registry(registry_path)
-        provider_id = str(semantic_settings["provider_id"])
-        provider = next(
-            (item for item in registry.providers if item.provider_id == provider_id), None
-        )
-        if provider is None:
-            raise RuntimeError(f"Unknown semantic Coverage provider: {provider_id}")
+        if semantic_provider is None:
+            raise RuntimeError("Semantic Coverage provider preflight was not completed")
         selected, semantic_coverage_audit = materialize_semantic_coverage(
             universe=stage_b_materialization_universe,
             proposed_survivors=tuple(selected),
             removal_proposals=tuple(not_selected),
             corpus_path=Path(str(semantic_settings["corpus_path"])),
             graph_path=Path(str(semantic_settings["graph_path"])),
-            provider=provider,
+            provider=semantic_provider,
             execution_scope=CoverageExecutionScope(execution_scope),
             representative_families=coverage_families_from_redundancy_plan(
                 redundancy_result.plan
@@ -907,6 +914,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         semantic_coverage_audit["status"] = "semantic_coverage_materialized"
         semantic_coverage_audit["semantic_graph_consumed"] = True
         semantic_coverage_audit["scientific_promotion_claimed"] = False
+        semantic_coverage_audit["artifact_preflight"] = semantic_artifact_preflight
     selected_ids = {str(row["chunk_uid"]) for row in selected}
     final_not_selected = [
         row for row in not_selected if str(row["chunk_uid"]) not in selected_ids
@@ -920,7 +928,6 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         "stage_b_removal_proposals": output_dir / "stage_b_removal_proposals.jsonl",
         "stage_c_not_selected": output_dir / "stage_c_not_selected_chunks.jsonl",
         "stage_c_curated": output_dir / "stage_c_curated_chunks.jsonl",
-        "stage_b_hard_transformations": output_dir / "stage_b_hard_transformations.jsonl",
         "stage_b_quality_candidate_transformations": output_dir / "stage_b_quality_candidate_transformations.jsonl",
     }
     _write_jsonl(paths["stage_a_release"], released)
@@ -931,7 +938,6 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     _write_jsonl(paths["stage_b_removal_proposals"], not_selected)
     _write_jsonl(paths["stage_c_not_selected"], final_not_selected)
     _write_jsonl(paths["stage_c_curated"], selected)
-    _write_jsonl(paths["stage_b_hard_transformations"], hard_transformations)
     _write_jsonl(paths["stage_b_quality_candidate_transformations"], quality_candidate_transformations)
     semantic_coverage_audit_path = output_dir / "stage_c_coverage_audit.json"
     save_json(semantic_coverage_audit_path, semantic_coverage_audit)
@@ -1048,7 +1054,6 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
             "stage_b_quality_abstain_retained_chunks": int(
                 quality_result.audit["chunks_with_any_abstain"]
             ),
-            "stage_b_hard_span_transformations": len(hard_transformations),
             "stage_b_quality_candidate_span_transformations": len(quality_candidate_transformations),
             "stage_b_total_span_transformations": len(span_transformations),
             "stage_c_curated_chunks": len(selected),
@@ -1090,7 +1095,6 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         "stage_b_quality_teacher": quality_result.audit,
         "quality_scoring": quality_scoring_audit,
         "stage_c_coverage": semantic_coverage_audit,
-        "hard_runtime_audit": hard_runtime_audit,
         "quality_candidate_runtime_audit": quality_candidate_runtime_audit,
         "pretraining_audit": pretraining_audit,
         "claim_boundary": config["claim_boundary"],

@@ -29,24 +29,26 @@
         "stage_a_bom_normalization",
         "stage_b_invalid_chunk",
         "stage_b_exact_duplicate",
-        "stage_c_symmetric_near_duplicate",
-        "stage_c_explicit_generated_artifact",
-        "stage_c_license_comment_only",
-        "stage_c_structural_scaffold",
-        "stage_c_empty_html_shell",
-        "stage_c_web_chrome_only_chunk"
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk",
+        "stage_b_quality_teacher_panel_v2"
       ],
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
         "stage_a_bom_normalization",
         "stage_b_invalid_chunk",
         "stage_b_exact_duplicate",
-        "stage_c_symmetric_near_duplicate",
-        "stage_c_explicit_generated_artifact",
-        "stage_c_license_comment_only",
-        "stage_c_structural_scaffold",
-        "stage_c_empty_html_shell",
-        "stage_c_web_chrome_only_chunk",
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk",
+        "stage_b_quality_teacher_panel_v2",
         "stage_c_coverage_guard"
       ],
       "excluded_policy_ids": [
@@ -61,6 +63,49 @@
         "stage_c_url_directory_only_candidate"
       ],
       "authorized_but_disabled_policy_ids": []
+    },
+    "hard_structural_v1": {
+      "stage_a_policy": "text_only_v2",
+      "authorized_policy_ids": [
+        "stage_a_normalized_text_integrity",
+        "stage_a_bom_normalization",
+        "stage_b_invalid_chunk",
+        "stage_b_exact_duplicate",
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk",
+        "stage_b_quality_teacher_panel_v2"
+      ],
+      "enabled_policy_ids": [
+        "stage_a_normalized_text_integrity",
+        "stage_a_bom_normalization",
+        "stage_b_invalid_chunk",
+        "stage_b_exact_duplicate",
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk",
+        "stage_b_quality_teacher_panel_v2",
+        "stage_c_coverage_guard"
+      ],
+      "excluded_policy_ids": [
+        "stage_a_provenance_contract",
+        "stage_a_risk_quarantine",
+        "stage_a_b_validity_recovery_candidate",
+        "stage_c_route_conditioned_quality_candidate",
+        "stage_c_calibrated_quality_effect_candidate",
+        "stage_c_coverage_support_candidate"
+      ],
+      "authorized_but_disabled_policy_ids": [
+        "stage_b_inline_license_header_candidate",
+        "stage_b_inline_license_comment_block_candidate",
+        "stage_b_repeated_span_template_candidate"
+      ]
     }
   },
   "core_decision_contracts": {
@@ -357,17 +402,17 @@
       "coverage_impact_validation": "required_before_promotion_original_and_recovered_payload_must_be_reported"
     },
     {
-      "id": "stage_c_inline_license_comment_block_candidate",
+      "id": "stage_b_inline_license_comment_block_candidate",
       "version": "0.1.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "candidate",
       "activation_state": "candidate",
       "reason_codes": [
         "inline_license_comment_block_removed"
       ],
       "required_metadata": [],
-      "policy_card_id": "stage_c_inline_license_comment_block_candidate",
+      "policy_card_id": "stage_b_inline_license_comment_block_candidate",
       "fixture": "validation/test_inline_license_comment_block_compaction.py",
       "runtime_implementation": [
         "hard_structural_runtime.py",
@@ -385,17 +430,17 @@
       "coverage_impact_validation": "required_before_promotion"
     },
     {
-      "id": "stage_c_inline_license_header_candidate",
+      "id": "stage_b_inline_license_header_candidate",
       "version": "0.1.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "candidate",
       "activation_state": "candidate",
       "reason_codes": [
         "inline_license_header_removed"
       ],
       "required_metadata": [],
-      "policy_card_id": "stage_c_inline_license_header_candidate",
+      "policy_card_id": "stage_b_inline_license_header_candidate",
       "fixture": "validation/test_inline_license_header_compaction.py",
       "runtime_implementation": [
         "hard_structural_runtime.py",
@@ -413,17 +458,17 @@
       "coverage_impact_validation": "required_before_promotion"
     },
     {
-      "id": "stage_c_repeated_span_template_candidate",
+      "id": "stage_b_repeated_span_template_candidate",
       "version": "0.1.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "candidate",
       "activation_state": "candidate",
       "reason_codes": [
         "repeated_exact_template_span_removed"
       ],
       "required_metadata": [],
-      "policy_card_id": "stage_c_repeated_span_template_candidate",
+      "policy_card_id": "stage_b_repeated_span_template_candidate",
       "fixture": "validation/test_span_level_template_compaction.py",
       "runtime_implementation": [
         "hard_structural_runtime.py",
@@ -723,23 +768,26 @@
       ]
     },
     {
-      "id": "stage_c_symmetric_near_duplicate",
+      "id": "stage_b_symmetric_near_duplicate",
       "version": "1.0.0",
-      "policy_card_id": "stage_c_symmetric_near_duplicate",
+      "policy_card_id": "stage_b_symmetric_near_duplicate",
       "core": "redundancy",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
-        "near_duplicate_representative_retained"
+        "redundancy_equivalent_family_nonrepresentative",
+        "redundancy_contained_payload_nonrepresentative"
       ],
       "required_metadata": [],
-      "fixture": "validation/test_stage_c_selection.py",
+      "fixture": "validation/test_redundancy_mode_policy_v1.py",
       "false_positive_fixture": "validation/fixtures/policy_fixture_contract_v1.json",
-      "case_matrix_scenario": "near_duplicate_family",
-      "coverage_impact_validation": "one_representative_per_declared_duplicate_stratum",
+      "case_matrix_scenario": "witness_based_near_substitute_family",
+      "coverage_impact_validation": "stable_representative_link_with_stage_c_coverage_veto",
       "runtime_implementation": [
-        "stage_c_selection.py"
+        "redundancy_equivalence.py",
+        "redundancy_mode_policy.py",
+        "redundancy_v2.py"
       ],
       "promotion_requirements": [
         "structural_fixture_passed",
@@ -749,11 +797,11 @@
       ]
     },
     {
-      "id": "stage_c_explicit_generated_artifact",
+      "id": "stage_b_explicit_generated_artifact",
       "version": "1.0.0",
-      "policy_card_id": "stage_c_explicit_generated_artifact",
+      "policy_card_id": "stage_b_explicit_generated_artifact",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
@@ -765,6 +813,7 @@
       "case_matrix_scenario": "explicit_generated_source",
       "coverage_impact_validation": "removal_requires_both_explicit_generated_and_non_editable_evidence",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "promotion_requirements": [
@@ -775,11 +824,11 @@
       ]
     },
     {
-      "id": "stage_c_license_comment_only",
+      "id": "stage_b_license_comment_only",
       "version": "1.0.0",
-      "policy_card_id": "stage_c_license_comment_only",
+      "policy_card_id": "stage_b_license_comment_only",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
@@ -793,6 +842,7 @@
       "case_matrix_scenario": "license_comment_only_code_chunk",
       "coverage_impact_validation": "executable_code_negative_fixture_must_be_retained",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "promotion_requirements": [
@@ -803,11 +853,11 @@
       ]
     },
     {
-      "id": "stage_c_structural_scaffold",
+      "id": "stage_b_structural_scaffold",
       "version": "1.1.0",
-      "policy_card_id": "stage_c_structural_scaffold",
+      "policy_card_id": "stage_b_structural_scaffold",
       "core": "redundancy",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
@@ -819,12 +869,41 @@
       "case_matrix_scenario": "structural_scaffold_family",
       "coverage_impact_validation": "one_stable_representative_with_comment_case_indentation_and_substantive_implementation_negative_fixtures",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "promotion_requirements": [
         "structural_fixture_passed",
         "reason_code_audit_complete",
         "development_ablation_pre_registered",
+        "confirmatory_evaluation_without_runtime_feedback"
+      ]
+    },
+    {
+      "id": "stage_b_quality_teacher_panel_v2",
+      "version": "2.0.0",
+      "policy_card_id": "stage_b_quality_teacher_panel_v2",
+      "core": "quality",
+      "stage": "Stage B",
+      "status": "active",
+      "activation_state": "runtime_executable",
+      "reason_codes": [
+        "quality_normal_unanimous_fail",
+        "quality_hard_stable_majority_fail"
+      ],
+      "required_metadata": [],
+      "fixture": "validation/test_quality_teacher_materialization_v1.py",
+      "false_positive_fixture": "validation/fixtures/policy_fixture_contract_v1.json",
+      "case_matrix_scenario": "three_teacher_q1_q4_consensus",
+      "coverage_impact_validation": "quality_rejection_is_stage_b_proposal_subject_to_stage_c_veto",
+      "runtime_implementation": [
+        "quality_teacher_materialization.py",
+        "quality_teacher_batch_runtime.py",
+        "all_policy_stage_b.py"
+      ],
+      "promotion_requirements": [
+        "protected_fixture_bound",
+        "reason_code_audit_complete",
         "confirmatory_evaluation_without_runtime_feedback"
       ]
     },
@@ -930,11 +1009,11 @@
       "fixture": "validation/test_reference_distribution_policy_boundary.py"
     },
     {
-      "id": "stage_c_empty_html_shell",
+      "id": "stage_b_empty_html_shell",
       "version": "1.0.0",
-      "policy_card_id": "stage_c_empty_html_shell",
+      "policy_card_id": "stage_b_empty_html_shell",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
@@ -946,6 +1025,7 @@
       "case_matrix_scenario": "empty_html_shell_only",
       "coverage_impact_validation": "whole_chunk_non_payload_removal_requires_explicit_empty_shell_evidence",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "promotion_requirements": [
@@ -1060,11 +1140,11 @@
       "coverage_impact_validation": "first_occurrence_and_residual_payload_required"
     },
     {
-      "id": "stage_c_web_chrome_only_chunk",
+      "id": "stage_b_web_chrome_only_chunk",
       "version": "1.0.0",
-      "policy_card_id": "stage_c_web_chrome_only_chunk",
+      "policy_card_id": "stage_b_web_chrome_only_chunk",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
@@ -1076,6 +1156,7 @@
       "case_matrix_scenario": "cookie_control_panel_only",
       "coverage_impact_validation": "whole_chunk_non_payload_removal_requires_all_lines_to_be_explicit_cookie_control_markers",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "promotion_requirements": [

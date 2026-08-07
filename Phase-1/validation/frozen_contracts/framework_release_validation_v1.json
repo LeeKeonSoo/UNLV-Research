@@ -5,9 +5,9 @@
   "framework_release": "blocked",
   "core_behavior": {
     "passed": true,
-    "fixture_sha256": "74febac8e5f98c12375fca24e69a32336ffba01287aa7ecc29e06ec0069cd153",
-    "case_matrix_sha256": "0bce07624a3ee873c41d88c46c442e9f319e29ff99ec968846aa180b42439459",
-    "policy_registry_sha256": "8ab6796c4bfe93f764fc121b76e06d6958960281f2718c96a5496b745549e424",
+    "fixture_sha256": "2faffc423cf2da2b4c0e55992038cf03955ab5f9025567a11374b6712ad5b0fe",
+    "case_matrix_sha256": "f7b08b938443dd547d775c0178e166e2b01609882d77d96c1dc556193119f79d",
+    "policy_registry_sha256": "c186d13de7e872a188dfff3ae86e727ff8e2ccb6c951e52af0517fd4327f50da",
     "fixture_kinds": [
       "adversarial_negative",
       "adversarial_positive",
@@ -16,11 +16,11 @@
       "metamorphic_positive"
     ],
     "summary": {
-      "cases": 39,
-      "true_positives": 24,
+      "cases": 44,
+      "true_positives": 27,
       "false_positives": 0,
       "false_negatives": 0,
-      "true_negatives": 15,
+      "true_negatives": 17,
       "behavior_invariant_failures": 0,
       "core_behavior_gates_passed": true,
       "case_matrix_reconciled": true
@@ -45,10 +45,10 @@
           "observable_trigger",
           "false_positive_boundary"
         ],
-        "true_positives": 4,
+        "true_positives": 6,
         "false_positives": 0,
         "false_negatives": 0,
-        "true_negatives": 5,
+        "true_negatives": 7,
         "behavior_invariant_failures": 0,
         "behavior_gate_passed": true
       },
@@ -58,7 +58,7 @@
           "representative_survival",
           "non_trigger_retention"
         ],
-        "true_positives": 3,
+        "true_positives": 4,
         "false_positives": 0,
         "false_negatives": 0,
         "true_negatives": 4,

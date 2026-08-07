@@ -2,9 +2,15 @@ from __future__ import annotations
 
 from typing import Any
 
+from all_policy_stage_b import apply_quality_policy, apply_redundancy_policy
 from ingestion.candidate_processing import process_candidate
+from quality_operating_points import CurationMode
+from quality_teacher_panel import PanelDecision, PolicyDecision, TeacherVote
+from quality_teacher_runtime import PanelPolicyResult
+from redundancy_equivalence import RedundancyMode
+from redundancy_v2 import RedundancySettings
 from run_curation import _coverage_impact_audit, _stage_b_chunks
-from stage_c_selection import select_chunks
+from stage_b_policy import propose_stage_b_removals
 
 
 JsonMap = dict[str, Any]
@@ -77,15 +83,39 @@ def execute_case(case: JsonMap) -> JsonMap:
                 row["chunk_uid"] for row in selected
             },
         }
-    if executor == "stage_c_removal":
-        selected, removed, _ = select_chunks(_expand_chunks(case["chunks"]), case["config"])
+    if executor == "stage_b_redundancy_v2":
+        result = apply_redundancy_policy(
+            _expand_chunks(case["chunks"]),
+            mode=RedundancyMode(case["config"]["mode"]),
+            settings=RedundancySettings(),
+        )
+        matches = [
+            row
+            for row in result.removals
+            if row["stage_b_policy"].get("removed_reason") == expected_code
+        ]
+        match = matches[0] if matches else {}
+        representative = match.get("stage_b_policy", {}).get(
+            "representative_chunk_uid"
+        )
+        return {
+            **_simple_event(bool(matches), "remove", expected_code),
+            "representative_chunk_uid": representative,
+            "representative_survived": representative in {
+                row["chunk_uid"] for row in result.survivors
+            },
+        }
+    if executor == "stage_b_structural_removal":
+        selected, removed, _ = propose_stage_b_removals(
+            _expand_chunks(case["chunks"]), case["config"]
+        )
         matches = [
             row
             for row in removed
-            if row["stage_c_selection"].get("removed_reason") == expected_code
+            if row["stage_b_policy"].get("removed_reason") == expected_code
         ]
         match = matches[0] if matches else {}
-        representative = match.get("stage_c_selection", {}).get(
+        representative = match.get("stage_b_policy", {}).get(
             "representative_chunk_uid"
         )
         return {
@@ -96,12 +126,59 @@ def execute_case(case: JsonMap) -> JsonMap:
             },
             "quality_decision": match.get("quality_retention_decision"),
         }
-    if executor == "stage_c_retention":
-        selected, _, _ = select_chunks(_expand_chunks(case["chunks"]), case["config"])
-        triggered = any(
-            row["stage_c_selection"].get("accepted_by") == expected_code for row in selected
+    if executor == "stage_b_quality_panel":
+        policy_id = str(case["policy_result"]["policy_id"])
+        first_pass = tuple(
+            TeacherVote(
+                teacher_id=f"teacher-{index}",
+                policy_id=policy_id,
+                decision=PolicyDecision(value),
+                reason_codes=("controlled_fixture_reason",),
+            )
+            for index, value in enumerate(case["policy_result"]["first_pass"])
         )
-        return {"triggered": triggered, "action": "retain", "reason_code": None}
+        second_values = case["policy_result"].get("second_pass")
+        second_pass = (
+            tuple(
+                TeacherVote(
+                    teacher_id=f"teacher-{index}",
+                    policy_id=policy_id,
+                    decision=PolicyDecision(value),
+                    reason_codes=("controlled_fixture_reason",),
+                )
+                for index, value in enumerate(second_values)
+            )
+            if isinstance(second_values, list)
+            else None
+        )
+        panel_result = PanelPolicyResult(
+            policy_id=policy_id,
+            decision=PanelDecision(case["policy_result"]["decision"]),
+            first_pass=first_pass,
+            second_pass=second_pass,
+        )
+        uid = "quality-fixture"
+        result = apply_quality_policy(
+            [{"chunk_uid": uid, "text": "fixture payload"}],
+            results_by_chunk={uid: (panel_result,)},
+            mode=CurationMode(case["config"]["mode"]),
+        )
+        row = (result.removals or result.survivors)[0]
+        decision = row["quality_stage_decision"]
+        triggered = (
+            decision["stage_b_action"] == "remove"
+            and decision["stage_b_reason_code"] == expected_code
+        )
+        return {
+            **_simple_event(triggered, "remove", expected_code),
+            "quality_authority_kind": "teacher_panel",
+            "quality_decision": {
+                **decision,
+                "benchmark_outcomes_read": result.audit["benchmark_outcomes_read"],
+                "utility_read": result.audit["utility_read"],
+                "token_budget_read": result.audit["token_budget_read"],
+            },
+        }
     if executor == "coverage_invariant":
         return _coverage_event(case)
     raise ValueError(f"Unsupported fixture executor: {executor}")

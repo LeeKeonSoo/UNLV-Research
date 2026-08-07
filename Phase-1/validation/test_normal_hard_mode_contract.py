@@ -27,7 +27,7 @@ def test_normal_mode_is_available_only_as_a_development_candidate() -> None:
     assert mode["authorization"] == "development_candidate_release_blocked"
     assert mode["effective_policy_sha256"]
     assert by_id[mode["profile_id"]]["status"] == "confirmatory_candidate_release_blocked"
-    assert by_id[mode["profile_id"]]["selector"]["kind"] == "reason_coded_text_structural_only"
+    assert by_id[mode["profile_id"]]["selector"]["kind"] == "reason_coded_structural_and_teacher_evidence"
 
 
 def test_hard_mode_fails_closed_until_its_structural_rule_set_is_validated() -> None:

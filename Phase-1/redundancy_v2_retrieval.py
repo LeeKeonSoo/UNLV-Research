@@ -20,6 +20,20 @@ def _add_bucket_pairs(buckets: dict[bytes, list[str]], reason: str, pairs: dict[
             pairs.setdefault((left, right), set()).add(reason)
 
 
+def _add_containment_anchor_pairs(
+    window_index: dict[bytes, set[str]],
+    anchors_by_uid: dict[str, tuple[bytes, bytes]],
+    pairs: dict[tuple[str, str], set[str]],
+) -> None:
+    for uid, (first_anchor, last_anchor) in anchors_by_uid.items():
+        candidates = window_index[first_anchor] & window_index[last_anchor]
+        for candidate_uid in candidates - {uid}:
+            left, right = sorted((uid, candidate_uid))
+            pairs.setdefault((left, right), set()).add(
+                "exact_containment_window_digest"
+            )
+
+
 def _digest(text: str) -> bytes:
     return hashlib.blake2b(text.encode("utf-8"), digest_size=16).digest()
 
@@ -51,16 +65,23 @@ def retrieve_candidate_pairs(
     exact: dict[bytes, list[str]] = {}
     formatting: dict[bytes, list[str]] = {}
     paragraph: dict[bytes, list[str]] = {}
-    containment: dict[bytes, list[str]] = {}
+    containment_windows: dict[bytes, set[str]] = {}
+    containment_anchors: dict[str, tuple[bytes, bytes]] = {}
     lsh: dict[tuple[int, tuple[int, ...]], list[str]] = {}
     rows = settings.retrieval_signature_size // settings.retrieval_bands
     for unit in units:
         exact.setdefault(_digest(unit.text), []).append(unit.uid)
         formatting.setdefault(_digest(formatting_canonical(unit.text)), []).append(unit.uid)
-        for span in normalized_paragraphs(unit.text, settings.repeated_span_min_lexical_tokens):
-            paragraph.setdefault(_digest(span), []).append(unit.uid)
-        for window in _window_digests(unit.text, settings.containment_min_tokens):
-            containment.setdefault(window, []).append(unit.uid)
+        if settings.retrieve_repeated_span_candidates:
+            for span in normalized_paragraphs(
+                unit.text, settings.repeated_span_min_lexical_tokens
+            ):
+                paragraph.setdefault(_digest(span), []).append(unit.uid)
+        windows = _window_digests(unit.text, settings.containment_min_tokens)
+        if windows:
+            containment_anchors[unit.uid] = (windows[0], windows[-1])
+            for window in set(windows):
+                containment_windows.setdefault(window, set()).add(unit.uid)
         if len(tokenize(unit.text)) < settings.retrieval_min_tokens:
             continue
         shingles = _shingles(unit.text, settings.retrieval_shingle_size)
@@ -73,7 +94,8 @@ def retrieve_candidate_pairs(
     pairs: dict[tuple[str, str], set[str]] = {}
     _add_bucket_pairs(exact, "exact_digest", pairs)
     _add_bucket_pairs(formatting, "formatting_digest", pairs)
-    _add_bucket_pairs(paragraph, "repeated_paragraph_digest", pairs)
-    _add_bucket_pairs(containment, "exact_containment_window_digest", pairs)
+    if settings.retrieve_repeated_span_candidates:
+        _add_bucket_pairs(paragraph, "repeated_paragraph_digest", pairs)
+    _add_containment_anchor_pairs(containment_windows, containment_anchors, pairs)
     _add_bucket_pairs(lsh, "minhash_lsh", pairs)
     return tuple(CandidatePair(left, right, tuple(sorted(reasons))) for (left, right), reasons in sorted(pairs.items()))

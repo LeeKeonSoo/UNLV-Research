@@ -32,9 +32,11 @@ result and is never read by the runtime.
 
 ## Core-Metric-Policy Roles
 
-The active user-facing runtime profile is **Normal** (`normal_structural_v1`), declared in
-`configs/policy_profiles.json`. It is deliberately limited to high-precision,
-reason-coded text-structural policies. `safe_structural_v3` is retained only to
+The active user-facing runtime profiles are **Normal** (`normal_structural_v1`)
+and **Hard** (`hard_structural_v1`), declared in
+`configs/policy_profiles.json`. They use the same reason-coded structural and
+three-teacher Quality policy families and differ only in frozen operating
+points. `safe_structural_v3` is retained only to
 reproduce historical provenance-and-safety experiments. The historical
 score-selector template is retired and cannot run. The required fields for a versioned active policy card are declared
 in `configs/policy_card_contract.json` and instantiated in
@@ -66,7 +68,7 @@ Raw input. It therefore explains a shift such as `Code: 60% -> 70%` without
 claiming that either percentage is intrinsically better.
 
 Each report also emits `reason_code_impact_audit`: for every Stage-A quarantine,
-Stage-B rejection, Stage-B policy removal, and Stage-B span transformation, it records affected records,
+Stage-B rejection, and Stage-B policy removal, it records affected records,
 chunks, and token-proxy cost. When one row has multiple Stage-A reasons, its
 token cost is deliberately visible under each reason and reason totals are not
 additive. `coverage_impact_audit` verifies that each exact-duplicate or
@@ -107,14 +109,14 @@ may produce candidate-only evidence only for a declared complete artifact with
 a compatible declared language/version; it has no active deletion authority.
 Collectors may supply provenance, rights, language, path, and artifact-context
 metadata for traceability or an optional safety review. The adapter preserves
-such declarations without inference, but the active v2 Stage-C selector does
+such declarations without inference, but the active Stage-B policy does
 not receive them. `scripts/build_rule_opportunity_audit.py` can still report
 their availability as a diagnostic; neither a source label nor a path pattern
 authorizes removal in the source-agnostic core.
 
 `stage_c_declared_dependency_copy_candidate` remains non-runnable historical
 research inventory. It is not part of the source-agnostic framework claim and
-cannot be promoted into the active v2 selector merely because a collector
+cannot be promoted into the active selector merely because a collector
 provides an artifact declaration. `stage_c_selection.py` is retained only as a
 legacy implementation adapter; public runtime traces and ownership use
 `stage_b_policy.py`.
@@ -128,29 +130,30 @@ about cookies or consent are retained. Placeholder and separable boilerplate
 compaction remain candidate-only until their false-positive and external gates
 close.
 
-The Normal development gate runs frozen Code, Math, and General fixtures across
+The structural development gate runs frozen Code, Math, and General fixtures across
 clean, exact-duplicate-heavy, explicit-artifact-heavy, and malformed scenarios.
 It compares artifact rules off versus all active Normal Quality rules on, reports
 reason-code and token-proxy deltas, and requires the Coverage invariant to
-pass. It is local structural evidence only: it does not read a model, NLL,
-Utility, or benchmark outcome.
+pass. That sub-gate is local structural evidence only. The final profiles also
+run the separately frozen three-teacher Quality panel; neither component reads
+NLL, Utility, benchmark outcomes, source reputation, a target composition, or
+a token budget.
 
 ## Normal And Hard Profiles
 
 `curation_mode: "normal"` and `curation_mode: "hard"` execute the same four
 Cores and the same Policy families. Normal uses strict Near-duplicate and
 unanimous Quality-fail operating points. Hard uses broader bounded-change
-limits, stable-majority Quality failure, and deterministic span compaction.
+limits and stable-majority Quality failure.
 Both are available for development/confirmatory runtime experiments and remain
 release-disabled. Neither uses model-relative scalar scores, source or domain
 metadata, retention fractions, or token budgets.
 
-The frozen Hard v1 inventory is deliberately small: prefix-license header
-spans, self-contained license comment-block spans, and long exact repeated
-template spans. Each requires an explicit trigger, a useful non-trigger
-fixture, a Stage-B-valid residual, a reason code/token delta, and a
-representative or span trace. Hard inherits every Normal rule and changes only
-frozen strength parameters. The retired 0.95 shingle selector, model-relative
+The former Hard span inventory (prefix-license header, self-contained license
+comment block, and repeated-template span) is an authorized-but-disabled
+candidate archive. None of those candidates can select, transform, or remove
+data in the final Normal or Hard runtime. Hard inherits every Normal rule and
+changes only frozen strength parameters. The retired 0.95 shingle selector, model-relative
 proxies, source metadata rules, and parser adapters are not in the final
 runtime surface.
 

@@ -46,7 +46,7 @@ def test_policy_profile_contract() -> None:
     assert normal["status"] == "confirmatory_candidate_release_blocked"
     assert normal["user_facing_mode"] == "normal"
     assert normal["stage_a_policy"] == "text_only_v2"
-    assert normal["selector"]["kind"] == "reason_coded_text_structural_only"
+    assert normal["selector"]["kind"] == "reason_coded_structural_and_teacher_evidence"
     assert normal["selector"]["reads_source_identity"] is False
     assert normal["selector"]["reads_source_tier"] is False
     assert normal["selector"]["reads_rights"] is False
@@ -58,6 +58,7 @@ def test_policy_profile_contract() -> None:
     assert normal["runtime_policy"]["stage_b"]["deduplicate_stage_a_text_exactly"] is True
     assert normal["runtime_policy"]["redundancy_v2"]["runtime_activation"] is True
     assert normal["runtime_policy"]["quality_teacher"]["runtime_required"] is True
+    assert "stage_b_quality_teacher_panel_v2" in normal["enabled_policy_ids"]
     assert "near_duplicate_compaction" not in normal["runtime_policy"]["stage_b_policy"]
     assert normal["runtime_policy"]["stage_b_policy"]["structural_scaffold_compaction"]["enabled"] is True
     assert normal["runtime_policy"]["stage_b_policy"]["structural_artifact_rules"] == {
@@ -71,10 +72,17 @@ def test_policy_profile_contract() -> None:
     hard = by_id["hard_structural_v1"]
     assert hard["status"] == "confirmatory_candidate_release_blocked"
     assert hard["user_facing_mode"] == "hard"
-    assert hard["selector"]["kind"] == "development_only_reason_coded_structural_span_compaction"
+    assert hard["selector"]["kind"] == "reason_coded_structural_and_teacher_evidence"
     assert hard["forbids_implicit_fixed_fraction"] is True
     assert hard["runtime_policy"]["redundancy_v2"]["runtime_activation"] is True
     assert hard["runtime_policy"]["quality_teacher"]["runtime_required"] is True
+    assert hard["enabled_policy_ids"] == normal["enabled_policy_ids"]
+    assert "hard_span_compaction" not in hard["runtime_policy"]["stage_b_policy"]
+    assert set(hard["candidate_policy_ids"]) == {
+        "stage_b_inline_license_header_candidate",
+        "stage_b_inline_license_comment_block_candidate",
+        "stage_b_repeated_span_template_candidate",
+    }
 
     calibrated = by_id["calibrated_selector_template_v1"]
     assert calibrated["status"] == "retired_not_runnable"

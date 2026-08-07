@@ -468,13 +468,13 @@
       "empirical_status": "unvalidated_structural_policy"
     },
     {
-      "id": "stage_c_symmetric_near_duplicate",
+      "id": "stage_b_symmetric_near_duplicate",
       "version": "1.0.0",
       "core": "redundancy",
-      "stage": "Stage C",
-      "hypothesis": "A symmetric lexical overlap family can retain one stable representative.",
+      "stage": "Stage B",
+      "hypothesis": "A length-aware symmetric witness with substantive-difference guards can link a removable near-substitute or contained payload to one stable representative.",
       "decision_unit": "chunk family",
-      "deployment_scope": "chunks meeting declared lexical-token and overlap conditions",
+      "deployment_scope": "chunks satisfying the frozen Redundancy v2 witness and mode-specific operating point",
       "allowed_inputs": [
         "chunk text"
       ],
@@ -490,23 +490,27 @@
         "composition"
       ],
       "reason_codes": [
-        "near_duplicate_representative_retained"
+        "redundancy_equivalent_family_nonrepresentative",
+        "redundancy_contained_payload_nonrepresentative"
       ],
       "negative_conditions": [
-        "pair overlap is below threshold or either chunk lacks minimum lexical tokens"
+        "substantive numeric, operator, negation, API, identifier, keyword, answer-label, or named-entity differences are retained",
+        "retrieval similarity without an authorized witness is retained"
       ],
-      "coverage_impact": "one representative per declared stratum is retained",
-      "rollback_behavior": "retain all family members by disabling near-duplicate compaction",
+      "coverage_impact": "every proposal links to a stable representative and remains subject to Stage C Coverage veto",
+      "rollback_behavior": "retain all family members by disabling Redundancy v2",
       "runtime_implementation": [
-        "stage_c_selection.py"
+        "redundancy_equivalence.py",
+        "redundancy_mode_policy.py",
+        "redundancy_v2.py"
       ],
-      "empirical_status": "unvalidated_structural_policy"
+      "empirical_status": "frozen_runtime_experiment_pending_external_validation"
     },
     {
-      "id": "stage_c_explicit_generated_artifact",
+      "id": "stage_b_explicit_generated_artifact",
       "version": "1.0.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "A source record explicitly marked generated and non-editable is a removable structural artifact.",
       "decision_unit": "source record",
       "deployment_scope": "records with both explicit generated and non-editable in-text evidence",
@@ -536,18 +540,19 @@
       "coverage_impact": "no target-mix restoration",
       "rollback_behavior": "retain source record by disabling this artifact rule",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "empirical_status": "unvalidated_structural_policy"
     },
     {
-      "id": "stage_c_license_comment_only",
+      "id": "stage_b_license_comment_only",
       "version": "1.0.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "A self-contained chunk containing only explicit license/comment text has no independent learnable payload.",
       "decision_unit": "chunk",
-      "deployment_scope": "all text-only Stage-C chunks",
+      "deployment_scope": "all text-only Stage-B chunks",
       "allowed_inputs": [
         "chunk text"
       ],
@@ -572,15 +577,16 @@
       "coverage_impact": "none",
       "rollback_behavior": "retain chunk by disabling this rule",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "empirical_status": "unvalidated_structural_policy"
     },
     {
-      "id": "stage_c_structural_scaffold",
+      "id": "stage_b_structural_scaffold",
       "version": "1.1.0",
       "core": "redundancy",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "Only an import/export-only scaffold family identical after trailing-whitespace normalization can retain one stable representative.",
       "decision_unit": "trailing-whitespace-normalized structural family",
       "deployment_scope": "text-only chunks satisfying the scaffold syntax condition and sharing a signature that preserves comments, indentation, and case",
@@ -609,9 +615,50 @@
       "coverage_impact": "one stable representative per trailing-whitespace-equivalent scaffold family is retained",
       "rollback_behavior": "retain all scaffold family members by disabling this rule",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_b_quality_teacher_panel_v2",
+      "version": "2.0.0",
+      "core": "quality",
+      "stage": "Stage B",
+      "hypothesis": "Independent Q1-Q4 fail evidence from the frozen three-teacher panel can reject a valid nonredundant unit only through the mode-specific consensus policy.",
+      "decision_unit": "chunk",
+      "deployment_scope": "English continued-pretraining chunks scored by the frozen NVIDIA Build teacher panel",
+      "allowed_inputs": [
+        "chunk text",
+        "runtime-local route",
+        "typed Q1-Q4 teacher evidence"
+      ],
+      "forbidden_inputs": [
+        "weighted_quality_score",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "quality_normal_unanimous_fail",
+        "quality_hard_stable_majority_fail"
+      ],
+      "negative_conditions": [
+        "any missing or abstaining evidence follows the frozen mode policy",
+        "teacher output alone has no deletion authority"
+      ],
+      "coverage_impact": "every rejection remains a Stage B proposal subject to Stage C Coverage veto",
+      "rollback_behavior": "retain the chunk when required panel evidence is unavailable",
+      "runtime_implementation": [
+        "quality_teacher_materialization.py",
+        "quality_teacher_batch_runtime.py",
+        "all_policy_stage_b.py"
+      ],
+      "empirical_status": "runtime_experiment_pending_external_validation"
     },
     {
       "id": "stage_c_coverage_guard",
@@ -650,10 +697,10 @@
       "empirical_status": "runtime_materialization_invariant_not_selector"
     },
     {
-      "id": "stage_c_empty_html_shell",
+      "id": "stage_b_empty_html_shell",
       "version": "1.0.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "A complete HTML shell with no visible lexical payload is a removable non-payload artifact.",
       "decision_unit": "chunk",
       "deployment_scope": "complete HTML documents with no visible lexical payload after tags are removed",
@@ -680,15 +727,16 @@
       "coverage_impact": "whole-chunk removal is allowed only after explicit empty-shell evidence",
       "rollback_behavior": "retain the chunk by disabling this rule",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "empirical_status": "unvalidated_structural_policy"
     },
     {
-      "id": "stage_c_inline_license_header_candidate",
+      "id": "stage_b_inline_license_header_candidate",
       "version": "0.2.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "An explicit prefix license header is separable non-payload when the residual independently satisfies the Stage-B payload boundary.",
       "decision_unit": "prefix comment span",
       "deployment_scope": "Hard development profile only; text-only chunks with an explicit license marker",
@@ -702,10 +750,10 @@
       "empirical_status": "development_only_pending_n4_ablation"
     },
     {
-      "id": "stage_c_inline_license_comment_block_candidate",
+      "id": "stage_b_inline_license_comment_block_candidate",
       "version": "0.2.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "A self-contained explicit license comment block is separable non-payload when the residual independently satisfies the Stage-B payload boundary.",
       "decision_unit": "contiguous comment-block span",
       "deployment_scope": "Hard development profile only; text-only chunks with an explicit license marker",
@@ -719,10 +767,10 @@
       "empirical_status": "development_only_pending_n4_ablation"
     },
     {
-      "id": "stage_c_repeated_span_template_candidate",
+      "id": "stage_b_repeated_span_template_candidate",
       "version": "0.2.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "A long exact normalized repeated paragraph is separable non-payload only from nonrepresentative chunks with an independently valid residual.",
       "decision_unit": "exact normalized paragraph span",
       "deployment_scope": "Hard development profile only; Stage-B pass chunks",
@@ -880,10 +928,10 @@
       "empirical_status": "retired_zero_observed_spans_in_development"
     },
     {
-      "id": "stage_c_web_chrome_only_chunk",
+      "id": "stage_b_web_chrome_only_chunk",
       "version": "1.0.0",
       "core": "quality",
-      "stage": "Stage C",
+      "stage": "Stage B",
       "hypothesis": "A chunk composed entirely of explicit cookie-control UI markers has no independent textual learning payload.",
       "decision_unit": "chunk",
       "deployment_scope": "chunks with four or more nonblank lines, each an explicit cookie-control marker",
@@ -910,6 +958,7 @@
       "coverage_impact": "whole-chunk removal is allowed only after explicit all-lines UI evidence",
       "rollback_behavior": "retain the chunk by disabling this rule",
       "runtime_implementation": [
+        "stage_b_policy.py",
         "stage_c_selection.py"
       ],
       "empirical_status": "unvalidated_structural_policy"

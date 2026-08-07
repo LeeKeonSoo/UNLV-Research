@@ -213,7 +213,7 @@ def test_target_aware_profiles_do_not_replace_the_active_structural_profile() ->
     assert target_aware.benchmark_feedback_allowed is False
     assert target_aware.source_selection_axis is False
     assert current_by_id["normal_structural_v1"]["status"] == "active"
-    assert current_by_id["normal_structural_v1"]["selector"]["kind"] == "reason_coded_text_structural_only"
+    assert current_by_id["normal_structural_v1"]["selector"]["kind"] == "reason_coded_structural_and_teacher_evidence"
     assert current["target_aware_candidate_profile_registry"] == "configs/joint_selector_profiles_v1.json"
     assert joint_contract["orchestration_role"] == "atomic_evidence_only_combination_not_a_fifth_core"
     assert joint_contract["runtime_activation"] is False

@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
 
 from quality_teacher_panel import PanelDecision, PolicyDecision, TeacherVote
 from quality_teacher_runtime import PanelPolicyResult
+from semantic_coverage_materializer import SemanticCoverageMaterializationError
 
 
 QUALITY_POLICY_IDS = (
@@ -113,6 +114,64 @@ def test_runtime_output_preflight_fails_before_expensive_work() -> None:
             assert error.path == blocking_file
         else:
             raise AssertionError("Expected output preflight to reject the blocked path")
+
+
+def test_semantic_artifact_preflight_runs_before_quality_scoring() -> None:
+    module = _load_module()
+    quality_called = False
+
+    def forbidden_quality_scorer(rows, **_kwargs):
+        nonlocal quality_called
+        quality_called = True
+        return _all_pass_quality_scorer(rows)
+
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        input_path = root / "input.jsonl"
+        config_path = root / "config.json"
+        _write_jsonl(
+            input_path,
+            [{"id": "fixture", "text": "A substantive fixture payload remains valid."}],
+        )
+        config_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "curation-run-contract-v1",
+                    "status": "frozen_before_stage_a_b_c_materialization",
+                    "curation_mode": "normal",
+                    "execution_scope": "development",
+                    "input": {
+                        "candidate_files": [str(input_path)],
+                        "text_fields": ["text"],
+                        "defaults": {},
+                    },
+                    "output_dir": str(root / "output"),
+                    "stage_b": {"max_chunk_chars": 6000},
+                    "stage_c": {
+                        "minimum_residual_chars": 40,
+                        "no_binding_budget_action": "selection_without_binding_budget",
+                        "semantic_coverage": {
+                            "provider_registry_path": str(
+                                ROOT / "configs" / "model_provider_registry_v1.json"
+                            ),
+                            "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+                            "corpus_path": str(root / "missing-corpus.jsonl"),
+                            "graph_path": str(root / "missing-graph.json"),
+                        },
+                    },
+                    "claim_boundary": "fixture-only",
+                }
+            ),
+            encoding="utf-8",
+        )
+        try:
+            module.materialize(config_path, quality_scorer=forbidden_quality_scorer)
+        except SemanticCoverageMaterializationError as error:
+            assert "missing" in str(error).lower()
+        else:
+            raise AssertionError("Missing Stage-C artifacts must stop the run")
+
+    assert quality_called is False
 
 
 def main() -> int:
@@ -265,12 +324,9 @@ def main() -> int:
             "framework_profiles.py",
             "framework_runtime_bridge.py",
             "model_provider_contract.py",
-            "hard_structural_runtime.py",
             "general_web_span_compaction.py",
             "ingestion/input_adapter.py",
             "ingestion/candidate_processing.py",
-            "inline_license_comment_block_compaction.py",
-            "inline_license_header_compaction.py",
             "quality_decision_contract.py",
             "quality_rule_evidence.py",
             "quality_retention.py",
@@ -281,7 +337,6 @@ def main() -> int:
             "redundancy_v2.py",
             "redundancy_v2_retrieval.py",
             "quality_teacher_adapters.py",
-            "quality_teacher_local.py",
             "quality_teacher_panel.py",
             "quality_teacher_response.py",
             "quality_teacher_runtime.py",
@@ -289,7 +344,6 @@ def main() -> int:
             "quality_teacher_unit_runtime.py",
             "quality_teacher_batch_runtime.py",
             "run_curation.py",
-            "span_level_template_compaction.py",
             "stage_b_policy.py",
             "stage_c_selection.py",
             "stage_permissions.py",
@@ -361,4 +415,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    test_chunk_text_preserves_code_layout_when_a_paragraph_exceeds_limit()
+    test_chunk_text_preserves_an_unbroken_long_line()
+    test_runtime_output_preflight_fails_before_expensive_work()
+    test_semantic_artifact_preflight_runs_before_quality_scoring()
     raise SystemExit(main())

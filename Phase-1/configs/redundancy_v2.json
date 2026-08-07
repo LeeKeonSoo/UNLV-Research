@@ -57,7 +57,8 @@
   ],
   "retrieval": {
     "exact_and_formatting_digest": true,
-    "repeated_paragraph_digest": true,
+    "repeated_paragraph_digest": false,
+    "repeated_paragraph_digest_scope": "candidate_development_only_explicit_opt_in",
     "exact_containment_window_digest": true,
     "minhash_lsh_candidate_only": true,
     "retrieval_min_tokens": 24,
