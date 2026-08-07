@@ -4,8 +4,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from collections import Counter
 from collections.abc import Iterable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -15,7 +17,7 @@ from composition_artifacts import (
     build_composition_artifacts,
     write_composition_artifacts,
 )
-from all_policy_stage_b import apply_quality_policy, apply_redundancy_policy
+from all_policy_stage_b import apply_quality_policy
 from coverage_redundancy_bridge import coverage_families_from_redundancy_plan
 from coverage_contract import CoverageExecutionScope
 from curation_artifacts import load_json, save_json, sha256_file
@@ -38,6 +40,7 @@ from quality_operating_points import CurationMode
 from quality_teacher_materialization import score_quality_rows
 from reason_code_audit import build_reason_code_impact_audit
 from redundancy_equivalence import RedundancyMode
+from redundancy_checkpoint import load_or_build_redundancy
 from redundancy_v2 import RedundancySettings
 from stage_b_policy import propose_stage_b_removals
 from semantic_coverage_materializer import materialize_semantic_coverage
@@ -63,6 +66,42 @@ POLICY_FINGERPRINT_CONFIGS = (
     "configs/policy_cards.json",
     "configs/policy_profiles.json",
 )
+
+
+@dataclass(frozen=True, slots=True)
+class RuntimeWritePreflightError(RuntimeError):
+    path: Path
+    detail: str
+
+    def __str__(self) -> str:
+        return f"Runtime output path is not writable: {self.path} ({self.detail})"
+
+
+def _probe_writable_directory(path: Path) -> None:
+    try:
+        path.mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        raise RuntimeWritePreflightError(path=path, detail=str(error)) from error
+    probe = path / f".curation-write-probe-{os.getpid()}"
+    try:
+        with probe.open("x", encoding="ascii") as handle:
+            handle.write("ok\n")
+        probe.unlink()
+    except OSError as error:
+        try:
+            probe.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise RuntimeWritePreflightError(path=path, detail=str(error)) from error
+
+
+def preflight_runtime_writes(
+    *, output_dir: Path, cache_path: Path, checkpoint_path: Path
+) -> None:
+    for path in dict.fromkeys((output_dir, cache_path.parent, checkpoint_path.parent)):
+        _probe_writable_directory(path)
+
+
 POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "run_curation.py",
     "all_policy_stage_b.py",
@@ -99,6 +138,7 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "quality_teacher_local.py",
     "quality_retention.py",
     "reason_code_audit.py",
+    "redundancy_checkpoint.py",
     "redundancy_equivalence.py",
     "redundancy_mode_policy.py",
     "redundancy_v2.py",
@@ -648,6 +688,25 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     effective_policy = mode["effective_policy"]
     validate_run_policy_overrides(config, effective_policy)
     output_dir = Path(str(config["output_dir"]))
+    quality_runtime = config.get("quality_runtime")
+    quality_runtime = quality_runtime if isinstance(quality_runtime, dict) else {}
+    quality_cache_path = Path(
+        str(
+            quality_runtime.get("observation_cache_path")
+            or output_dir / "quality_teacher_observations.jsonl"
+        )
+    )
+    redundancy_checkpoint_path = Path(
+        str(
+            quality_runtime.get("redundancy_checkpoint_path")
+            or output_dir / "checkpoints" / "stage_b_redundancy_v2.json"
+        )
+    )
+    preflight_runtime_writes(
+        output_dir=output_dir,
+        cache_path=quality_cache_path,
+        checkpoint_path=redundancy_checkpoint_path,
+    )
     source_specs = _source_specs(config["input"])
     source_paths = [_source_path(source) for source in source_specs]
     pretraining_audit = _pretraining_audit(config, source_paths)
@@ -770,23 +829,17 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         passed, removal_policy
     )
     redundancy_settings_payload = dict(effective_policy["redundancy_v2"]["settings"])
-    redundancy_result = apply_redundancy_policy(
+    checkpointed_redundancy = load_or_build_redundancy(
         selected,
         mode=RedundancyMode(mode["mode"]),
         settings=RedundancySettings(**redundancy_settings_payload),
+        checkpoint_path=redundancy_checkpoint_path,
     )
-    quality_runtime = config.get("quality_runtime")
-    quality_runtime = quality_runtime if isinstance(quality_runtime, dict) else {}
+    redundancy_result = checkpointed_redundancy.result
     panel_path = Path(str(effective_policy["quality_teacher"]["panel"]))
     if not panel_path.is_absolute():
         panel_path = root / panel_path
     dotenv_path = Path(str(quality_runtime.get("dotenv_path") or root.parent / ".env"))
-    quality_cache_path = Path(
-        str(
-            quality_runtime.get("observation_cache_path")
-            or output_dir / "quality_teacher_observations.jsonl"
-        )
-    )
     quality_results, quality_scoring_audit = quality_scorer(
         list(redundancy_result.survivors),
         panel_path=panel_path,
@@ -1029,6 +1082,11 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         "policy_fingerprint": _policy_fingerprint(),
         "stage_b_policy": selection_audit,
         "stage_b_redundancy_v2": redundancy_result.audit,
+        "stage_b_redundancy_checkpoint": {
+            "checkpoint_hit": checkpointed_redundancy.checkpoint_hit,
+            "identity_sha256": checkpointed_redundancy.identity_sha256,
+            "checkpoint_path": checkpointed_redundancy.checkpoint_path,
+        },
         "stage_b_quality_teacher": quality_result.audit,
         "quality_scoring": quality_scoring_audit,
         "stage_c_coverage": semantic_coverage_audit,

@@ -12,9 +12,12 @@ if str(ROOT) not in sys.path:
 
 from quality_teacher_materialization import (
     OBSERVATION_SCHEMA,
+    QualityBatchUnavailableError,
+    _evaluate_reliably,
     _load_cache,
     materialize_modes,
 )
+from quality_teacher_unit_runtime import InsufficientTeacherAvailability
 from quality_teacher_panel import PanelDecision, PolicyDecision, TeacherVote
 from quality_teacher_runtime import PanelPolicyResult
 
@@ -122,7 +125,60 @@ def test_unavailable_provider_observation_is_never_reused() -> None:
         assert ignored == 1
 
 
+def test_rate_limit_retry_uses_cooldown_scale_backoff() -> None:
+    attempts = 0
+    sleeps: list[float] = []
+    expected = ("recovered",)
+
+    def evaluator(panel, adapters, units):
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise InsufficientTeacherAvailability(
+                unit_id="fixture",
+                available_teachers=1,
+            )
+        return expected
+
+    observed = _evaluate_reliably(
+        panel=None,
+        adapters={},
+        units=(),
+        retry_delays_seconds=(30.0, 60.0, 120.0),
+        evaluator=evaluator,
+        sleep_fn=sleeps.append,
+    )
+
+    assert observed == expected
+    assert attempts == 3
+    assert sleeps == [30.0, 60.0]
+
+
+def test_exhausted_provider_retry_raises_only_the_typed_resume_error() -> None:
+    def unavailable(panel, adapters, units):
+        raise InsufficientTeacherAvailability(
+            unit_id="fixture",
+            available_teachers=1,
+        )
+
+    try:
+        _evaluate_reliably(
+            panel=None,
+            adapters={},
+            units=(),
+            retry_delays_seconds=(1.0,),
+            evaluator=unavailable,
+            sleep_fn=lambda _: None,
+        )
+    except QualityBatchUnavailableError as error:
+        assert error.attempts == 2
+    else:
+        raise AssertionError("Expected the typed resumable provider error")
+
+
 if __name__ == "__main__":
     test_normal_and_hard_share_evidence_but_use_different_fail_strength()
     test_unavailable_provider_observation_is_never_reused()
+    test_rate_limit_retry_uses_cooldown_scale_backoff()
+    test_exhausted_provider_retry_raises_only_the_typed_resume_error()
     print("[quality-teacher-materialization-v1] shared evidence and deletion authority: pass")

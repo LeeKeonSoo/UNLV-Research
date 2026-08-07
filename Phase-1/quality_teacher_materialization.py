@@ -5,10 +5,10 @@ import hashlib
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from time import sleep
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 from dotenv import load_dotenv
 
@@ -35,6 +35,18 @@ from quality_teacher_unit_runtime import InsufficientTeacherAvailability
 JsonMap = dict[str, Any]
 OBSERVATION_SCHEMA = "quality-teacher-corpus-observation-v2"
 REPORT_SCHEMA = "quality-teacher-materialization-report-v1"
+
+
+@dataclass(frozen=True, slots=True)
+class QualityBatchUnavailableError(RuntimeError):
+    chunk_uids: tuple[str, ...]
+    attempts: int
+
+    def __str__(self) -> str:
+        return (
+            f"Quality provider unavailable after {self.attempts} attempts: "
+            f"{','.join(self.chunk_uids)}"
+        )
 
 
 def _sha256(path: Path) -> str:
@@ -149,18 +161,23 @@ def _evaluate_reliably(
     adapters: Mapping[str, PolicySetBatchAdapter],
     units: tuple[EvaluationUnit, ...],
     *,
-    maximum_attempts: int = 4,
+    retry_delays_seconds: tuple[float, ...] = (30.0, 60.0, 120.0),
+    evaluator: Callable[
+        [Any, Mapping[str, PolicySetBatchAdapter], tuple[EvaluationUnit, ...]],
+        tuple[UnitBatchResult, ...],
+    ] = evaluate_quality_units_batched,
+    sleep_fn: Callable[[float], None] = sleep,
 ) -> tuple[UnitBatchResult, ...]:
-    for attempt in range(1, maximum_attempts + 1):
+    for attempt in range(len(retry_delays_seconds) + 1):
         try:
-            return evaluate_quality_units_batched(panel, adapters, units)
+            return evaluator(panel, adapters, units)
         except InsufficientTeacherAvailability:
             pass
-        if attempt < maximum_attempts:
-            sleep(2 ** (attempt - 1))
-    raise RuntimeError(
-        f"Quality provider unavailable after {maximum_attempts} attempts: "
-        f"{','.join(unit.unit_id for unit in units)}"
+        if attempt < len(retry_delays_seconds):
+            sleep_fn(retry_delays_seconds[attempt])
+    raise QualityBatchUnavailableError(
+        chunk_uids=tuple(unit.unit_id for unit in units),
+        attempts=len(retry_delays_seconds) + 1,
     )
 
 
@@ -233,6 +250,7 @@ def score_quality_rows(
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     new_observations = 0
+    failed_batches: list[JsonMap] = []
     if pending:
         with cache_path.open("a", encoding="utf-8", newline="\n") as handle:
             with ThreadPoolExecutor(max_workers=task_workers) as executor:
@@ -252,7 +270,25 @@ def score_quality_rows(
                         for unit_batch in batch_group
                     }
                     for future in as_completed(futures):
-                        result_by_id = {item.unit_id: item.evidence for item in future.result()}
+                        try:
+                            completed = future.result()
+                        except QualityBatchUnavailableError as error:
+                            failed_batch = {
+                                "chunk_uids": [item[2].unit_id for item in futures[future]],
+                                "error": str(error),
+                            }
+                            failed_batches.append(failed_batch)
+                            print(
+                                json.dumps(
+                                    {
+                                        "quality_batch_failure": failed_batch["chunk_uids"],
+                                        "status": "deferred_for_resume",
+                                    }
+                                ),
+                                flush=True,
+                            )
+                            continue
+                        result_by_id = {item.unit_id: item.evidence for item in completed}
                         for task_id, text_digest, unit in futures[future]:
                             result = result_by_id[unit.unit_id]
                             observation = {
@@ -284,6 +320,17 @@ def score_quality_rows(
                         flush=True,
                     )
 
+    if failed_batches:
+        failure_path = cache_path.with_suffix(cache_path.suffix + ".failures.jsonl")
+        with failure_path.open("a", encoding="utf-8", newline="\n") as handle:
+            for failure in failed_batches:
+                handle.write(json.dumps(failure, ensure_ascii=True, sort_keys=True) + "\n")
+        raise RuntimeError(
+            f"Quality materialization saved partial progress but deferred "
+            f"{sum(len(item['chunk_uids']) for item in failed_batches)} chunks; "
+            f"resume with the same cache"
+        )
+
     results_by_chunk: dict[str, tuple[PanelPolicyResult, ...]] = {}
     for row in rows:
         chunk_uid = str(row["chunk_uid"])
@@ -314,7 +361,7 @@ def score_quality_rows(
         "teacher_panel_sha256": panel_sha256,
         "quality_policy_ids": list(expected_policy_ids),
         "input_chunks": len(rows),
-        "transport_mode": "all_q1_q4_policies_for_four_units_per_teacher_request",
+        "transport_mode": "all_q1_q4_policies_batched_per_teacher_request",
         "unit_batch_size": panel.unit_batch_size,
         "required_observations": len(rows),
         "new_observations": new_observations,

@@ -88,6 +88,8 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("validation/test_quality_teacher_unit_runtime_v1.py")
     expected.add("all_policy_stage_b.py")
     expected.add("validation/test_all_policy_stage_b_v1.py")
+    expected.add("redundancy_checkpoint.py")
+    expected.add("validation/test_redundancy_checkpoint_v1.py")
     expected.add("validation/test_quality_candidate_authority_v1.py")
     expected.add("validation/test_positive_quality_coverage_contract.py")
     expected.add("validation/test_content_routing_quality_coverage_contract_v2.py")

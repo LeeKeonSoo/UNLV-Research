@@ -34,7 +34,7 @@ class PolicySetBatchGenerationRequest(BaseModel):
     teacher_id: str = Field(min_length=1)
     model_id: str = Field(min_length=1)
     policies: tuple[QualityPolicy, QualityPolicy, QualityPolicy, QualityPolicy]
-    units: tuple[EvaluationUnit, ...] = Field(min_length=1, max_length=8)
+    units: tuple[EvaluationUnit, ...] = Field(min_length=1, max_length=16)
     pass_index: Literal[1, 2]
     blind_run_id: str = Field(min_length=1)
     schema_retry: bool
@@ -54,7 +54,7 @@ class UnitPolicyPayload(BaseModel):
 class PolicySetBatchPayload(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    units: tuple[UnitPolicyPayload, ...] = Field(min_length=1, max_length=8)
+    units: tuple[UnitPolicyPayload, ...] = Field(min_length=1, max_length=16)
 
 
 @dataclass(frozen=True, slots=True)

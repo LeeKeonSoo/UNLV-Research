@@ -179,7 +179,7 @@ class TeacherPanel(BaseModel):
         "single_policy_request",
         "all_policies_per_unit_request",
     ] = "single_policy_request"
-    unit_batch_size: int = Field(default=1, ge=1, le=8)
+    unit_batch_size: int = Field(default=1, ge=1, le=16)
     teacher_output_alone_may_delete: Literal[False]
     training_objective: Literal["continued_pretraining"]
     initial_language_scope: tuple[Literal["english"], ...]
@@ -202,8 +202,10 @@ class TeacherPanel(BaseModel):
             raise PanelContractError("Only the frozen v2 hosted panel may be runtime-active")
         if self.runtime_activation and self.transport_mode != "all_policies_per_unit_request":
             raise PanelContractError("Runtime Quality deletion requires combined Q1-Q4 transport")
-        if self.runtime_activation and self.unit_batch_size != 4:
-            raise PanelContractError("Runtime Quality deletion requires the frozen four-unit batch")
+        if self.runtime_activation and self.unit_batch_size not in {4, 8, 16}:
+            raise PanelContractError(
+                "Runtime Quality deletion requires a frozen 4, 8, or 16-unit batch"
+            )
         if len({teacher.teacher_id for teacher in self.teachers}) != 3:
             raise PanelContractError("Teacher IDs must be unique")
         if len({teacher.organization for teacher in self.teachers}) != 3:

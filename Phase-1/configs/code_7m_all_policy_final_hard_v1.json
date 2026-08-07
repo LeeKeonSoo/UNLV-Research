@@ -17,8 +17,9 @@
   },
   "quality_runtime": {
     "dotenv_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/.env",
-    "observation_cache_path": "D:/UNLV-Research/final_all_policy_v1/quality/teacher_observations_v1.jsonl",
-    "task_workers": 32
+    "observation_cache_path": "D:/UNLV-Research/final_all_policy_v1/quality/teacher_observations_v2_batch16.jsonl",
+    "redundancy_checkpoint_path": "D:/UNLV-Research/final_all_policy_v1/checkpoints/hard_stage_b_redundancy_v2.json",
+    "task_workers": 8
   },
   "stage_c": {
     "minimum_residual_chars": 120,

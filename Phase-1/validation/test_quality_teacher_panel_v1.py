@@ -103,6 +103,8 @@ def test_active_v2_panel_uses_glm_with_slow_endpoint_transport_budget() -> None:
     assert glm.maximum_transport_retries == 1
     assert glm.reasoning_control == "none"
     assert panel.runtime_activation is True
+    assert panel.unit_batch_size == 16
+    assert all(teacher.maximum_new_tokens == 4096 for teacher in panel.teachers)
 
 
 def test_v2_development_success_does_not_activate_quality() -> None:

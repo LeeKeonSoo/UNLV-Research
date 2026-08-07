@@ -56,6 +56,7 @@ def _load_module() -> object:
     spec = importlib.util.spec_from_file_location("run_curation", path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -93,6 +94,25 @@ def test_chunk_text_preserves_an_unbroken_long_line() -> None:
 
     assert "".join(chunks) == source
     assert [len(chunk) for chunk in chunks] == [40, 40, 11]
+
+
+def test_runtime_output_preflight_fails_before_expensive_work() -> None:
+    module = _load_module()
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        blocking_file = root / "not-a-directory"
+        blocking_file.write_text("fixture", encoding="utf-8")
+
+        try:
+            module.preflight_runtime_writes(
+                output_dir=root / "output",
+                cache_path=blocking_file / "cache.jsonl",
+                checkpoint_path=root / "checkpoint.json",
+            )
+        except module.RuntimeWritePreflightError as error:
+            assert error.path == blocking_file
+        else:
+            raise AssertionError("Expected output preflight to reject the blocked path")
 
 
 def main() -> int:
@@ -255,6 +275,7 @@ def main() -> int:
             "quality_rule_evidence.py",
             "quality_retention.py",
             "reason_code_audit.py",
+            "redundancy_checkpoint.py",
             "redundancy_equivalence.py",
             "redundancy_mode_policy.py",
             "redundancy_v2.py",
