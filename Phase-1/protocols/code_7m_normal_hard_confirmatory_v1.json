@@ -8,8 +8,8 @@
     "required_status": "benchmark_exclusion_complete"
   },
   "curation": {
-    "normal_config": "protocols/code_7m_normal_confirmatory_curation_v1.json",
-    "hard_config": "protocols/code_7m_hard_confirmatory_curation_v1.json",
+    "normal_config": "configs/code_7m_all_policy_final_normal_v1.json",
+    "hard_config": "configs/code_7m_all_policy_final_hard_v1.json",
     "policy_boundary": "Hard is confirmatory-only and must not be used for production curation before external results are frozen."
   },
   "training": {
@@ -25,7 +25,7 @@
     "weight_decay": 0.1,
     "max_grad_norm": 1.0,
     "adapter": {"rank": 32, "alpha": 64, "dropout": 0.05, "target_modules": "all-linear"},
-    "output_root": "D:/UNLV-Research/final_framework_test_v1"
+    "output_root": "D:/UNLV-Research/final_all_policy_v1/external_training_v1"
   },
   "primary_benchmarks": ["humanevalplus", "mbppplus", "bigcodebench_complete", "cruxeval_input_prediction", "cruxeval_output_prediction", "ds1000"],
   "blocked_benchmarks": ["livecodebench_code_generation_lite"],

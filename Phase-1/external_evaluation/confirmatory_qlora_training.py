@@ -13,7 +13,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROTOCOL = ROOT / "protocols" / "code_7m_normal_hard_confirmatory_v1.json"
 DEFAULT_INPUT_REPORT = Path(
-    "D:/UNLV-Research/code_5m_corpus_v2/hard_confirmatory_7m_v1/training_inputs/training_inputs_report.json"
+    "D:/UNLV-Research/final_all_policy_v1/training_inputs_v1/training_inputs_report.json"
 )
 
 
