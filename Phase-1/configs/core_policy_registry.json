@@ -899,6 +899,7 @@
       "coverage_impact_validation": "quality_rejection_is_stage_b_proposal_subject_to_stage_c_veto",
       "runtime_implementation": [
         "quality_teacher_materialization.py",
+        "quality_teacher_batch_cache.py",
         "quality_teacher_json.py",
         "quality_teacher_batch_runtime.py",
         "all_policy_stage_b.py"

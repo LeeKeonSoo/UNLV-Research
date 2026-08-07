@@ -109,10 +109,12 @@ def test_unavailable_provider_observation_is_never_reused() -> None:
     with TemporaryDirectory() as directory:
         path = Path(directory) / "cache.jsonl"
         panel_sha256 = "a" * 64
+        runtime_sha256 = "c" * 64
         payload = {
             "schema_version": OBSERVATION_SCHEMA,
             "task_id": "unavailable",
             "teacher_panel_sha256": panel_sha256,
+            "quality_runtime_sha256": runtime_sha256,
             "chunk_uid": "chunk",
             "text_sha256": "b" * 64,
             "available_teacher_ids": ["teacher-0"],
@@ -120,9 +122,33 @@ def test_unavailable_provider_observation_is_never_reused() -> None:
             "policy_results": [],
         }
         path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
-        cache, ignored = _load_cache(path, panel_sha256)
+        cache, ignored = _load_cache(path, panel_sha256, runtime_sha256)
         assert cache == {}
         assert ignored == 1
+
+
+def test_observation_cache_rejects_runtime_identity_mismatch() -> None:
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "cache.jsonl"
+        payload = {
+            "schema_version": OBSERVATION_SCHEMA,
+            "task_id": "cached",
+            "teacher_panel_sha256": "a" * 64,
+            "quality_runtime_sha256": "b" * 64,
+            "chunk_uid": "chunk",
+            "text_sha256": "c" * 64,
+            "available_teacher_ids": ["teacher-0", "teacher-1"],
+            "unavailable_teacher_ids": ["teacher-2"],
+            "policy_results": [{}, {}, {}, {}],
+        }
+        path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+        try:
+            _load_cache(path, "a" * 64, "d" * 64)
+        except RuntimeError as error:
+            assert "runtime identity mismatch" in str(error)
+        else:
+            raise AssertionError("changed Quality runtime must invalidate observations")
 
 
 def test_rate_limit_retry_uses_cooldown_scale_backoff() -> None:
@@ -176,9 +202,29 @@ def test_exhausted_provider_retry_raises_only_the_typed_resume_error() -> None:
         raise AssertionError("Expected the typed resumable provider error")
 
 
+def test_reliable_evaluation_forwards_provider_evidence_store() -> None:
+    expected_store = object()
+
+    def evaluator(panel, adapters, units, *, evidence_store):
+        assert evidence_store is expected_store
+        return ("cached",)
+
+    observed = _evaluate_reliably(
+        panel=None,
+        adapters={},
+        units=(),
+        evidence_store=expected_store,
+        evaluator=evaluator,
+    )
+
+    assert observed == ("cached",)
+
+
 if __name__ == "__main__":
     test_normal_and_hard_share_evidence_but_use_different_fail_strength()
     test_unavailable_provider_observation_is_never_reused()
+    test_observation_cache_rejects_runtime_identity_mismatch()
     test_rate_limit_retry_uses_cooldown_scale_backoff()
     test_exhausted_provider_retry_raises_only_the_typed_resume_error()
+    test_reliable_evaluation_forwards_provider_evidence_store()
     print("[quality-teacher-materialization-v1] shared evidence and deletion authority: pass")

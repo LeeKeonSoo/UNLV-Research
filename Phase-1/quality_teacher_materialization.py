@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 from quality_operating_points import CurationMode, QualityAction
 from quality_stage_bridge import apply_coverage_veto, propose_quality_removals
 from quality_teacher_adapters import ConcurrencyLimitedBackend, NvidiaBuildBackend
+from quality_teacher_batch_cache import TeacherBatchEvidenceStore
 from quality_teacher_panel import (
     PanelDecision,
     PolicyDecision,
@@ -26,6 +27,7 @@ from quality_teacher_runtime import EvaluationUnit, PanelPolicyResult
 from quality_teacher_batch_runtime import (
     HostedPolicySetBatchAdapter,
     PolicySetBatchAdapter,
+    TeacherBatchEvidenceStoreProtocol,
     UnitBatchResult,
     evaluate_quality_units_batched,
 )
@@ -33,8 +35,18 @@ from quality_teacher_unit_runtime import InsufficientTeacherAvailability
 
 
 JsonMap = dict[str, Any]
-OBSERVATION_SCHEMA = "quality-teacher-corpus-observation-v2"
+OBSERVATION_SCHEMA = "quality-teacher-corpus-observation-v3"
 REPORT_SCHEMA = "quality-teacher-materialization-report-v1"
+QUALITY_RUNTIME_MODULES = (
+    "quality_teacher_adapters.py",
+    "quality_teacher_batch_cache.py",
+    "quality_teacher_batch_runtime.py",
+    "quality_teacher_json.py",
+    "quality_teacher_materialization.py",
+    "quality_teacher_panel.py",
+    "quality_teacher_runtime.py",
+    "quality_teacher_unit_runtime.py",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +67,17 @@ def _sha256(path: Path) -> str:
 
 def _text_sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _quality_runtime_sha256() -> str:
+    root = Path(__file__).resolve().parent
+    digest = hashlib.sha256()
+    for relative_path in QUALITY_RUNTIME_MODULES:
+        digest.update(relative_path.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update((root / relative_path).read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def _read_jsonl(path: Path) -> list[JsonMap]:
@@ -131,12 +154,23 @@ def _result_from_mapping(payload: Mapping[str, Any]) -> PanelPolicyResult:
     )
 
 
-def _task_id(panel_sha256: str, chunk_uid: str, text_sha256: str) -> str:
-    payload = f"{panel_sha256}\0{chunk_uid}\0{text_sha256}\0combined_q1_q4"
+def _task_id(
+    panel_sha256: str,
+    runtime_sha256: str,
+    chunk_uid: str,
+    text_sha256: str,
+) -> str:
+    payload = (
+        f"{panel_sha256}\0{runtime_sha256}\0{chunk_uid}\0{text_sha256}\0combined_q1_q4"
+    )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
-def _load_cache(path: Path, panel_sha256: str) -> tuple[dict[str, JsonMap], int]:
+def _load_cache(
+    path: Path,
+    panel_sha256: str,
+    runtime_sha256: str,
+) -> tuple[dict[str, JsonMap], int]:
     if not path.exists():
         return {}, 0
     cached: dict[str, JsonMap] = {}
@@ -146,6 +180,8 @@ def _load_cache(path: Path, panel_sha256: str) -> tuple[dict[str, JsonMap], int]
             raise RuntimeError(f"Incompatible Quality observation schema in {path}")
         if row.get("teacher_panel_sha256") != panel_sha256:
             raise RuntimeError(f"Quality observation panel identity mismatch in {path}")
+        if row.get("quality_runtime_sha256") != runtime_sha256:
+            raise RuntimeError(f"Quality observation runtime identity mismatch in {path}")
         if len(tuple(row.get("available_teacher_ids") or ())) < 2:
             ignored_unavailable += 1
             continue
@@ -161,16 +197,16 @@ def _evaluate_reliably(
     adapters: Mapping[str, PolicySetBatchAdapter],
     units: tuple[EvaluationUnit, ...],
     *,
+    evidence_store: TeacherBatchEvidenceStoreProtocol | None = None,
     retry_delays_seconds: tuple[float, ...] = (30.0, 60.0, 120.0),
-    evaluator: Callable[
-        [Any, Mapping[str, PolicySetBatchAdapter], tuple[EvaluationUnit, ...]],
-        tuple[UnitBatchResult, ...],
-    ] = evaluate_quality_units_batched,
+    evaluator: Callable[..., tuple[UnitBatchResult, ...]] = evaluate_quality_units_batched,
     sleep_fn: Callable[[float], None] = sleep,
 ) -> tuple[UnitBatchResult, ...]:
     for attempt in range(len(retry_delays_seconds) + 1):
         try:
-            return evaluator(panel, adapters, units)
+            if evidence_store is None:
+                return evaluator(panel, adapters, units)
+            return evaluator(panel, adapters, units, evidence_store=evidence_store)
         except InsufficientTeacherAvailability:
             pass
         if attempt < len(retry_delays_seconds):
@@ -245,15 +281,22 @@ def score_quality_rows(
     if not panel.runtime_activation:
         raise RuntimeError("Quality teacher panel is not authorized for runtime materialization")
     panel_sha256 = _sha256(panel_path)
-    cache, ignored_unavailable = _load_cache(cache_path, panel_sha256)
+    runtime_sha256 = _quality_runtime_sha256()
+    cache, ignored_unavailable = _load_cache(cache_path, panel_sha256, runtime_sha256)
     expected_policy_ids = tuple(policy.policy_id for policy in panel.policies)
     adapters = _build_policy_set_adapters(panel)
+    provider_cache_root = cache_path.with_suffix(cache_path.suffix + ".provider_batches")
+    evidence_store = TeacherBatchEvidenceStore(
+        root=provider_cache_root,
+        panel_sha256=panel_sha256,
+        runtime_sha256=runtime_sha256,
+    )
     pending: list[tuple[str, str, EvaluationUnit]] = []
     required_task_ids: list[str] = []
     for row in rows:
         unit = _evaluation_unit(row)
         text_digest = _text_sha256(unit.text)
-        task_id = _task_id(panel_sha256, unit.unit_id, text_digest)
+        task_id = _task_id(panel_sha256, runtime_sha256, unit.unit_id, text_digest)
         required_task_ids.append(task_id)
         if task_id not in cache:
             pending.append((task_id, text_digest, unit))
@@ -276,6 +319,7 @@ def score_quality_rows(
                             panel,
                             adapters,
                             tuple(item[2] for item in unit_batch),
+                            evidence_store=evidence_store,
                         ): unit_batch
                         for unit_batch in batch_group
                     }
@@ -305,6 +349,7 @@ def score_quality_rows(
                                 "schema_version": OBSERVATION_SCHEMA,
                                 "task_id": task_id,
                                 "teacher_panel_sha256": panel_sha256,
+                                "quality_runtime_sha256": runtime_sha256,
                                 "chunk_uid": unit.unit_id,
                                 "text_sha256": text_digest,
                                 "available_teacher_ids": list(result.available_teacher_ids),
@@ -345,7 +390,9 @@ def score_quality_rows(
     for row in rows:
         chunk_uid = str(row["chunk_uid"])
         text_digest = _text_sha256(str(row["text"]))
-        observation = cache[_task_id(panel_sha256, chunk_uid, text_digest)]
+        observation = cache[
+            _task_id(panel_sha256, runtime_sha256, chunk_uid, text_digest)
+        ]
         results = tuple(
             _result_from_mapping(result) for result in observation["policy_results"]
         )
@@ -369,6 +416,7 @@ def score_quality_rows(
     return results_by_chunk, {
         "teacher_panel_path": str(panel_path),
         "teacher_panel_sha256": panel_sha256,
+        "quality_runtime_sha256": runtime_sha256,
         "quality_policy_ids": list(expected_policy_ids),
         "input_chunks": len(rows),
         "transport_mode": "all_q1_q4_policies_batched_per_teacher_request",
@@ -388,6 +436,7 @@ def score_quality_rows(
         ),
         "observation_cache_path": str(cache_path),
         "observation_cache_sha256": _sha256(cache_path),
+        "provider_batch_cache": evidence_store.audit(),
     }
 
 

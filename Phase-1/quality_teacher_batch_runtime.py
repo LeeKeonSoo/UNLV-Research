@@ -45,6 +45,25 @@ class PolicySetBatchAdapter(Protocol):
     def generate_policy_batch(self, request: PolicySetBatchGenerationRequest) -> str: ...
 
 
+class TeacherBatchEvidenceStoreProtocol(Protocol):
+    def get(
+        self,
+        teacher: TeacherSpec,
+        policies: tuple[QualityPolicy, ...],
+        units: tuple[EvaluationUnit, ...],
+        pass_index: Literal[1, 2],
+    ) -> dict[str, tuple[TeacherVote, ...]] | None: ...
+
+    def put(
+        self,
+        teacher: TeacherSpec,
+        policies: tuple[QualityPolicy, ...],
+        units: tuple[EvaluationUnit, ...],
+        pass_index: Literal[1, 2],
+        votes_by_unit: Mapping[str, tuple[TeacherVote, ...]],
+    ) -> None: ...
+
+
 class UnitPolicyPayload(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -185,7 +204,23 @@ def _evaluate_teacher_batch(
     policies: tuple[QualityPolicy, ...],
     units: tuple[EvaluationUnit, ...],
     pass_index: Literal[1, 2],
+    evidence_store: TeacherBatchEvidenceStoreProtocol | None,
 ) -> dict[str, tuple[TeacherVote, ...]]:
+    if evidence_store is not None:
+        cached = evidence_store.get(teacher, policies, units, pass_index)
+        if cached is not None:
+            print(
+                json.dumps(
+                    {
+                        "quality_teacher": teacher.teacher_id,
+                        "pass_index": pass_index,
+                        "unit_count": len(units),
+                        "status": "provider_cache_hit",
+                    }
+                ),
+                flush=True,
+            )
+            return cached
     request = PolicySetBatchGenerationRequest(
         teacher_id=teacher.teacher_id,
         model_id=teacher.model_id,
@@ -217,6 +252,20 @@ def _evaluate_teacher_batch(
             return _unavailable(teacher, units, policies)
         parsed = parse_policy_set_batch_response(raw, units, policies)
         if parsed is not None:
+            votes_by_unit = {
+                unit_id: tuple(
+                    TeacherVote(
+                        teacher_id=teacher.teacher_id,
+                        policy_id=vote.policy_id,
+                        decision=vote.decision,
+                        reason_codes=vote.reason_codes,
+                    )
+                    for vote in votes
+                )
+                for unit_id, votes in parsed.items()
+            }
+            if evidence_store is not None:
+                evidence_store.put(teacher, policies, units, pass_index, votes_by_unit)
             print(
                 json.dumps(
                     {
@@ -230,18 +279,7 @@ def _evaluate_teacher_batch(
                 ),
                 flush=True,
             )
-            return {
-                unit_id: tuple(
-                    TeacherVote(
-                        teacher_id=teacher.teacher_id,
-                        policy_id=vote.policy_id,
-                        decision=vote.decision,
-                        reason_codes=vote.reason_codes,
-                    )
-                    for vote in votes
-                )
-                for unit_id, votes in parsed.items()
-            }
+            return votes_by_unit
         print(
             json.dumps(
                 {
@@ -274,12 +312,18 @@ def _run_pass(
     adapters: Mapping[str, PolicySetBatchAdapter],
     units: tuple[EvaluationUnit, ...],
     pass_index: Literal[1, 2],
+    evidence_store: TeacherBatchEvidenceStoreProtocol | None,
 ) -> tuple[dict[str, tuple[TeacherVote, ...]], ...]:
     with ThreadPoolExecutor(max_workers=3) as executor:
         return tuple(
             executor.map(
                 lambda teacher: _evaluate_teacher_batch(
-                    adapters[teacher.teacher_id], teacher, panel.policies, units, pass_index
+                    adapters[teacher.teacher_id],
+                    teacher,
+                    panel.policies,
+                    units,
+                    pass_index,
+                    evidence_store,
                 ),
                 panel.teachers,
             )
@@ -305,8 +349,10 @@ def evaluate_quality_units_batched(
     panel: TeacherPanel,
     adapters: Mapping[str, PolicySetBatchAdapter],
     units: tuple[EvaluationUnit, ...],
+    *,
+    evidence_store: TeacherBatchEvidenceStoreProtocol | None = None,
 ) -> tuple[UnitBatchResult, ...]:
-    first = _run_pass(panel, adapters, units, 1)
+    first = _run_pass(panel, adapters, units, 1, evidence_store)
     available = tuple(
         teacher.teacher_id
         for teacher, batch in zip(panel.teachers, first, strict=True)
@@ -319,7 +365,7 @@ def evaluate_quality_units_batched(
         first_by_policy = tuple(tuple(batch[unit.unit_id][index] for batch in first) for index in range(4))
         needs_by_unit[unit.unit_id] = tuple(_needs_second(votes) for votes in first_by_policy)
     second_units = tuple(unit for unit in units if any(needs_by_unit[unit.unit_id]))
-    second = _run_pass(panel, adapters, second_units, 2) if second_units else None
+    second = _run_pass(panel, adapters, second_units, 2, evidence_store) if second_units else None
     unavailable = tuple(teacher.teacher_id for teacher in panel.teachers if teacher.teacher_id not in available)
     output: list[UnitBatchResult] = []
     for unit in units:

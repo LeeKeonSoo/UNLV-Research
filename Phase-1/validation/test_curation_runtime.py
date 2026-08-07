@@ -342,6 +342,7 @@ def main() -> int:
             "quality_teacher_response.py",
             "quality_teacher_runtime.py",
             "quality_teacher_materialization.py",
+            "quality_teacher_batch_cache.py",
             "quality_teacher_unit_runtime.py",
             "quality_teacher_batch_runtime.py",
             "run_curation.py",
