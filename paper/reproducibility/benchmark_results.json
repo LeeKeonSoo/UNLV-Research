@@ -1,0 +1,284 @@
+{
+  "schema_version": "confirmatory-benchmark-results-v1",
+  "score_unit": "percent",
+  "seeds": [
+    101,
+    202,
+    303
+  ],
+  "evidence_scope": "confirmatory_three_seed",
+  "benchmarks": [
+    "BigCodeBench Complete",
+    "CRUXEval-I",
+    "CRUXEval-O",
+    "DS-1000",
+    "HumanEval+",
+    "MBPP+"
+  ],
+  "benchmark_hierarchy": {
+    "amendment": "protocols/code_reasoning_primary_amendment_v1.json",
+    "primary_reasoning": [
+      "BigCodeBench Complete",
+      "CRUXEval-I",
+      "CRUXEval-O",
+      "DS-1000"
+    ],
+    "secondary_short_function": [
+      "HumanEval+",
+      "MBPP+"
+    ],
+    "all_results_mandatory": true
+  },
+  "rows": [
+    {
+      "model_arm": "Base",
+      "arm": "base_no_update",
+      "seed": null,
+      "scores_percent": {
+        "HumanEval+": 31.097561,
+        "MBPP+": 58.465608,
+        "BigCodeBench Complete": 39.912281,
+        "CRUXEval-I": 3.5,
+        "CRUXEval-O": 2.125,
+        "DS-1000": 28.0
+      },
+      "primary_reasoning_macro_percent": 18.38432
+    },
+    {
+      "model_arm": "Raw seed 101",
+      "arm": "raw_audited_natural",
+      "seed": 101,
+      "scores_percent": {
+        "HumanEval+": 30.487805,
+        "MBPP+": 45.502646,
+        "BigCodeBench Complete": 40.350877,
+        "CRUXEval-I": 6.375,
+        "CRUXEval-O": 2.875,
+        "DS-1000": 33.1
+      },
+      "primary_reasoning_macro_percent": 20.675219
+    },
+    {
+      "model_arm": "Raw seed 202",
+      "arm": "raw_audited_natural",
+      "seed": 202,
+      "scores_percent": {
+        "HumanEval+": 28.658537,
+        "MBPP+": 50.0,
+        "BigCodeBench Complete": 41.842105,
+        "CRUXEval-I": 7.625,
+        "CRUXEval-O": 2.0,
+        "DS-1000": 33.6
+      },
+      "primary_reasoning_macro_percent": 21.266776
+    },
+    {
+      "model_arm": "Raw seed 303",
+      "arm": "raw_audited_natural",
+      "seed": 303,
+      "scores_percent": {
+        "HumanEval+": 27.439024,
+        "MBPP+": 51.322751,
+        "BigCodeBench Complete": 40.789474,
+        "CRUXEval-I": 7.5,
+        "CRUXEval-O": 1.375,
+        "DS-1000": 32.9
+      },
+      "primary_reasoning_macro_percent": 20.641118
+    },
+    {
+      "model_arm": "Normal seed 101",
+      "arm": "normal_natural",
+      "seed": 101,
+      "scores_percent": {
+        "HumanEval+": 32.926829,
+        "MBPP+": 54.761905,
+        "BigCodeBench Complete": 40.175439,
+        "CRUXEval-I": 8.75,
+        "CRUXEval-O": 5.625,
+        "DS-1000": 31.6
+      },
+      "primary_reasoning_macro_percent": 21.53761
+    },
+    {
+      "model_arm": "Normal seed 202",
+      "arm": "normal_natural",
+      "seed": 202,
+      "scores_percent": {
+        "HumanEval+": 32.926829,
+        "MBPP+": 52.645503,
+        "BigCodeBench Complete": 38.947368,
+        "CRUXEval-I": 5.5,
+        "CRUXEval-O": 3.25,
+        "DS-1000": 32.2
+      },
+      "primary_reasoning_macro_percent": 19.974342
+    },
+    {
+      "model_arm": "Normal seed 303",
+      "arm": "normal_natural",
+      "seed": 303,
+      "scores_percent": {
+        "HumanEval+": 29.268293,
+        "MBPP+": 53.703704,
+        "BigCodeBench Complete": 39.385965,
+        "CRUXEval-I": 4.75,
+        "CRUXEval-O": 5.0,
+        "DS-1000": 31.9
+      },
+      "primary_reasoning_macro_percent": 20.258991
+    },
+    {
+      "model_arm": "Hard seed 101",
+      "arm": "hard_natural",
+      "seed": 101,
+      "scores_percent": {
+        "HumanEval+": 29.878049,
+        "MBPP+": 54.761905,
+        "BigCodeBench Complete": 39.122807,
+        "CRUXEval-I": 5.625,
+        "CRUXEval-O": 5.375,
+        "DS-1000": 31.1
+      },
+      "primary_reasoning_macro_percent": 20.305702
+    },
+    {
+      "model_arm": "Hard seed 202",
+      "arm": "hard_natural",
+      "seed": 202,
+      "scores_percent": {
+        "HumanEval+": 32.926829,
+        "MBPP+": 54.761905,
+        "BigCodeBench Complete": 40.087719,
+        "CRUXEval-I": 6.25,
+        "CRUXEval-O": 5.25,
+        "DS-1000": 33.0
+      },
+      "primary_reasoning_macro_percent": 21.14693
+    },
+    {
+      "model_arm": "Hard seed 303",
+      "arm": "hard_natural",
+      "seed": 303,
+      "scores_percent": {
+        "HumanEval+": 29.268293,
+        "MBPP+": 53.968254,
+        "BigCodeBench Complete": 40.350877,
+        "CRUXEval-I": 6.625,
+        "CRUXEval-O": 4.125,
+        "DS-1000": 32.7
+      },
+      "primary_reasoning_macro_percent": 20.950219
+    }
+  ],
+  "arm_summaries": [
+    {
+      "arm": "raw_audited_natural",
+      "scores": {
+        "BigCodeBench Complete": {
+          "mean_percent": 40.994152,
+          "sample_std_percent": 0.766394,
+          "seed_count": 3
+        },
+        "CRUXEval-I": {
+          "mean_percent": 7.166667,
+          "sample_std_percent": 0.688446,
+          "seed_count": 3
+        },
+        "CRUXEval-O": {
+          "mean_percent": 2.083333,
+          "sample_std_percent": 0.753464,
+          "seed_count": 3
+        },
+        "DS-1000": {
+          "mean_percent": 33.2,
+          "sample_std_percent": 0.360555,
+          "seed_count": 3
+        },
+        "HumanEval+": {
+          "mean_percent": 28.861789,
+          "sample_std_percent": 1.534519,
+          "seed_count": 3
+        },
+        "MBPP+": {
+          "mean_percent": 48.941799,
+          "sample_std_percent": 3.050942,
+          "seed_count": 3
+        }
+      },
+      "primary_reasoning_macro_percent": 20.861038
+    },
+    {
+      "arm": "normal_natural",
+      "scores": {
+        "BigCodeBench Complete": {
+          "mean_percent": 39.502924,
+          "sample_std_percent": 0.622334,
+          "seed_count": 3
+        },
+        "CRUXEval-I": {
+          "mean_percent": 6.333333,
+          "sample_std_percent": 2.126225,
+          "seed_count": 3
+        },
+        "CRUXEval-O": {
+          "mean_percent": 4.625,
+          "sample_std_percent": 1.231107,
+          "seed_count": 3
+        },
+        "DS-1000": {
+          "mean_percent": 31.9,
+          "sample_std_percent": 0.3,
+          "seed_count": 3
+        },
+        "HumanEval+": {
+          "mean_percent": 31.707317,
+          "sample_std_percent": 2.112257,
+          "seed_count": 3
+        },
+        "MBPP+": {
+          "mean_percent": 53.703704,
+          "sample_std_percent": 1.058201,
+          "seed_count": 3
+        }
+      },
+      "primary_reasoning_macro_percent": 20.590314
+    },
+    {
+      "arm": "hard_natural",
+      "scores": {
+        "BigCodeBench Complete": {
+          "mean_percent": 39.853801,
+          "sample_std_percent": 0.646589,
+          "seed_count": 3
+        },
+        "CRUXEval-I": {
+          "mean_percent": 6.166667,
+          "sample_std_percent": 0.505181,
+          "seed_count": 3
+        },
+        "CRUXEval-O": {
+          "mean_percent": 4.916667,
+          "sample_std_percent": 0.688446,
+          "seed_count": 3
+        },
+        "DS-1000": {
+          "mean_percent": 32.266667,
+          "sample_std_percent": 1.021437,
+          "seed_count": 3
+        },
+        "HumanEval+": {
+          "mean_percent": 30.691057,
+          "sample_std_percent": 1.960091,
+          "seed_count": 3
+        },
+        "MBPP+": {
+          "mean_percent": 54.497355,
+          "sample_std_percent": 0.458215,
+          "seed_count": 3
+        }
+      },
+      "primary_reasoning_macro_percent": 20.80095
+    }
+  ]
+}

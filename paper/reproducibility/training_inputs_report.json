@@ -1,0 +1,76 @@
+{
+  "schema_version": "natural-budget-training-inputs-v1",
+  "status": "tokenizer_materialization_complete",
+  "contract": "protocols\\code_7m_normal_hard_confirmatory_materialization_v1.json",
+  "contract_sha256": "c36547aead52ec5d4e06d670afdaa75a5371e91abf1099855a73731a7b12aa95",
+  "tokenizer": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "tail_rule": "Drop only the final incomplete sequence and final incomplete gradient-accumulation group; never impose a target fraction, max-token budget, or equal-token resampling."
+  },
+  "arms": {
+    "raw_audited_natural": {
+      "source_stage": "Audited Raw baseline",
+      "records": 4890,
+      "source_path": "D:\\UNLV-Research\\code_5m_corpus_v2\\final_replay_v1\\audited_release_candidates_v2.jsonl",
+      "source_sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7",
+      "arm_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\training_inputs_v1\\arms\\raw_audited_natural.jsonl",
+      "arm_sha256": "ccd27b3250c3697b5ca88d9d289a379fce54f105a45d682778e22c41ce1fa804",
+      "blocks_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\training_inputs_v1\\token_blocks\\raw_audited_natural.pt",
+      "blocks_sha256": "f1b758803c84c70079f01de0991f6dc343b39f276e5e26e38f12bf515a06c3fe",
+      "sequence_length": 2048,
+      "blocks": 3408,
+      "stream_tokens": 6984438,
+      "materialized_tokens": 6979584,
+      "dropped_tail_tokens": 4854,
+      "optimizer_steps": 426
+    },
+    "normal_natural": {
+      "source_stage": "Luna-calibrated Normal Stage C output",
+      "records": 7147,
+      "source_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_c_curated_chunks.jsonl",
+      "source_sha256": "091bcc4bdaab320388428d40b17fa76c67dc03498c7aa5403470d1458ad22cf9",
+      "arm_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\training_inputs_v1\\arms\\normal_natural.jsonl",
+      "arm_sha256": "356ed13ecdff8354cdc25cae2013eccdc2738b07107fd837abb86e167ecfd754",
+      "blocks_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\training_inputs_v1\\token_blocks\\normal_natural.pt",
+      "blocks_sha256": "5ad2f51cb0a192038e8d7d87c0bce434269a92a2299c9047ef9ff49cdbf7fa7d",
+      "sequence_length": 2048,
+      "blocks": 2984,
+      "stream_tokens": 6125213,
+      "materialized_tokens": 6111232,
+      "dropped_tail_tokens": 13981,
+      "optimizer_steps": 373
+    },
+    "hard_natural": {
+      "source_stage": "Luna-calibrated Hard Stage C output",
+      "records": 5859,
+      "source_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\hard\\stage_c_curated_chunks.jsonl",
+      "source_sha256": "1d514a2018d9027d84989ff4a980c1ca3f26e019b6265fc0f5634f9bf5190414",
+      "arm_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\training_inputs_v1\\arms\\hard_natural.jsonl",
+      "arm_sha256": "671dc23e725a2f59e341a7da340784e067c782f9ddb1ba3d3c4e21521df4a58f",
+      "blocks_path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\training_inputs_v1\\token_blocks\\hard_natural.pt",
+      "blocks_sha256": "b354f02a0e4a7251e33df5465080dc5fa5ea82c45d21054eb0b296445702c497",
+      "sequence_length": 2048,
+      "blocks": 2456,
+      "stream_tokens": 5032400,
+      "materialized_tokens": 5029888,
+      "dropped_tail_tokens": 2512,
+      "optimizer_steps": 307
+    }
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false,
+    "equal_token_resampling": false
+  },
+  "claim_boundary": "This artifact freezes external natural-budget training inputs. It does not alter runtime curation, read Utility or benchmark outcomes, or establish downstream performance."
+}

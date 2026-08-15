@@ -1,0 +1,37 @@
+{
+  "schema_version": "code-7m-normal-hard-confirmatory-materialization-v1",
+  "status": "frozen_before_tokenizer_materialization",
+  "purpose": "Materialize natural-budget continued-pretraining blocks from audited Raw, Normal, and Hard confirmatory outputs.",
+  "tokenizer": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "tail_rule": "Drop only the final incomplete sequence and final incomplete gradient-accumulation group; never impose a target fraction, max-token budget, or equal-token resampling."
+  },
+  "arms": {
+    "raw_audited_natural": {
+      "source": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+      "source_stage": "Audited Raw baseline",
+      "role": "benchmark-excluded collected corpus before runtime curation"
+    },
+    "normal_natural": {
+      "source": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/normal/stage_c_curated_chunks.jsonl",
+      "source_stage": "Luna-calibrated Normal Stage C output",
+      "role": "final Normal runtime output"
+    },
+    "hard_natural": {
+      "source": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/hard/stage_c_curated_chunks.jsonl",
+      "source_stage": "Luna-calibrated Hard Stage C output",
+      "role": "final Hard runtime output"
+    }
+  },
+  "output_root": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/training_inputs_v1",
+  "claim_boundary": "This artifact freezes external natural-budget training inputs. It does not alter runtime curation, read Utility or benchmark outcomes, or establish downstream performance."
+}

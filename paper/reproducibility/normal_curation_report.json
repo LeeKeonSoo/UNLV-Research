@@ -1,0 +1,4856 @@
+{
+  "schema_version": "curation-materialization-report-v1",
+  "status": "curation_materialization_complete",
+  "stage_contract": {
+    "stage_a": "source_agnostic_text_normalization_and_integrity_handling",
+    "stage_b": "redundancy_removal_and_positive_quality_selection",
+    "stage_c": "coverage_veto_and_final_materialization",
+    "external_evaluation": "not_started"
+  },
+  "curation_mode": {
+    "mode": "normal",
+    "profile_id": "normal_structural_v1",
+    "profile_status": "confirmatory_candidate_release_blocked",
+    "authorization": "confirmatory_candidate_release_blocked",
+    "enabled_policy_ids": [
+      "stage_a_normalized_text_integrity",
+      "stage_a_bom_normalization",
+      "stage_b_invalid_chunk",
+      "stage_b_exact_duplicate",
+      "stage_b_symmetric_near_duplicate",
+      "stage_b_explicit_generated_artifact",
+      "stage_b_license_comment_only",
+      "stage_b_structural_scaffold",
+      "stage_b_empty_html_shell",
+      "stage_b_web_chrome_only_chunk",
+      "stage_b_quality_distilled_ranker_v1",
+      "stage_c_coverage_guard"
+    ],
+    "effective_policy": {
+      "stage_a": {
+        "policy": "text_only_v2",
+        "normalization_context_default": "preserve"
+      },
+      "stage_b": {
+        "deduplicate_stage_a_text_exactly": true
+      },
+      "redundancy_v2": {
+        "contract": "configs/redundancy_v2.json",
+        "runtime_activation": true,
+        "settings": {
+          "short_exact_only_max_tokens": 32,
+          "near_min_tokens": 96,
+          "near_max_changed_ratio": 0.01,
+          "near_max_changed_tokens": 2,
+          "containment_min_tokens": 24,
+          "repeated_span_min_lexical_tokens": 12,
+          "complementary_overlap_floor": 0.18,
+          "retrieval_min_tokens": 24,
+          "retrieval_shingle_size": 5,
+          "retrieval_signature_size": 32,
+          "retrieval_bands": 8,
+          "retrieve_repeated_span_candidates": false
+        }
+      },
+      "stage_b_policy": {
+        "structural_scaffold_compaction": {
+          "enabled": true
+        },
+        "structural_artifact_rules": {
+          "explicit_generated_artifact": true,
+          "license_comment_only_chunk": true,
+          "empty_html_shell": true,
+          "web_chrome_only_chunk": true
+        },
+        "quality_span_candidate_rules": {
+          "web_control_and_url_directory": false
+        }
+      },
+      "coverage": {
+        "enforce_materialization_invariants": true,
+        "selection_authority": false
+      },
+      "quality_runtime": {
+        "contract": "configs/quality_ranker_v1.json",
+        "oracle_panel": "configs/quality_teacher_luna_single_v1.json",
+        "operating_point": "normal",
+        "minimum_passed_policies": 1,
+        "qualified_fail_action": "not_select",
+        "abstain_action": "not_select_unless_coverage_veto",
+        "runtime_method": "distilled_quality_ranker_v1",
+        "runtime_required": true,
+        "full_corpus_teacher_panel_forbidden": true
+      }
+    },
+    "effective_policy_sha256": "422eb0757185131e18b6d9561b6ca44b0ef404d9efbad45e881c270e88583e85"
+  },
+  "framework_runtime": {
+    "schema_version": "framework-runtime-foundation-report-v1",
+    "bridge_status": "runtime_integrated_block_7",
+    "framework_manifest_sha256": "8fd37bb61cd1367dbecd5681e517822cae5a2c4b9c2bf007723c94eeeca9e530",
+    "object_registry_sha256": "b7473cca9d78146787ba80da5ba0c243f9ff7a8ec4be5d6d9c69099f5e88c484",
+    "profile_registry_sha256": "f75cf3e9bc728e384b90963f801c8c1b38a2b3af70e8ee3a477cb165d519772d",
+    "legacy_kernel_sha256": "9fd828e1aca0805872a1a9dade73d137810b405c8c2e677aaf220969fd9dda58",
+    "new_v1_policy_activation": true,
+    "blocked_v1_policy_ids": [],
+    "stage_tickets": [
+      {
+        "stage_id": "stage_a",
+        "core_id": "validity",
+        "supplied_categories": [
+          "raw_text",
+          "declared_input_contract",
+          "deterministic_normalized_text",
+          "stable_identifiers"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      },
+      {
+        "stage_id": "stage_b",
+        "core_id": "redundancy",
+        "supplied_categories": [
+          "stage_a_survivors",
+          "deterministic_normalized_text",
+          "stable_identifiers",
+          "runtime_local_structural_evidence",
+          "prior_stage_reason_codes"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      },
+      {
+        "stage_id": "stage_b",
+        "core_id": "quality",
+        "supplied_categories": [
+          "stage_a_survivors",
+          "deterministic_normalized_text",
+          "stable_identifiers",
+          "runtime_local_structural_evidence",
+          "prior_stage_reason_codes"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      },
+      {
+        "stage_id": "stage_c",
+        "core_id": "coverage",
+        "supplied_categories": [
+          "stage_b_survivors",
+          "typed_non_selection_proposals",
+          "representative_links",
+          "prior_stage_reason_codes"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      }
+    ]
+  },
+  "effective_policy_manifest": {
+    "profile_id": "normal_structural_v1",
+    "profile_status": "confirmatory_candidate_release_blocked",
+    "enabled_policy_ids": [
+      "stage_a_normalized_text_integrity",
+      "stage_a_bom_normalization",
+      "stage_b_invalid_chunk",
+      "stage_b_exact_duplicate",
+      "stage_b_symmetric_near_duplicate",
+      "stage_b_explicit_generated_artifact",
+      "stage_b_license_comment_only",
+      "stage_b_structural_scaffold",
+      "stage_b_empty_html_shell",
+      "stage_b_web_chrome_only_chunk",
+      "stage_b_quality_distilled_ranker_v1",
+      "stage_c_coverage_guard"
+    ],
+    "policy_sha256": "422eb0757185131e18b6d9561b6ca44b0ef404d9efbad45e881c270e88583e85",
+    "policy": {
+      "stage_a": {
+        "policy": "text_only_v2",
+        "normalization_context_default": "preserve"
+      },
+      "stage_b": {
+        "deduplicate_stage_a_text_exactly": true
+      },
+      "redundancy_v2": {
+        "contract": "configs/redundancy_v2.json",
+        "runtime_activation": true,
+        "settings": {
+          "short_exact_only_max_tokens": 32,
+          "near_min_tokens": 96,
+          "near_max_changed_ratio": 0.01,
+          "near_max_changed_tokens": 2,
+          "containment_min_tokens": 24,
+          "repeated_span_min_lexical_tokens": 12,
+          "complementary_overlap_floor": 0.18,
+          "retrieval_min_tokens": 24,
+          "retrieval_shingle_size": 5,
+          "retrieval_signature_size": 32,
+          "retrieval_bands": 8,
+          "retrieve_repeated_span_candidates": false
+        }
+      },
+      "stage_b_policy": {
+        "structural_scaffold_compaction": {
+          "enabled": true
+        },
+        "structural_artifact_rules": {
+          "explicit_generated_artifact": true,
+          "license_comment_only_chunk": true,
+          "empty_html_shell": true,
+          "web_chrome_only_chunk": true
+        },
+        "quality_span_candidate_rules": {
+          "web_control_and_url_directory": false
+        }
+      },
+      "coverage": {
+        "enforce_materialization_invariants": true,
+        "selection_authority": false
+      },
+      "quality_runtime": {
+        "contract": "configs/quality_ranker_v1.json",
+        "oracle_panel": "configs/quality_teacher_luna_single_v1.json",
+        "operating_point": "normal",
+        "minimum_passed_policies": 1,
+        "qualified_fail_action": "not_select",
+        "abstain_action": "not_select_unless_coverage_veto",
+        "runtime_method": "distilled_quality_ranker_v1",
+        "runtime_required": true,
+        "full_corpus_teacher_panel_forbidden": true
+      }
+    }
+  },
+  "development_candidate_profile": null,
+  "summary": {
+    "input_records": 4890,
+    "stage_a_release_records": 4889,
+    "stage_a_quarantined_records": 1,
+    "stage_b_hard_gate_pass_chunks": 8024,
+    "stage_b_rejected_chunks": 1,
+    "stage_c_retained_chunks": 7147,
+    "stage_c_not_selected_chunks": 877,
+    "stage_b_near_duplicate_removed_chunks": 0,
+    "stage_b_redundancy_v2_removed_chunks": 2,
+    "stage_b_quality_not_selected_chunks": 934,
+    "stage_b_structural_scaffold_removed_chunks": 0,
+    "stage_b_explicit_generated_artifact_removed_chunks": 39,
+    "stage_b_license_comment_only_removed_chunks": 1,
+    "stage_b_empty_html_shell_removed_chunks": 0,
+    "stage_b_web_chrome_only_removed_chunks": 0,
+    "stage_b_explicit_non_payload_rejected_chunks": 40,
+    "stage_b_positive_quality_kept_chunks": 7048,
+    "stage_b_all_quality_policies_passed_chunks": 25,
+    "stage_b_quality_chunks_with_any_abstain": 7957,
+    "stage_b_quality_candidate_span_transformations": 0,
+    "stage_b_total_span_transformations": 0,
+    "stage_c_curated_chunks": 7147,
+    "stage_c_curated_whitespace_token_proxy": 2287371,
+    "stage_a_quarantine_reasons": {
+      "acquisition_failure": 1
+    },
+    "stage_b_hard_gate_rejection_reasons": {
+      "normalized_exact_duplicate": 1
+    }
+  },
+  "composition_audit": {
+    "authority": "audit_only",
+    "consumed_by_stage_a": false,
+    "consumed_by_stage_b": false,
+    "consumed_by_stage_c": false,
+    "method": "deterministic_four_axis_audit_v2",
+    "stages": {
+      "raw_input": {
+        "content_domain": {
+          "records": {
+            "code": 4179,
+            "general": 87,
+            "mathematics": 597,
+            "science": 27
+          },
+          "token_proxy": {
+            "code": 2080013,
+            "general": 25715,
+            "mathematics": 459358,
+            "science": 11179
+          },
+          "token_share": {
+            "code": 0.8073754058685733,
+            "general": 0.00998150423190161,
+            "mathematics": 0.17830386237440635,
+            "science": 0.004339227525118728
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 4518,
+            "dialogue": 5,
+            "formula_structured": 117,
+            "markup": 16,
+            "prose": 234
+          },
+          "token_proxy": {
+            "code": 2506613,
+            "dialogue": 807,
+            "formula_structured": 22550,
+            "markup": 5558,
+            "prose": 40737
+          },
+          "token_share": {
+            "code": 0.9729639613937231,
+            "dialogue": 0.0003132441732508108,
+            "formula_structured": 0.008752981544988579,
+            "markup": 0.002157386759514258,
+            "prose": 0.01581242612852327
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 5,
+            "explanatory": 4622,
+            "instructional": 115,
+            "reference": 147,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 807,
+            "explanatory": 1963611,
+            "instructional": 269349,
+            "reference": 341949,
+            "transactional": 549
+          },
+          "token_share": {
+            "discussion": 0.0003132441732508108,
+            "explanatory": 0.7621929421080518,
+            "instructional": 0.10455019184750015,
+            "reference": 0.13273052267526828,
+            "transactional": 0.00021309919592899022
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 4506,
+            "mixed": 384
+          },
+          "token_proxy": {
+            "latin": 2401144,
+            "mixed": 175121
+          },
+          "token_share": {
+            "latin": 0.9320252380869204,
+            "mixed": 0.06797476191307959
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.06797476191307959
+      },
+      "stage_a_release": {
+        "content_domain": {
+          "records": {
+            "code": 4178,
+            "general": 87,
+            "mathematics": 597,
+            "science": 27
+          },
+          "token_proxy": {
+            "code": 2079970,
+            "general": 25715,
+            "mathematics": 459358,
+            "science": 11179
+          },
+          "token_share": {
+            "code": 0.8073721907506418,
+            "general": 0.009981670834268165,
+            "mathematics": 0.1783068384634554,
+            "science": 0.004339299951634603
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 4517,
+            "dialogue": 5,
+            "formula_structured": 117,
+            "markup": 16,
+            "prose": 234
+          },
+          "token_proxy": {
+            "code": 2506570,
+            "dialogue": 807,
+            "formula_structured": 22550,
+            "markup": 5558,
+            "prose": 40737
+          },
+          "token_share": {
+            "code": 0.972963510132279,
+            "dialogue": 0.00031324940164318137,
+            "formula_structured": 0.008753127641950112,
+            "markup": 0.0021574227686899654,
+            "prose": 0.01581269005543777
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 5,
+            "explanatory": 4621,
+            "instructional": 115,
+            "reference": 147,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 807,
+            "explanatory": 1963568,
+            "instructional": 269349,
+            "reference": 341949,
+            "transactional": 549
+          },
+          "token_share": {
+            "discussion": 0.00031324940164318137,
+            "explanatory": 0.7621889728447315,
+            "instructional": 0.10455193690605856,
+            "reference": 0.13273273809477598,
+            "transactional": 0.00021310275279071446
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 4505,
+            "mixed": 384
+          },
+          "token_proxy": {
+            "latin": 2401101,
+            "mixed": 175121
+          },
+          "token_share": {
+            "latin": 0.9320241035128184,
+            "mixed": 0.06797589648718162
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.06797589648718162
+      },
+      "stage_b_pass": {
+        "content_domain": {
+          "records": {
+            "code": 5893,
+            "general": 387,
+            "mathematics": 1622,
+            "science": 122
+          },
+          "token_proxy": {
+            "code": 1837745,
+            "general": 66696,
+            "mathematics": 620698,
+            "science": 51092
+          },
+          "token_share": {
+            "code": 0.7133463575277217,
+            "general": 0.02588898278143536,
+            "mathematics": 0.24093258717871185,
+            "science": 0.019832072512131094
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 6694,
+            "dialogue": 22,
+            "formula_structured": 493,
+            "markup": 83,
+            "prose": 732
+          },
+          "token_proxy": {
+            "code": 2274728,
+            "dialogue": 10434,
+            "formula_structured": 146399,
+            "markup": 34412,
+            "prose": 110258
+          },
+          "token_share": {
+            "code": 0.8829674047086616,
+            "dialogue": 0.004050102649956467,
+            "formula_structured": 0.05682681405510608,
+            "markup": 0.013357497833074751,
+            "prose": 0.04279818075320109
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 19,
+            "explanatory": 7606,
+            "instructional": 163,
+            "reference": 235,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 8071,
+            "explanatory": 2360758,
+            "instructional": 80758,
+            "reference": 126257,
+            "transactional": 387
+          },
+          "token_share": {
+            "discussion": 0.0031328712370901524,
+            "explanatory": 0.9163611492913485,
+            "instructional": 0.031347344240481544,
+            "reference": 0.04900841578259092,
+            "transactional": 0.00015021944848889716
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 7553,
+            "mixed": 470,
+            "unknown": 1
+          },
+          "token_proxy": {
+            "latin": 2446997,
+            "mixed": 129032,
+            "unknown": 202
+          },
+          "token_share": {
+            "latin": 0.9498360201394983,
+            "mixed": 0.05008557074268573,
+            "unknown": 7.840911781591015e-05
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.05008557074268573
+      },
+      "stage_c_curated": {
+        "content_domain": {
+          "records": {
+            "code": 5299,
+            "general": 290,
+            "mathematics": 1446,
+            "science": 112
+          },
+          "token_proxy": {
+            "code": 1653883,
+            "general": 40611,
+            "mathematics": 547368,
+            "science": 45509
+          },
+          "token_share": {
+            "code": 0.7230497370124916,
+            "general": 0.01775444385716178,
+            "mathematics": 0.23930005233081997,
+            "science": 0.019895766799526617
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 6013,
+            "dialogue": 18,
+            "formula_structured": 446,
+            "markup": 72,
+            "prose": 598
+          },
+          "token_proxy": {
+            "code": 2039897,
+            "dialogue": 8231,
+            "formula_structured": 129262,
+            "markup": 28658,
+            "prose": 81323
+          },
+          "token_share": {
+            "code": 0.8918085435200499,
+            "dialogue": 0.0035984542953460545,
+            "formula_structured": 0.056511165001217556,
+            "markup": 0.01252879397351807,
+            "prose": 0.03555304320986845
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 16,
+            "explanatory": 6789,
+            "instructional": 134,
+            "reference": 207,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 6855,
+            "explanatory": 2105717,
+            "instructional": 64798,
+            "reference": 109614,
+            "transactional": 387
+          },
+          "token_share": {
+            "discussion": 0.002996890316437517,
+            "explanatory": 0.9205839367553406,
+            "instructional": 0.02832859208235131,
+            "reference": 0.047921390976802626,
+            "transactional": 0.00016918986906802613
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 6752,
+            "mixed": 395
+          },
+          "token_proxy": {
+            "latin": 2180649,
+            "mixed": 106722
+          },
+          "token_share": {
+            "latin": 0.9533429426184034,
+            "mixed": 0.0466570573815966
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.0466570573815966
+      }
+    },
+    "delta_from_raw": {
+      "stage_a_release": {
+        "content_domain": {
+          "token_share": {
+            "code": -3.2151179314432454e-06,
+            "general": 1.666023665553018e-07,
+            "mathematics": 2.9760890490615477e-06,
+            "science": 7.242651587496818e-08
+          }
+        },
+        "document_format": {
+          "token_share": {
+            "code": -4.512614441010143e-07,
+            "dialogue": 5.228392370578653e-09,
+            "formula_structured": 1.460969615337676e-07,
+            "markup": 3.60091757072023e-08,
+            "prose": 2.63926914500362e-07
+          }
+        },
+        "document_function": {
+          "token_share": {
+            "discussion": 5.228392370578653e-09,
+            "explanatory": -3.969263320247052e-06,
+            "instructional": 1.7450585584055656e-06,
+            "reference": 2.2154195077062067e-06,
+            "transactional": 3.556861724233031e-09
+          }
+        },
+        "language_script": {
+          "token_share": {
+            "latin": -1.1345741020019062e-06,
+            "mixed": 1.1345741020296618e-06
+          }
+        },
+        "non_latin_or_mixed_token_share": 1.1345741020296618e-06
+      },
+      "stage_b_pass": {
+        "content_domain": {
+          "token_share": {
+            "code": -0.09402904834085157,
+            "general": 0.015907478549533748,
+            "mathematics": 0.06262872480430551,
+            "science": 0.015492844987012366
+          }
+        },
+        "document_format": {
+          "token_share": {
+            "code": -0.08999655668506146,
+            "dialogue": 0.0037368584767056563,
+            "formula_structured": 0.0480738325101175,
+            "markup": 0.011200111073560493,
+            "prose": 0.02698575462467782
+          }
+        },
+        "document_function": {
+          "token_share": {
+            "discussion": 0.0028196270638393417,
+            "explanatory": 0.1541682071832967,
+            "instructional": -0.07320284760701862,
+            "reference": -0.08372210689267735,
+            "transactional": -6.287974744009306e-05
+          }
+        },
+        "language_script": {
+          "token_share": {
+            "latin": 0.01781078205257791,
+            "mixed": -0.017889191170393864,
+            "unknown": 7.840911781591015e-05
+          }
+        },
+        "non_latin_or_mixed_token_share": -0.017889191170393864
+      },
+      "stage_c_curated": {
+        "content_domain": {
+          "token_share": {
+            "code": -0.08432566885608161,
+            "general": 0.007772939625260171,
+            "mathematics": 0.06099618995641362,
+            "science": 0.01555653927440789
+          }
+        },
+        "document_format": {
+          "token_share": {
+            "code": -0.0811554178736732,
+            "dialogue": 0.003285210122095244,
+            "formula_structured": 0.04775818345622898,
+            "markup": 0.010371407214003812,
+            "prose": 0.01974061708134518
+          }
+        },
+        "document_function": {
+          "token_share": {
+            "discussion": 0.0026836461431867065,
+            "explanatory": 0.15839099464728879,
+            "instructional": -0.07622159976514885,
+            "reference": -0.08480913169846566,
+            "transactional": -4.390932686096409e-05
+          }
+        },
+        "language_script": {
+          "token_share": {
+            "latin": 0.02131770453148296,
+            "mixed": -0.02131770453148299
+          }
+        },
+        "non_latin_or_mixed_token_share": -0.02131770453148299
+      }
+    },
+    "coverage_v1": {
+      "taxonomy_version": "coverage-taxonomy-v1",
+      "authority": "audit_only",
+      "consumed_by_selection": false,
+      "classification": "multi_label_with_unknown",
+      "stages": {
+        "raw_input": {
+          "semantic_domain": {
+            "records": {
+              "code": 4617,
+              "finance_economics": 2,
+              "general_knowledge": 55,
+              "history_humanities": 6,
+              "law": 2,
+              "math": 190,
+              "medicine": 16,
+              "science": 72,
+              "unknown": 218
+            },
+            "token_proxy": {
+              "code": 2521793,
+              "finance_economics": 1256,
+              "general_knowledge": 26583,
+              "history_humanities": 15510,
+              "law": 1695,
+              "math": 478428,
+              "medicine": 26361,
+              "science": 126987,
+              "unknown": 27889
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.9788562123849837,
+              "finance_economics": 0.0004875274864969248,
+              "general_knowledge": 0.010318426093588975,
+              "history_humanities": 0.0060203434041140955,
+              "law": 0.0006579292114747513,
+              "math": 0.18570605120203085,
+              "medicine": 0.01023225483403299,
+              "science": 0.049291124942503976,
+              "unknown": 0.010825361521427337
+            },
+            "unknown_record_rate": 0.04458077709611452,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 2,
+              "cyrillic": 30,
+              "greek": 12,
+              "han": 182,
+              "hangul": 21,
+              "hebrew": 2,
+              "kana": 25,
+              "latin": 4890,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 296,
+              "cyrillic": 10110,
+              "greek": 16739,
+              "han": 57643,
+              "hangul": 7328,
+              "hebrew": 1154,
+              "kana": 8428,
+              "latin": 2576265,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 0.00011489501274131349,
+              "cyrillic": 0.003924285739238782,
+              "greek": 0.006497390602286644,
+              "han": 0.022374639254890315,
+              "hangul": 0.0028444278830011666,
+              "hebrew": 0.0004479352861603911,
+              "kana": 0.0032714025925128045,
+              "latin": 1.0,
+              "thai": 0.00013973717765835425
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 909,
+              "formula": 190,
+              "link_directory": 9,
+              "list": 46,
+              "markup": 543,
+              "prose": 4826,
+              "source_code": 4617,
+              "table": 11,
+              "unknown": 19
+            },
+            "token_proxy": {
+              "dialogue": 1333431,
+              "formula": 478428,
+              "link_directory": 33671,
+              "list": 130269,
+              "markup": 815301,
+              "prose": 2572768,
+              "source_code": 2521793,
+              "table": 27300,
+              "unknown": 888
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.5175830126171027,
+              "formula": 0.18570605120203085,
+              "link_directory": 0.013069695858151239,
+              "list": 0.05056506221215597,
+              "markup": 0.31646627967231633,
+              "prose": 0.9986426085825798,
+              "source_code": 0.9788562123849837,
+              "table": 0.010596735972425197,
+              "unknown": 0.00034468503822394046
+            },
+            "unknown_record_rate": 0.003885480572597137,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 52,
+              "explanation": 420,
+              "implementation": 4617,
+              "procedure": 615,
+              "reference": 151,
+              "transactional_ui": 1,
+              "unknown": 254
+            },
+            "token_proxy": {
+              "argument": 227146,
+              "explanation": 960070,
+              "implementation": 2521793,
+              "procedure": 1122090,
+              "reference": 345026,
+              "transactional_ui": 549,
+              "unknown": 49865
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.08816872487884593,
+              "explanation": 0.37265964487348935,
+              "implementation": 0.9788562123849837,
+              "procedure": 0.4355491379962853,
+              "reference": 0.13392488738542035,
+              "transactional_ui": 0.00021309919592899022,
+              "unknown": 0.019355539899816206
+            },
+            "unknown_record_rate": 0.05194274028629857,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        },
+        "stage_a_release": {
+          "semantic_domain": {
+            "records": {
+              "code": 4616,
+              "finance_economics": 2,
+              "general_knowledge": 55,
+              "history_humanities": 6,
+              "law": 2,
+              "math": 190,
+              "medicine": 16,
+              "science": 72,
+              "unknown": 218
+            },
+            "token_proxy": {
+              "code": 2521750,
+              "finance_economics": 1256,
+              "general_knowledge": 26583,
+              "history_humanities": 15510,
+              "law": 1695,
+              "math": 478428,
+              "medicine": 26361,
+              "science": 126987,
+              "unknown": 27889
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.978855859471738,
+              "finance_economics": 0.00048753562387092415,
+              "general_knowledge": 0.01031859831955476,
+              "history_humanities": 0.006020443890316906,
+              "law": 0.0006579401930423698,
+              "math": 0.1857091508418141,
+              "medicine": 0.010232425621704962,
+              "science": 0.049291947666000833,
+              "unknown": 0.010825542208707168
+            },
+            "unknown_record_rate": 0.044589895684188995,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 2,
+              "cyrillic": 30,
+              "greek": 12,
+              "han": 182,
+              "hangul": 21,
+              "hebrew": 2,
+              "kana": 25,
+              "latin": 4889,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 296,
+              "cyrillic": 10110,
+              "greek": 16739,
+              "han": 57643,
+              "hangul": 7328,
+              "hebrew": 1154,
+              "kana": 8428,
+              "latin": 2576222,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 0.00011489693046639614,
+              "cyrillic": 0.003924351239916436,
+              "greek": 0.006497499050935828,
+              "han": 0.02237501271241376,
+              "hangul": 0.002844475359654564,
+              "hebrew": 0.0004479427626966931,
+              "kana": 0.0032714571958472522,
+              "latin": 1.0,
+              "thai": 0.000139739510026698
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 909,
+              "formula": 190,
+              "link_directory": 9,
+              "list": 46,
+              "markup": 543,
+              "prose": 4825,
+              "source_code": 4616,
+              "table": 11,
+              "unknown": 19
+            },
+            "token_proxy": {
+              "dialogue": 1333431,
+              "formula": 478428,
+              "link_directory": 33671,
+              "list": 130269,
+              "markup": 815301,
+              "prose": 2572725,
+              "source_code": 2521750,
+              "table": 27300,
+              "unknown": 888
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.5175916516511387,
+              "formula": 0.1857091508418141,
+              "link_directory": 0.01306991400585819,
+              "list": 0.05056590619907756,
+              "markup": 0.31647156184521363,
+              "prose": 0.9986425859262129,
+              "source_code": 0.978855859471738,
+              "table": 0.010596912843691266,
+              "unknown": 0.0003446907913991884
+            },
+            "unknown_record_rate": 0.003886275311924729,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 52,
+              "explanation": 420,
+              "implementation": 4616,
+              "procedure": 615,
+              "reference": 151,
+              "transactional_ui": 1,
+              "unknown": 254
+            },
+            "token_proxy": {
+              "argument": 227146,
+              "explanation": 960070,
+              "implementation": 2521750,
+              "procedure": 1122090,
+              "reference": 345026,
+              "transactional_ui": 549,
+              "unknown": 49865
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.08817019651256763,
+              "explanation": 0.3726658649759221,
+              "implementation": 0.978855859471738,
+              "procedure": 0.4355564077940488,
+              "reference": 0.13392712274019863,
+              "transactional_ui": 0.00021310275279071446,
+              "unknown": 0.019355862965225824
+            },
+            "unknown_record_rate": 0.0519533646962569,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        },
+        "stage_b_pass": {
+          "semantic_domain": {
+            "records": {
+              "code": 7120,
+              "finance_economics": 2,
+              "general_knowledge": 198,
+              "history_humanities": 7,
+              "law": 2,
+              "math": 416,
+              "medicine": 16,
+              "science": 91,
+              "unknown": 692
+            },
+            "token_proxy": {
+              "code": 2398158,
+              "finance_economics": 1011,
+              "general_knowledge": 76450,
+              "history_humanities": 3533,
+              "law": 721,
+              "math": 236277,
+              "medicine": 5786,
+              "science": 43607,
+              "unknown": 96971
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.9308784810057794,
+              "finance_economics": 0.0003924337530291344,
+              "general_knowledge": 0.029675133945674902,
+              "history_humanities": 0.00137138323387926,
+              "law": 0.00027986620764985747,
+              "math": 0.0917142135157911,
+              "medicine": 0.0022459166122913666,
+              "science": 0.016926665349496998,
+              "unknown": 0.03764064635508229
+            },
+            "unknown_record_rate": 0.08624127617148554,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 2,
+              "cyrillic": 36,
+              "greek": 14,
+              "han": 206,
+              "hangul": 27,
+              "hebrew": 3,
+              "kana": 30,
+              "latin": 8024,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 296,
+              "cyrillic": 10020,
+              "greek": 6107,
+              "han": 47265,
+              "hangul": 7161,
+              "hebrew": 1154,
+              "kana": 7997,
+              "latin": 2576231,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 0.00011489652907677922,
+              "cyrillic": 0.00388940277482881,
+              "greek": 0.0023705172401077387,
+              "han": 0.018346569077074222,
+              "hangul": 0.0027796420429689727,
+              "hebrew": 0.00044794119781960546,
+              "kana": 0.0031041471048209573,
+              "latin": 1.0,
+              "thai": 0.00013973902185013688
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 1935,
+              "formula": 416,
+              "link_directory": 5,
+              "list": 56,
+              "markup": 910,
+              "prose": 7886,
+              "source_code": 7120,
+              "table": 13,
+              "unknown": 87
+            },
+            "token_proxy": {
+              "dialogue": 974973,
+              "formula": 236277,
+              "link_directory": 2172,
+              "list": 27668,
+              "markup": 426619,
+              "prose": 2565317,
+              "source_code": 2398158,
+              "table": 7349,
+              "unknown": 8128
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.37844937041748195,
+              "formula": 0.0917142135157911,
+              "link_directory": 0.0008430920984958259,
+              "list": 0.010739720157082187,
+              "markup": 0.1655981160074543,
+              "prose": 0.9957635786542434,
+              "source_code": 0.9308784810057794,
+              "table": 0.002852616865490711,
+              "unknown": 0.0031549965822164237
+            },
+            "unknown_record_rate": 0.010842472582253241,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 35,
+              "explanation": 736,
+              "implementation": 7120,
+              "procedure": 970,
+              "reference": 240,
+              "transactional_ui": 1,
+              "unknown": 809
+            },
+            "token_proxy": {
+              "argument": 21025,
+              "explanation": 398918,
+              "implementation": 2398158,
+              "procedure": 493177,
+              "reference": 127910,
+              "transactional_ui": 387,
+              "unknown": 140008
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.008161147039997579,
+              "explanation": 0.15484558644003585,
+              "implementation": 0.9308784810057794,
+              "procedure": 0.19143353216384712,
+              "reference": 0.0496500507912528,
+              "transactional_ui": 0.00015021944848889716,
+              "unknown": 0.05434605825331657
+            },
+            "unknown_record_rate": 0.10082253240279163,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        },
+        "stage_c_curated": {
+          "semantic_domain": {
+            "records": {
+              "code": 6391,
+              "finance_economics": 2,
+              "general_knowledge": 160,
+              "history_humanities": 3,
+              "law": 2,
+              "math": 357,
+              "medicine": 14,
+              "science": 76,
+              "unknown": 583
+            },
+            "token_proxy": {
+              "code": 2149664,
+              "finance_economics": 1011,
+              "general_knowledge": 56617,
+              "history_humanities": 1274,
+              "law": 721,
+              "math": 200879,
+              "medicine": 5307,
+              "science": 36571,
+              "unknown": 76829
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.9397968235148562,
+              "finance_economics": 0.0004419921385730605,
+              "general_knowledge": 0.024751996943215594,
+              "history_humanities": 0.0005569713002394452,
+              "law": 0.0003152090325530926,
+              "math": 0.08782090880753494,
+              "medicine": 0.0023201308401654126,
+              "science": 0.015988224035366365,
+              "unknown": 0.03358834224968315
+            },
+            "unknown_record_rate": 0.08157268784105219,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 1,
+              "cyrillic": 34,
+              "greek": 11,
+              "han": 166,
+              "hangul": 24,
+              "hebrew": 3,
+              "kana": 22,
+              "latin": 7147,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 39,
+              "cyrillic": 9337,
+              "greek": 4170,
+              "han": 37822,
+              "hangul": 6626,
+              "hebrew": 1154,
+              "kana": 6439,
+              "latin": 2287371,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 1.705014184406465e-05,
+              "cyrillic": 0.004081978830718759,
+              "greek": 0.0018230536279422972,
+              "han": 0.016535140123749056,
+              "hangul": 0.002896775380994163,
+              "hebrew": 0.0005045093253346309,
+              "kana": 0.0028150221367674944,
+              "latin": 1.0,
+              "thai": 0.00015738592471444292
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 1765,
+              "formula": 357,
+              "link_directory": 4,
+              "list": 49,
+              "markup": 806,
+              "prose": 7041,
+              "source_code": 6391,
+              "table": 9,
+              "unknown": 60
+            },
+            "token_proxy": {
+              "dialogue": 883182,
+              "formula": 200879,
+              "link_directory": 1620,
+              "list": 24036,
+              "markup": 371812,
+              "prose": 2279547,
+              "source_code": 2149664,
+              "table": 4196,
+              "unknown": 5338
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.38611226600319754,
+              "formula": 0.08782090880753494,
+              "link_directory": 0.0007082366612149931,
+              "list": 0.010508133573434305,
+              "markup": 0.16254993177757346,
+              "prose": 0.9965794792362062,
+              "source_code": 0.9397968235148562,
+              "table": 0.0018344203891716734,
+              "unknown": 0.002333683517015823
+            },
+            "unknown_record_rate": 0.008395130824122009,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 30,
+              "explanation": 648,
+              "implementation": 6391,
+              "procedure": 854,
+              "reference": 212,
+              "transactional_ui": 1,
+              "unknown": 674
+            },
+            "token_proxy": {
+              "argument": 18008,
+              "explanation": 348982,
+              "implementation": 2149664,
+              "procedure": 433505,
+              "reference": 111267,
+              "transactional_ui": 387,
+              "unknown": 106126
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.007872793700715799,
+              "explanation": 0.15256904105193256,
+              "implementation": 0.9397968235148562,
+              "procedure": 0.1895210702592627,
+              "reference": 0.04864405468111644,
+              "transactional_ui": 0.00016918986906802613,
+              "unknown": 0.04639649623956936
+            },
+            "unknown_record_rate": 0.0943053029243039,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        }
+      },
+      "delta_from_raw": {
+        "stage_a_release": {
+          "semantic_domain": {
+            "token_incidence_share_of_stage": {
+              "code": -3.5291324562702897e-07,
+              "finance_economics": 8.137373999346324e-09,
+              "general_knowledge": 1.7222596578395089e-07,
+              "history_humanities": 1.0048620281005727e-07,
+              "law": 1.0981567618575591e-08,
+              "math": 3.099639783260555e-06,
+              "medicine": 1.7078767197177547e-07,
+              "science": 8.227234968571917e-07,
+              "unknown": 1.8068727983093502e-07
+            }
+          },
+          "language_script": {
+            "token_incidence_share_of_stage": {
+              "arabic": 1.917725082656611e-09,
+              "cyrillic": 6.550067765433154e-08,
+              "greek": 1.0844864918417574e-07,
+              "han": 3.734575234441706e-07,
+              "hangul": 4.747665339728882e-08,
+              "hebrew": 7.47653630195702e-09,
+              "kana": 5.460333444770593e-08,
+              "latin": 0.0,
+              "thai": 2.3323683437620306e-09
+            }
+          },
+          "format_genre": {
+            "token_incidence_share_of_stage": {
+              "dialogue": 8.639034036028725e-06,
+              "formula": 3.099639783260555e-06,
+              "link_directory": 2.18147706952318e-07,
+              "list": 8.439869215934315e-07,
+              "markup": 5.282172897302928e-06,
+              "prose": -2.265636689369188e-08,
+              "source_code": -3.5291324562702897e-07,
+              "table": 1.7687126606900916e-07,
+              "unknown": 5.753175247942728e-09
+            }
+          },
+          "content_morphology": {
+            "token_incidence_share_of_stage": {
+              "argument": 1.4716337217030029e-06,
+              "explanation": 6.22010243273019e-06,
+              "implementation": -3.5291324562702897e-07,
+              "procedure": 7.269797763498342e-06,
+              "reference": 2.235354778279408e-06,
+              "transactional_ui": 3.556861724233031e-09,
+              "unknown": 3.230654096186836e-07
+            }
+          }
+        },
+        "stage_b_pass": {
+          "semantic_domain": {
+            "token_incidence_share_of_stage": {
+              "code": -0.04797773137920425,
+              "finance_economics": -9.509373346779039e-05,
+              "general_knowledge": 0.019356707852085927,
+              "history_humanities": -0.0046489601702348355,
+              "law": -0.0003780630038248938,
+              "math": -0.09399183768623975,
+              "medicine": -0.007986338221741624,
+              "science": -0.032364459593006975,
+              "unknown": 0.026815284833654952
+            }
+          },
+          "language_script": {
+            "token_incidence_share_of_stage": {
+              "arabic": 1.5163354657321418e-09,
+              "cyrillic": -3.4882964409971556e-05,
+              "greek": -0.004126873362178905,
+              "han": -0.004028070177816093,
+              "hangul": -6.478584003219391e-05,
+              "hebrew": 5.911659214344507e-09,
+              "kana": -0.00016725548769184724,
+              "latin": 0.0,
+              "thai": 1.8441917826292516e-09
+            }
+          },
+          "format_genre": {
+            "token_incidence_share_of_stage": {
+              "dialogue": -0.13913364219962077,
+              "formula": -0.09399183768623975,
+              "link_directory": -0.012226603759655412,
+              "list": -0.03982534205507378,
+              "markup": -0.15086816366486203,
+              "prose": -0.0028790299283364407,
+              "source_code": -0.04797773137920425,
+              "table": -0.007744119106934486,
+              "unknown": 0.0028103115439924832
+            }
+          },
+          "content_morphology": {
+            "token_incidence_share_of_stage": {
+              "argument": -0.08000757783884835,
+              "explanation": -0.2178140584334535,
+              "implementation": -0.04797773137920425,
+              "procedure": -0.2441156058324382,
+              "reference": -0.08427483659416755,
+              "transactional_ui": -6.287974744009306e-05,
+              "unknown": 0.034990518353500366
+            }
+          }
+        },
+        "stage_c_curated": {
+          "semantic_domain": {
+            "token_incidence_share_of_stage": {
+              "code": -0.0390593888701275,
+              "finance_economics": -4.553534792386428e-05,
+              "general_knowledge": 0.014433570849626619,
+              "history_humanities": -0.00546337210387465,
+              "law": -0.00034272017892165866,
+              "math": -0.0978851423944959,
+              "medicine": -0.007912123993867577,
+              "science": -0.03330290090713761,
+              "unknown": 0.022762980728255812
+            }
+          },
+          "language_script": {
+            "token_incidence_share_of_stage": {
+              "arabic": -9.784487089724884e-05,
+              "cyrillic": 0.00015769309147997766,
+              "greek": -0.004674336974344347,
+              "han": -0.005839499131141259,
+              "hangul": 5.234749799299656e-05,
+              "hebrew": 5.657403917423974e-05,
+              "kana": -0.00045638045574531013,
+              "latin": 0.0,
+              "thai": 1.7648747056088666e-05
+            }
+          },
+          "format_genre": {
+            "token_incidence_share_of_stage": {
+              "dialogue": -0.13147074661390518,
+              "formula": -0.0978851423944959,
+              "link_directory": -0.012361459196936245,
+              "list": -0.040056928638721664,
+              "markup": -0.15391634789474287,
+              "prose": -0.002063129346373649,
+              "source_code": -0.0390593888701275,
+              "table": -0.008762315583253523,
+              "unknown": 0.0019889984787918825
+            }
+          },
+          "content_morphology": {
+            "token_incidence_share_of_stage": {
+              "argument": -0.08029593117813014,
+              "explanation": -0.2200906038215568,
+              "implementation": -0.0390593888701275,
+              "procedure": -0.2460280677370226,
+              "reference": -0.08528083270430392,
+              "transactional_ui": -4.390932686096409e-05,
+              "unknown": 0.027040956339753154
+            }
+          }
+        }
+      },
+      "jensen_shannon_divergence_from_raw": {
+        "stage_a_release": {
+          "semantic_domain": 8.951007167557607e-12,
+          "language_script": 1.84153389926412e-12,
+          "format_genre": 1.1788739124429517e-11,
+          "content_morphology": 1.309232906414837e-11
+        },
+        "stage_b_pass": {
+          "semantic_domain": 0.023294639958470326,
+          "language_script": 0.0008249274847678507,
+          "format_genre": 0.014127114022515593,
+          "content_morphology": 0.04552621756318846
+        },
+        "stage_c_curated": {
+          "semantic_domain": 0.022918277744768584,
+          "language_script": 0.0013027226621161688,
+          "format_genre": 0.014953845215130051,
+          "content_morphology": 0.045405384266442576
+        }
+      }
+    }
+  },
+  "composition_artifacts": {
+    "authority": "audit_only",
+    "consumed_by_selection": false,
+    "target_distribution_enforced": false,
+    "raw_tokens": 2576265,
+    "curated_tokens": 2287371
+  },
+  "reason_code_impact_audit": {
+    "schema_version": "reason-code-impact-audit-v1",
+    "authority": "audit_only",
+    "selector_consumes_this_audit": false,
+    "token_accounting": "A multi-reason row is charged to each of its reasons; reason totals are not additive across reasons.",
+    "stages": {
+      "stage_a_quarantine": {
+        "reasons": {
+          "acquisition_failure": {
+            "records": 1,
+            "chunks": 1,
+            "token_proxy": 43
+          }
+        }
+      },
+      "stage_b_rejection": {
+        "reasons": {
+          "normalized_exact_duplicate": {
+            "records": 1,
+            "chunks": 1,
+            "token_proxy": 8
+          }
+        }
+      },
+      "stage_b_policy_removal": {
+        "reasons": {
+          "explicit_generated_artifact": {
+            "records": 10,
+            "chunks": 24,
+            "token_proxy": 4733
+          },
+          "license_comment_only_chunk": {
+            "records": 1,
+            "chunks": 1,
+            "token_proxy": 8
+          },
+          "quality_normal_retention_threshold_not_met": {
+            "records": 674,
+            "chunks": 850,
+            "token_proxy": 284085
+          },
+          "redundancy_contained_payload_nonrepresentative": {
+            "records": 2,
+            "chunks": 2,
+            "token_proxy": 34
+          }
+        }
+      },
+      "stage_b_span_transformation": {
+        "reasons": {}
+      }
+    }
+  },
+  "coverage_impact_audit": {
+    "authority": "materialization_invariant",
+    "selector_consumes_this_audit": false,
+    "metadata_strata_or_target_mix_used": false,
+    "representative_linkage": {
+      "required_removed_chunks": 3,
+      "missing_representative_chunk_uids": [],
+      "representative_not_in_curated_pool": [],
+      "resolved_by_non_payload_removal": [
+        {
+          "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/inspection/_plot/__init__.py::0000",
+          "representative_chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/datasets/images/__init__.py::0000",
+          "reason_code": "normalized_exact_duplicate",
+          "representative_removed_reason": "license_comment_only_chunk"
+        }
+      ],
+      "resolved_by_representative_chain": [],
+      "passed": true
+    },
+    "residual_payload": {
+      "span_rewrite_active": false,
+      "rewritten_chunks_checked": 0,
+      "minimum_residual_chars": 120,
+      "invalid_residual_chunk_uids": [],
+      "passed": true,
+      "zero_survivor_exception_allowed": false,
+      "note": "Any promoted span rewrite must retain its chunk and preserve the declared Stage-B residual boundary."
+    },
+    "zero_survivor_invariant": {
+      "zero_survivor_records": [
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/datasets/images/__init__.py",
+          "reason_codes": [
+            "license_comment_only_chunk"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::19da0bb95d57d28062ddc8cba4cd37d72158394bd25a4257438dcf1341805094",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2ef67dab132bcbe59a8577b83bdb3218c58c1e36d58ef7c65a588253c9ab716c",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::48b415730f2bddc267f6c3cbf095b4db6e01da63c45c5171ae0498b5bea6dc2d",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::59d6561ff9b89528c3e74be58d8a88d1659cd474b21f29afffb977ae70f9088b",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/fixtures/fill_fixtures/test_extend_fixture_conftest_conftest/pkg/conftest.py",
+          "reason_codes": [
+            "redundancy_contained_payload_nonrepresentative"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/esm/openfold_utils/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/pp_ocrv5_mobile_rec/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pallets/click::333c28d79cd9::src/click/_utils.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::src/_pytest/assertion/highlight.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_compat.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::build_tools/wheels/check_license.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::doc/sphinxext/allow_nan_estimators.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/covariance/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/ensemble/_hist_gradient_boosting/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/ensemble/_hist_gradient_boosting/predictor.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/experimental/enable_hist_gradient_boosting.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_compat/cupy/_aliases.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_compat/dask/array/linalg.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_compat/numpy/linalg.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/inspection/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/linear_model/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_pairwise_distances_reduction/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/neural_network/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/preprocessing/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/semi_supervised/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/svm/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/svm/_bounds.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/tree/__init__.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/tree/_reingold_tilford.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/utils/_arpack.py",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::00103d0a452c05e1284a8788956a39d8cfafb036134111b37db2b43ed7762dd2",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::001e3432ec660a132d3145e33ae45016cfcf7d39f69d0d073273f62aa525cc3a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::001eb1e0a3576af23799ec32d095ae31b43ed1ecff134d790b9128f8733f6e33",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0052a0e3b66989e7e1ac52c3959d97636e5876b70eb923ad516a61c7b3a486c9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::00bde29445029fed3e922aba0e4f01dbd2067039b13d702606bc7fd383c4e58c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0296564cdc637b3ba9f4c26d39afb7233b4f59270f8078ca44b9c91c965e75c4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::02d8fac59d933cc02cd8221603aa970973c920243030c415576c5adc03b9e2fc",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::032ec75dee2e5ed793930043ef8c8f3fbb0ad72d44c10cb53555c5ce032f8753",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::03596219857261a3c2f95bf59c88f6b666c24e65e359d45ac413b56a9197a91d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::039f71acb1256550d7c765684860f6fd4058293c441435835a0c4b449a2f559f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::04067756c133f4a398c340723322ceef13bf183eea465661798049ca80bcaa53",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::054932f3d495882ebae1111e8c3b51ebd3838f1e23810911e6ee9657ab6b0fcf",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::06cb8484bc11298cfb09a08d3e3c81d2759a962a6205b1c53fe193a2f0329a9f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::06ee73c2ad10d72995e16d0428e6bf71fbc14b350572e52152543026d1ec26d6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::06f1cccb8dc08f83dd4c4c4ab13e0280b6cb6c82c42b0db3fa59b4619b05895c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::08c6167fdccb463378a668cb8f0ceb646d7e6ac2bbb3cc8257b1b40d0a9a74c7",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::090ef572908af7d7483c59df5396602846d225c060a60caf0340db1f30f171c7",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::09d7f266f9f491ca1ef4b051377dd4a45940b4d25f19a37b4d32c401d18de084",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0ac9e271d6d802cd8388db30ee74f84b0ba3a6e7f555d0e5490779f7dd3e3723",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0be344bb8736f3a3b0ee34f571dcefeeb0606633b6c9cd8aa7d65ed09f943343",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0c0392221925d82d8c6db42e8be1689e69ddc3f7c6de3a7d9b3c9addde347291",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0c33c2a05c84e6e4d4d8eb0c993f03e823f25abbbce26ffa5d044a13f90a174d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0caaf01bd1936beff3b455e0221478e341550c199f05373f3e4057fef67dc374",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0d1d9f301e9a4dffafefb6e83a64d6ced9792d4a12dc4152b5087b9ac645e83a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0d39b599dcb9a14a85a651d3e70f54757a3daa515f9ffd51c2015a016b31b9a8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0da5e88766f34cdce24870714d29a30091943282e1312f4235e9d3f2a93c2019",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0df9420d3302ae58dee4b58e0210d7844a9dfe2ffe2f35acedd9b730c2d71cfa",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0e25e72e9997c458e3a380da9c9e1dddbe6bb1bbda362199c9b059c5c68a96a2",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0e5560201333b5b2db98bf5c0f776cc1b25b67b76cdeff673491eec5a53f49bf",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0e8ee730c047698c42d95e609d27c84ec577c80b5035e213680e8016847a56c6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::11630f9d6a3ae2d5f80721a3ae12c6a05540b7f1d2b2cf6c5063b1c96d2e48b3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::118f6671d7a1c345fc044d90f0c69edbf70b8dc9fb4708bd54b666ca27946f96",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::11bf8836eb05702a292e533dc0638dde95afe0e98fe07597a1d50c8228bcdadf",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::125f63839c5e4a33f9deb5a035540559cd9026473e87b97f90eb0649aa225c19",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::13c817ff0f7b3a4f8341299bf868195a2d9c671d8fa4e36be6560882eb99519b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::13f687788bad8229871dd287f7b587fd628694046bb0d357f64bf1a3dc9a6703",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::14709e1359f7fa37bf64c9d1e1fa8f1860dfc47dbe0a6224516d2adfc80a9af0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::14db586471af9a69bd093f1661339a507d55967e842e78e8736f17ee6a87d9ef",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::15f70775b253e68a56ab363814f1735a929ba5779d60c2e36ffa46e794c31582",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1638b476b2e4493a0a6a80a27aca1a8ec3e2a1324800773494a357bc24626506",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1680ca7a9bbcb446ff5fefa430e91e93b2bd82b0de55cd495b95cf288666cee8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::16da58b65a6765a4a34e181a1671b0b7b26f81843f929c837aed5caff86094eb",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1784a56a5d09817126ee5e2eba66c4f5097f7943c458cb1809153c4dc28b2b7e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::18017e1d7a9f049095fd70cb55feeeedbc98915c60fb6bd9e335f1aeff6f1814",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::18194827e7dad1be85dc4462d286c54dc00e36af7a3bb5c3cf67204c050bd1ce",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::18362960186b94b5971c3ad49eff716ac7b934b41159272c9f57798407462f82",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::19cde15b827dff3f7f27e801f56eff069a46bcee927cac5c13de8ba876454423",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::19f67d47944a1c7a1f05625140b4578783c9c08be810f603998cde3ceda991d1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1a6ddbc01f247b8b3b589846bad883c0234923df3b2ae36515163885fb4cbf6b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1aef934340bcef51fe3f4c530598592ec7f62ecbc72d91017154791265783881",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1b307c9169541a8bf94ddf500578a03914dd3e2474b9f15abe9f6fa43369f084",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1b7f98cf0c844313703000b18fd0e3452d366f6ec104e838ddbdc7714625061d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1c84ff871c87d56068f28752e08b509fbe2ee5e29b22747c9ff6be04bbe45cfb",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1d1b6dbe83c71449194ca5058301b7b538703cfffd8213cd634f634730893f5a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1d7a62e98999da372a6eb6af58aa398c826f4ea63543688fe1a49f44d745e933",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1dc9c852eb5b11d23444d160e20f898a8b12c88c77d0006745c5665a965c60e1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1e2201cdb03fe0b44de8ce6791ed269ebb048997cde271098b928daeb3f9de14",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1ec2591336c8c591ec5010ea333c16a391114f59e2c0f2a8c886d5776b3e141b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1f1c2cb5c4620f2fb2cd7d4ac05698573f57b756e490d67d64efeb94d1868b3d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1fc1ec211ebeca8879c229fa9b458669070b7eaed64d309a72f146c426fc1f60",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::20c70c2ac6b8c59bfc5c96338ec7fb83c41037644df1a0a8f94233b5a89b2503",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::21fbabf1873e031eb5ffd075df04232f76de2158cbdac577db6b4a856d790672",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2279a655d1c7bc12c0c271bd96cf2e473d570c1aa9e933650f8c2507954259a9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::22c46bf64c502d862b1334c74c85d8f30f1a2dbd94b09b3af832d1fafefcdd4c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::24126d4bd4ed36f371ba3ce4eaa3715bc6aa4ad0971c7189c03b1744284d0887",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::25140b61b5028823975b475347f20ea0eb40bd4c067b83b29a43298034b4886a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::27c29ead1a9fda6f1463aae2b2ded19844378a3986cd5fbfcb2b365cedb21ef8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::28ab42231bcd700af56e1ffd77c166c4ca742b89754159289465ee5421145048",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2922d9282279e8906f283fd98880b70a4fa32a1b2930c3fb3178e9e15b316517",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::29b5098efc6afbe014035033833cc8cf7be10099b3e1235e05bc2e344d79045d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::29e5fb708a34f07bbcbf6a53a6917a20bab0e1c9394e7ec6e47b6b00eb64b836",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2a005aba44ede372025da7e0764b397383a6c67696e45bafa315962c0155eaae",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2a4865eae192ddaa6103ed8ac128133932069687a638064cafbf3748bb4bca41",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2ad9d538afdb0eee4624561e9eeb59562f797f9bf5d75be40866210448bea916",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2b1ab0c9b96ab3aa7971260dcab3d9a4f41c624afdd98913dca2f79005be8724",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2c948825099f79517e770a7f0445745827b1b5fd0ae3b81d119f404c668d7ebe",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2d8ef9a8bc199e911e118b98b5db84815de8374aab14140882a27de1ab67c64c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2ec1218fc54551af21ba8edab324a53b82800a7734d6b8d62e190158a505c67b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2f59dded6b3fc4567998433a969c68f42c5780703c2de338febbdcb01d9a352f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2f64468b71b464ab1caf83c5a3a8b30ed086bd94cf1863b42e3b06d8f0b1b80c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2fbecd7e80d23ab1ccd1b8500daa0ee2a63d487dda959b4aa0b3e29dbd1b12c1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::309e9065a3a8f5a52362a4b222febb64c174449811c621dce7622c4a116721e9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::30bfe1eebd841fd6aea14ee3496fb26fc0e2a5eecf6c7cd1d19dbb31ec73e34a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::327aad9d0bd7c86fc69af1cde23df5a33dbe64b4db187c13d94b2d5cf217ad3d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::33770045b1095fc335e5baba6290233882824fac7f566343186496e1d7f59848",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::33d9fad5b425b412518a34fa50ed1d8c41b210bf59762cecbad45e87fbb058c0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::33f659aefe00ec7f7cdb46fb9a146294cb9d65b9358f156efa222d00aa26cc4b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::346d998a137fab1226c90617981c1d4366676d752b9a7cce2f7087f97288d9e9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::363aedc1135ad12cc802cce0a351e9e607434e6271cdfd831f5213d523a37ec4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::366cffb2bd71c729e8a5ede8bce0f931ee88fc4f5a0315293425b1eb07932cb6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::385546297c332ce693948c369ded74460d5a156a813025c1e8e6ab2302765cbd",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::386c20a1ff0ca30ea5d19c5956c8863df106ed2a263ca2f252da5235494f9b08",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3933e0dfb9ed1f30b223056a31bb9c46c6137d4b3854945519ca77ca684ef257",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3dc3f898c1a67030d29f994a2d5138c25316f1a14a68375a0a0f6e678b7005c6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3dd9b113cb5535db8d693c6a4f1a3886b7442024c3d85ee390a98f07ac3efede",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3e011efe76fa46e2715680b5be777418d3318774ff97653c6acd2fad3774b124",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3e511138e81cac57aed35e30334ea8a14ace6bd55cb79799f93e5e608f259815",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3ed060acfdfb0bb4f843e1551c59550fde367295a7b3867f8cb801be71f58f7a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3f719db762d5b292c3365c52c9c51be4af893c319ca6b6da5f87a9945b578bba",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::40daf1b90224706f38cc8b0d77584ad3887d34408b1bff9558eeeba71c2d4b86",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::41435b00fb7bb0eeaa83cfa60ee7b2777f035db417fe91a4d48d8ea15cc43df7",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::424b52136520d150bf92be669bb069fe023ce67e9d251efbf62d3778f652faae",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::42ef5c70673aa388996a3462174e416bbafc7a689662171321b0b8c2c553375c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4362f15e9e3a1658fe85a83c401ecb4176be77f0dafbe5fbf24da7b57b6df5a4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::454092c5c5a432ec9c5b51449e03d4e9fea97ac12c94c6a93f0014ddaa75272f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::461cbfac1e5a34baf7acc64a61b77443a616aaff02c0e5f66ab8b4634d88dbf2",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::475df47669b5707ad9c028b2647d89b601689e2d905c04bb5be3b05c44b194d4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::47d926343db814ac4953fc8ca52eb284d79ae1391838b9786a253aa7dc78bda6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::494701144d875941cb585cb9014cda6abfe19546328af2eee7e2bc808a799ffa",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::495acde2c73c6b8ab4e8f6ae05465c3739a0b39ae8f22f2bff3acf32be03c9a2",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4c125d2c45a823700fce515484fbb24f038d8d0a0f675fdc30cbfb8072f9a849",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4e50406cc425a3e81ab4a08e448570e225404c5e6c666d9f72ffa1901e5b233a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4ebb675898ff37b0a7d7e6496f9351bb13b73eab6f652280b361cd30cbb34e4c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::50ec2832ba5993bd475ddd58df9a34804c4eb0dba27deba9380fcd6a2311490f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::513c71d70f668f4ee3161c0d5f9c65482f167754a63aa30c591932b31ebe8be5",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::527027ff25314360c16f25a5f0996aeb5364abdf4cdaa5b4c41cc57310e239b4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5314e879e58b575fcefabf5e72a06baab2b7796aa7762243ef06295996a1508a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::532a7c79dace4bb6ff837940ba9b542ba5f6a8c62f96a1760645c78cf37c0c3d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::534f8da4d8897ab1c8f5d3672a0e82298571135bde422385e66b934309ed7139",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::53efa2c003247c760336587a7821705397accad4b1600be9bc18b3f1514d028f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::53f9e83c3b71169a9a017b520c55f27698373d39fc624d39d8c6879df1c09771",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5458dac929a753b3209e2ed57317ac28a53ea7a1bf526e03c145a3bff0da6409",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5486af9ab29144b50957c10feaef09dc2c5b106e4e21eb310f74a0694594cdf9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::554b9649ccd28826a2104296d3b243b32725ed4680e65f37f16e6717553eca9f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5606a58aa63212b9e7f04ed14f4f6356965b9efd757723175153ae5943f2f301",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::571dd97b1864eb1284300c23ce06ecd030e6699d960da692dd22d0beb88a18e9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5a07e81ea4a2f05dae9f75d81d872bd4718974560130bbae697c4708bafd0a67",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5a1c2ccf150b0076642510d0e51e7a363a692d33c923ea0724adea777f748055",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5a24e2b5f85a8f5e447cb74b3e08fbfc02d5eacb2a1f68c32ce78002c592887e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5a3ab314aa904ffc513800d1a3b56ac55c2bbc5b1e650555a6477a25785a9995",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5ab3e0fda7271f1879405f54d5280d433346ad64d465614eed945c85fe7185d6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5ad61ea3141dbfe87c46afd0c9d8bbdae1f6c707feda3583b41e3fca8e080373",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5ba09f36a891b3e329712f813d663c6e54d2bced1f29205f9fce4403c35cf6d6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5be6e2096d9ebfeff8e01947723715a95d941a54e38d38e23628df0e30b68d7c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5d432ff0a4365518d085495046ae1df0010eb52c1c061a7e917a43da978649d9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5d72ff4dd56bd417473f06be90f3ab5104425900ce6ad736a585ecdeab1b2ee7",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5dad3825a9a49b5eb210e4202e2974c09eec939b9713ca0883e974f29f06a495",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5e2356fce677608bccbf73572c685b72067f94f2036b0a27352b7e6f05bffe7f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5f3110e6590542a1d1fda0f82d6abe956763af2965f1b1f2986c3be8247e040f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5f8a5ae10da2a71e57d17bc1f7ae01b4ce847299fd0563f9a8ebdd234d029ad4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5feee664f0bd836620de5b23274c648f7a6b90cd7c45e74b3ba0469ec32365fd",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::613947ef741a7896d110f0afe66dabd8edde7b76ebfde9533f8bf17a5a5b7ce3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::61a17e3af4af01f88306bc5997218b6798ad973a83e08b4554b43a4f2d2ffbad",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::64da94ecaa15eed409ca7864d4afbece117d39aa5e03bb202330a95f7df98421",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::659996abea6bf9f4749d648f2ad76bd3b52abbcf307f767d54dda6d93dadb68f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::65e90f7167c3a529032159774e3bd17512eb152521f65ce798f5580469e00f61",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6639a6ef4a6f4cc39318b66fec68314b0eab7fdda54bad66e871043de8e1e8cc",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::66433183da928c8bd15af510ea660a36cd1eb7a8ec21c4031a90d18496fd9fca",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::674a940677f60b1a4b9e4706cade8ae69b16c347bd68ff9a92fdd141e390e8fe",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6751e52c2b84ad0df060ef2ba3f9096be0ecc13a532c7281db13761af9bd3829",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::683bf8787ad0452f2d2c45daa9c33b9b40472e35396daa9381c59dbe0859ef77",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::68f0b4e137a9b29d96bc94a75cf3229ce4bcef420b967552ddf0f60640d0e58d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::698df24202cd64b6b65dcbaf6e2f9baef7fe9f53041a1141faeadff2e9ec653a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6a831ec49f6df0b8a2f1c73b74525715a2c4de4c6512204ad4f90c869482d567",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6ada3e4552bd42ab3f0f1075372c136b2199d71f1dced8de12dedf4ed4ee164a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6b094bd270a3b14b9ae2a69ffb7a20f93758f514394d7753a55c5e9e9df6011e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6b800aa6c5ac54c4da7630f64861d59953662bc46532cbdac410330d0b128285",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6bc69ab4da846be2bdc23103ecf5a9d21b3aebafdf22293d7744268158bbc528",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6c1d760ed78b16f527f368f7ba3d0620566b8084ec630277bf05c21f174fce8f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6d7a51300519581a1765ce58027b3635b7140f5f737e33479261a68935f3c374",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6f1bff2843b1fcad588faef618feccec97f2cda7b90ad44ee3bd60b39580c539",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6f9f644e1e147e0e86df9eb0bc66bd6b46041b295645b32492a4e357910711eb",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6feb4c6d3ad3fbe4ec6baf33fe6e4037ba55636e5b2275aed4442775cd8abd0b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6ff90f27025f735219bc0c50b52158a1cd5bccee5725ddef1bf548015753cd17",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::700f6c6a8f21682ef21f2f3b752bf5fea03c515093a0e482fb3e2e737f356aae",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::70c013d21b78012a750e4a7c20e4dd8c924ccb3828ff9802689eac6d863cb31f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::70f377bfea134bb5edfd9b3bb203221fef7b6b59602bbd4853c0c294799b98aa",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::72fcf291cc03aeab476bc274d874f79afdaa67f1e2bead18f75a1469e89c7829",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7481ab92478cfaaedc45abb5884691c96e202c69888f385274bba321af1c5dea",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::74824d1d9cf185abf4679e0ae44f14862b6c6205ea814ccfa5d078eb299280e8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::75245edd5d76e6fe748edb09ffeb6674d08e854e691fe983e37f96a712afc66a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7536b053bf73a01769a368a167cd476e57c69aeba709bb59e6deabedc25af5c9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::761c10a2dfc21720a1583e2b04c73c3d4eec2a902b79e2f755f1cd712b0cf416",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::784f7cf254ee281b297324f8670aa8972b722c43803d8fe0609a4a09ff3f94b4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::79facebef392eae364b05330a377ea3b3d433c7ddef4b27a25a0ecd3acaeb52c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7a9bf82746e40fde5017153af8da46e33ecc18da1ba8e32dffacde1aee930db1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7ae43d2e721933255dbbc5ac109639c20e59bd24f9d94dd9a5015e0cbfb642ad",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7ae86ebfc7809088ced13fbdf8961cb55e1c07d6117564e963d67fdd4da21200",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7b40a650cc0b659e9fc37814716688529cd347eb3cb869abbbb0b38930244c99",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7ba62378fd8bd459c7a4b7fedfb7ff29305d4b9c593477cad4010bce8809969d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7c7e530e8f753896af2b4f1dc47e49b3bb3a9b1b0137af000bd4024163690c30",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7c99f7deccdca7cb7b9b74dca37fd1f88d888203a380c0da3578fbcd30504153",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7dd5ade029dc91aee3cc580dc19cb43371c9dd432c71085112555cee90a96189",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7e283992dc875688ffc9627300120ba28d2292b4195f938ae7e98ca3c7fe2349",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7ebdb16318938521e2bc4905c932737e5d5d7e22b64d2183b2b4e90bc0839578",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7eefa376ddc2187bf459b7ff1a913a4c1a676b0efea117921c4b49815ba564e3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7f1c2f6af028d5502fa726c3c614708809f6021cc4419ab92bb46574eb2704fc",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7f2b3ba08513d23a5d1301aa2da18e35976fe6e452dbe1c85c03bac29a3cb6e2",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7f751dd58e57d042b2a0f7324f885089060ebfe4ff1d58d70823584b2b6f1767",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::80935fee16bc4b0e65d4a0584f88d6c13aa9f22d95a4d7d4b94c34793299dc13",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::80fba1ffd5da2f8525033538e3aa82218f4b8e9dd4e2226687815714c1a48dc6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::81bcf0d6b1c29d29fe798b4b45fc48395cf353fb324902ea44a109804e5b549e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::82236583d7bc04f64d05885ac2c6a93bf78ab0fe24604ca4dd000ee134a44396",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::82fba9d5b28ccd75612cd40a8323bea74f46e6dce0ded40c0f63e75f734934ad",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8317c0605c3827db26c16142db2b5b07dcbe101bb15486e0b354ca16f94a466d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::83b015876846c0611e37958c685d13116e698263bcf973fceba22edc399f8136",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::83e6999efc5c05495cfd46f641f3035431c2d6ac307754a01f535409c27b9236",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::847aaba3e3bcb70b4215aba278023a0446d53952892aa989fdee32f8a72a9307",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::848e10f20b69245f0c94803feeefa13e9ceb6da68a6afa72dbcbeba54d676459",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::84bfae60cca4a22548abab6fd4f045ed009880fa52170e2fafb92b6bea394d40",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8507bde3626de8b86f014de4aa6174e80b58a618350c6cd39c6628288f2a3c57",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::85ab090270a9a0ffe8bfb0aa0ede53431f8f0239766f0b8bc6a1844394ec78a1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::85fe73532b97fe7d6e1ad3938c3efb8692b245590131f6bcc39a96b27ae7a561",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::863ea19104a5d92034e0561d390544be6d18ae97c3b0d0930754d2f680fef305",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::872ea3a48c1aeea3e13acf303db8c43d697f6c5c44aae9cfaa2af1e7eec0f66f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::873184244a362eb05b4e7bd615c7e040ceec6b0e71cd6f2c6df975b40aa6c468",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::878523cddd55586ab5e3523fad42043fe8cca8b89e7beeec2d88763ff8c46d73",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::87a87316b3f244ff343491e8e51485186d2070468f15249a6866d2862f5af270",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8a0cf51a3176d3e07ffa3c72ef37f0048dd94fef9d0f037f785c19cdcf951cba",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8aa5ab4c80d506ae4a21562391f8403c7ddec15300a008fc5b71bc4cef30c829",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8c3394fda7e760d82ee5ceb858f72c3939acbad0dfaed3b7cda1a0139d1391ca",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8d02ba5654c5be4baf8b8aef071ca311368e692c8e2d04a9398d2fe019c09a6e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8d03140c28fcb862330256a2bb10dabd46b1d44d86a085e882b1230ec9f6a17b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8d9c4df730de9b8a981702f872428bb987f22407fb0bdbe387ff819d6a25ab6b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8ee162cd8b566a3f1e28347d2bce0a962e91f9ed7d54ad3ca83f78e6b36b4eab",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8f02528adc3e287fe100ff5e6a700a512e1659f2b25149d4a286736c41d9343d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8f42976227604289795ed98efac64aff0264d5477deeec862894b5c5b458c15a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8f8416ef1d1040c022b7736e032d5573f74a4c435e8a325842053838b65205c8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::90dcc72dcb8ebb799330970ea38dbd74927ad02c210c58121a611b6e37b1f2cb",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::925ab8477181afe82683c74ff2b67488997e3dd7e33ab50fd57def61604e29da",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::935c38d03cc6fb36a22a7c846df98c9b4bcdd3dcb03281701efcdeaa69b233a0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9402b5620388c566ba1e73b50b4dc20ff8eb03c730eaa1dd8a0158932fff7a67",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::940da06335686156b37a2308e6edf50569d3ff25c44f845674a7dda156215daf",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9482ee1bbbdee7d58bdad699866ca8f2fd9953318c3a046c0a45694ba56a1828",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::94b634f7f648f6970d151125d576240615979ffe8d3bc90d312dfa0c0f3f0409",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::965c9ad4e5a2cd085f4c1ab480b07ee6a668daed9de7e3709e806fe97fe0c233",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::969c693957082db15247b7bd43ae15b9589988306d8dbcd16f73518a3db3a461",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::96fa546da1eb4820ad8d39fc03f59ac55f21bb2a949d4b664bb331b284604af3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::96fdfc98bc5ebaa8c3559638c9ecfcba6d1fa6bcde5045ffd9d44e88a80bbdb5",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9706120c0df89565d7a8aa22261294f7de84088678bd47f119fd199c82e3ac88",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::97e66d7df8f817783cf8ade779e309759a5255551464424a87090529db2cd958",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::985ba23f9d1a61c64d4e70a413bb5a359f83b6548d161b209673f5b20ea0d552",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::987ed6ffd10fa0cb87d6a0653695100a7a4613f6bec485a44aef16092fa067cd",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::98c9abb3c14803ebbff5dd54a00f21f780f9d34302c7b41eb0b408c7fe467550",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9915b80eef5d9b24f486ab8656ca5977e879cf58c330f7906463dca7e8e29014",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9a0120f415d725c18d2d9a1c870ed25180c507dcaa881007d2068a6463732322",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9a19bfdecc9e290699749f334d985016ae36272e7674661488b39262f89174d6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9a6bdba5d3c853c72d9030f38132c67a56c39bb95eee670e63ec8ff54b028f74",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9aa1ab9b5f3b798b1bea058754ecb36f5328205928ee5ca7a3d5474e1bd4f5f4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9c6dc51048001ecede0b75e2831b05cbee3f5857a6ca9807f258e9eee32d629d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9cd02239083b40955c30781776dd49d94ce6eaf30da410231fbded568b564393",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9d5f13e5764fa2341e28d1a816e29388bd22fc391980b6f4faf9b999d7a7b97c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9ed7428f0ae2a35327081b6b212e2640e8d066376cabaafd28ca296d318e4d61",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9fb79eb67df0fbb27c661ee82ec234d9906db096482fe684713346bab44b98f8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a03b33b1393acd65055d9bc7fac4b10fa422fb6e78295b51e15ecf24917d1aa6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a1c649594b45fa0484f99328baa78de6d0771c30087c0cf91149dd8d6f3fdffd",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a1e5dd1085de81df4a66b3a5e8ef3a4efe4ebc38d1e36dbbf6ae34a7cc96c8b4",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a26ae2c417786e2f297996ff364764f30f56612aab9cb96d4f780c6707eeaa1d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a3261f2dd47e8058130e944f53485d1de1c9540b8a4860a160903b31404b7074",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a3afdbec7030075c6d6fabb4f716e6f5eb648cc3e16aa996ff0e450c0403521e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a4b964580678a54f7dcb151002a148f76b5be80d30feca8d800e7bd1a5c59ac0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a4bd9b6b9f15114f9c62ac89b08891d4b95d26864e422b4e8d17cc73b8dae87d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a4e94fb0f18ed8d2dfd534a77ff3f3747fe22fcac2ac299ada38d9bb2dc48bee",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a52d7787b77572ce3874054928018bd9c2f8380cc6bd631ca7a6d17c50c21114",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a63efa0c52765071a868ca49c0df4e554258288a92c268c3ab75b8d414266037",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a742ce1475a8e98f82070de3baf6000567042370e4179809bbd147a10eb33ae0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a79c1e9831f6798dc11b24cf1459420e8da4ed1aecfc2fb2a1ab4c70ed401b55",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a84fc080f0a41553c7c169ed2fc464c5f7f41905263c882b8d5d28e486e575d3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a9c9d0d8aa2cf36ed5c8b21c3a51d38db0ed93d4c61dcaf5d5c327bef24c2ca6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ac820bee947fc97aebd3802a6746c058e8f7a0aedfc231ab3924429fad7ff5ae",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ad6c58beb678db9e8b13de1f0cd1db7b502d47169607336715ceb650b2c88c41",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::adac625feb693f008dddaeacd1866c173cccd54b84bece41a6508472b98ea1cc",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::aedf9efc0bc7d6ec2b384386b67dffdce59067e2d4a56d0753429fb8355f3234",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::af04025ae2fb10b22dcd61a68046ab47edb7c2112395322d996586534347c7ed",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::aff7c66a2d66440304642d18a29ed0003e45b761368c990d1f93f6cb71aa5113",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b06f4bf700d3e78e8d9c5a042235ef7a4a998258c6dfbff0e94b135c360a95e6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b0b70c3b172a296cf9f5a68b9e5beb3d9bbff2c158eaa33549be5b2bd2ce8f4d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b1155eb7d248698bbb0d84c4b306d39aacf93e4b4fdbeff4a36a93f92d7b2029",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b15f01ffb46efe24a24a0bc7edc39fb01fae53ef12713da9613dcc121a5ec34e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b295274fd9d84ce4b0da7c33235c514b9d2c40c51aaea3268b9b1ac15a2cf27e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b2c3fc7b7fff6cd4f0cf96ad7dd18fc44e2d49ef0a17e3449f876ad86c3e609c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b3818375580fabd78c459ab6b88330940997acb6c006f0ada0c6d51e80712eed",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b39c0b39d260edd2c0ed272b2ff1802d8c308a32f22fb97a7ec036cf2962bb7b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b3e4d951abdbfe128e4726b752c29bcce5da742a1949872d0c1d7a88016517cb",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b432c787a4b942766bd79378b6e339c6aa5d7b5c89e3d651d57690a557fe9043",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b56782eb70eee817005aedac935c42d09ed314f3a5478b6751038bafb0a65f57",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b5e6e3b27a840999b1ba4f0702131465cc1dfab11385cac07612dcbfb2f191d1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b607c0a3b12252f2c4650e711cc4db32806637264fd5ccc98061537b77151efd",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b6a301acde6d48ff34f285e7209b339565dbccb6c892be31b1e6dfb050462795",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b819c019392d22b081a2dc0cd4c5836659b7e37a37ed713427bfd8f3fa57c7d3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b859b27b24c8a0b0fd4e2c15023a7d4135d0539f2be96829c85b37933dd40305",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b897a2730801f6912a9d9b94b0a931474d0eb7a42ba8a01af481106291efd219",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b8bf02690d320cc75b39b4dd98d23149b97a112bad1cca167d039113f6cc39f9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bb7964d0daae20086c823984d5ac72936153c08341c68bd2d05e5e8d05a27726",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bc7868d4b82886a9a5c21affb86a3c0d0e3762e489005ae4f3753430b93e0862",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::be33b6c087c4fc436c433377da3c3d10f1e973244af0cff7be089d60f495d60c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bea0bbc8097205c206a81daac34c84bf54317ebc7a0c2c1c90c49e9c1b90d32f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bf5f8160f79342c8d039ea4eea82dd96cb4b87835dedaaf9973bcdde0b9fbf20",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bf820453e417d357c41bfca65a6950103961e0d3195fb04d52a2f1180307cbef",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c0fd39194265f4c1a3a7cc55c544591f81ecbd9eb1db102486f2acd6a6e49f1a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c10f47ce524ef1a11799fe3755f277b4f22db58ae0026981f5ff93d6f2508859",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c33771015f27ce854086fb5a44c279900841a866fcca5e8ffe9a3de74e6fea7a",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c35b374c304cd913449bda1eff34699f08a8e95313bdcc6146c1eebc4c4bdaef",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c477ed3a467c81dce5836c30d63a623b44b92535ee478d4455a6a2928754a318",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c4e16c9f98a746f8f72c0d859d6ecaee66c0edcd97f7ee7faedb407918d01d02",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c5d77e57074cc34c59fc3a76bac8444a6918628e8bf188ee08a8438ceda3042e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c6f9eaefe39f97eb8cf5dcfd37999c43cefb1503c1205ad81ce67012cbbe8699",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c771aa965ef8a10f4ecc0e953d2009e6ab5248a2ec54e7c8935a01ce75fed2ba",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c7d6b9e19fcc0adef232ce8c488d219948d88f85bdd1c0670e0e5195e911d2d7",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c9617555d604d0174ae7e4cfef56506d99aca1213d1d91306ab1a2ea72c9e540",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c9824ca040871e7a9a4722cca8577c8bd0b6f2b92fb73cb3754064bdeca6d6bc",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c9edaa1db5195a18202a5550b3de5455348a0aa87f33db32100ec36801675368",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ca458f5b72fde2e604a97b061f0370074a24aed64b985551e34723917434c2e2",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cbd75f99726dd307412dddf744b56cbb6470fc43abbbaab88ef1e4313bcc9620",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cd571d3576a8983928a2c74c6e60b296ee6945dd6ab520674702adbfcfb46bba",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cdb01caad3618dc4cb514403740c5c3a6f8a7ca7da342def4ccf95eda48cf5e3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cde49371e84af388702e2d1e85f4f9f725eed51bc78e254e4c85d0312c7c940d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cf04238a4c6630f96d400a3eb1b65d8952762f547709f443be373ecb7e2c0f72",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cf3508d2ebcdbd93ca71d260226d4dd95b1bd0ecef43b3e5fb200dfc9eefe8a8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cfcf2bf3345f646a18760ca32b08cbad7d2f4155ec8b0cd8f77e9bf9711d49e8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cfd50802214561326f882b25a27e5ccc8408a9fddd953d174ddd54d6ca5dddd3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d09df540c1fce0e38b115d7738c695d70457c8d1775e9980b51d237aded97962",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d0f50666caf43341c99cea31e2b1b2bdb85269f4923cb5bbb3f5d56c6fc5ebb3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d2363367ab7a74f774bf9313788ec6640ee58d5fb39cdfa1a775672c8705e785",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d29f0af6355564f6dc52c7df373d071669ad595aea5baffa31c61aec67d8e3cd",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d3b0f19a2614eeced67458fdc2070dd021b0b1eb08d624de284970e6c4dca77e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d3ff297e25b9d0ebb059f2655fe991abddea3e2c36419cad35eebc774c8a0570",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d4794e0899965d81784c3888fd0d1c902be65d2672ddb24403fb69332d5de75f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d4ab3dfe2b75ba28be08c9c45abcba767ca3c70874ab929ecc5ca02dc7e79f7e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d5d11d7edc8af394db49772b4cf481ea76426ae193e63d1e7b06cbfd997efc9e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d63fe13fc67f84754e760b569d7a42a37d669ae5470f8f84b56d3db6b3405411",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d6ad40a38ecd96e8db9eafcbd986b81be1c02a81e1c5848006b64a9c2deab4cc",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d7907bdc9db45805cfa139e7242eb00e115ece5590d0262983c99f1905168af5",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d98c3ad0d9e8bfa3bdad8ccda2fd83fce242ced92976b0a042ba4ba5c5e46b73",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d9ffe9a62fb84957adfe60481fca94245047762b4224987b91f855bcd90ec7ac",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::db86338faab286392c2ba36ec72ec8f32ca7dda26921de5517f011565229ce0b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::dd5cb272c17e6731e1791018135e00c407dab634d7ae46ec3f80ecee8543f2a0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::dde8a1697f1a7fab701359fe6dd9308b3080bb42c7850887097eeb44c76ad6a6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::def5308dbd80b399f1971c80e68cf6c6b70c550a120385eecbf175721aee155e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::df203e160485a78049cd8e19f8e392f4ebef60a7ef415dff592777a0b4acbfa0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::df5399c0dda0cf3fd8d7f3381c067bc923d18a278cbdd7e95683d09f2a84fe0d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e019bba1b5962bea5837bf838958dad1ee357dd737eba48cfdb612eb143c1abc",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e10fbd075a8008062f9e964d3b3b59971911b5c510f567c9970fc1703e86e58f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e1475db30dc904276255c245497972547806feaf84a826e53c4e51cdc4404ae9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e148a4e48b4dc2a6244e6bcdf6ed1f27f933fc1e70eb2864014abf96329a065b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e25c4cc66d136ac925da342c67df693f00452b91d451ecb358cd11619e2b5409",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e368b2cecf9c3d80d05dbaa84fa6e787f8298db78a37f308f60f12aad8bb0a08",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e3ffad7664b891fe61ee40f1ddbea1469dcc2a01a487b29f141f162294a0e928",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e5513a438c19066c1228b6682762eba96772a6a5a46ace4e4f57ce306b8ca5f0",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e5c19037fe421e9b007ddcca7650eae1efdd9183f89a23340ce6657909f6e038",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e62687871ad9d6429a03390021fdab2a410ee3af6151ef6c86907512aed9ff92",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e67efd8b8906cb1e20c005ad1704c8947d76349d5a1410256fc73fa2a8722281",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e6ea9a59306014cabcc88a363f6401575a2a8a063c801f457ccefa4e297c8e01",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e7692b3f55ecf577036464b184c0ace6b8c7594ffa454ac00a50857bd49ab3ad",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e81f12804ad3193ea83571ee1c97ce7b57654f2cbeae0b3d50a7625a35333d8e",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e860db12ebaea61762b5af2c26ddca82c2ec1317d62ab577288b26ce8be4c185",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e987e09b203638079b5ebf7c2cd0adff5ae11f9a2e387724227ef171c5bb1c41",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::eb2df25739e9b1b45071a1219828ab891d6ba5d910f3c06a3e410d7a434844a1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ec33ed62fff085368f60a090cbaf2a95cabecefae46a6d9226dca30031326d61",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ec5e5392202630b3375ce97589260bb6204df8828afd8b6816b009c5a79b0c39",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ee4b89b5cefc768fce20b02828933c0e81b6f46e4a5515b368230c7357a1d29d",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::eec86ba91503a43d92c07b31d68c3a9da81109ea32eceb9e1d7e01e76d4dfd82",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f04f69d06367ae154d1763c6ea52af0bd8104d6a5e2bff588de4ca266e8b4721",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f07ab23b0ee808340420d7e3a8a5c9a38af296162c71661c76799f7dd2b65f40",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f16aa75c1b680f762f10a384b54e1ba1f7fac43a5a129802ee6c088c595968eb",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f30530b9e1098754b06f270cfa501995e46b159cf53e8a568823d3829e81b2ed",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f352a75712572dfa5713bb89a9a9353a3465eaca1098f8cdf88337df99bdadb3",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f3cb2675555b809092f8c9ea7781b8d516b01ce99b873c714e1dbc10c3c82937",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f51cc6cb52e9257355fb9aecf419e4676cd840427e6e0f25ae0ad2f8bcd291c6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f5908eddf617a09cf84386709ec42657830475063aeffd51159a26101a0b47c1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f8948880b0f999707b9ad38809dc2cfeedf156f2d4f593eb17118806c1dd0ddf",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f9f3ab68de33b86a8a1387b8875fa5d5bab1d9372de3dc970c7c9d9fa4b579a5",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fa0990ee1703c11ded2b28513ed66824b21934ba725729cff802713ec2fb64a6",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::faaf30fe022c27c0967dedef3344e06ceea7a8cda3e5f8f4f35698820f5fbe4c",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fcf69969c6fce4754eeb2c4a20027889089ea8e9586ffd93093e17c8829371c1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fcf74cda66fd85cecb207d103c72437e8709ce0c1a99dcbd1c70e9229e84cb1f",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fd835d755f33a0bc2b572d83ac8182492f658febba17e1ce96ee83327b05609b",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fd96ac394ebac9bfbc9ea5d5b6967eb92b519ee17aff11e70c54ad8930fc6be8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fdf4d4b7249c93e822090788c474aecf4960f8143d0bb5189cc8e4bc90712ab1",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ff1dd773e5773eab17919edaba85927adddf98c7e4da171bdc57babdc3d7cb02",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ffd146acf576072b897cb6256c48e09229818269c3bfeca73d3a90f5944c35e9",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met"
+          ],
+          "all_removals_explained": true
+        }
+      ],
+      "unexplained_zero_survivor_records": [],
+      "passed": true
+    },
+    "rule_interaction_audit": {
+      "multi_reason_records": [
+        {
+          "stage_a_record_id": "the-stack-dedup::3dc6b62c282d3f1a094d29e0ef19a3d6b7f2e150be9b2d67c4ffcb1c31af06a8",
+          "reason_codes": [
+            "quality_normal_retention_threshold_not_met",
+            "redundancy_contained_payload_nonrepresentative"
+          ],
+          "all_removals_explained": true
+        }
+      ],
+      "unexplained_multi_reason_records": [],
+      "passed": true
+    },
+    "passed": true,
+    "stage_c_delta_from_raw": {
+      "content_domain": {
+        "token_share": {
+          "code": -0.08432566885608161,
+          "general": 0.007772939625260171,
+          "mathematics": 0.06099618995641362,
+          "science": 0.01555653927440789
+        }
+      },
+      "document_format": {
+        "token_share": {
+          "code": -0.0811554178736732,
+          "dialogue": 0.003285210122095244,
+          "formula_structured": 0.04775818345622898,
+          "markup": 0.010371407214003812,
+          "prose": 0.01974061708134518
+        }
+      },
+      "document_function": {
+        "token_share": {
+          "discussion": 0.0026836461431867065,
+          "explanatory": 0.15839099464728879,
+          "instructional": -0.07622159976514885,
+          "reference": -0.08480913169846566,
+          "transactional": -4.390932686096409e-05
+        }
+      },
+      "language_script": {
+        "token_share": {
+          "latin": 0.02131770453148296,
+          "mixed": -0.02131770453148299
+        }
+      },
+      "non_latin_or_mixed_token_share": -0.02131770453148299
+    },
+    "claim_boundary": "Audits structural retention effects, representative linkage, and explainable zero-survivor outcomes; it never enforces or restores a target composition."
+  },
+  "measurement_contract": {
+    "runtime_token_measurement": "whitespace_proxy_non_training",
+    "exact_tokenizer_count": null,
+    "exact_tokenizer_count_role": "external_evaluation_only_with_declared_tokenizer"
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "source_pool_role_read": false,
+    "composition_read": false
+  },
+  "policy_fingerprint": {
+    "policy_configs": {
+      "configs/curation_framework_v1.json": "8fd37bb61cd1367dbecd5681e517822cae5a2c4b9c2bf007723c94eeeca9e530",
+      "configs/framework_objects_v1.json": "b7473cca9d78146787ba80da5ba0c243f9ff7a8ec4be5d6d9c69099f5e88c484",
+      "configs/framework_profiles_v1.json": "f75cf3e9bc728e384b90963f801c8c1b38a2b3af70e8ee3a477cb165d519772d",
+      "configs/framework_runtime_bridge_v1.json": "b984abff7bb3973ab41a2b10590675a2726729a5c43e74b2162585ce89c01103",
+      "configs/quality_teacher_luna_single_v1.json": "4d01db1e1de41aabaf5c3b9df610fc1b05b2aea6b41e5285c98df2a0a89cc2c1",
+      "configs/quality_ranker_v1.json": "4e903b79bea8f263416fdc2558c26a24ba630bed179e9fa3c34637058393f071",
+      "configs/redundancy_v2.json": "355f83266fae8186dc53e45809ed0aee41c71bd9206c5aada8af456c62cd43e1",
+      "configs/curation_contract.json": "41f98503fd2758c55b491847a2b972abb593b2113510ff0c2ee09d7d812b67d5",
+      "configs/core_policy_registry.json": "858f35e614d26c3ce67165bfc74dc95c943c620740ce38f13ec7a878081bc131",
+      "configs/policy_cards.json": "4371741d0104925bad2f8a98be76781202688c5c68bdd5498f60230a30203e37",
+      "configs/policy_profiles.json": "68eeab23b61adb29de79a3cbc8c4d9ade53ff675dfc2f63d1bf91a031686a719"
+    },
+    "runtime_modules": {
+      "run_curation.py": "9fd828e1aca0805872a1a9dade73d137810b405c8c2e677aaf220969fd9dda58",
+      "all_policy_stage_b.py": "dfe08d9a8f7a88f051d3a1024a993a27fa97ca1055300f1a96d5544d8f84ea8e",
+      "composition_audit.py": "b8b3e7b16e9188bd3796bfc3624991051e2dc3a724367211aee4a99ef6413eec",
+      "composition_artifacts.py": "be95fed59272e68ab483c8d166e1177d77f4d6e7ca240fc5ad2e6d2de3071649",
+      "content_router.py": "4b31e4279d9d67826f7b43b27220690bf945f944c08ccc766e85e3b5053f03ea",
+      "coverage_contract.py": "e87a4ad37e85b0cc643f2bfec5512deb6f542bf1f799c8a80da0201cf8edc8e7",
+      "coverage_engine.py": "e89fa9e86873e7adb5910a489d40d82508ce57af220907bbfa383becf76ccb8d",
+      "coverage_metrics.py": "3d9d87de0386f60e599a2317732e4ab55882e6510bd53f2fb690ea8d1d009c55",
+      "coverage_rematerialization.py": "aeec9de30b28110d6ace394759bac88af223ebfd43f8ca00abf6cb3b731cbda7",
+      "coverage_taxonomy.py": "7cff80c65670cce076bf49dfb142df9b7a665eda4c2bf09261bdb7c8b0b6f3c2",
+      "curation_artifacts.py": "3ea127b49b5c29f29e3432d086d441150dbf1144a03852877e38d128aa29bd72",
+      "framework_objects.py": "2623dae034ed3948efc2463dea6cf86ec97eac537a4b2d5df3d1d354ce0ca929",
+      "framework_profiles.py": "1c59a29b52f1a75ac6d79f0eb77408d0312bdeb7af31ca9977113b3c1b35ced6",
+      "framework_runtime_bridge.py": "eb4bbc0e3903bdda6c1939272a74ec1ef170163f9cb6abf8606512bc0cc3c851",
+      "model_provider_contract.py": "c6a681a87a949493d99af252f77fca2fa8431a75cc504fc48fc2cad22beb29b2",
+      "stage_permissions.py": "38de5d732d1eccbb387b2414117f44bfc4f91cb7ae37aa57e30b0a539a27a344",
+      "general_web_span_compaction.py": "336c89ec576da4c0eb23b8c6840baa6e7e1714aebf4315ec6a5b05fbb3aced93",
+      "ingestion/input_adapter.py": "286de557ff6fdd9fc3a1841407455ead23c2f8fca814c9dfc2e381d84b8138df",
+      "ingestion/candidate_processing.py": "9178cd02a69e020959bf803d4998e37be8cdc11d1606937ec33536038e69e3d0",
+      "quality_decision_contract.py": "d1eba939eff3f2a9f1ac6ebc1b29ba1318f6b266bdef4266f560948888d29c28",
+      "quality_rule_evidence.py": "147da928b8aff67d0118fafc305fceb936ee0140ddb9c5ba50aeddb129d3778a",
+      "quality_teacher_panel.py": "725620cb8cdc0f0151631d4a2f3097c595c48212426267dbd06af3ce399f53d9",
+      "quality_teacher_json.py": "0d89db8667a6adab14ee899bbff491de32b6fa3f274c0f733df3a251f845be22",
+      "quality_teacher_response.py": "82ceae1d9015de37b358eb2ee0c12b0471d1d37146a3fd0e5dfca79000c5c08d",
+      "quality_teacher_runtime.py": "f0b6c0072df671c7cb5f61c7a9396e0cb4a8f4601bad8a8e5056ed82302c37df",
+      "quality_teacher_materialization.py": "777b46263194c7fe8bb33d7dd68d84d0904bf814a6726674f6492ff2aecc81b2",
+      "quality_teacher_batch_cache.py": "dc67d32052069d6e20e5aef48c774ad63de1b9a65ebd535a18a14f3756082e06",
+      "quality_teacher_unit_runtime.py": "61b59e45a4914b1a350cd00a9e3858564048135cace745836840c2216067cc08",
+      "quality_teacher_batch_runtime.py": "1e42db96ceef56be3e204ee9735d632e6a114b5011ed8ba770ecb8047db62d28",
+      "quality_teacher_adapters.py": "3c3aece505e7553ac36ae7ee77af040fefca25600ef9221f3eda72a154b7b8c8",
+      "quality_ranker_artifact.py": "0d5dae21050e7d772258fcee37ef983e23fbe237d4f6f37b215eab545c9103c0",
+      "quality_ranker_policy.py": "b8736cd3a0890da53ebdc65e29b0f651ab4f92a32da7c8f6d1719ee77c9bfa78",
+      "quality_ranker_runtime.py": "3b128b0b19cfd1cd4b809e51d14fd157397e713670e9e32a59d07fb102b215af",
+      "quality_operating_points.py": "b2c3f3c680b6b2567e706fc77c58fd68f996a320c30ff1481be4ca673295edcb",
+      "quality_stage_bridge.py": "b7967bafb25edf2376a2808b26e7b42f77dffb800caec43a1ff2d70cb3160f59",
+      "quality_runtime_dispatch.py": "eaf74aeb047b4ab08be1a86d01e4beef6ce45c2f758f69d2eda387ec4c42f042",
+      "quality_retention.py": "1bf11fcede83dc9e50f317551bd6e72f235c9c82c2713126699285992fe6cc33",
+      "reason_code_audit.py": "3ac23dc90d53708f78ed3a902da2292dad1dc598c470d48e5c8581fe4c3287bb",
+      "redundancy_checkpoint.py": "37f5a337af25b58f70eabacfb9f2efd226dd03e1333c52095c7125c5eb43c92f",
+      "redundancy_equivalence.py": "b46572f3aba5d8de4879c19d6fe636f7b19d12b27e56f55422a6c3f2724045f9",
+      "redundancy_mode_policy.py": "1fa19433723f5366959b52ac9f46bdd337e9c7918b9ed103e4e376ee2b0f497b",
+      "redundancy_v2.py": "aeb2e402b69218ebb661505858e279efc18db85c7dec042679e46f5b6fca6fca",
+      "redundancy_v2_retrieval.py": "b208e403bd3f7bf2655e001e8408f64ca03f5e5e70222c1270fd3cff8519bc21",
+      "coverage_redundancy_bridge.py": "051e147b854e00f6e630f2453bfad6d1a38c6605e6f2a0896dce636c55bdabda",
+      "semantic_coverage_materializer.py": "61e924a8bb2f43bc7904c2adf5ad8144c472bf42952d62afb1ebc26700e7ec6b",
+      "semantic_coverage_bundle.py": "4e30228787495d1a9cb034e96bec423325227c616919bf42fd833da5530c401f",
+      "semantic_coverage_graph.py": "0bc93e351353fe6c12312550e24881bcfa2ade36aa9cf73563736cc51c680636",
+      "stage_b_policy.py": "a453b8b99eeca331fac7d14154dc23d4082800a8c7461048a6771445df0ee29a",
+      "stage_c_selection.py": "50a6aa48186a52a8cb16bb0966d3f2b3e905e3a72719300fd21906ab307bf0a2"
+    }
+  },
+  "stage_b_policy": {
+    "selection_mode": "reason_coded_duplicate_generated_artifact_and_scaffold_compaction_without_budget",
+    "near_duplicate_compaction": {
+      "candidate_enabled": false,
+      "shingle_size": 5,
+      "minimum_lexical_tokens": 40,
+      "symmetric_overlap_threshold": 0.95
+    },
+    "near_duplicate_removed_chunks": 0,
+    "structural_scaffold_compaction": {
+      "enabled": true
+    },
+    "structural_scaffold_removed_chunks": 0,
+    "explicit_generated_artifact_removed_chunks": 39,
+    "license_comment_only_removed_chunks": 1,
+    "empty_html_shell_removed_chunks": 0,
+    "web_chrome_only_removed_chunks": 0,
+    "quality_retention": {
+      "contract": "quality_retention_deletion_authority_v2",
+      "policy_artifact_sha256": "4371741d0104925bad2f8a98be76781202688c5c68bdd5498f60230a30203e37",
+      "decision_counts": {
+        "reject": 40,
+        "keep": 0,
+        "abstain_retain": 7984
+      },
+      "reason_code_counts": {
+        "license_comment_only_chunk": 1,
+        "explicit_generated_artifact": 39
+      },
+      "active_policy_ids": [
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk"
+      ],
+      "candidate_policy_used": false,
+      "intrinsic_quality_score_used": false,
+      "weighted_score_used": false,
+      "utility_read": false,
+      "benchmark_outcomes_read": false,
+      "abstain_action": "retain"
+    },
+    "structural_artifact_rules": {
+      "explicit_generated_artifact": true,
+      "license_comment_only_chunk": true,
+      "empty_html_shell": true,
+      "web_chrome_only_chunk": true
+    },
+    "coverage_representatives_retained": 0,
+    "coverage_invariants": {
+      "authority": "audit_only",
+      "selector_consumes_invariants": false,
+      "metadata_strata_supported": false,
+      "representative_links_are_reported_by": "materialization_coverage_impact_audit"
+    },
+    "budget_applied": false,
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "source_pool_role_read": false,
+    "owner_stage": "Stage B",
+    "core_ids": [
+      "redundancy",
+      "quality"
+    ],
+    "proposal_is_final_membership": false,
+    "legacy_implementation_adapter": "stage_c_selection.select_chunks"
+  },
+  "stage_b_redundancy_v2": {
+    "schema_version": "stage-b-redundancy-v2-runtime-audit-v1",
+    "mode": "normal",
+    "input_chunks": 7984,
+    "candidate_pairs_evaluated": 2515,
+    "removed_chunks": 2,
+    "retained_chunks": 7982,
+    "family_count": 2,
+    "removal_witness_counts": {
+      "exact_token_containment": 2
+    },
+    "relation_counts": {
+      "contained_payload": 1,
+      "distinct": 401,
+      "related_complementary": 395,
+      "repeated_span": 1717,
+      "superset_payload": 1
+    },
+    "all_removals_have_representative": true,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "token_budget_read": false
+  },
+  "stage_b_redundancy_checkpoint": {
+    "checkpoint_hit": false,
+    "identity_sha256": "5c39da95c0aef8424d5ecd606ad5155d15e9a271df0e83a7b53901f7009d2e2a",
+    "checkpoint_path": "D:\\UNLV-Research\\final_all_policy_v1\\checkpoints\\luna_final_v1\\normal_stage_b_redundancy.json"
+  },
+  "stage_b_quality": {
+    "schema_version": "stage-b-quality-runtime-audit-v3",
+    "mode": "normal",
+    "input_chunks": 7982,
+    "retained_chunks": 7048,
+    "not_selected_chunks": 934,
+    "reason_code_counts": {
+      "quality_normal_retention_threshold_not_met": 934
+    },
+    "failed_policy_counts": {},
+    "panel_policy_decision_counts": {
+      "abstain": 17618,
+      "pass": 14310
+    },
+    "chunks_with_any_abstain": 7957,
+    "chunks_with_all_policy_pass": 25,
+    "chunks_meeting_retention_threshold": 7048,
+    "all_input_chunks_received_quality_decision": true,
+    "abstain_action": "not_select_unless_coverage_veto",
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "token_budget_read": false
+  },
+  "quality_scoring": {
+    "runtime_method": "distilled_quality_ranker_v1",
+    "ranker_manifest_path": "D:\\UNLV-Research\\final_all_policy_v1\\quality_ranker_luna_v1\\ranker_v2\\quality_ranker_manifest.json",
+    "ranker_artifact_sha256": "50f887ded1c7dfe1854b06e7ca3d51d439e6041d832267882d4af73416555912",
+    "embedding_manifest_path": "D:\\UNLV-Research\\final_all_policy_v1\\quality_ranker_luna_v1\\augmented\\embeddings\\embedding_manifest.json",
+    "embedding_manifest_sha256": "1805f49932259cd629e9306b01e9d332ac76fd92871cfb4acd71e62027ec4c08",
+    "input_chunks": 7982,
+    "policy_heads": [
+      "q1_correctness_evidence",
+      "q2_semantic_coherence",
+      "q3_substantive_payload",
+      "q4_learnable_relations"
+    ],
+    "ood_chunks": 8,
+    "uncertain_chunks": 6614,
+    "teacher_requests": 0,
+    "uncertain_action": "not_select_unless_coverage_veto",
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "source_reputation_read": false,
+    "domain_quota_read": false,
+    "oracle_fallback_enabled": false,
+    "maximum_oracle_fraction": 0.0,
+    "uncertain_fraction": 0.8286143823603107,
+    "teacher_reviewed_chunks": 0,
+    "teacher_review_affects_membership": false,
+    "fallback_status": "disabled_not_select"
+  },
+  "stage_c_coverage": {
+    "schema_version": "semantic-coverage-materialization-v1",
+    "execution_scope": "confirmatory",
+    "corpus_sha256": "0082e0cbbfb3ed3e7c20fdb0b898f236c356e8a0b8a188361d9173ff45dbe04d",
+    "graph_sha256": "114dd1dca0da96d0ab45c04ce1e20cf0884e9b9e21651e83261326ed4fe4ccea",
+    "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+    "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+    "initial_status": "veto_candidate",
+    "final_status": "pass",
+    "required_retain_uids": [
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/integrations/higgs.py::0002",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/auto/modeling_auto.py::0001",
+      "known-hq::huggingface/transformers::7ea2320c7611::utils/check_bad_commit.py::0000",
+      "known-hq::pytest-dev/pytest::67a174fcee35::src/_pytest/capture.py::0001",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0018",
+      "known-hq::python-poetry/poetry::f46702336862::src/poetry/mixology/partial_solution.py::0001",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/cluster/__init__.py::0000",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/covariance/_shrunk_covariance.py::0000",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/datasets/_samples_generator.py::0009",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py::0009",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py::0011",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/experimental/__init__.py::0000",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_compat/common/_helpers.py::0001",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_compat/common/_linalg.py::0000",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_compat/cupy/linalg.py::0000",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/pairwise.py::0009",
+      "the-stack-dedup::024a810f7410812505958d87b1e763a044201651de68ffb67034eb69dfdd608e::0000",
+      "the-stack-dedup::044ccea25f0e197ef075549f45f7b78a017269e370aea8c09ae92896a310e08d::0000",
+      "the-stack-dedup::0cefa5faa4cc988fe98cc9b72c037240b2aff310a99915d0864b279aa2373500::0000",
+      "the-stack-dedup::0e1616d819a7190972c6460c17e62355517a75e36047d8578140df56849e6e50::0000",
+      "the-stack-dedup::1000ba6ad7fd5d535618a0d983fd0553bd2d786bc5b4b1e2ea6c083366eb7841::0000",
+      "the-stack-dedup::14d4ac8766b14bb49180e651b9e81bdb3e0e54b772045d6f78772ea2211a1aef::0002",
+      "the-stack-dedup::1969bda8649606e97345488d22228ce40309461e62053c53a1b17fab0f3e5d30::0000",
+      "the-stack-dedup::1fd15db22168ba2d1ca74c4a7ac3874a3fd7a55b007a61e25c4158d57922c8c4::0000",
+      "the-stack-dedup::1ff1cc239471877b8e8567f6642858012c494fd3040a26dc2dc51d1866f5a58e::0000",
+      "the-stack-dedup::207e79b89d1d43125774685788e02b16f859dc17e9380017f9a8cdf773972c38::0000",
+      "the-stack-dedup::209ffc94e25cb9222c411718b24a168f722533ae52dc16c21903f712f601d668::0000",
+      "the-stack-dedup::2817eabd52787d41eced2a0e01d8bf0e453c83d8646a4467dfea236ad2ede400::0000",
+      "the-stack-dedup::29c82ab7b8d8108848672a85b7888b0d4be8fabaf4e4c4ed9d5a7a06f69e285d::0002",
+      "the-stack-dedup::2ad9cc923fd8cc9df3e3c0ac19dbbc9656d05a8669ac31960d240d53b6155b2e::0007",
+      "the-stack-dedup::2e351bf4390bbd9c49c9e9329399df203370dafa179552a327bb1ea0726f43ea::0000",
+      "the-stack-dedup::3279e6ced69f7a0f4110c2cf3a627d5a8c5488ee96b9af757932c87fbf895856::0000",
+      "the-stack-dedup::3cd3d10590d8dd91ae2980e75f4c8c143b6a7ca30535aa3fa18fb58327113a99::0001",
+      "the-stack-dedup::3d7c9d2e21241b424cd44211f3cad63ef86806a25f6e89d8021656e7c9363f58::0000",
+      "the-stack-dedup::4e33b48bd739d617969e12c63dfffb2902375f4082a473946cf4eff3fad195e9::0000",
+      "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0000",
+      "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0002",
+      "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0003",
+      "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0006",
+      "the-stack-dedup::592a54bf547b40d8c40cb81ec553800cf67ee8f1a14a03f20fd1cbc32cf3015b::0000",
+      "the-stack-dedup::696987643c04054c4cb82d1291e1b983db8646c936dec2ef14b7f05c2f564902::0000",
+      "the-stack-dedup::6d85ce7b665b4b71c8aa1398437b650b92f450c73d834d94ca88114d3ae7c09c::0000",
+      "the-stack-dedup::6da335fe211193a44906ae3ce280bf78a336bcd96ec4850eeab87f52d041e34b::0000",
+      "the-stack-dedup::705816ebc11c1fe391e5d8cc61ee564adcdf10033846dac09ece8d1d4c85aa0e::0001",
+      "the-stack-dedup::7a03adb7215273c1f0339147121f036292ca091eaaa977e9e65b08f53c7b5a9e::0000",
+      "the-stack-dedup::7b7b0e33360b7d61297c8ca2ad1be4379ec5df4a9db8000ee6efd5dfd9c0154d::0000",
+      "the-stack-dedup::7c80a38f2f1d6645c9bc403cbc6db397d8e16bfb74baac386509cd766246d34c::0000",
+      "the-stack-dedup::7f4d054fe4cf8cda5205a33af70e52060a21150bdcb11096c21667c49861bf7f::0002",
+      "the-stack-dedup::80acd1fa7157fd17186418e0286caefc28c738de434a7711355e8dc1758918c6::0000",
+      "the-stack-dedup::81e5b3ee027e500d6dfb0f7253ad7c50c2f553db291ceaa606efecacc3147103::0000",
+      "the-stack-dedup::85ceea3c11f40056f12e57ed1c94005feec1573d61eaf93d9c56931cfcfd9518::0000",
+      "the-stack-dedup::87730daa1957029b3f20cd8643c0d03a59b4b11c7669b5edbe8e8b9b34d154a4::0000",
+      "the-stack-dedup::8a13de8c51aa35e4d97b3b6054620aa44c9cfbb2725fba85f398861d70b8b461::0000",
+      "the-stack-dedup::8ab33c7f9be969d6dbc841038107db2e8ee9baadb1f790f6aa1913f4644a1ae4::0000",
+      "the-stack-dedup::8b1a84f38cc7d6cb4eda898d525649d663da6d269a1715d83eec96629348a692::0000",
+      "the-stack-dedup::8e325b1b25e2dcf558214ce7d3670bd46052eab630b1437780abce7b189d1818::0000",
+      "the-stack-dedup::9198c3b9fa97423c739967e50e3eec7cefbf98fbf2a6ecd69dcd4b2c97ff6cf3::0000",
+      "the-stack-dedup::9d5cdf1a61ff6074fe92debe0d5845367da5cb30187fcac0e4644cbaa8c35561::0002",
+      "the-stack-dedup::9e4a063e1dbad3727c2d5beec69a8848f0d9b2a2604528c4599e08c8cd65ee7d::0000",
+      "the-stack-dedup::ad84abad65cf1f6006838172e79eabd353d5c17c63e1e42a8e8ddd18c317f4a4::0000",
+      "the-stack-dedup::b33c30692bd7e3e2a2bd33bac64c77d7715806bcb4ca355738f9d70b71431a0a::0001",
+      "the-stack-dedup::b63f287b8f4f3b2217b61a24e70aa73e410a78c98dbf0a07c9251bc15de16391::0000",
+      "the-stack-dedup::ba93dc669ddbb6ad9e0a7c3095adb3fde19b109914ca474a865e843778f07ddc::0000",
+      "the-stack-dedup::bce1af93249022a518fe62d1062bbb729062e13a1e2d46ba5981565ac1e4ef8d::0000",
+      "the-stack-dedup::c178d4c58705249edd363f9a4b84865138911029af57356654b7e8811f4facca::0002",
+      "the-stack-dedup::c59ec9a41cf8d7de8723d62e2b6c20635d800b438de2ff113e38e04ac14de27b::0001",
+      "the-stack-dedup::cb43972c8d892c8d3cae1c5e023af3fdf107b5ac74f24bc1bc267c8ecf710983::0001",
+      "the-stack-dedup::cb43972c8d892c8d3cae1c5e023af3fdf107b5ac74f24bc1bc267c8ecf710983::0003",
+      "the-stack-dedup::cd306eca63b870e693cc481c938728865cad8343f9ee8efd2a07ede8938a0f47::0000",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0001",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0006",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0009",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0011",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0017",
+      "the-stack-dedup::d084033bde7abf615e6f31d0a496c3829f5ee14197d5a997d64698d0f2d62963::0000",
+      "the-stack-dedup::d8a07f92f35ee291fa5d30b143ab0a86fc9eba1c0f1a0d59f0ce1942aa7f605e::0000",
+      "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0001",
+      "the-stack-dedup::dc41fcb1db7c71ee0ada0121e637cc34536f8eb49c4c180317b17dfa66bf746d::0003",
+      "the-stack-dedup::dd58d7ec2403f04f24e6fe05e62f8e755000d4d50c5e4b2ba659813d7f79d2bc::0000",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0001",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0006",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0008",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0010",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0011",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0012",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0014",
+      "the-stack-dedup::e0b8957d5914d7e798085f9013c6244ed4af2d43b13cf3f2d450167ff9533d62::0001",
+      "the-stack-dedup::e267d7af1d9d5903db1c1280d7219d4fdd450b0e6de3658fb84e8514a47743bf::0000",
+      "the-stack-dedup::e5070528fb57bc6a3bf9ee1c1c0b7fd12e0aecd75421df7bce7eb21b9770718b::0000",
+      "the-stack-dedup::e7b57c8b0b98749428bfc427af64a3005c8ef763ea738c27dae58c6fabb0ea55::0000",
+      "the-stack-dedup::e7cce4a347f70b1b15a0b7959c0fe9cbe76f5cf0422713fb709395f59c7d14f4::0000",
+      "the-stack-dedup::f11bd19de61d903e8ac933eb9411cf680558543a909f0549116ee2e9357f2e18::0000",
+      "the-stack-dedup::f1bc6ab1d06532fe23a1aa9703fa4edb3389aca29aa4347d514b60285791b4f8::0000",
+      "the-stack-dedup::f6e1f52b0888f2266c3804ce29a943dc5b4f39f7b8cc68c8170a3e5a89ca745c::0000",
+      "the-stack-dedup::f91f98373aa33d3ca580e49399cbe3e3cb8d6bbf24377370c0a5e4af4743797e::0000",
+      "the-stack-dedup::f9222e92e351dda0f37e3e1ec8d5036a4c748c4c2a3b6e392c0a4bf5cf11fa1a::0000",
+      "the-stack-dedup::fb36b7f80bd64bf55a4adeebb79c4f131f188963e22b1c107cc483fc9b62b51b::0000",
+      "the-stack-dedup::fd5c1ce4e51b93420f257262a493b1612d2120af914a3d5f9427f07437037089::0000",
+      "the-stack-dedup::fdfd7000b7e36cc8746acdab232eeeebac8c1f1f5e9a17f87846a2dbd8fcfa59::0001"
+    ],
+    "complete_recheck_passed": true,
+    "rematerialization_applied": true,
+    "proposed_survivors": 7048,
+    "final_survivors": 7147,
+    "may_create_new_removal": false,
+    "scientific_promotion_claimed": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "explicit_representative_families_consumed": 2,
+    "status": "semantic_coverage_materialized",
+    "semantic_graph_consumed": true,
+    "artifact_preflight": {
+      "status": "semantic_coverage_artifacts_ready",
+      "corpus_sha256": "0082e0cbbfb3ed3e7c20fdb0b898f236c356e8a0b8a188361d9173ff45dbe04d",
+      "graph_sha256": "114dd1dca0da96d0ab45c04ce1e20cf0884e9b9e21651e83261326ed4fe4ccea",
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+      "universe_chunks": 8024
+    }
+  },
+  "quality_candidate_runtime_audit": null,
+  "pretraining_audit": {
+    "path": "D:\\UNLV-Research\\code_5m_corpus_v2\\final_replay_v1\\benchmark_exclusion_audit_v2.json",
+    "sha256": "67d255be38ccf5b111dccce83cd42995fa46b0199194e733c0ad9473c69a4e1d",
+    "status": "benchmark_exclusion_complete",
+    "pretraining_eligible": true,
+    "audited_input_sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7"
+  },
+  "claim_boundary": "Final Code confirmatory materialization. GPT-5.6 Luna supplies offline Q1-Q4 calibration labels and one frozen local ranker processes the full corpus. Normal retains only chunks with at least one independent confident in-distribution Q1-Q4 pass and no qualified fail; abstain, OOD, and low confidence are not selected unless Stage-C Coverage vetoes support extinction. External teachers cannot alter runtime membership. Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets are forbidden runtime inputs.",
+  "outputs": {
+    "stage_a_release": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_a_release_candidates.jsonl",
+      "sha256": "31c8823d2feafd7c40c6d3e7360de754bde0cfb61a22adfe99857c355b33f947"
+    },
+    "stage_a_quarantine": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_a_quarantined_candidates.jsonl",
+      "sha256": "cd9e589e027b23fde6af9f2b255338dea3ec9b9e1db476e91aa3102d27f89a36"
+    },
+    "stage_b_pass": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_b_pass_chunks.jsonl",
+      "sha256": "e8e8b7a76ee12ef754b2058f888c21bc17800f701bc2a458daa5208dd241ca45"
+    },
+    "stage_b_rejected": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_b_rejected_chunks.jsonl",
+      "sha256": "fb5e59f914b2206f709fd7b9487c50357bd04041eda0532065a0afdde758eede"
+    },
+    "stage_b_proposed_survivors": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_b_proposed_survivors.jsonl",
+      "sha256": "ed807535491568b25565eea7ca284745eb2ec2c502761119e5f3e561503a6156"
+    },
+    "stage_b_non_selection_proposals": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_b_non_selection_proposals.jsonl",
+      "sha256": "56c2a8b7507fe4970cef5fddb22eb0efc4516391d750319f40739385279255a0"
+    },
+    "stage_c_not_selected": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_c_not_selected_chunks.jsonl",
+      "sha256": "636e8f84e85cbf6a21221caa04aa278d0c3f76143c5f831ceb7f69c86d61fa45"
+    },
+    "stage_c_curated": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_c_curated_chunks.jsonl",
+      "sha256": "091bcc4bdaab320388428d40b17fa76c67dc03498c7aa5403470d1458ad22cf9"
+    },
+    "stage_b_quality_candidate_transformations": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_b_quality_candidate_transformations.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stage_c_coverage_audit": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\stage_c_coverage_audit.json",
+      "sha256": "ee35678f3b479c6082bff03b444656bc73a99d29d8e97deaee8a1c7d596dcd1f"
+    },
+    "composition_audit_json": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\composition_audit.json",
+      "sha256": "f61e7d5e38f793d0031266fe118f9ea15aa617a8c8202f0bfb3ba109ec17f67c"
+    },
+    "composition_by_route_csv": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\composition_by_route.csv",
+      "sha256": "d1d53bb136daed0a7eb13d7baaddeba29471f0e6c74f10845f8b2ebe5ec6d8d6"
+    },
+    "composition_by_language_csv": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\composition_by_language.csv",
+      "sha256": "c5a148973eb74da4b0beb5e416a3a27b3f823486b18074bfa3c1446a551bb319"
+    },
+    "raw_curated_composition_delta_csv": {
+      "path": "D:\\UNLV-Research\\final_all_policy_v1\\luna_final_v1\\normal\\raw_curated_composition_delta.csv",
+      "sha256": "bb9bfab54091b73c50a9fa661989e7e2fb3c953de30a078232da5709092026a5"
+    }
+  },
+  "source_sha256": {
+    "config": "30ebe936a079715f3b096c01ec5e44f20e18b329692aec2f3afa6a4e7412da5d",
+    "inputs": {
+      "D:\\UNLV-Research\\code_5m_corpus_v2\\final_replay_v1\\audited_release_candidates_v2.jsonl": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7"
+    }
+  }
+}

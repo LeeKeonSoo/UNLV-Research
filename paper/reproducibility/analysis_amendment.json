@@ -1,0 +1,42 @@
+{
+  "schema_version": "code-reasoning-primary-amendment-v1",
+  "status": "frozen_before_any_non_base_reasoning_suite_result",
+  "frozen_at": "2026-08-10T00:20:53.1588940+09:00",
+  "amends": "protocols/code_7m_normal_hard_confirmatory_v1.json",
+  "amendment_timing": {
+    "already_observed": [
+      "all HumanEval+ arm results",
+      "a partial set of MBPP+ arm results",
+      "Base-only CRUXEval-I and CRUXEval-O results"
+    ],
+    "not_observed": [
+      "any non-Base BigCodeBench Complete result",
+      "any non-Base CRUXEval-I result",
+      "any non-Base CRUXEval-O result",
+      "any non-Base DS-1000 result"
+    ],
+    "integrity_label": "post-EvalPlus, pre-reasoning-suite analysis amendment"
+  },
+  "rationale": "The target claim concerns reasoning-intensive and compositional code capability for a small language model. Short standalone function synthesis remains useful as a regression diagnostic but is not the sole target capability.",
+  "primary_reasoning_benchmarks": [
+    "bigcodebench_complete",
+    "cruxeval_input_prediction",
+    "cruxeval_output_prediction",
+    "ds1000"
+  ],
+  "secondary_short_function_benchmarks": [
+    "humanevalplus",
+    "mbppplus"
+  ],
+  "analysis": {
+    "primary_summary": "unweighted macro mean of the four primary benchmark percentages, computed per model arm after seed aggregation",
+    "arm_reporting": "Base, Raw, Normal, and Hard remain separate; no arm or seed may be omitted because of its result",
+    "secondary_role": "reported in every main result table and interpreted as short-function retention or regression evidence",
+    "forbidden": [
+      "dropping HumanEval+ or MBPP+ after observing a low score",
+      "claiming general code improvement from primary reasoning benchmarks alone",
+      "selecting only the best benchmark, seed, or curation mode for the headline result"
+    ]
+  },
+  "claim_boundary": "A positive primary result supports reasoning-intensive code evidence for the specific frozen curation profile. Any HumanEval+ or MBPP+ regression must be disclosed as a capability trade-off. This amendment does not support a universal or general-code superiority claim."
+}

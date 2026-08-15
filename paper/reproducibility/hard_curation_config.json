@@ -1,0 +1,41 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "hard",
+  "execution_scope": "confirmatory",
+  "input": {
+    "candidate_files": [
+      "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl"
+    ],
+    "text_fields": ["text", "content", "document", "body"],
+    "defaults": {}
+  },
+  "output_dir": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/hard",
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+  "stage_b": {
+    "max_chunk_chars": 6000
+  },
+  "quality_runtime": {
+    "method": "distilled_quality_ranker_v1",
+    "embedding_manifest_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/augmented/embeddings/embedding_manifest.json",
+    "ranker_manifest_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/ranker_v2/quality_ranker_manifest.json",
+    "oracle_fallback_enabled": false,
+    "maximum_oracle_fraction": 0.0,
+    "dotenv_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/.env",
+    "observation_cache_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/runtime_review/teacher_observations.jsonl",
+    "redundancy_checkpoint_path": "D:/UNLV-Research/final_all_policy_v1/checkpoints/luna_final_v1/hard_stage_b_redundancy.json",
+    "task_workers": 1
+  },
+  "stage_c": {
+    "minimum_residual_chars": 120,
+    "no_binding_budget_action": "selection_without_binding_budget",
+    "semantic_coverage": {
+      "provider_registry_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/Phase-1/configs/model_provider_registry_v1.json",
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "parent_retained_path": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/normal/stage_c_curated_chunks.jsonl",
+      "corpus_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/hard/corpus.jsonl",
+      "graph_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/hard/semantic_coverage_graph.json"
+    }
+  },
+  "claim_boundary": "Final Code confirmatory materialization. Hard uses the same active Core and Policy families as Normal, requires at least two independent confident in-distribution Q1-Q4 passes, and rejects any qualified fail before Stage-C Coverage veto. GPT-5.6 Luna is an offline calibration teacher only and external teachers cannot alter runtime membership. Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets are forbidden runtime inputs."
+}

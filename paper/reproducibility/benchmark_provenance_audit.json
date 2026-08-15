@@ -1,0 +1,929 @@
+{
+  "schema_version": "confirmatory-benchmark-provenance-audit-v1",
+  "expected_cells": 60,
+  "verified_cells": 60,
+  "missing_cells": 0,
+  "all_verified": true,
+  "cells": [
+    {
+      "arm": "base_no_update",
+      "seed": null,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 51,
+      "score_percent": 31.097561,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "4146bbef55ad01e19ea74c73edeca8853b4ab03e4d2e7fcf593ea438b6326774",
+        "e20ad63e47439507293a146a44e8a49d1525d1c2cea1dbcbdb6d6b98ff68bf07"
+      ]
+    },
+    {
+      "arm": "base_no_update",
+      "seed": null,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 221,
+      "score_percent": 58.465608,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "7ebcbeae312cedb665d3757da6776e1d020372d6634686e3c6fe8336ce300f97",
+        "c676f5a1a5b11192fc58e24517ebf0df4d77ba0eb71c357a957642af4b112f33"
+      ]
+    },
+    {
+      "arm": "base_no_update",
+      "seed": null,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 455,
+      "score_percent": 39.912281,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "384d2d29f550bd8bceea7bcc8349ab331ca426c9641b51e80f538ee4fcfb28f0",
+        "48dc631ca60a6a35e563dbad3a18b636793899f9420434c18c42f874ffa78dd4",
+        "b3e36c7f0fa0bcb92fcfaa8302833be952b04d59009c242657a5d03eb280bb6a"
+      ]
+    },
+    {
+      "arm": "base_no_update",
+      "seed": null,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 28,
+      "score_percent": 3.5,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "0203d3aac88b9348ac569809c528a1ac87260750a3435d1e6dbbd159852462fc",
+        "9c6b2d3cc9e8f7de9fd9d1e52f43ac5aa621a512fc85d86c20d71e106a094662"
+      ]
+    },
+    {
+      "arm": "base_no_update",
+      "seed": null,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 17,
+      "score_percent": 2.125,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "e83657fe29e2d077c7303778dfb85980e829ce956942f1d85b9a549cdb14f3d6",
+        "05d28e143dac2b35f0d3d376e7ae6858d5779f6cee6e2e2321ee1c1b65083729"
+      ]
+    },
+    {
+      "arm": "base_no_update",
+      "seed": null,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 280,
+      "score_percent": 28.0,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "d804dfae657db3f9fbc5b5de91ec2bbaa5a171eca71f08160ef014ff193c58be",
+        "b68870fde7db336942f8c0b117831f82e0d7d614c8b130757205aab3489f707a",
+        "19b3160c70da8638322dc9eae6bbb847b6e4602fbd3928cfb27a0f3826324e02"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 101,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 50,
+      "score_percent": 30.487805,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "034facc47228761a2d1439c7da3d6d1e25f477848530a7300f993514392f9362",
+        "c17b50fb3d3d36c73775c824e81b03fd6ca3069db9027938087c47d515bb36f5"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 101,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 172,
+      "score_percent": 45.502646,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "d573c8c0147fe8b772e9a01cc981b96c71198780e2f397d486ba01395eb5cb3a",
+        "56c11054dfc3b1cb32e4cc09a252500e032cfe83bdade92a3f9f3a84cd801a90"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 101,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 460,
+      "score_percent": 40.350877,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "aa8987779b97f3ad6c3027159d305cee456e283326c9ce819d6d1e90be44f7b5",
+        "0dbdf5ce17d2f8ad5a61db332154e8280b3eb8a28e991e3df2998ccfaf55fb14",
+        "ae870ceb127a98e4145536622d3f632cf634e807f2b2a73fc47c9206a93a3afc"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 101,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 51,
+      "score_percent": 6.375,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "959585352785c1cd9bdf03050fbfc76a8973675dbef92da6d9dac46923ee8055",
+        "54ef20c25b95c8ba7e25f97065c2601ed567403c7379150f62fb950244628bab"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 101,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 23,
+      "score_percent": 2.875,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "917b8431eff98e1d46ef4c61303df10dfb192f3c358e50105b92eb97dc314309",
+        "ff01484e9d5de3bacb8bb0fad06b974bc4dedf1cf5349c4c31818bd59bf58b4f"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 101,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 331,
+      "score_percent": 33.1,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "4629d7064e0ff75b7652f47801b75cbaaeff89f4abc97d8f3f49b779da48ddc4",
+        "0cd0bb3d02d2407bd1a88788a7aa0239248c2a2dda8940c3a7aa776cc1f01be4",
+        "19db15ec43b69c0c2989505df6ac7147ab81db0d65c4cf6a99f2dad164844814"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 202,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 47,
+      "score_percent": 28.658537,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "502f6258188242487e272c23420f1e462b5f8d3e596e22b481949cf5018ffb08",
+        "53b9ebfc466dcb3c3716a32d625253f3090df0768e58f82c7bebcfaa777ebbb8"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 202,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 189,
+      "score_percent": 50.0,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "a56f8ed068a0b9621d5811502e8cd8a2f49d95c66da7922aee2d1bea404c9654",
+        "cb852f4d252ae76f65fd44d336d8aefa2aed9d193827ecfc1338565f5700ee81"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 202,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 477,
+      "score_percent": 41.842105,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "11af3673c1d7de1c7cc1b7e72d2aac89efd9bbca420834995bf8f58bf4c3e9d9",
+        "71180732b3e9323fb773a7ebfb48e471a2d404e2f46fb6dbc5f2bd6253383c59",
+        "ead218088fc23e390ff1fcb0241ee075d04a546cacfa44b7a1f052a025c32a90"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 202,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 61,
+      "score_percent": 7.625,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "3d9997a9f0bd44e133a1e373ee0dd9c664994c825a1d8820064f60c8dd1386a8",
+        "d8455bcc5495dd143fb8d23aa00707c1e949143a315e9141de43bdc745abb6e4"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 202,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 16,
+      "score_percent": 2.0,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "36692692a56c34f134aeae01c8409b259985c137ab27a642a0555eedbe344ba4",
+        "a5274fc75f9bea47d37a22d1f9e62f1f19e7036ad36559884366b4112e3d4a66"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 202,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 336,
+      "score_percent": 33.6,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "90c6d05a2db95608c4d798337e928c53165d81b2c43e26a11a14fc095d45911c",
+        "1308fd1f3abda05ceb15ffed4e7548521271507d0e08868fc6ce0dbc240b87ad",
+        "fe1ac49bcff2d3c153c12938c215ff9f6e960bcb089bda61bb61b54406b71fb7"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 303,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 45,
+      "score_percent": 27.439024,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "4647bffc60e2ba75528412ba136d4d8fc7212a2b6c3b7e5a00c4c8a004f15516",
+        "c2505b42d47668921089a4c58604736c64a9e39a7b247eab41a96668d10b6962"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 303,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 194,
+      "score_percent": 51.322751,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "330fb2f0e775fbd4b170184a76d74a5cd3bbf43e2cd4025fe033be6de6ed2467",
+        "6f2f0e339da47aadb21b34deb937f0244df27e6efc3afa14e61c5d642adef9db"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 303,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 465,
+      "score_percent": 40.789474,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "c911153a20e5b285c7c70c4beab17d336a70e89500be2ecca837835b465e13da",
+        "572497c7e9e6848be65079990ef226b90530e7ae28de6ba5bea5a0cfb423ace1",
+        "ca0b91e50a2537004b5bfdaf959db1176c3988d453c677d33c143650027800e9"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 303,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 60,
+      "score_percent": 7.5,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "7dacdfa2f73879223cac74a7a725e44805d8e707857c84b94c145fe5279332b9",
+        "6a1fae89c83608d82e7bbf9520bd2246f35649acd4c19863162f75aa4046bcf4"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 303,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 11,
+      "score_percent": 1.375,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "3e17a055e1af27661568c2ae87d8c7462d4030f759ce0f7d19265854a278312a",
+        "1ac6ce47b1bb748932f9da01dcc493e0ead1211c9b5ec4abff22524df48da339"
+      ]
+    },
+    {
+      "arm": "raw_audited_natural",
+      "seed": 303,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 329,
+      "score_percent": 32.9,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "c73e8ddc8009f0790741a585e2b733e80d17b0d6010c63423d3b335e42554baa",
+        "dbb4569f6c9ce21bf5e022317a18c1124389ee7c79230e26ab70f9faeaeb162b",
+        "8f808b0dbe257dc04bf99fe78adeaf44d24490b669cfce2fd96aa5abd90caeeb"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 101,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 54,
+      "score_percent": 32.926829,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "a52442bcdfaaf1ece656689f084e7622a83945f1840bcc982e58b4a2885c553c",
+        "87183ec1843658d5e3f221cbd59c522c6bac21ddcbd3393a75930105e2bf4d8a"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 101,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 207,
+      "score_percent": 54.761905,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "1837ac83dedffe8a2c0b30fe1b47c7f05b2452bfb4204c44b144f1c0e5e92393",
+        "c4ec94a972d3a2dbd041d215bac058522299ea88289e7c7c2bbf7301cfff47ab"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 101,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 458,
+      "score_percent": 40.175439,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "1af3cb86b518de8dd7b28c531c6e1bbf25793d06749c29085de9297688ab91ad",
+        "354a77a699c2072008e2aac9fb896ea1da2edeedbe002cc38ee81dc560ff7d9b",
+        "b57b747121e2e91ab1fd603561640968fa5a61e0fb74b50fd5ff738c43c8c46a"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 101,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 70,
+      "score_percent": 8.75,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "fb1558896c3a33d590e2334735aabae1839bd1b8aa7460a6dea3e1ab4b437881",
+        "5b0b46f43b85ac8769735b8478958ff88631c357d61dbabab89016afc4609e63"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 101,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 45,
+      "score_percent": 5.625,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "8167ad6a81165984ae4ae2d16c342041832d2284b23155144e604cf5e58c2a58",
+        "fdd53501baff57d1ed753b4d49bd0484d5f0d465268e59931137167743a8f3e8"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 101,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 316,
+      "score_percent": 31.6,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "04849465d02abc0f2a631c513e18bef8922b61a86b8d9ab30f6d40038c0226e8",
+        "2b7bc55c4358e5691403e94a076a126e291b7095773277d11b3d87e0ba61ed44",
+        "35de7272c1ef9e3e35174bfeeef916043a4fc41cbe5cf82f65b45d7129d7a8c6"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 202,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 54,
+      "score_percent": 32.926829,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "af0dae5889ad1b60a496098ad4d8e78b1c21e97894c7acd6652eaa6b5d4fec15",
+        "7f09f18a55bc901c99ea7449facda022ba9ee6c2e220a6e7cca3e6554d1562b2"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 202,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 199,
+      "score_percent": 52.645503,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "4ad34dd1a5187267ac1df54a606b27c229c4db1394fbf6e57373123e6eb4b063",
+        "56216946d8e6a6cb845f2e8e1d2357ca7e5ac9202150d18c2888c03d32256969"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 202,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 444,
+      "score_percent": 38.947368,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "eada55704ee3e76a55466c30ff73e081fd2ba66b6ce3bfa6f2e37c6769cb7962",
+        "df8385290bbe422ed7bdb5f28767b31c10e8a7bf24a7e6544afbee692730198b",
+        "af0b7cd392e9b2d5fe5637dd51805b8cf2155dc2dc66a2edeae575f33fa22cc4"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 202,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 44,
+      "score_percent": 5.5,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "686753436ae15b47914df38b5808ccefc6bf4958fbeccb3e829d9eb085a13717",
+        "b65610a576b8a35ef44fb2f624a4d4c9c879f3523e745f6e877af56b1f6923d0"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 202,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 26,
+      "score_percent": 3.25,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "3006e480078b7965b65669a33b766e7d7b19fa0489a93dd91b33ac6e50627ffc",
+        "c06e72fb4513e20b5b6caedbdebfdf8bef469460b4ad55d9c075be0af13c567a"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 202,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 322,
+      "score_percent": 32.2,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "d8e878332e911aa87d61aaeac70224308062dcfca8adfd7d75a66eef2234b511",
+        "9aae10dc004aff228bff8dcd1ab80e6f96e9739266a174b89a679ac419cdefd9",
+        "363190f9e28dca85725d2a2cb975227334c72603cf3379268088d682753fd220"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 303,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 48,
+      "score_percent": 29.268293,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "dc4f993c7246f893603ec81fb38e4c71f8a82c69a6ce0c51419a38fb69cb4126",
+        "5b4377e43d5d1cc65d4234cccdf82e51b78aa4c5007abbd3ae97450d77c8c8da"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 303,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 203,
+      "score_percent": 53.703704,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "eead79d9bd1a4ba8ea62d8ed739baac7366eb8731d3825b0602c3d362e0e95d8",
+        "370dcc15f725e150d8957d399161dac4551a102e7e77c7957f3d5123cbdd08c3"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 303,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 449,
+      "score_percent": 39.385965,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "f3a05cb1030258c6231da054d38483742cc491f7482b40e6bf611f2b6a54fbe9",
+        "f1b52eae9491b49794530a4b32132984602b626b2328a14d8d6db9d9f848dd6c",
+        "32c1b57ff547781177fd93bacc8594ab573c005ef23715d7cf57b9bab6cfa8bc"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 303,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 38,
+      "score_percent": 4.75,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "554fda443952c883e30b0dc1c815aaa17cbc64ffda7a6f6e8c944cedf28cdec0",
+        "17b7632d8d81d1c8533c01b6a2c7abc6ed745cfb30bce7f4dbd54c0fabfb9f5d"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 303,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 40,
+      "score_percent": 5.0,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "37fac817bbd0524e67b451cc27c84340cbec3a0aa0c7026e9bb7af853bf44ba9",
+        "2b7b4be2346f1f9a8faa51ced0f89110551e94ddb5911d3d004863e7946d344b"
+      ]
+    },
+    {
+      "arm": "normal_natural",
+      "seed": 303,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 319,
+      "score_percent": 31.9,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "5f1327b2f3debbebceed31d209cbff5b8e8aa7c39e103597193aa4d2bbda0b81",
+        "ff59a0dd78400a290c82e3d82795d86cf96279066ec6d0f23feb77d5cc179ff6",
+        "78dd325a7b9881bca1ef506771e0365a16dc54118020b5f4bb741ab5f484ec2a"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 101,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 49,
+      "score_percent": 29.878049,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "7716cc5ae9651618154be302df96b6b88c07d87df2b71a57b378e88e3746ffe8",
+        "5d84008ea92cce007a6ae3fbd0a461e4e3938ca159bc40c5242d9ebb3cbbae19"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 101,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 207,
+      "score_percent": 54.761905,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "de29a4f2ef253d7501e6785d329e49ef4ad8cb57f91045a382c83cc039938803",
+        "ddd83a1221ae9b44cc8c27bea227e01e3a452c896ba9440994f005437dec4c73"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 101,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 446,
+      "score_percent": 39.122807,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "3b0ae4f080af196a0b3a0892aa29a6352e23897258f5e99219ea107dcf56fab1",
+        "bd25917d56134f041930996464b5f065b0e48bf20b1d5ea97b8d92557fcf10b6",
+        "0dae17bc6c9555b2220bfb78ddd42ab315a1adda64dc03b63a5b51a0f7e213a9"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 101,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 45,
+      "score_percent": 5.625,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "08260ac926cdb82dfbab4afc409eea9fca709576a0a5e97c61f8e51e3e328de4",
+        "e9a444a00ab8897a33bcbd5ccdcbe66dadce1cb6e39f5894df77bcbb377ce928"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 101,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 43,
+      "score_percent": 5.375,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "9e56c1ecd591f5f463bdca3a61d17d6fbceae4c17fe9f59ee7bef28a2e76ef7f",
+        "50fbdc2a05541670267e77b99b444963ab3ed7cc17998a6c39d6c5983604fee3"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 101,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 311,
+      "score_percent": 31.1,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "2c4891747af5c5ef13499938946e33488808f24265746b46913cc4d2d4760459",
+        "6339aee529e1108728f03115f5b82c22ef35b06480a08f811b1919d2ad0edb08",
+        "61e04cf31af8f3b4d37c56bd6cf34b9dbe2bd609388c01852c27b593749839cc"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 202,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 54,
+      "score_percent": 32.926829,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "2a48844bc07d34f393ee3feca9a2619cf8a22d6bc3e1545cb7389106c20b4dc8",
+        "5176d4cbd650a5a733ad7c250a8e6ce9a607c72a8cabd632b10691d8cd8a6999"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 202,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 207,
+      "score_percent": 54.761905,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "803c135eb9e2bc8a74b2e6d04f9f3b440512ca0b9a96ba23a12295de77dbc167",
+        "bacd4d07874e25f7d58d09fd1b69ddf831d9944ed7befdf1f4fcefdfb09a723e"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 202,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 457,
+      "score_percent": 40.087719,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "11a2d20909d99ab1636a82c4ba44ad6ab8bb7f0dd6d7f52bd6fbbd24998b0561",
+        "ef54285a0f32f1dffb6b13f450c4517581994edfdea74e82f03d30412ec933f5",
+        "a72d56ece38fe1159cb9d3cba500113b8f3b5e959cdab5e5e97051cd45adf5cb"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 202,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 50,
+      "score_percent": 6.25,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "391ddeb90bf3abcd27c720c3dc4fb8cb6de541cd3928b1f9adfb56796909b8fb",
+        "9e3eaa4122d2f86f979a7e5c3cffe00837670f56bcfec090a0ad952c61fb4199"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 202,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 42,
+      "score_percent": 5.25,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "9973de072cea86ae0e8aae61a8f2a575109ebd26a1deb39652028f7656783a6b",
+        "7817d1b52d923a5051ec5e83d7d9ec9ca9634e990979e5cfe947f67fb70e84f4"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 202,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 330,
+      "score_percent": 33.0,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "b88295efc7f5f4690abddb699bf066142b2cf6b7bfe5240b61b5a408c806f492",
+        "5447006fa941ae37e704d1f67d2d830b120e061e564218586aefbe80759c28ac",
+        "00b1a41a22bb92b4321788f67646c5ce69506b5c24f8bf6870fad1770e81b2bb"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 303,
+      "benchmark": "HumanEval+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 164,
+      "passed_tasks": 48,
+      "score_percent": 29.268293,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "c3038eb4c5c36394c15adaa314b67220ea1399edcd8c469270c9b550099d0186",
+        "c1e40c99a22ddf84a5fbafb6c94752faceb023f543dadc08af37fad7f0173bc2"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 303,
+      "benchmark": "MBPP+",
+      "status": "verified",
+      "verified": true,
+      "task_count": 378,
+      "passed_tasks": 204,
+      "score_percent": 53.968254,
+      "evaluator_contract": "official EvalPlus evaluate() base+plus tests",
+      "artifact_sha256": [
+        "3bbe53fb1bb570ddc7c510b3418f27ec7b1a03e8e51b8ced8e8e222b94cf2053",
+        "b43112c308a6659b9d1beec5be8a515970544462088d0c21de5be1e49f642078"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 303,
+      "benchmark": "BigCodeBench Complete",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1140,
+      "passed_tasks": 460,
+      "score_percent": 40.350877,
+      "evaluator_contract": "public bigcode/bigcodebench-evaluator task execution",
+      "artifact_sha256": [
+        "2f3b0b078e67edb5c10f28fa39f6c93c094a326a9205e13f0a49771223d0c373",
+        "d32a6dd591b5caecf5430832747fc972fad4f0cf8f957da679b44c307b3aacdb",
+        "ea449cccd639fd83264701938167d5d3fc2985e3fbd173b8ca5eb8a9c11ee4fa"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 303,
+      "benchmark": "CRUXEval-I",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 53,
+      "score_percent": 6.625,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "377d98390b9727991f2d106965bf3654fb6ab0f21c6e510e821da70965265085",
+        "969cb9b3c59f8da76b721e70a14aaa74ca7466fdeed2c64f6b495d230f87ba1d"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 303,
+      "benchmark": "CRUXEval-O",
+      "status": "verified",
+      "verified": true,
+      "task_count": 800,
+      "passed_tasks": 33,
+      "score_percent": 4.125,
+      "evaluator_contract": "upstream CRUXEval evaluate_generations()",
+      "artifact_sha256": [
+        "3cbd37585579e5a077a6cc0d2d1f5735b980e6874bf9d1f5b3f1e89750277e98",
+        "b5dedf7f2a8bd32712b784d38a7f89651819924d294b8dec8423db83ffae0488"
+      ]
+    },
+    {
+      "arm": "hard_natural",
+      "seed": 303,
+      "benchmark": "DS-1000",
+      "status": "verified",
+      "verified": true,
+      "task_count": 1000,
+      "passed_tasks": 327,
+      "score_percent": 32.7,
+      "evaluator_contract": "official DS-1000 test programs in Windows subprocess isolation",
+      "artifact_sha256": [
+        "a1a05abb52003c77101337b639f966b541e81a336daa5cd7a959924ae7daeb2d",
+        "f76264d498f3a9b9f96d56224b4a19f2a23977a24ea8c19382a2566f950682af",
+        "8bc36e71ee3daf16bee5ba456c8962cf076f87facda4b0cb6d61316309da0943"
+      ]
+    }
+  ]
+}

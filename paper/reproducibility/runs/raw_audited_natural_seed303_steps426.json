@@ -1,0 +1,32 @@
+{
+  "schema_version": "confirmatory-qlora-run-manifest-v1",
+  "status": "complete",
+  "protocol_path": "C:\\Users\\ksl11\\Desktop\\Code\\Projects\\unlv\\UNLV-Research\\Phase-1\\protocols\\code_7m_normal_hard_confirmatory_v1.json",
+  "protocol_sha256": "ddc741fb84331f065d28a228bdcec42b6e4616f27ac5d9e2e01ed1ca8d4159db",
+  "training_input_report": "D:\\UNLV-Research\\final_all_policy_v1\\training_inputs_raw_prefetch_v1\\training_inputs_report.json",
+  "training_input_report_sha256": "ddabb554c96a8e59c6e47abf1180f92e2a42118e8156099ad067bce072bd88d0",
+  "arm": "raw_audited_natural",
+  "seed": 303,
+  "gpu": 0,
+  "blocks_path": "D:\\UNLV-Research\\final_all_policy_v1\\training_inputs_raw_prefetch_v1\\token_blocks\\raw_audited_natural.pt",
+  "blocks_sha256": "f1b758803c84c70079f01de0991f6dc343b39f276e5e26e38f12bf515a06c3fe",
+  "materialized_tokens": 6979584,
+  "optimizer_steps": 426,
+  "recipe": {
+    "learning_rate": 5e-05,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "quantization": "4-bit NF4, double quantization, bfloat16 compute",
+    "loss_implementation": "transformers_full_logits_cross_entropy"
+  },
+  "elapsed_seconds": 23344.816,
+  "adapter_directory": "D:\\UNLV-Research\\final_all_policy_v1\\external_training_v1\\qlora_runs\\raw_audited_natural_seed303_steps426"
+}
