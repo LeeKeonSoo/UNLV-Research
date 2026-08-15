@@ -153,6 +153,7 @@ class CoverageRequest:
     provider_id: str
     provider_identity_sha256: str
     execution_scope: CoverageExecutionScope = CoverageExecutionScope.PRODUCTION
+    restoration_candidate_uids: frozenset[str] | None = None
 
     def __post_init__(self) -> None:
         chunk_ids = tuple(chunk.uid for chunk in self.chunks)
@@ -161,6 +162,13 @@ class CoverageRequest:
             raise CoverageContractError("Coverage universe requires unique chunks")
         if not self.proposed_survivors <= universe:
             raise CoverageContractError("Proposed survivors must belong to the Coverage universe")
+        if self.restoration_candidate_uids is not None:
+            if not self.restoration_candidate_uids <= universe:
+                raise CoverageContractError("Coverage restoration candidates must belong to the universe")
+            if not self.proposed_survivors <= self.restoration_candidate_uids:
+                raise CoverageContractError(
+                    "Proposed survivors must belong to the Coverage restoration ceiling"
+                )
         if not self.provider_id or not SHA256_RE.fullmatch(self.provider_identity_sha256):
             raise CoverageContractError("Coverage requests require a frozen semantic-provider identity")
         stratum_ids = tuple(stratum.stratum_id for stratum in self.strata)

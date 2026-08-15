@@ -15,15 +15,21 @@ if str(ROOT) not in sys.path:
 from quality_teacher_adapters import (
     CompletionRequest,
     ConcurrencyLimitedBackend,
+    ProviderRateLimitCircuitBreaker,
     StructuredResponseFormat,
     TeacherAdapterContractError,
     TeacherModelAdapter,
     build_reasoning_extra_body,
     build_teacher_messages,
     collect_stream_content,
+    rate_limit_cooldown_seconds,
 )
 from quality_teacher_panel import load_teacher_panel
-from quality_teacher_runtime import EvaluationUnit, TeacherGenerationRequest
+from quality_teacher_runtime import (
+    EvaluationUnit,
+    TeacherGenerationRequest,
+    TeacherGenerationUnavailable,
+)
 from quality_teacher_local import LazyQwenLocalBackend, extract_chat_input_ids
 
 
@@ -219,6 +225,35 @@ def test_concurrency_limited_backend_serializes_requests_at_provider_cap() -> No
     assert backend.maximum_active == 1
 
 
+def test_rate_limit_circuit_breaker_rejects_requests_until_cooldown_expires() -> None:
+    # Given: one provider has returned HTTP 429 at a known monotonic time.
+    now = [100.0]
+    breaker = ProviderRateLimitCircuitBreaker(clock=lambda: now[0])
+    breaker.trip(60.0)
+
+    # When/Then: calls fail locally during the cooldown without reaching the provider.
+    try:
+        breaker.raise_if_blocked("provider-model")
+    except TeacherGenerationUnavailable as error:
+        assert error.teacher_id == "provider-model"
+        assert error.reason == "rate_limit_cooldown"
+    else:
+        raise AssertionError("A rate-limited provider must not be called during cooldown")
+
+    # When/Then: the exact expiry boundary reopens the provider.
+    now[0] = 160.0
+    breaker.raise_if_blocked("provider-model")
+
+
+def test_rate_limit_cooldown_prefers_retry_after_and_has_safe_default() -> None:
+    # Given/When/Then: an endpoint-provided delta controls the circuit duration.
+    assert rate_limit_cooldown_seconds({"retry-after": "17"}) == 17.0
+
+    # Given/When/Then: missing or malformed provider guidance uses one bounded probe interval.
+    assert rate_limit_cooldown_seconds({}) == 60.0
+    assert rate_limit_cooldown_seconds({"retry-after": "not-a-number"}) == 60.0
+
+
 def test_local_chat_template_extracts_input_ids_from_batch_encoding() -> None:
     # Given: Qwen3.5 returns a BatchEncoding-shaped mapping instead of a raw tensor.
     expected_ids = (101, 102, 103)
@@ -278,6 +313,8 @@ if __name__ == "__main__":
     test_mistral_frontier_adapter_disables_reasoning_for_bounded_json()
     test_teacher_model_adapter_rejects_cross_teacher_dispatch()
     test_concurrency_limited_backend_serializes_requests_at_provider_cap()
+    test_rate_limit_circuit_breaker_rejects_requests_until_cooldown_expires()
+    test_rate_limit_cooldown_prefers_retry_after_and_has_safe_default()
     test_local_chat_template_extracts_input_ids_from_batch_encoding()
     test_stream_collector_ignores_empty_transport_events()
     test_local_backend_is_loaded_only_on_first_generation()

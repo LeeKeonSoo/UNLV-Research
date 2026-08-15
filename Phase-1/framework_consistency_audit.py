@@ -42,8 +42,8 @@ def build_consistency_audit(root: Path, coverage_report: Path | None = None) -> 
         "runtime_stage_b_trace_owner": '"stage_b_policy": selection_audit' in runtime,
         "runtime_stage_c_contract": '"stage_c": "coverage_veto_and_final_materialization"' in runtime,
         "quality_lifecycle_registry_alignment": (
-            policy_lifecycle.get("quality.teacher_panel_v2")
-            == profile_lifecycle.get("quality.teacher_panel_v2")
+            policy_lifecycle.get("quality.distilled_ranker_v1")
+            == profile_lifecycle.get("quality.distilled_ranker_v1")
             == "candidate"
         ),
         "profiles_release_disabled": all(not profile["release_enabled"] for profile in profiles["profiles"]),
@@ -83,7 +83,7 @@ def build_consistency_audit(root: Path, coverage_report: Path | None = None) -> 
         "paper_claim_ready": implementation_ready and release_eligible and coverage_promoted,
         "production_release_ready": release_eligible and coverage_promoted,
         "stage_ownership": ownership,
-        "quality_teacher_policy_lifecycle": policy_lifecycle.get("quality.teacher_panel_v2"),
+        "quality_ranker_policy_lifecycle": policy_lifecycle.get("quality.distilled_ranker_v1"),
         "checks": checks,
         "coverage_evidence": coverage,
         "release_blockers": release["release_blockers"],

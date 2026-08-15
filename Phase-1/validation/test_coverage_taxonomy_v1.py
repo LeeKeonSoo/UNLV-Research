@@ -75,7 +75,9 @@ def test_coverage_distribution_is_multilabel_and_audit_only() -> None:
         ]
     )
     curated = annotate_records([{"text": "def add(a, b):\n    return a + b\nimport math", "token_proxy": 8}])
-    audit = build_composition_audit({"raw_input": raw, "stage_c_curated": curated})
+    audit = build_composition_audit(
+        {"raw_input": raw, "stage_b_pass": raw, "stage_c_curated": curated}
+    )
     coverage = audit["coverage_v1"]
 
     assert coverage["authority"] == "audit_only"
@@ -84,7 +86,8 @@ def test_coverage_distribution_is_multilabel_and_audit_only() -> None:
     assert coverage["stages"]["raw_input"]["semantic_domain"]["records"]["code"] == 1
     assert coverage["stages"]["raw_input"]["semantic_domain"]["records"]["unknown"] == 1
     assert coverage["stages"]["raw_input"]["semantic_domain"]["unknown_record_rate"] == 0.5
-    assert "semantic_domain" in coverage["jensen_shannon_divergence_from_raw"]["stage_c_curated"]
+    assert "stage_c_curated" not in coverage["jensen_shannon_divergence_from_raw"]
+    assert "semantic_domain" in coverage["jensen_shannon_divergence_from_stage_b_pass"]["stage_c_curated"]
 
 
 if __name__ == "__main__":

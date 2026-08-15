@@ -5,7 +5,7 @@ from typing import Any
 from all_policy_stage_b import apply_quality_policy, apply_redundancy_policy
 from ingestion.candidate_processing import process_candidate
 from quality_operating_points import CurationMode
-from quality_teacher_panel import PanelDecision, PolicyDecision, TeacherVote
+from quality_teacher_panel import PanelDecision
 from quality_teacher_runtime import PanelPolicyResult
 from redundancy_equivalence import RedundancyMode
 from redundancy_v2 import RedundancySettings
@@ -46,7 +46,11 @@ def _stage_b_records(records: list[JsonMap]) -> list[JsonMap]:
 
 
 def _composition_audit_stub() -> JsonMap:
-    return {"delta_from_raw": {"stage_c_curated": {"content_domain": {"token_share": {}}}}}
+    return {
+        "delta_from_stage_b_pass": {
+            "stage_c_curated": {"content_domain": {"token_share": {}}}
+        },
+    }
 
 
 def execute_case(case: JsonMap) -> JsonMap:
@@ -126,52 +130,40 @@ def execute_case(case: JsonMap) -> JsonMap:
             },
             "quality_decision": match.get("quality_retention_decision"),
         }
-    if executor == "stage_b_quality_panel":
-        policy_id = str(case["policy_result"]["policy_id"])
-        first_pass = tuple(
-            TeacherVote(
-                teacher_id=f"teacher-{index}",
-                policy_id=policy_id,
-                decision=PolicyDecision(value),
-                reason_codes=("controlled_fixture_reason",),
+    if executor == "stage_b_quality_ranker":
+        payloads = case.get("policy_results") or [case["policy_result"]]
+        panel_results = tuple(
+            PanelPolicyResult(
+                policy_id=str(payload["policy_id"]),
+                decision=PanelDecision(payload["decision"]),
+                first_pass=(),
+                second_pass=None,
+                decision_source="distilled_ranker",
+                reason_codes=("controlled_ranker_fixture",),
+                failure_probability=float(payload["failure_probability"]),
+                normal_failure_threshold=float(payload["normal_failure_threshold"]),
+                hard_failure_threshold=float(payload["hard_failure_threshold"]),
+                prediction_confidence=float(payload["prediction_confidence"]),
+                out_of_distribution=bool(payload.get("out_of_distribution", False)),
+                ranker_artifact_sha256="f" * 64,
             )
-            for index, value in enumerate(case["policy_result"]["first_pass"])
-        )
-        second_values = case["policy_result"].get("second_pass")
-        second_pass = (
-            tuple(
-                TeacherVote(
-                    teacher_id=f"teacher-{index}",
-                    policy_id=policy_id,
-                    decision=PolicyDecision(value),
-                    reason_codes=("controlled_fixture_reason",),
-                )
-                for index, value in enumerate(second_values)
-            )
-            if isinstance(second_values, list)
-            else None
-        )
-        panel_result = PanelPolicyResult(
-            policy_id=policy_id,
-            decision=PanelDecision(case["policy_result"]["decision"]),
-            first_pass=first_pass,
-            second_pass=second_pass,
+            for payload in payloads
         )
         uid = "quality-fixture"
         result = apply_quality_policy(
             [{"chunk_uid": uid, "text": "fixture payload"}],
-            results_by_chunk={uid: (panel_result,)},
+            results_by_chunk={uid: panel_results},
             mode=CurationMode(case["config"]["mode"]),
         )
-        row = (result.removals or result.survivors)[0]
+        row = (result.not_selected or result.survivors)[0]
         decision = row["quality_stage_decision"]
         triggered = (
-            decision["stage_b_action"] == "remove"
+            decision["stage_b_action"] == "not_select"
             and decision["stage_b_reason_code"] == expected_code
         )
         return {
-            **_simple_event(triggered, "remove", expected_code),
-            "quality_authority_kind": "teacher_panel",
+            **_simple_event(triggered, "not_select", expected_code),
+            "quality_authority_kind": "distilled_ranker",
             "quality_decision": {
                 **decision,
                 "benchmark_outcomes_read": result.audit["benchmark_outcomes_read"],

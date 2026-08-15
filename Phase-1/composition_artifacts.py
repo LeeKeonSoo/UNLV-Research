@@ -46,7 +46,7 @@ class CompositionShare:
 class CompositionDelta:
     axis: str
     label: str
-    raw_token_count: int
+    eligible_token_count: int
     curated_token_count: int
     token_count_delta: int
     token_share_delta: float
@@ -56,8 +56,10 @@ class CompositionDelta:
 class CompositionAuditArtifacts:
     shares: tuple[CompositionShare, ...]
     deltas: tuple[CompositionDelta, ...]
-    raw_tokens: int
+    eligible_tokens: int
     curated_tokens: int
+    baseline_stage: str = "stage_b_pass"
+    comparison_unit: str = "chunk"
     authority: str = "audit_only"
     consumed_by_selection: bool = False
     target_distribution_enforced: bool = False
@@ -119,14 +121,20 @@ def _stage_shares(
 
 
 def build_composition_artifacts(
-    raw_records: tuple[CompositionRecord, ...],
+    eligible_records: tuple[CompositionRecord, ...],
     curated_records: tuple[CompositionRecord, ...],
 ) -> CompositionAuditArtifacts:
-    if len({record.uid for record in raw_records}) != len(raw_records):
-        raise CompositionArtifactError("Raw composition record IDs must be unique")
+    eligible_ids = {record.uid for record in eligible_records}
+    curated_ids = {record.uid for record in curated_records}
+    if len(eligible_ids) != len(eligible_records):
+        raise CompositionArtifactError("Eligible composition chunk IDs must be unique")
     if len({record.uid for record in curated_records}) != len(curated_records):
         raise CompositionArtifactError("Curated composition record IDs must be unique")
-    shares = _stage_shares("raw", raw_records) + _stage_shares(
+    if not curated_ids.issubset(eligible_ids):
+        raise CompositionArtifactError(
+            "Curated composition IDs must be a subset of eligible chunk IDs"
+        )
+    shares = _stage_shares("eligible", eligible_records) + _stage_shares(
         "curated", curated_records
     )
     by_key = {(item.stage, item.axis, item.label): item for item in shares}
@@ -138,7 +146,8 @@ def build_composition_artifacts(
             axis,
             label,
             by_key.get(
-                ("raw", axis, label), CompositionShare("raw", axis, label, 0, 0, 0.0)
+                ("eligible", axis, label),
+                CompositionShare("eligible", axis, label, 0, 0, 0.0),
             ).token_count,
             by_key.get(
                 ("curated", axis, label),
@@ -149,14 +158,16 @@ def build_composition_artifacts(
                 CompositionShare("curated", axis, label, 0, 0, 0.0),
             ).token_count
             - by_key.get(
-                ("raw", axis, label), CompositionShare("raw", axis, label, 0, 0, 0.0)
+                ("eligible", axis, label),
+                CompositionShare("eligible", axis, label, 0, 0, 0.0),
             ).token_count,
             by_key.get(
                 ("curated", axis, label),
                 CompositionShare("curated", axis, label, 0, 0, 0.0),
             ).token_share
             - by_key.get(
-                ("raw", axis, label), CompositionShare("raw", axis, label, 0, 0, 0.0)
+                ("eligible", axis, label),
+                CompositionShare("eligible", axis, label, 0, 0, 0.0),
             ).token_share,
         )
         for axis, label in sorted(axes_and_labels)
@@ -164,7 +175,7 @@ def build_composition_artifacts(
     return CompositionAuditArtifacts(
         shares,
         deltas,
-        sum(record.token_count for record in raw_records),
+        sum(record.token_count for record in eligible_records),
         sum(record.token_count for record in curated_records),
     )
 
@@ -189,13 +200,15 @@ def write_composition_artifacts(
         output_directory / "composition_audit.json",
         output_directory / "composition_by_route.csv",
         output_directory / "composition_by_language.csv",
-        output_directory / "raw_curated_composition_delta.csv",
+        output_directory / "eligible_curated_composition_delta.csv",
     )
     payload = {
         "authority": audit.authority,
         "consumed_by_selection": audit.consumed_by_selection,
         "target_distribution_enforced": audit.target_distribution_enforced,
-        "raw_tokens": audit.raw_tokens,
+        "baseline_stage": audit.baseline_stage,
+        "comparison_unit": audit.comparison_unit,
+        "eligible_tokens": audit.eligible_tokens,
         "curated_tokens": audit.curated_tokens,
         "shares": [asdict(item) for item in audit.shares],
         "deltas": [asdict(item) for item in audit.deltas],
@@ -215,7 +228,7 @@ def write_composition_artifacts(
             fieldnames=(
                 "axis",
                 "label",
-                "raw_token_count",
+                "eligible_token_count",
                 "curated_token_count",
                 "token_count_delta",
                 "token_share_delta",

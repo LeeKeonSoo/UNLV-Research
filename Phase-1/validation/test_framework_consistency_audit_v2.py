@@ -26,7 +26,7 @@ def test_current_framework_is_internally_aligned_but_release_blocked() -> None:
         "stage_b": ["redundancy", "quality"],
         "stage_c": ["coverage"],
     }
-    assert report["quality_teacher_policy_lifecycle"] == "candidate"
+    assert report["quality_ranker_policy_lifecycle"] == "candidate"
     assert "framework_release_blocked" in report["readiness_blockers"]
     assert "semantic_coverage_scientific_promotion_missing" in report["readiness_blockers"]
 

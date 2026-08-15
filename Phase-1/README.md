@@ -55,30 +55,23 @@ it changes imports and the active-surface test contract.
 
 ## Current Policy State
 
-Normal and Hard now expose the same immutable Policy families. Their intended
-difference is a separately calibrated versioned operating point: Normal is the
-more conservative removal mode and Hard is stronger while preserving
+Normal and Hard expose the same immutable Policy families. Normal requires one
+independent positive Q1-Q4 pass; Hard requires two, while preserving
 `Hard subset-or-equal Normal`. Neither accepts a run-local threshold, retention
 fraction, or token budget. Both redesigned operating points are now wired into
 the final runtime experiment but remain uncalibrated and release-disabled.
 
-The sole current model-driven Quality candidate is the three-teacher Quality
-Ranker in `configs/quality_teacher_panel_v2.json`. Its active runtime-experiment
-panel is GLM-5.2, Nemotron 3 Ultra, and MiniMax M3. It evaluates Q1 Correctness
-Evidence, Q2 Semantic Coherence, Q3 Substantive Payload, and Q4 Learnable
-Relations independently as `pass`, `fail`, or `abstain`. Its frozen Policy now
-has Stage-B proposal authority, subject to Stage-C Coverage veto. It remains
-unpromoted until fresh behavior fixtures, protected-fixture
-false-removal bounds, consensus stability, and Normal/Hard operating points
-pass. Runtime execution is experimental, and teacher output alone cannot
-delete data.
-
-The shared hosted/local adapter, closed Policy-specific reason-code schema,
-single schema retry, blinded consensus runner, deterministic 512-item behavior
-matrix, 800-item protected set, resumable qualification executor, exact
-false-removal report, and Normal/Hard staged-policy bridge are implemented.
-The bridge is active in the all-policy runtime experiment. Stage C receives
-every typed removal proposal and can veto support loss before final output.
+The current model-driven Quality candidate is a distilled Q1-Q4 ranker rooted
+in `configs/quality_ranker_v1.json`. GPT-5.6 Luna, declared in
+`configs/quality_teacher_luna_single_v1.json`, supplies offline Batch calibration
+labels only. The frozen local ranker evaluates Q1 Correctness Evidence, Q2
+Semantic Coherence, Q3 Substantive Payload, and Q4 Learnable Relations as
+independent `pass`, `fail`, or `abstain` decisions. A qualified fail blocks
+selection. Abstain, OOD, and low confidence provide no positive retention
+evidence. Stage C receives every typed non-selection proposal and may restore
+only the support required by its Coverage invariants. Hard restoration is
+bounded by the final Normal retained set, so Coverage cannot create a
+Hard-only survivor while satisfying its support checks.
 
 Q1 uses typed declared-verifier evidence before model judgment. A declared
 verifier result bypasses teacher generation; the panel is used only when that
@@ -86,15 +79,10 @@ evidence is absent. Qualification observations use the incompatible-with-v1
 `quality-teacher-observation-v2` contract so pre-fix diagnostics cannot be
 resumed into promotion evidence.
 
-The first v2 behavior qualification is negative evidence: Q1 passed all 128
-controlled tasks, but Q2 produced two PASS-to-ABSTAIN mismatches by task 143.
-Because exact behavior was preregistered, the protected run was not started and
-both operating points remain blocked. See
-`validation/frozen_contracts/quality_teacher_behavior_gate_v2.json`.
-
-Those results belong to a replaced provider panel and cannot qualify the active
-GLM-5.2/Nemotron/MiniMax panel. GLM-5.2 has passed endpoint and schema smoke
-only; its observed NVIDIA Build latency remains a release blocker.
+Historical multi-provider failures remain negative development evidence and do
+not qualify the Luna-derived ranker. The current positive-selection behavior
+fixtures pass, but the Policy remains release-blocked pending disjoint
+multidomain and natural-token external validation.
 
 The previous loss-gap Quality experiment is retired and preserved only under
 `archive/historical_contracts/contrastive_quality_candidate_2026-08-04/`.
@@ -123,6 +111,23 @@ language/script composition JSON/CSV artifacts. They are audit-only, may be
 multi-label, and never enforce a target domain distribution or enter the
 selector.
 
+## Current Positive-Quality Snapshot
+
+The 2026-08-08 Code 7M run applied the Luna-distilled Q1-Q4 gate and Semantic
+Coverage to the same audited Raw input. Exact Qwen3-4B tokenizer stream counts
+are 6,984,438 Raw, 6,125,213 Normal, and 5,032,400 Hard. Normal removes 12.30%
+of Raw tokens and Hard removes 27.95%, without a target retention fraction or
+maximum token budget. Final retained chunk counts are 7,147 Normal and 5,859
+Hard, with zero Hard-only chunks. The complete natural-training groups contain
+6,979,584 Raw, 6,111,232 Normal, and 5,029,888 Hard tokens; only each arm's
+incomplete final optimizer group is dropped.
+
+The Raw corpus is not a single-source 7M The Stack sample. Its frozen
+provenance is 4,723,925 tokens from `bigcode/the-stack-dedup` and 2,260,513
+tokens from eight version-pinned public GitHub repositories. See
+`docs/code_7m_corpus_provenance.md` for exact records, commits, hashes, source
+claim boundaries, and the 12-record benchmark-exclusion audit.
+
 ## Previous Structural Snapshot
 
 The previous Code 7M candidate run materialized both Normal and Hard through
@@ -140,7 +145,8 @@ The final run contracts are
 `configs/code_7m_all_policy_final_normal_v1.json` and
 `configs/code_7m_all_policy_final_hard_v1.json`. They execute every declared
 Validity, Redundancy, Quality, and Coverage Policy. Hosted Quality observations
-are resumable and shared by exact `(panel, chunk UID, text)` identity.
+are resumable and shared by exact `(panel, chunk UID, text)` identity, while
+the full corpus uses a hash-bound embedding and Ranker artifact.
 
 The mixed Code/Math/General Coverage audit contains 768 records. Its mean
 cross-provider mutual-neighbor Jaccard is 0.2178, with 499 records in stable
@@ -163,6 +169,10 @@ conda run -n research python validation\test_policy_profile_contract.py
 conda run -n research python validation\test_core_policy_runtime_linkage.py
 conda run -n research python validation\test_core_behavior_audit_v3.py
 conda run -n research python validation\test_quality_candidate_authority_v1.py
+conda run -n research python validation\test_quality_ranker_sampling_v1.py
+conda run -n research python validation\test_quality_ranker_policy_v1.py
+conda run -n research python validation\test_quality_ranker_runtime_v1.py
+conda run -n research python validation\test_quality_runtime_dispatch_v1.py
 conda run -n research python validation\test_quality_teacher_panel_v1.py
 conda run -n research python validation\test_quality_teacher_adapters_v1.py
 conda run -n research python validation\test_quality_teacher_runtime_v1.py

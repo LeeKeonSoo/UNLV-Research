@@ -5,9 +5,9 @@
   "framework_release": "blocked",
   "core_behavior": {
     "passed": true,
-    "fixture_sha256": "2faffc423cf2da2b4c0e55992038cf03955ab5f9025567a11374b6712ad5b0fe",
-    "case_matrix_sha256": "f7b08b938443dd547d775c0178e166e2b01609882d77d96c1dc556193119f79d",
-    "policy_registry_sha256": "27ea857ad90436b1b9e1b7aa01c070b0238606cf069fdd7c1abfa5caea2cfe6f",
+    "fixture_sha256": "c0ab9303fa8f2fe2415a477f6cf1bdd648639ded8b615aea5d651d60c0c167f9",
+    "case_matrix_sha256": "3ed523d48181a230f7792189559d78c047729dae543de7c8d836f87f2c8cfdc3",
+    "policy_registry_sha256": "858f35e614d26c3ce67165bfc74dc95c943c620740ce38f13ec7a878081bc131",
     "fixture_kinds": [
       "adversarial_negative",
       "adversarial_positive",
@@ -16,8 +16,8 @@
       "metamorphic_positive"
     ],
     "summary": {
-      "cases": 44,
-      "true_positives": 27,
+      "cases": 47,
+      "true_positives": 30,
       "false_positives": 0,
       "false_negatives": 0,
       "true_negatives": 17,
@@ -41,11 +41,11 @@
       },
       "quality": {
         "required_dimensions": [
-          "typed_deletion_authority",
-          "observable_trigger",
-          "false_positive_boundary"
+          "typed_quality_decision_authority",
+          "observable_evidence_trace",
+          "membership_boundary"
         ],
-        "true_positives": 6,
+        "true_positives": 9,
         "false_positives": 0,
         "false_negatives": 0,
         "true_negatives": 7,
@@ -157,8 +157,8 @@
     "profile_contains_unpromoted_policy",
     "profile_operating_points_uncalibrated",
     "coverage.representative_guard:candidate",
+    "quality.distilled_ranker_v1:candidate",
     "quality.explicit_nonpayload:candidate",
-    "quality.teacher_panel_v2:candidate",
     "redundancy.exact_text_family:development_passed",
     "redundancy.symmetric_near_duplicate_candidate:candidate",
     "validity.interpretable_text:candidate"

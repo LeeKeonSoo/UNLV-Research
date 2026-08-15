@@ -75,6 +75,14 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("quality_teacher_batch_cache.py")
     expected.add("quality_teacher_unit_runtime.py")
     expected.add("quality_teacher_batch_runtime.py")
+    expected.add("quality_ranker_artifact.py")
+    expected.add("quality_ranker_pipeline.py")
+    expected.add("quality_ranker_policy.py")
+    expected.add("quality_ranker_protected.py")
+    expected.add("quality_ranker_runtime.py")
+    expected.add("quality_ranker_sampling.py")
+    expected.add("quality_ranker_training.py")
+    expected.add("quality_runtime_dispatch.py")
     expected.add("validation/test_quality_teacher_batch_cache_v1.py")
     expected.add("validation/test_quality_teacher_adapters_v1.py")
     expected.add("validation/test_quality_teacher_panel_v1.py")
@@ -89,6 +97,10 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
     expected.add("validation/test_quality_stage_bridge_v1.py")
     expected.add("validation/test_quality_teacher_materialization_v1.py")
     expected.add("validation/test_quality_teacher_unit_runtime_v1.py")
+    expected.add("validation/test_quality_ranker_policy_v1.py")
+    expected.add("validation/test_quality_ranker_runtime_v1.py")
+    expected.add("validation/test_quality_ranker_sampling_v1.py")
+    expected.add("validation/test_quality_runtime_dispatch_v1.py")
     expected.add("all_policy_stage_b.py")
     expected.add("validation/test_all_policy_stage_b_v1.py")
     expected.add("redundancy_checkpoint.py")
@@ -266,12 +278,54 @@ def test_active_python_files_are_limited_to_curation_surface() -> None:
             "validation/test_near_duplicate_calibration_v1.py",
         }
     )
+    expected.update(
+        {
+            "external_evaluation/benchmark_provenance_audit.py",
+            "external_evaluation/bigcodebench_chunked_runner.py",
+            "external_evaluation/bigcodebench_remote_runner.py",
+            "external_evaluation/collect_confirmatory_benchmark_results.py",
+            "external_evaluation/confirmatory_provenance_report.py",
+            "external_evaluation/cruxeval_windows_runner.py",
+            "external_evaluation/ds1000_windows_runner.py",
+            "external_evaluation/evalplus_windows_runner.py",
+            "external_evaluation/runtime_paths.py",
+            "quality_ranker_enrichment.py",
+            "quality_teacher_fixture_dataset.py",
+            "quality_teacher_luna_batch_runner.py",
+            "quality_teacher_openai.py",
+            "quality_teacher_openai_batch.py",
+            "validation/test_benchmark_provenance_audit.py",
+            "validation/test_benchmark_worker_paths.py",
+            "validation/test_bigcodebench_chunked_runner.py",
+            "validation/test_bigcodebench_remote_runner.py",
+            "validation/test_colab_transfer_contract.py",
+            "validation/test_confirmatory_benchmark_collector.py",
+            "validation/test_cruxeval_windows_runner.py",
+            "validation/test_ds1000_environment_contract.py",
+            "validation/test_ds1000_windows_runner.py",
+            "validation/test_evalplus_benchmark_major_queue.py",
+            "validation/test_evalplus_windows_runner.py",
+            "validation/test_luna_final_curation_contract_v1.py",
+            "validation/test_quality_ranker_enrichment_v1.py",
+            "validation/test_quality_teacher_luna_batch_runner_v1.py",
+            "validation/test_quality_teacher_openai_backend_v1.py",
+            "validation/test_quality_teacher_openai_batch_v1.py",
+            "validation/test_quality_teacher_single_runtime_v1.py",
+            "validation/test_scoring_worker_failure_isolation.py",
+        }
+    )
     actual = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*.py")
-        if "archive" not in path.parts and ".omo" not in path.parts and "__pycache__" not in path.parts
+        if "archive" not in path.parts
+        and ".omo" not in path.parts
+        and "__pycache__" not in path.parts
+        and path.relative_to(ROOT).parts[0] not in {"output", "tmp"}
     }
-    assert actual == expected
+    assert actual == expected, {
+        "unexpected_active_python": sorted(actual - expected),
+        "missing_active_python": sorted(expected - actual),
+    }
 
 
 def test_active_configs_are_limited_to_revised_contract() -> None:
@@ -339,9 +393,21 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
             "near_duplicate_calibration_v1.json",
             "quality_teacher_panel_v1.json",
             "quality_teacher_panel_v2.json",
+            "quality_ranker_v1.json",
+            "quality_ranker_code_7m_v1.json",
             "code_7m_quality_teacher_v2.json",
             "code_7m_all_policy_final_normal_v1.json",
             "code_7m_all_policy_final_hard_v1.json",
+            "code_7m_luna_final_hard_v1.json",
+            "code_7m_luna_final_normal_v1.json",
+            "code_7m_nemotron_final_hard_v1.json",
+            "code_7m_nemotron_final_normal_v1.json",
+            "quality_ranker_luna_code_7m_v1.json",
+            "quality_ranker_luna_code_7m_v2.json",
+            "quality_ranker_nemotron_code_7m_v1.json",
+            "quality_teacher_cross_model_audit_v1.json",
+            "quality_teacher_luna_single_v1.json",
+            "quality_teacher_nemotron_single_v1.json",
         }
     )
     expected.update(
@@ -372,7 +438,10 @@ def test_active_configs_are_limited_to_revised_contract() -> None:
         }
     )
     actual = {path.name for path in (ROOT / "configs").glob("*.json")}
-    assert actual == expected
+    assert actual == expected, {
+        "unexpected_active_configs": sorted(actual - expected),
+        "missing_active_configs": sorted(expected - actual),
+    }
 
 
 if __name__ == "__main__":

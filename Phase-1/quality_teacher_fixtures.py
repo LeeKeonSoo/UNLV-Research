@@ -201,6 +201,127 @@ def build_behavior_fixture_matrix(samples_per_cell: int = 8) -> tuple[BehaviorFi
     return tuple(fixtures)
 
 
+def _ranker_enrichment_payload(
+    policy_id: str,
+    route: str,
+    fixture_class: FixtureClass,
+    index: int,
+) -> tuple[str, tuple[str, ...]]:
+    policy_offset = POLICY_IDS.index(policy_id) * 10_000
+    unique_index = policy_offset + index + 2_000
+    if fixture_class is FixtureClass.PASS:
+        return _pass_payload(route, unique_index)
+    if fixture_class is FixtureClass.ABSTAIN:
+        return _abstain_payload(route, unique_index)
+    if policy_id == "q1_correctness_evidence":
+        return _fail_payload(policy_id, route, unique_index)
+    if policy_id == "q2_semantic_coherence":
+        payloads = {
+            "code_artifact": (
+                f"def valve_state_{unique_index}(): return 'closed'\n"
+                f"The unchanged valve_state_{unique_index} call always returns 'open'."
+            ),
+            "mathematical_content": (
+                f"Assume integer n_{unique_index} is even. Under the same unchanged "
+                f"assumption, n_{unique_index} is odd."
+            ),
+            "general_prose": (
+                f"Valve {unique_index} remained closed throughout the trial. "
+                f"The same valve {unique_index} remained open throughout that trial."
+            ),
+            "table_structured_data": (
+                f"sensor_id,state\n{unique_index},closed\n{unique_index},open"
+            ),
+        }
+        return payloads[route], (f"entity_{unique_index}_has_incompatible_states",)
+    if policy_id == "q3_substantive_payload":
+        payloads = {
+            "code_artifact": (
+                f"# Copyright 2026 Example-{unique_index}\n"
+                "# All rights reserved.\n# Generated header.\n# End of header."
+            ),
+            "mathematical_content": (
+                f"Mathematics index {unique_index} | Previous | Next | Search | Sign in"
+            ),
+            "general_prose": (
+                f"Site {unique_index} | Accept cookies | Privacy settings | Sign in | Subscribe"
+            ),
+            "table_structured_data": (
+                f"title,updated,owner\nIndex {unique_index},today,site administrator"
+            ),
+        }
+        return payloads[route], (f"boilerplate_instance_{unique_index}_has_no_payload",)
+    payloads = {
+        "code_artifact": (
+            f"alpha_{unique_index} beta_{unique_index} gamma_{unique_index} delta_{unique_index}"
+        ),
+        "mathematical_content": (
+            f"x_{unique_index} y_{unique_index} theorem_{unique_index} lemma_{unique_index}"
+        ),
+        "general_prose": (
+            f"river_{unique_index} copper_{unique_index} quiet_{unique_index} amber_{unique_index}"
+        ),
+        "table_structured_data": (
+            f"label\nalpha_{unique_index}\nbeta_{unique_index}\ngamma_{unique_index}"
+        ),
+    }
+    return payloads[route], (f"tokens_{unique_index}_have_no_recoverable_relation",)
+
+
+def build_ranker_enrichment_fixture_set(
+    samples_per_cell: int = 12,
+) -> tuple[BehaviorFixture, ...]:
+    fixtures: list[BehaviorFixture] = []
+    classes = (FixtureClass.PASS, FixtureClass.FAIL, FixtureClass.ABSTAIN)
+    for policy_id in POLICY_IDS:
+        for route_index, route in enumerate(ROUTES):
+            for fixture_class in classes:
+                for index in range(samples_per_cell):
+                    unique_index = route_index * samples_per_cell + index
+                    fixture_id = (
+                        f"ranker-enrichment-{policy_id}-{route}-{fixture_class.value}-{index:03d}"
+                    )
+                    text, evidence = _ranker_enrichment_payload(
+                        policy_id,
+                        route,
+                        fixture_class,
+                        unique_index,
+                    )
+                    expected = fixture_class.value
+                    reason_map = (
+                        _PASS_REASONS
+                        if expected == "pass"
+                        else _FAIL_REASONS if expected == "fail" else _ABSTAIN_REASONS
+                    )
+                    verifier = (
+                        _verifier(fixture_id, expected, evidence)
+                        if policy_id == "q1_correctness_evidence"
+                        and expected in {"pass", "fail"}
+                        else None
+                    )
+                    fixtures.append(
+                        BehaviorFixture(
+                            fixture_id=fixture_id,
+                            policy_id=policy_id,
+                            route=route,
+                            fixture_class=fixture_class,
+                            expected_decision=expected,
+                            expected_reason_code=reason_map[policy_id],
+                            label_provenance="deterministic_construction",
+                            unit=EvaluationUnit(
+                                unit_id=fixture_id,
+                                text=text,
+                                declared_context=(
+                                    f"English {route} deterministic ranker-enrichment fixture."
+                                ),
+                                attached_evidence=evidence,
+                                declared_verifier=verifier,
+                            ),
+                        )
+                    )
+    return tuple(fixtures)
+
+
 def build_protected_fixture_set(samples_per_route: int = 200) -> tuple[ProtectedFixture, ...]:
     fixtures: list[ProtectedFixture] = []
     for route in ROUTES:

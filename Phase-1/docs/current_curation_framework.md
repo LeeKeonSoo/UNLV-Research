@@ -15,7 +15,7 @@ downstream model evaluation.
 ```text
 collect candidate pool
   -> Stage A: Validity normalization and closed-failure quarantine
-  -> Stage B: chunking plus Redundancy/Quality removal proposals
+  -> Stage B: chunking plus Redundancy removal and positive Quality selection
   -> Stage C: Coverage veto, explicit restoration, and final materialization
 ```
 
@@ -35,7 +35,7 @@ result and is never read by the runtime.
 The active user-facing runtime profiles are **Normal** (`normal_structural_v1`)
 and **Hard** (`hard_structural_v1`), declared in
 `configs/policy_profiles.json`. They use the same reason-coded structural and
-three-teacher Quality policy families and differ only in frozen operating
+distilled Q1-Q4 Quality Policy families and differ only in frozen operating
 points. `safe_structural_v3` is retained only to
 reproduce historical provenance-and-safety experiments. The historical
 score-selector template is retired and cannot run. The required fields for a versioned active policy card are declared
@@ -54,7 +54,7 @@ Historical artifact identifiers may retain older labels only in the explicit
 | --- | --- | --- |
 | Validity | closed text-contract evidence | Stage A quarantines only payload absence, declared text-contract violation, unrecoverable corruption, or acquisition failure; Stage B rejects only invalid chunk results |
 | Redundancy | exact identity plus formatting, bounded changed-token near-substitute, exact containment, token-preserving reflow, and optional declared-verifier witnesses | Stage B proposes only nonrepresentative removal with a stable family, witness, evidence hash, and representative. Near edges are non-transitive pairwise matches; retrieval similarity alone cannot delete |
-| Quality | four independent Q1-Q4 panel decisions plus closed deterministic non-payload evidence | Stage B applies frozen Normal/Hard fail gates. Normal requires unanimous first-pass failure; Hard accepts stable 2-of-3 failure. Abstention retains, and provider output alone cannot delete |
+| Quality | four independent Q1-Q4 ranker decisions plus closed deterministic non-payload evidence | Stage B retains only chunks with enough positive evidence and no qualified fail. Normal requires one independent pass and Hard requires two. Abstention, OOD, and low confidence do not support retention; provider output alone has no membership authority |
 | Coverage | representative linkage, semantic support extinction, residual-payload preservation, and composition audit | Stage C originates no deletion. It accepts Stage-B proposals or veto-restores the minimum required support, rematerializes, and reruns the complete invariant set; quotas and target mixes are forbidden |
 
 Content domain and language/script are separate audit axes. For example,
@@ -85,7 +85,7 @@ Quality target is not treated as a currently observable runtime score.
 
 Stage C has no weighted operational threshold. It does not access Utility or
 benchmarks. It cannot originate a deletion; it only accepts or vetoes Stage-B
-proposals and materializes the final output. A fixed-fraction, token-cap, or
+non-selection proposals and materializes the final output. A fixed-fraction, token-cap, or
 priority allocator remains outside the current framework surface.
 The active Normal profile may inspect only chunk text. Source identity, source tier,
 rights, path, composition labels, Utility, and benchmark outcomes remain
@@ -134,17 +134,19 @@ The structural development gate runs frozen Code, Math, and General fixtures acr
 clean, exact-duplicate-heavy, explicit-artifact-heavy, and malformed scenarios.
 It compares artifact rules off versus all active Normal Quality rules on, reports
 reason-code and token-proxy deltas, and requires the Coverage invariant to
-pass. That sub-gate is local structural evidence only. The final profiles also
-run the separately frozen three-teacher Quality panel; neither component reads
+pass. That sub-gate is local structural evidence only. The final profiles run
+one frozen local Q1-Q4 ranker distilled from offline GPT-5.6 Luna Batch labels;
+neither component reads
 NLL, Utility, benchmark outcomes, source reputation, a target composition, or
 a token budget.
 
 ## Normal And Hard Profiles
 
 `curation_mode: "normal"` and `curation_mode: "hard"` execute the same four
-Cores and the same Policy families. Normal uses strict Near-duplicate and
-unanimous Quality-fail operating points. Hard uses broader bounded-change
-limits and stable-majority Quality failure.
+Cores and the same Policy families. Normal uses strict Near-duplicate bounds
+and requires at least one independent Q1-Q4 pass. Hard uses broader
+bounded-change limits and requires at least two independent passes. Any
+qualified fail blocks selection in both modes.
 Both are available for development/confirmatory runtime experiments and remain
 release-disabled. Neither uses model-relative scalar scores, source or domain
 metadata, retention fractions, or token budgets.
@@ -153,6 +155,8 @@ The former Hard span inventory (prefix-license header, self-contained license
 comment block, and repeated-template span) is an authorized-but-disabled
 candidate archive. None of those candidates can select, transform, or remove
 data in the final Normal or Hard runtime. Hard inherits every Normal rule and
+its Stage-C restoration candidates are bounded by the final Normal retained
+set, so `Hard subset-or-equal Normal` remains true after Coverage vetoes.
 changes only frozen strength parameters. The retired 0.95 shingle selector, model-relative
 proxies, source metadata rules, and parser adapters are not in the final
 runtime surface.
@@ -196,7 +200,8 @@ precision rule, not a claim of material compression.
 false-positive, metamorphic, and adversarial fixtures through the real A/B/C
 runtime. It verifies more than reason-code presence: Validity must issue the
 declared action, Redundancy removals must link to a surviving representative,
-Quality removals must carry the typed deletion-authority trace, and Coverage
+Quality decisions must carry passed/failed Policy IDs, required pass count, and
+the typed membership trace, while Coverage
 must detect missing representatives while remaining audit-only. It also fails
 when Registry and Case Matrix Core ownership disagree. The resulting
 TP/FP/FN/TN and invariant counts are a regression gate for constructed

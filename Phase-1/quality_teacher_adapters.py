@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from threading import BoundedSemaphore
-from typing import Iterable, Literal, Protocol, assert_never
+from threading import BoundedSemaphore, Lock
+from time import monotonic
+from typing import Any, Callable, Iterable, Literal, Mapping, Protocol, assert_never
 
 from quality_teacher_panel import ReasoningControl, TeacherSpec
 from quality_teacher_runtime import TeacherGenerationRequest, TeacherGenerationUnavailable
@@ -39,10 +40,56 @@ class CompletionRequest:
 class StructuredResponseFormat:
     type: Literal["json_object"]
     allowed_reason_codes: tuple[str, ...]
+    json_schema_name: str | None = None
+    json_schema: Mapping[str, Any] | None = None
+
+    def __post_init__(self) -> None:
+        if (self.json_schema_name is None) != (self.json_schema is None):
+            raise ValueError("json_schema_name and json_schema must be supplied together")
 
 
 class CompletionBackend(Protocol):
     def complete(self, request: CompletionRequest) -> str: ...
+
+
+class ProviderRateLimitCircuitBreaker:
+    """Suppress provider calls while an observed HTTP 429 cooldown is active."""
+
+    __slots__ = ("_blocked_until", "_clock", "_lock")
+
+    def __init__(self, *, clock: Callable[[], float] = monotonic) -> None:
+        self._clock = clock
+        self._lock = Lock()
+        self._blocked_until = 0.0
+
+    def trip(self, cooldown_seconds: float) -> None:
+        if cooldown_seconds <= 0:
+            raise ValueError("cooldown_seconds must be positive")
+        with self._lock:
+            self._blocked_until = max(
+                self._blocked_until,
+                self._clock() + cooldown_seconds,
+            )
+
+    def raise_if_blocked(self, teacher_id: str) -> None:
+        with self._lock:
+            blocked = self._clock() < self._blocked_until
+        if blocked:
+            raise TeacherGenerationUnavailable(teacher_id, "rate_limit_cooldown")
+
+
+def rate_limit_cooldown_seconds(
+    headers: Mapping[str, str], *, default_seconds: float = 60.0
+) -> float:
+    """Resolve an HTTP Retry-After delta, falling back to a bounded provider probe interval."""
+    raw = headers.get("retry-after")
+    if raw is None:
+        return default_seconds
+    try:
+        parsed = float(raw)
+    except ValueError:
+        return default_seconds
+    return parsed if parsed > 0 else default_seconds
 
 
 class ConcurrencyLimitedBackend:
@@ -81,6 +128,8 @@ def build_reasoning_extra_body(
             return {"chat_template_kwargs": {"thinking": False}}
         case "reasoning_effort_none":
             return {"reasoning_effort": "none"}
+        case "reasoning_effort_low":
+            return {"reasoning_effort": "low"}
         case unreachable:
             assert_never(unreachable)
 
@@ -215,11 +264,13 @@ class NvidiaBuildBackend:
             max_retries=maximum_transport_retries,
             timeout=float(timeout_seconds),
         )
+        self._rate_limit = ProviderRateLimitCircuitBreaker()
 
     def complete(self, request: CompletionRequest) -> str:
         from httpx import TimeoutException
         from openai import APIConnectionError, APIError, APIStatusError, APITimeoutError
 
+        self._rate_limit.raise_if_blocked(request.model_id)
         try:
             completion = self._client.chat.completions.create(
                 model=request.model_id,
@@ -242,6 +293,8 @@ class NvidiaBuildBackend:
         except APIConnectionError as error:
             raise TeacherGenerationUnavailable(request.model_id, "connection_error") from error
         except APIStatusError as error:
+            if error.status_code == 429:
+                self._rate_limit.trip(rate_limit_cooldown_seconds(error.response.headers))
             raise TeacherGenerationUnavailable(
                 request.model_id,
                 f"http_status_{error.status_code}",

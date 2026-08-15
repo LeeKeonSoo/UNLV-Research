@@ -622,17 +622,17 @@
       "empirical_status": "unvalidated_structural_policy"
     },
     {
-      "id": "stage_b_quality_teacher_panel_v2",
-      "version": "2.0.0",
+      "id": "stage_b_quality_distilled_ranker_v1",
+      "version": "1.0.0",
       "core": "quality",
       "stage": "Stage B",
-      "hypothesis": "Independent Q1-Q4 fail evidence from the frozen three-teacher panel can reject a valid nonredundant unit only through the mode-specific consensus policy.",
+      "hypothesis": "A frozen lightweight ranker can reproduce independently defined Q1-Q4 Teacher decisions and retain only chunks with mode-specific positive evidence while failing closed on OOD and low-confidence chunks.",
       "decision_unit": "chunk",
-      "deployment_scope": "English continued-pretraining chunks scored by the frozen NVIDIA Build teacher panel",
+      "deployment_scope": "continued-pretraining chunks within the frozen encoder and protected-test calibration scope",
       "allowed_inputs": [
         "chunk text",
-        "runtime-local route",
-        "typed Q1-Q4 teacher evidence"
+        "frozen encoder embedding",
+        "frozen ranker coefficients and calibrated operating points"
       ],
       "forbidden_inputs": [
         "weighted_quality_score",
@@ -645,20 +645,22 @@
         "composition"
       ],
       "reason_codes": [
-        "quality_normal_unanimous_fail",
-        "quality_hard_stable_majority_fail"
+        "quality_normal_qualified_fail",
+        "quality_hard_qualified_fail",
+        "quality_normal_retention_threshold_not_met",
+        "quality_hard_retention_threshold_not_met"
       ],
       "negative_conditions": [
-        "any missing or abstaining evidence follows the frozen mode policy",
-        "teacher output alone has no deletion authority"
+        "OOD or low-confidence prediction supplies no positive retention evidence",
+        "unpromoted or missing threshold has no retention authority",
+        "Teacher output is calibration or uncertain-case evidence only"
       ],
-      "coverage_impact": "every rejection remains a Stage B proposal subject to Stage C Coverage veto",
-      "rollback_behavior": "retain the chunk when required panel evidence is unavailable",
+      "coverage_impact": "every Quality non-selection remains a Stage B proposal subject to Stage C Coverage veto",
+      "rollback_behavior": "fail closed and do not select when the ranker artifact, calibrated threshold, or in-scope confidence evidence is unavailable",
       "runtime_implementation": [
-        "quality_teacher_materialization.py",
-        "quality_teacher_batch_cache.py",
-        "quality_teacher_json.py",
-        "quality_teacher_batch_runtime.py",
+        "quality_ranker_runtime.py",
+        "quality_ranker_policy.py",
+        "quality_runtime_dispatch.py",
         "all_policy_stage_b.py"
       ],
       "empirical_status": "runtime_experiment_pending_external_validation"

@@ -229,7 +229,14 @@ def test_batch_transport_preserves_unit_and_policy_matrix() -> None:
         is PanelDecision.FAIL
         for result in results
     )
-    assert all(len(adapter.calls) == 2 for adapter in adapters.values())
+    assert {
+        teacher.model_id: len(adapters[teacher.teacher_id].calls)
+        for teacher in panel.teachers
+    } == {
+        "z-ai/glm-5.2": 4,
+        "nvidia/nemotron-3-ultra-550b-a55b": 2,
+        "minimaxai/minimax-m3": 4,
+    }
 
 
 def test_batch_invalid_schema_does_not_count_as_teacher_availability() -> None:
@@ -256,10 +263,38 @@ def test_batch_invalid_schema_does_not_count_as_teacher_availability() -> None:
         raise AssertionError("schema-invalid teachers must not satisfy the availability gate")
 
 
+def test_batch_transport_honors_each_teacher_unit_limit() -> None:
+    panel = load_teacher_panel(PANEL)
+    units = tuple(
+        EvaluationUnit(
+            unit_id=f"provider-limit-{index}",
+            text=f"substantive payload {index}",
+            declared_context=None,
+            attached_evidence=(),
+        )
+        for index in range(4)
+    )
+    adapters = {
+        teacher.teacher_id: ControlledBatchAdapter(teacher.teacher_id)
+        for teacher in panel.teachers
+    }
+
+    evaluate_quality_units_batched(panel, adapters, units)
+
+    calls_by_model = {
+        teacher.model_id: tuple(len(call.units) for call in adapters[teacher.teacher_id].calls)
+        for teacher in panel.teachers
+    }
+    assert calls_by_model["z-ai/glm-5.2"] == (1, 1, 1, 1)
+    assert calls_by_model["nvidia/nemotron-3-ultra-550b-a55b"] == (4,)
+    assert calls_by_model["minimaxai/minimax-m3"] == (1, 1, 1, 1)
+
+
 if __name__ == "__main__":
     test_combined_response_requires_each_policy_exactly_once()
     test_two_available_teachers_can_create_only_stable_majority_fail()
     test_one_available_teacher_cannot_produce_cacheable_evidence()
     test_batch_transport_preserves_unit_and_policy_matrix()
     test_batch_invalid_schema_does_not_count_as_teacher_availability()
+    test_batch_transport_honors_each_teacher_unit_limit()
     print("[quality-teacher-unit-runtime-v1] combined independent policy contract: pass")

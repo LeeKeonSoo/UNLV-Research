@@ -189,8 +189,32 @@ def test_resume_calls_only_the_provider_that_was_unavailable() -> None:
         )
 
 
+def test_provider_cache_uses_compact_windows_safe_directory_names() -> None:
+    panel = load_teacher_panel(PANEL)
+    unit = EvaluationUnit(
+        unit_id="unit-with-a-compact-provider-cache-path",
+        text="substantive payload",
+        declared_context=None,
+        attached_evidence=(),
+    )
+    adapters = {teacher.teacher_id: CountingAdapter() for teacher in panel.teachers}
+
+    with TemporaryDirectory() as directory:
+        store = TeacherBatchEvidenceStore(
+            root=Path(directory),
+            panel_sha256="a" * 64,
+            runtime_sha256="b" * 64,
+        )
+        evaluate_quality_units_batched(panel, adapters, (unit,), evidence_store=store)
+
+        teacher_directories = {path.parent.parent.name for path in Path(directory).rglob("*.json")}
+        assert len(teacher_directories) == 3
+        assert all(len(name) == 12 for name in teacher_directories)
+
+
 if __name__ == "__main__":
     test_completed_teacher_batches_survive_before_panel_observation()
     test_runtime_identity_change_cannot_reuse_teacher_evidence()
     test_resume_calls_only_the_provider_that_was_unavailable()
+    test_provider_cache_uses_compact_windows_safe_directory_names()
     print("[quality-teacher-batch-cache-v1] durable provider evidence: pass")

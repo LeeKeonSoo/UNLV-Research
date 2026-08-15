@@ -41,7 +41,7 @@
       "required": ["required_fields", "missing_field_action"],
       "properties": {
         "required_fields": {"type": "array", "minItems": 15, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "missing_field_action": {"const": "abstain_retain"}
+        "missing_field_action": {"const": "not_select"}
       }
     },
     "registry_references": {"$ref": "#/$defs/pathMap"},
@@ -49,14 +49,15 @@
     "external_evaluation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["runtime_stage", "selector_visible", "data_arms", "natural_token_budget", "seeds", "equal_token_primary", "common_sensitivity_baseline_required", "development_confirmatory_disjoint"],
+      "required": ["runtime_stage", "selector_visible", "data_arms", "untrained_base_reference", "natural_token_training", "seeds", "equal_token_resampling_allowed", "common_sensitivity_baseline_required", "development_confirmatory_disjoint"],
       "properties": {
         "runtime_stage": {"const": false},
         "selector_visible": {"const": false},
-        "data_arms": {"const": ["base_stage_a", "normal", "hard"]},
-        "natural_token_budget": {"const": true},
+        "data_arms": {"const": ["raw_audited_natural", "normal_natural", "hard_natural"]},
+        "untrained_base_reference": {"const": true},
+        "natural_token_training": {"const": true},
         "seeds": {"const": [101, 202, 303]},
-        "equal_token_primary": {"const": false},
+        "equal_token_resampling_allowed": {"const": false},
         "common_sensitivity_baseline_required": {"const": true},
         "development_confirmatory_disjoint": {"const": true}
       }

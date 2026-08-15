@@ -5,7 +5,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Mapping
 
 from quality_operating_points import CurationMode, QualityAction
-from quality_stage_bridge import propose_quality_removals
+from quality_stage_bridge import propose_quality_selections
 from quality_teacher_materialization import panel_policy_result_to_mapping
 from quality_teacher_runtime import PanelPolicyResult
 from redundancy_equivalence import RedundancyMode
@@ -27,7 +27,7 @@ class RedundancyPolicyResult:
 @dataclass(frozen=True, slots=True)
 class QualityPolicyResult:
     survivors: tuple[JsonMap, ...]
-    removals: tuple[JsonMap, ...]
+    not_selected: tuple[JsonMap, ...]
     audit: JsonMap
 
 
@@ -129,9 +129,9 @@ def apply_quality_policy(
     input_uids = {str(row["chunk_uid"]) for row in rows}
     if set(results_by_chunk) != input_uids:
         raise RuntimeError("Quality results must cover every Stage-B input chunk exactly once")
-    decisions = propose_quality_removals(results_by_chunk, mode)
+    decisions = propose_quality_selections(results_by_chunk, mode)
     survivors: list[JsonMap] = []
-    removals: list[JsonMap] = []
+    not_selected: list[JsonMap] = []
     reason_counts: Counter[str] = Counter()
     failed_policy_counts: Counter[str] = Counter()
     panel_decision_counts: Counter[str] = Counter()
@@ -141,7 +141,7 @@ def apply_quality_policy(
         row = dict(source)
         uid = str(row["chunk_uid"])
         decision = decisions[uid]
-        row["quality_teacher_evidence"] = [
+        row["quality_policy_evidence"] = [
             panel_policy_result_to_mapping(result) for result in results_by_chunk[uid]
         ]
         panel_decision_counts.update(result.decision.value for result in results_by_chunk[uid])
@@ -149,33 +149,40 @@ def apply_quality_policy(
             chunks_with_any_abstain += 1
         if all(result.decision.value == "pass" for result in results_by_chunk[uid]):
             chunks_with_all_policy_pass += 1
-        row["quality_stage_decision"] = asdict(decision)
-        if decision.stage_b_action == QualityAction.REMOVE.value:
+        quality_stage_decision = asdict(decision)
+        quality_stage_decision["failed_policy_ids"] = list(decision.failed_policy_ids)
+        quality_stage_decision["passed_policy_ids"] = list(decision.passed_policy_ids)
+        row["quality_stage_decision"] = quality_stage_decision
+        if decision.stage_b_action == QualityAction.NOT_SELECT.value:
             row["stage_b_policy"] = {
                 **_removal_trace(row, decision.stage_b_reason_code),
+                "action": "not_select",
                 "failed_policy_ids": list(decision.failed_policy_ids),
+                "passed_policy_ids": list(decision.passed_policy_ids),
+                "required_pass_count": decision.required_pass_count,
             }
-            removals.append(row)
+            not_selected.append(row)
             reason_counts[decision.stage_b_reason_code] += 1
             failed_policy_counts.update(decision.failed_policy_ids)
         else:
             survivors.append(row)
     return QualityPolicyResult(
         survivors=tuple(survivors),
-        removals=tuple(removals),
+        not_selected=tuple(not_selected),
         audit={
-            "schema_version": "stage-b-quality-panel-runtime-audit-v1",
+            "schema_version": "stage-b-quality-runtime-audit-v3",
             "mode": mode.value,
             "input_chunks": len(rows),
             "retained_chunks": len(survivors),
-            "removed_chunks": len(removals),
+            "not_selected_chunks": len(not_selected),
             "reason_code_counts": dict(sorted(reason_counts.items())),
             "failed_policy_counts": dict(sorted(failed_policy_counts.items())),
             "panel_policy_decision_counts": dict(sorted(panel_decision_counts.items())),
             "chunks_with_any_abstain": chunks_with_any_abstain,
             "chunks_with_all_policy_pass": chunks_with_all_policy_pass,
+            "chunks_meeting_retention_threshold": len(survivors),
             "all_input_chunks_received_quality_decision": set(decisions) == input_uids,
-            "abstain_action": "retain",
+            "abstain_action": "not_select_unless_coverage_veto",
             "benchmark_outcomes_read": False,
             "utility_read": False,
             "token_budget_read": False,

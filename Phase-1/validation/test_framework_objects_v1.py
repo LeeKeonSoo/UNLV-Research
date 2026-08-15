@@ -36,18 +36,26 @@ def test_registry_parses_complete_core_metric_policy_method_lineage() -> None:
             metric = metrics[metric_id]
             assert metric.core_id is policy.core_id
             assert metric.method_id in methods
-    teacher_panel = next(
-        policy for policy in registry.policies if policy.id == "quality.teacher_panel_v2"
+    quality_ranker = next(
+        policy for policy in registry.policies if policy.id == "quality.distilled_ranker_v1"
     )
-    assert tuple(item.path for item in teacher_panel.evidence) == (
-        "configs/quality_teacher_panel_v2.json",
+    assert tuple(item.path for item in quality_ranker.evidence) == (
+        "configs/quality_ranker_v1.json",
+        "configs/quality_teacher_luna_single_v1.json",
     )
-    assert teacher_panel.lifecycle.value == "candidate"
-    assert teacher_panel.decision_authority.value == "quality_decision"
+    assert quality_ranker.lifecycle.value == "candidate"
+    assert quality_ranker.decision_authority.value == "quality_decision"
     quality_provider = next(
-        provider for provider in registry.providers if provider.id == "quality.teacher_panel_v2"
+        provider for provider in registry.providers if provider.id == "quality.distilled_ranker_v1"
     )
-    assert quality_provider.identity_sha256 == teacher_panel.evidence[0].sha256
+    assert quality_provider.identity_sha256 == quality_ranker.evidence[0].sha256
+    teacher_oracle = next(
+        provider
+        for provider in registry.providers
+        if provider.id == "quality.teacher_luna_single_v1"
+    )
+    assert teacher_oracle.role == "offline_quality_annotation_oracle"
+    assert teacher_oracle.direct_deletion_authority is False
     coverage = next(
         policy for policy in registry.policies if policy.id == "coverage.representative_guard"
     )

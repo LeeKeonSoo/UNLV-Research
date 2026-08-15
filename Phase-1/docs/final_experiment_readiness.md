@@ -23,8 +23,16 @@ lower level never implies a passing higher level.
   Stage C Coverage veto and materialization.
 - External boundary: Qwen3-4B-Base continued pretraining with seeds 101, 202,
   and 303 under each arm's natural token budget.
-- Primary external suites: HumanEval+, MBPP+, BigCodeBench Complete,
+- Mandatory external suites: HumanEval+, MBPP+, BigCodeBench Complete,
   CRUXEval-I, CRUXEval-O, and DS-1000.
+- Amended primary reasoning suite: BigCodeBench Complete, CRUXEval-I,
+  CRUXEval-O, and DS-1000.
+- Mandatory secondary short-function diagnostics: HumanEval+ and MBPP+.
+
+The analysis hierarchy is timestamped in
+`protocols/code_reasoning_primary_amendment_v1.json`. It was frozen after
+partial EvalPlus observation but before any non-Base reasoning-suite result.
+All six benchmarks, all arms, and all seeds must still be reported.
 
 No equal-token resampling, target retention fraction, maximum token budget,
 Utility, NLL, or benchmark result is visible to curation.

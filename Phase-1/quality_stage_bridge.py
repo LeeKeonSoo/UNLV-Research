@@ -16,6 +16,8 @@ class StagedQualityDecision:
     chunk_uid: str
     mode: str
     failed_policy_ids: tuple[str, ...]
+    passed_policy_ids: tuple[str, ...]
+    required_pass_count: int
     stage_b_action: str
     stage_b_reason_code: str
     final_action: str
@@ -25,7 +27,7 @@ class StagedQualityDecision:
     token_budget_read: bool = False
 
 
-def propose_quality_removals(
+def propose_quality_selections(
     results_by_chunk: Mapping[str, tuple[PanelPolicyResult, ...]],
     mode: CurationMode,
 ) -> dict[str, StagedQualityDecision]:
@@ -36,6 +38,8 @@ def propose_quality_removals(
             chunk_uid=chunk_uid,
             mode=mode.value,
             failed_policy_ids=decision.failed_policy_ids,
+            passed_policy_ids=decision.passed_policy_ids,
+            required_pass_count=decision.required_pass_count,
             stage_b_action=decision.action.value,
             stage_b_reason_code=decision.reason_code,
             final_action=decision.action.value,
@@ -55,7 +59,7 @@ def apply_coverage_veto(
                 final_action=QualityAction.RETAIN.value,
                 stage_c_reason_code="coverage_veto_retain",
             )
-            if proposal.stage_b_action == QualityAction.REMOVE.value
+            if proposal.stage_b_action == QualityAction.NOT_SELECT.value
             and chunk_uid in protected_uids
             else replace(proposal, stage_c_reason_code="coverage_constraints_satisfied")
         )

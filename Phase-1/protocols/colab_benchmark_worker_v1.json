@@ -1,0 +1,97 @@
+{
+  "schema_version": "colab-benchmark-worker-v1",
+  "status": "frozen_for_remote_generation_preflight",
+  "role": "generation_only_external_evaluation_worker",
+  "scoring_location": "primary_windows_worker_official_evaluators",
+  "source": {
+    "git_commit": "5fa79258861d1b4d8059b320e5fd861183221c00",
+    "worktree_note": "Runtime files below include reviewed uncommitted changes and are bound by SHA-256.",
+    "files": {
+      "external_evaluation/evalplus_generator.py": "6ac10e3b1383cd21a7e61395dda300da3224952d2dd3756103b7f5b17258ad45",
+      "external_evaluation/official_suite_generator.py": "1b2b65cbf645095c6522f578c7d6c8d073ae7cf9111fcac7ce5b01af77a547b3",
+      "external_evaluation/runtime_paths.py": "1715dcf80142eb69488eb81db6a0c18b379ce0bc0de32fa4af0a09710be5d0f9",
+      "protocols/code_7m_normal_hard_confirmatory_v1.json": "d14f0f31cc53aaf21037a67d1aa7c465da9a78709d99ff8ef5ef5cb8a95cd4ef"
+    }
+  },
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.6.0+cu124",
+    "transformers": "5.9.0",
+    "peft": "0.19.1",
+    "bitsandbytes": "0.49.2",
+    "datasets": "3.6.0",
+    "accelerate": "1.14.0",
+    "tokenizers": "0.22.2",
+    "safetensors": "0.7.0",
+    "huggingface_hub": "1.17.0"
+  },
+  "base_model": {
+    "repo_id": "Qwen/Qwen3-4B-Base",
+    "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539"
+  },
+  "input_report": {
+    "relative_path": "training_inputs_report.json",
+    "sha256": "f0be5435a13ea7d79c24b0763b2f9d30ee4069d0d6e6f7f1625fff306132d475"
+  },
+  "adapter_transfer": {
+    "archive_name": "colab_adapters_seed101_202_v1.tar",
+    "archive_sha256": "95e779a641ca8a5faa6878e6c064061aa1bd2d0187ed35518da3f2ffb13544fa",
+    "part_count": 379,
+    "part_size_bytes": 4194304
+  },
+  "adapters": {
+    "hard_natural_seed101_steps307": {
+      "adapter_model.safetensors": "f5b1d1653b5230181949ae976bd6996eba05bd1b11c7bf76c128a0b6bf9b6361",
+      "adapter_config.json": "acfbc731fa3ed15c6489525ea1b151a06fd102763c0ec5dc13e106324d79e05f",
+      "run_result.json": "68f15f896a66b54ab0ee585c16029d9f211d6e4f9b355677bf743808328c810a"
+    },
+    "hard_natural_seed202_steps307": {
+      "adapter_model.safetensors": "9c99589f833bfafbf34cac15c2641f0505e580a049b859b6de31ae38f519019a",
+      "adapter_config.json": "f065dcf1c956db084b9dcfb6fd5ff00bbc694b5c854299169f3361b12e8e9bad",
+      "run_result.json": "8d6bdd362c70d35b4f104a2a8c2bf8eaca13fa812e43d8afd6265ab0d532b7cf"
+    },
+    "normal_natural_seed101_steps373": {
+      "adapter_model.safetensors": "8e380207f182cba9cec04d1525818c2d5ad248e390e386d71487ba0da737dabf",
+      "adapter_config.json": "d71ae150cfe742811a7dca4a02e612b9b0f883f30a08373f9b37d1a29baa55d1",
+      "run_result.json": "a4b94c202eb1f8fbc4b0ae3ec91b0ed41896c6f8a61c12ab184895dec1d4eb44"
+    },
+    "normal_natural_seed202_steps373": {
+      "adapter_model.safetensors": "329c0b4cbc0799a13b0d8e787939d453345084b5627b17459055311942e98609",
+      "adapter_config.json": "3180b9babeb2be286acf3d8c03ea1941856afb7553c1b294945b5837448c1558",
+      "run_result.json": "13c63c46dd6d7e67be08f1ba21a50c7955c99d8f5efb058c0d73bce2c859599e"
+    },
+    "raw_audited_natural_seed101_steps426": {
+      "adapter_model.safetensors": "ff6b37c11283c613e216ad1af1cf51ff530069641cf52a8f7cefcad29f907b66",
+      "adapter_config.json": "c0a0f2c6174b0492c2803360b5b83666384468688a27cf4114e0a5ba65e713c7",
+      "run_result.json": "8a65717ea3fd4290c7ce29e329169d517be64aa5821b27071641e33eec9f19f3"
+    },
+    "raw_audited_natural_seed202_steps426": {
+      "adapter_model.safetensors": "45e1262f623e8e9b192054a8ae310f2e839c1b3e864c3fbf7f9fb57d4ff93093",
+      "adapter_config.json": "4ca6138c58058190678ed0f2cecae00a99c69b7bcaead035adec03dfdd63b5a9",
+      "run_result.json": "2735ce40088bff2c1fb9e51b68e0c5d34ac344abfabc610dd5ec8c51cf5b10b7"
+    }
+  },
+  "benchmarks": {
+    "bigcodebench": {
+      "repo_id": "bigcode/bigcodebench",
+      "revision": "b74c0d0bf70d2c0bc459be537895cca163007f1a",
+      "data_sha256": "d9a4965821c9507ebdfb551c288656b2d5fe553234f5183044333ca8a4018267"
+    },
+    "cruxeval": {
+      "git_commit": "190faf16d175b5847b0af05d937872b1fb395942",
+      "data_sha256": "ffe1e65fd1abfeefc118bb5c4dd73083b6835b11fbc9e891aa762c9ef23361ce"
+    },
+    "ds1000": {
+      "git_commit": "b39aab71da6d23ef8d3cac59a7c5f834516ab334",
+      "data_sha256": "e8c6daa9d7223976bce0296644f3933f78d7f47830669ff05cd61da62c6ba9b3"
+    }
+  },
+  "generation": {
+    "do_sample": false,
+    "max_new_tokens": 1024,
+    "batch_size": 4,
+    "max_batch_context_tokens": 4096,
+    "quantization": "nf4_double_quant_bfloat16",
+    "scoring_must_not_run_on_colab": true
+  }
+}

@@ -37,7 +37,7 @@ def test_final_runtime_has_no_declared_policy_left_blocked_or_legacy_mapped() ->
     assert foundation.bridge.blocked_v1_policy_ids == ()
     assert foundation.bridge.legacy_policy_mappings == ()
     assert lifecycle_by_id["redundancy.symmetric_near_duplicate_candidate"] == "candidate"
-    assert lifecycle_by_id["quality.teacher_panel_v2"] == "candidate"
+    assert lifecycle_by_id["quality.distilled_ranker_v1"] == "candidate"
 
 
 def test_runtime_stage_ticket_is_issued_from_central_permissions() -> None:

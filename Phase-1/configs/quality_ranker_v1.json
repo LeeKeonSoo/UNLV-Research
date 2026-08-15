@@ -1,0 +1,57 @@
+{
+  "schema_version": "quality-ranker-contract-v1",
+  "lifecycle": "candidate_distilled_runtime",
+  "core": "quality",
+  "stage": "stage_b",
+  "definition": "A frozen multi-policy classifier distills independent Q1-Q4 pass/fail/abstain observations from the offline calibration oracle. A chunk is retained only when it reaches the mode-specific count of independent pass decisions and has no qualified fail. It does not define or weight a scalar intrinsic Quality score.",
+  "teacher_oracle": {
+    "contract": "configs/quality_teacher_luna_single_v1.json",
+    "authority": "offline_annotation_and_uncertain_case_review_only",
+    "full_corpus_runtime_allowed": false,
+    "teacher_output_alone_may_select_or_delete": false
+  },
+  "encoder": {
+    "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+    "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+    "pooling": "last_token",
+    "long_document_strategy": "exhaustive_nonoverlapping_window_mean",
+    "frozen_identity_required": true
+  },
+  "policy_heads": [
+    "q1_correctness_evidence",
+    "q2_semantic_coherence",
+    "q3_substantive_payload",
+    "q4_learnable_relations"
+  ],
+  "output_enum": ["pass", "fail", "abstain"],
+  "normal_hard_contract": {
+    "shared_model_required": true,
+    "normal_false_positive_tolerance": 0.005,
+    "hard_false_positive_tolerance": 0.02,
+    "normal_minimum_independent_pass_count": 1,
+    "hard_minimum_independent_pass_count": 2,
+    "qualified_fail_action": "not_select",
+    "pass_count_aggregation": "unweighted_count_over_independent_q1_q4_heads",
+    "normal_threshold_must_be_at_least_hard": true,
+    "threshold_derivation": "teacher_labeled_training_and_calibration_then_separate_uid_and_text_hash_disjoint_protected_test",
+    "protected_observation_minimum_negative_count_per_head": 600,
+    "protected_observation_teacher_requirement": "all_three_frozen_teachers",
+    "arbitrary_runtime_threshold_override_allowed": false
+  },
+  "uncertainty_contract": {
+    "low_confidence_action": "not_select_unless_coverage_veto",
+    "out_of_distribution_action": "not_select_unless_coverage_veto",
+    "oversized_review_queue_action": "not_select_uncertain_and_require_recalibration",
+    "partial_input_order_review_allowed": false
+  },
+  "forbidden_inputs": [
+    "utility",
+    "nll",
+    "benchmark_outcomes",
+    "source_reputation",
+    "source_tier",
+    "domain_quota",
+    "target_retention_fraction",
+    "maximum_token_budget"
+  ]
+}

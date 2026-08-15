@@ -95,12 +95,14 @@ def test_all_stage_b_policies_remove_with_typed_evidence() -> None:
     )
 
     assert {row["chunk_uid"] for row in quality.survivors} == {"near-a", "keep"}
-    assert len(quality.removals) == 1
-    quality_removed = quality.removals[0]
+    assert len(quality.not_selected) == 1
+    quality_removed = quality.not_selected[0]
     assert quality_removed["chunk_uid"] == "quality-bad"
-    assert quality_removed["quality_stage_decision"]["stage_b_action"] == "remove"
+    assert quality_removed["quality_stage_decision"]["stage_b_action"] == "not_select"
+    assert isinstance(quality_removed["quality_stage_decision"]["failed_policy_ids"], list)
+    assert isinstance(quality_removed["quality_stage_decision"]["passed_policy_ids"], list)
     assert quality_removed["stage_b_policy"]["removed_reason"] == (
-        "quality_normal_unanimous_fail"
+        "quality_normal_qualified_fail"
     )
     assert quality.audit["all_input_chunks_received_quality_decision"] is True
     assert quality.audit["benchmark_outcomes_read"] is False
@@ -109,4 +111,4 @@ def test_all_stage_b_policies_remove_with_typed_evidence() -> None:
 
 if __name__ == "__main__":
     test_all_stage_b_policies_remove_with_typed_evidence()
-    print("[all-policy-stage-b-v1] redundancy and Quality deletion: pass")
+    print("[all-policy-stage-b-v1] redundancy and positive Quality selection: pass")

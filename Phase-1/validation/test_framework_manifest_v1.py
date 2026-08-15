@@ -50,9 +50,10 @@ def test_manifest_declares_the_complete_core_and_stage_boundary() -> None:
     assert profile["shared_policy_families_required"] is True
     assert profile["independent_operating_point_calibration_required"] is True
     assert profile["arbitrary_threshold_override_allowed"] is False
-    assert manifest["registry_references"]["quality_teacher_panel"] == (
-        "configs/quality_teacher_panel_v2.json"
+    assert manifest["registry_references"]["quality_teacher_oracle"] == (
+        "configs/quality_teacher_luna_single_v1.json"
     )
+    assert manifest["registry_references"]["quality_ranker"] == "configs/quality_ranker_v1.json"
 
 
 def test_threshold_provenance_is_non_optional() -> None:
@@ -78,7 +79,7 @@ def test_threshold_provenance_is_non_optional() -> None:
         "lifecycle",
         "invalidation_conditions",
     }
-    assert manifest["threshold_provenance"]["missing_field_action"] == "abstain_retain"
+    assert manifest["threshold_provenance"]["missing_field_action"] == "not_select"
 
 
 def test_json_schema_rejects_undeclared_fields_by_contract() -> None:

@@ -124,9 +124,9 @@
     {
       "id": "three_teacher_q1_q4_consensus",
       "core": "quality",
-      "expected": "mode_specific_reason_coded_removal_with_abstain_retention",
+      "expected": "mode_specific_positive_quality_selection_with_fail_closed_abstention",
       "policy_ids": [
-        "stage_b_quality_teacher_panel_v2"
+        "stage_b_quality_distilled_ranker_v1"
       ]
     }
   ]

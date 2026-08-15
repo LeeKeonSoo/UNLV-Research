@@ -16,8 +16,13 @@
     "max_chunk_chars": 6000
   },
   "quality_runtime": {
+    "method": "distilled_quality_ranker_v1",
+    "embedding_manifest_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_v1/embeddings/embedding_manifest.json",
+    "ranker_manifest_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_v1/ranker/quality_ranker_manifest.json",
+    "oracle_fallback_enabled": true,
+    "maximum_oracle_fraction": 0.05,
     "dotenv_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/.env",
-    "observation_cache_path": "D:/UNLV-Research/final_all_policy_v1/quality/teacher_observations_v3_batch16.jsonl",
+    "observation_cache_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_v1/runtime_review/teacher_observations.jsonl",
     "redundancy_checkpoint_path": "D:/UNLV-Research/final_all_policy_v1/checkpoints/hard_stage_b_redundancy_v2.json",
     "task_workers": 8
   },
@@ -31,5 +36,5 @@
       "graph_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/hard/semantic_coverage_graph.json"
     }
   },
-  "claim_boundary": "Final all-policy Code confirmatory materialization. Hard executes the same four Cores and rule families as Normal with stronger frozen Redundancy and Quality operating points. Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets are forbidden runtime inputs."
+  "claim_boundary": "Final all-policy Code confirmatory materialization. Hard executes the same four Cores and rule families as Normal with stronger frozen Redundancy and distilled Quality operating points. The three-teacher panel is restricted to offline calibration and bounded uncertain-case review. Utility, NLL, benchmark outcomes, source reputation, domain quota, and token budgets are forbidden runtime inputs."
 }

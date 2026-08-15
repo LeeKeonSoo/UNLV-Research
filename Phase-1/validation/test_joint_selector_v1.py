@@ -212,8 +212,12 @@ def test_target_aware_profiles_do_not_replace_the_active_structural_profile() ->
     assert target_aware.post_run_override_allowed is False
     assert target_aware.benchmark_feedback_allowed is False
     assert target_aware.source_selection_axis is False
-    assert current_by_id["normal_structural_v1"]["status"] == "active"
-    assert current_by_id["normal_structural_v1"]["selector"]["kind"] == "reason_coded_structural_and_teacher_evidence"
+    assert current_by_id["normal_structural_v1"]["status"] == (
+        "confirmatory_candidate_release_blocked"
+    )
+    assert current_by_id["normal_structural_v1"]["selector"]["kind"] == (
+        "reason_coded_structural_and_distilled_quality_evidence"
+    )
     assert current["target_aware_candidate_profile_registry"] == "configs/joint_selector_profiles_v1.json"
     assert joint_contract["orchestration_role"] == "atomic_evidence_only_combination_not_a_fifth_core"
     assert joint_contract["runtime_activation"] is False
@@ -223,7 +227,7 @@ def test_current_gates_are_derived_from_frozen_configs_and_remain_blocked() -> N
     gates = load_current_joint_gates(ROOT)
 
     assert gates.origin is JointGateOrigin.FROZEN_REGISTRY
-    assert gates.redundancy_ready is False
+    assert gates.redundancy_ready is True
     assert gates.quality_ready is False
     assert gates.coverage_ready is False
     assert gates.hard_extension_ready is False

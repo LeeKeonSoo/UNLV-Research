@@ -126,9 +126,8 @@ benchmark outcomes to select the representative.
 
 ### 5.3 Quality
 
-**Question:** Is there validated evidence that retaining this otherwise valid,
-nonredundant unit is less useful for the declared LM-training interface than
-removing it?
+**Question:** Does this otherwise valid, nonredundant unit have enough
+independent positive evidence to enter the curated LM-training dataset?
 
 Quality is model- and objective-relative. It is represented by a typed evidence
 vector, never by an undocumented universal scalar. Evidence may include closed
@@ -137,15 +136,17 @@ structural non-payload conditions and calibrated model-driven signals.
 The scientific latent target is expected learning contribution per tokenizer
 token under a declared training and evaluation distribution. Runtime Metrics
 are estimators or structural evidence for that target; they do not redefine it.
-No Quality Policy receives deletion authority merely because a score exists.
+No Quality Policy receives membership authority merely because a scalar score
+exists.
 
 Quality decisions are:
 
 | Decision | Meaning | Action |
 | --- | --- | --- |
-| `reject` | a promoted Policy has sufficient negative evidence | remove or transform with trace |
-| `keep` | a promoted Policy has sufficient positive evidence | retain with trace |
-| `abstain_retain` | neither direction is sufficiently supported | retain without a Quality claim |
+| `retain_supported` | the mode-specific independent Q1-Q4 pass count is met and no qualified fail fires | retain with trace |
+| `not_select_qualified_fail` | a promoted Policy has sufficient negative evidence | do not select, with trace |
+| `not_select_insufficient_pass_evidence` | the positive pass count is not met, including abstain, OOD, low confidence, or missing evidence | do not select, with trace |
+| `coverage_veto_retain` | Stage C detects support extinction | explicitly restore and recheck |
 
 ### 5.4 Coverage
 
@@ -169,7 +170,7 @@ The public stages are fixed as follows:
 | Stage | Scope | Primary Core authority | Output |
 | --- | --- | --- | --- |
 | Stage A | record/chunk hard gate | Validity | valid baseline plus quarantined records |
-| Stage B | family and payload decisions | Redundancy and Quality | retained records plus typed removal proposals |
+| Stage B | family and payload decisions | Redundancy and Quality | retained records plus typed non-selection proposals |
 | Stage C | corpus materialization | Coverage | final dataset or fail-closed veto |
 
 Stage A is the common baseline for all development and confirmatory arms.
@@ -303,7 +304,7 @@ Every threshold or categorical boundary must record:
 - invalidation conditions.
 
 A convenient value, inherited constant, or successful single run is not a
-valid derivation. Missing provenance forces `abstain_retain` or prevents the
+valid derivation. Missing provenance forces `not_select` or prevents the
 profile from loading.
 
 ## 11. Development and Confirmatory Separation
@@ -319,8 +320,8 @@ baseline. The `B_A` hash and each disjointness result are included in every
 sensitivity report.
 
 This audit sample is distinct from the training comparison below. Normal and
-Hard training corpora are intentionally derived subsets of the same Stage-A
-corpus and therefore are not disjoint from the Base training corpus.
+Hard training corpora are intentionally derived subsets of the same audited Raw
+corpus and therefore are not disjoint from that Raw arm.
 
 Development may inspect fixtures, compression, reason-code effects, Coverage
 impact, and external development evaluations. Confirmatory data and outcomes
@@ -353,7 +354,7 @@ Every promoted Policy must pass:
 - route and corpus transfer analysis for its claimed scope;
 - Coverage impact analysis;
 - preregistered acceptance criteria and uncertainty reporting;
-- benchmark-disjoint natural-budget external evaluation.
+- benchmark-disjoint natural-token external evaluation.
 
 No universal numerical false-positive threshold is invented here. Each Policy
 must preregister a threshold appropriate to its risk and intended claim before
@@ -361,21 +362,21 @@ confirmatory execution.
 
 ### 12.3 Evidence gate
 
-External comparison uses exactly three data arms derived from the same Stage-A
-corpus:
+External continued-pretraining comparison uses exactly three data arms derived
+from the same audited Raw corpus:
 
 | Arm | Training data |
 | --- | --- |
-| Base | all Stage-A survivors, natural token budget |
-| Normal | Normal output, natural token budget |
-| Hard | Hard output, natural token budget |
+| Raw | complete audited Raw corpus, one natural pass |
+| Normal | complete Normal output, one natural pass |
+| Hard | complete Hard output, one natural pass |
 
 Training uses the same model, tokenizer, optimizer contract, and seeds
 `101/202/303`. Primary outcomes and non-inferiority margins are preregistered by
 domain. Exact tokenizer tokens, examples, updates, and wall-clock compute are
-all reported; equal-token comparison is optional diagnosis, not the primary
-claim. The untouched pretrained model may be benchmarked as a reference point,
-but it is not a fourth curation data arm.
+all reported. Equal-token resampling is forbidden in this protocol. The
+untouched pretrained model is benchmarked as a Base reference, but it is not a
+fourth continued-pretraining data arm.
 
 Code, Math, and General evidence are reported independently. Evidence in one
 domain does not license a downstream-effectiveness claim in another.
@@ -388,7 +389,7 @@ The project may make claims at three levels:
 | --- | --- | --- |
 | Framework | architecture and framework gate pass | auditable, domain-independent curation interface |
 | Policy | named Policy gates pass in stated scopes | validated operation within those scopes |
-| Downstream | frozen three-seed natural-budget confirmatory pass | retained performance at lower data cost for the tested model/domain/benchmarks |
+| Downstream | frozen three-seed natural-token confirmatory pass | retained performance at lower data cost for the tested model/domain/benchmarks |
 
 `domain-general` describes the framework interface only after Code, Math, and
 General inputs execute through the same contracts without domain-specific entry
@@ -407,9 +408,10 @@ the removed records were universally low Quality.
 
 ## 14. Abstention and Failure Semantics
 
-The runtime must abstain and retain when evidence is missing, provider identity
+The Quality gate must not select when evidence is missing, provider identity
 does not match calibration, routing is unsupported, uncertainty crosses the
-decision boundary, or required trace fields are absent.
+decision boundary, or required trace fields are absent. Coverage may restore a
+unit only through its explicit veto and complete recheck.
 
 The run must fail closed before materialization when configuration hashes do not
 match, profile monotonicity is violated, a removal family has no explained
@@ -427,7 +429,7 @@ Every released run must include:
 - input manifest and stable corpus fingerprint;
 - Stage-A baseline manifest;
 - Normal and Hard curated JSONL outputs;
-- selected, removed, quarantined, transformed-span, and representative-link
+- selected, not-selected, quarantined, transformed-span, and representative-link
   traces;
 - reason-code counts and exact tokenizer token deltas;
 - Core, route, script/language, format, and family Coverage reports;
@@ -443,8 +445,9 @@ The following decisions may not drift during implementation:
 
 1. The public Cores are Validity, Redundancy, Quality, and Coverage.
 2. The hierarchy is Core-Metric-Policy-Method.
-3. Stage A is the Validity hard gate, Stage B owns Redundancy and Quality
-   proposals, and Stage C owns Coverage and final materialization.
+3. Stage A is the Validity hard gate, Stage B owns Redundancy removal and
+   positive Quality selection, and Stage C owns Coverage and final
+   materialization.
 4. Quality is conditional learning contribution, not intrinsic document merit.
 5. Coverage preserves explainable support and has veto authority, not quota or
    Quality authority.

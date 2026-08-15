@@ -1,6 +1,6 @@
 # Formal Definition of Quality and Coverage
 
-Status: implementation contract v3, 2026-08-05
+Status: implementation contract v4, 2026-08-08
 
 This document defines the two Cores that must not be inferred from their names.
 It separates the scientific target, runtime-observable evidence, and decision
@@ -10,8 +10,11 @@ observable or justify a runtime threshold.
 ## 1. Shared Boundary
 
 Let `V` be the valid, chunked corpus after Stage A and the Stage-B hard gate.
-Let `C` be the final materialized corpus. Curation may remove a whole chunk,
-retain one representative of a redundancy family, or remove a separable span.
+Let `C` be the final materialized corpus. Curation may quarantine an invalid
+unit, remove a nonrepresentative redundancy-family member, decline to select a
+chunk that lacks positive Quality support, or retain a Coverage representative.
+For Hard, a Coverage representative must also belong to the final Normal
+retained set; a Hard-only restoration is forbidden.
 
 The runtime may read text, stable identifiers, normalized structural evidence,
 and explicitly declared metadata authorized by a policy card. It may not read
@@ -44,39 +47,46 @@ The four coordinates are fixed:
    entities, operations, claims, conditions, or outcomes.
 
 A Policy fails only on its named closed boundary. Missing external knowledge,
-undeclared execution assumptions, missing context, or specialized notation
-produce `abstain`, not deletion. The runtime never averages the four decisions.
-External natural-budget training and benchmarks evaluate a frozen Policy after
-curation and are not part of `QualityEvidence(x)`.
+undeclared execution assumptions, missing context, specialized notation,
+low-confidence output, or out-of-distribution input produces `abstain` and
+therefore supplies no positive retention evidence. The runtime never averages
+or weights the four decisions. External natural-token training and benchmarks
+evaluate a frozen Policy after curation and are not part of
+`QualityEvidence(x)`.
 
 ### 2.2 Runtime meaning
 
 Q1 first consumes typed declared-verifier evidence when available. A versioned
 verifier identity, binary result, and evidence SHA-256 are required; its result
-is authoritative and bypasses teacher generation. Without that evidence, three
-frozen teacher organizations evaluate Q1. Q2-Q4 always use those teachers. A
-first-pass 3-of-3 decision is accepted. A 2-of-3 result is accepted only when a
-blinded second pass preserves the decision and at least two of the same
-teachers. Invalid output and teacher unavailability abstain.
+is authoritative and bypasses model judgment. Otherwise, GPT-5.6 Luna supplies
+offline Q1-Q4 calibration labels through the Batch API. Those labels train one
+frozen local four-head ranker; the external teacher never reads the full corpus
+and has no runtime membership authority.
 
-Normal and Hard use identical Policy semantics:
+For chunk `x`, let `P(x)` be the set of confident in-distribution heads whose
+decision is `pass`, and let `F_m(x)` be the set of qualified fails under mode
+`m`. The unweighted selection rule is:
 
-| Mode | Stage-B removal proposal |
-|---|---|
-| Normal | At least one Policy has a first-pass unanimous FAIL |
-| Hard | At least one Policy has a unanimous FAIL or stable repeated 2-of-3 FAIL |
+```text
+Select_Normal(x) = 1[|P(x)| >= 1 and |F_Normal(x)| = 0]
+Select_Hard(x)   = 1[|P(x)| >= 2 and |F_Hard(x)| = 0]
+```
 
-All other outcomes retain. Stage C may veto a removal to preserve Coverage.
-Teacher output has no authority before the fixture and false-removal gates pass.
+Normal and Hard use the same Q1-Q4 Policy family and differ only in the frozen
+operating point. A qualified fail always blocks Stage-B selection. `abstain`,
+OOD, low confidence, and missing evidence do not count as passes. Stage C may
+restore a non-selected chunk only through an explicit Coverage veto followed by
+complete rematerialization and recheck.
+
 Shortness, perplexity, source reputation, lexical diversity, weighted formulas,
 Utility, NLL, benchmarks, domain quotas, and token budgets are not Policy inputs.
 
 ### 2.3 Measurement output
 
-The framework reports the four Policy decisions, teacher votes, closed reason
-codes, blinded-pass stability, model identities, response hashes, transport
-status, and Coverage outcome. This auditable vector is the Quality measurement.
-No `overall_quality_score` is produced.
+The framework reports all four class-probability vectors, discrete Policy
+decisions, confidence and OOD state, passed and failed Policy IDs, required pass
+count, frozen ranker identity, reason code, and Coverage outcome. This auditable
+vector is the Quality measurement. No `overall_quality_score` is produced.
 
 ### 2.4 Quality validation gate
 
@@ -86,17 +96,16 @@ A Quality rule becomes enabled only after all of the following pass:
 2. positive, false-positive, adversarial, and clean-corpus fixtures;
 3. reason code, policy hash, original-text hash, and token-delta trace;
 4. exact expected behavior on the deterministic 512-task matrix;
-5. at least 800 protected fixtures with a one-sided 95% false-removal upper
-   bound at most 0.5% for Normal or 2.0% for Hard;
+5. disjoint protected observations for each head and explicit error analysis of
+   both false retention and false non-selection;
 6. Coverage invariants and distribution-impact report;
 7. benchmark-disjoint external evaluation of the frozen curation result.
 
-The current implementation provides the complete measurement and qualification
-path, including observation-schema isolation and Q1 verifier precedence, but
-runtime activation remains blocked. The first v2 panel failed the behavior
-prerequisite after two Q2 PASS-to-ABSTAIN mismatches; protected-fixture
-qualification was therefore not run. This negative result does not change the
-Quality definition or authorize a weaker post-hoc gate.
+The current implementation provides the measurement, positive-selection,
+Coverage-veto, and natural-token materialization paths. GPT-5.6 Luna Batch
+observations trained the frozen Code-7M ranker candidate. Its behavior fixtures
+pass, but scientific promotion remains blocked until the new positive operating
+points receive disjoint multidomain and external validation.
 
 ## 3. Coverage
 
@@ -110,7 +119,7 @@ tail stratum without an authorized explanation?" It does not answer: "Is this
 chunk good?" It also does not prescribe a desired Code/Math/General percentage.
 
 Coverage is a corpus-level constraint Core. Redundancy proposes family
-compaction; Quality proposes explicit non-payload removal; Coverage verifies
+compaction; Quality proposes positive membership decisions; Coverage verifies
 that their combined materialization has not produced an orphaned or unexplained
 loss. It has veto-only authority: it may abort materialization or return typed
 `required_retain_uids` for explicit rematerialization and a complete second
@@ -137,7 +146,7 @@ overlapping uncertainty groups. Stage C restores a deterministic representative
 only when a group would otherwise be extinct. Singletons, unknown routing, and
 unsupported tags remain explicitly represented. Embedding similarity alone
 never authorizes deletion. Normal and Hard use exactly the same Coverage
-invariants; their difference remains limited to Stage-B removal proposals and
+invariants; their difference remains limited to Stage-B non-selection proposals and
 span transformations.
 
 ### 3.3 Mandatory runtime invariants
@@ -207,10 +216,14 @@ Coverage_min = min(normalized components of CoverageVector)
 ```
 
 The runtime also emits `composition_audit.json`, `composition_by_route.csv`,
-`composition_by_language.csv`, and `raw_curated_composition_delta.csv`. Primary
-route share is exclusive; route and language/script incidence are multi-label
-and may sum above 100%. These artifacts explain Raw-to-Curated change and are
-never target distributions or selector inputs.
+`composition_by_language.csv`, and `eligible_curated_composition_delta.csv`.
+The comparable delta uses Stage-B eligible chunks and Stage-C curated chunks,
+so both sides share the same chunk unit and immutable chunk IDs. Raw and Stage-A
+record-level composition remains descriptive only. Record-to-chunk deltas and
+divergences are not emitted; those stages are named under
+`excluded_cross_unit_deltas` instead. Primary route share is
+exclusive; route and language/script incidence are multi-label and may sum
+above 100%. These artifacts are never target distributions or selector inputs.
 
 No distributional threshold has runtime veto authority until its taxonomy,
 unknown handling, confidence interval, false-positive fixtures, and development
@@ -224,18 +237,18 @@ audit view.
 
 ### 3.5 Boundary with the other Cores
 
-| Core | Primary question | May delete? | May veto output? |
+| Core | Primary question | May exclude? | May veto output? |
 |---|---|---:|---:|
 | Validity | Is the unit structurally usable under the declared input contract? | Yes, by hard reason | No |
 | Redundancy | Is the information already represented by a linked family member? | Yes, while retaining a representative | No |
-| Quality | Is there promoted evidence of explicit non-payload, or promoted positive retention evidence? | Yes, by named policy | No |
+| Quality | Does the unit meet the positive Q1-Q4 membership gate? | Yes, by reason-coded non-selection | No |
 | Coverage | Did the combined removals create an unexplained support failure? | No | Yes |
 
 ## 4. Stage Placement
 
 1. Stage A applies Validity and quarantines closed observable failures.
 2. Stage B applies Redundancy and promoted Quality Policies to create
-   reason-coded removal proposals.
+   reason-coded non-selection proposals.
 3. Stage C applies Coverage invariants and may veto unexplained support loss
    before writing the curated corpus.
 

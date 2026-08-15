@@ -36,6 +36,38 @@ Do not make two computers append to the same JSONL over a network share. Each wo
 
 Within a suite, one worker should own a complete arm at a time. For example, assign the 3080 Ti the seven base/Raw/Curated artifacts for BigCodeBench; do not split one artifact across machines.
 
+## Google Colab worker
+
+The VS Code Colab worker follows the same ownership rule. It is a generation-only
+worker; all official scoring remains on the primary Windows machine. The frozen
+contract is `protocols/colab_benchmark_worker_v1.json`, and the executable notebook
+is `notebooks/colab_benchmark_worker_v1.ipynb`.
+
+Open `UNLV-Colab.code-workspace`, connect the notebook with `Select Kernel > Colab
+> New Colab Server`, then upload the source bundle and adapter-parts folder from
+`Colab Transfer`:
+
+```text
+colab_worker_source_v1.zip
+adapter_parts_4m/
+```
+
+The adapter archive is split into 379 parts capped at 4 MiB. Runtime evidence
+showed that the Colab Contents API rejected every 24 MiB part with HTTP 400/500,
+while the smaller transfer contract stays below the base64 request limit. The
+notebook reconstructs the archive on Drive and checks its complete SHA-256 before
+extraction.
+
+The notebook copies the archives to Google Drive, verifies source, adapter, and
+benchmark SHA-256 values, downloads the exact Qwen snapshot, and checks all remote
+paths before loading the model. Its initial queue owns only DS-1000 generation for
+Raw seeds 101 and 202. This does not overlap with the local BigCodeBench workers.
+
+Do not compare an arm produced on Colab with local arms until the manifest and
+preflight cells pass. Record the allocated GPU in the notebook output. A Colab
+runtime may disappear, so completed outputs are written under
+`MyDrive/UNLV-Colab-Worker-v1/results`; incomplete `.tmp` files are not scoreable.
+
 ## Preflight and run
 
 Run this before a worker starts generation:

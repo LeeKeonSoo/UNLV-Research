@@ -136,7 +136,7 @@ def materialize_arm(
 
 
 def materialize(contract_path: Path = DEFAULT_CONTRACT) -> dict[str, object]:
-    """Materialize both frozen v3 arms and write their audited input report."""
+    """Materialize every frozen natural-token arm and write its audited report."""
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
     if contract["status"] != "frozen_before_tokenizer_materialization":
         raise RuntimeError("Materialization contract is not in its frozen pre-run state")
@@ -174,6 +174,7 @@ def materialize(contract_path: Path = DEFAULT_CONTRACT) -> dict[str, object]:
             "utility_read": False,
             "benchmark_outcomes_read": False,
             "target_token_fraction_read": False,
+            "equal_token_resampling": False,
         },
         "claim_boundary": contract["claim_boundary"],
     }

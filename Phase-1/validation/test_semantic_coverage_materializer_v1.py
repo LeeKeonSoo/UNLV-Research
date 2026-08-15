@@ -78,11 +78,21 @@ def test_stage_c_restores_only_an_extinct_support_representative() -> None:
         final, audit = materialize_semantic_coverage(
             universe=rows,
             proposed_survivors=(rows[2],),
-            removal_proposals=(),
+            non_selection_proposals=(
+                {
+                    "chunk_uid": "b",
+                    "stage_b_policy": {
+                        "family_id": "redundancy-family-a-b",
+                        "evidence_sha256": "4" * 64,
+                        "representative_chunk_uid": "a",
+                    },
+                },
+            ),
             corpus_path=corpus,
             graph_path=graph,
             provider=provider,
             execution_scope=CoverageExecutionScope.CONFIRMATORY,
+            restoration_candidate_uids=frozenset({"b", "c"}),
             representative_families=(
                 RepresentativeFamily(
                     family_id="redundancy-family-a-b",
@@ -93,14 +103,16 @@ def test_stage_c_restores_only_an_extinct_support_representative() -> None:
             ),
         )
 
-    assert {row["chunk_uid"] for row in final} == {"a", "c"}
-    assert audit["required_retain_uids"] == ["a"]
+    assert {row["chunk_uid"] for row in final} == {"b", "c"}
+    assert audit["required_retain_uids"] == ["b"]
+    assert audit["restoration_ceiling_applied"] is True
     assert audit["complete_recheck_passed"] is True
     assert audit["may_create_new_removal"] is False
     assert audit["execution_scope"] == "confirmatory"
     assert audit["provider_id"] == provider.provider_id
     assert audit["scientific_promotion_claimed"] is False
     assert audit["explicit_representative_families_consumed"] == 1
+    assert audit["families_outside_restoration_ceiling"] == []
 
 
 def test_semantic_artifact_preflight_fails_before_expensive_policy_work() -> None:

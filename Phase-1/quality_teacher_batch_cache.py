@@ -83,9 +83,8 @@ class TeacherBatchEvidenceStore:
         return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
     def _path(self, teacher: TeacherSpec, pass_index: Literal[1, 2], cache_key: str) -> Path:
-        safe_id = re.sub(r"[^A-Za-z0-9_.-]+", "_", teacher.teacher_id).strip("._")
         teacher_digest = hashlib.sha256(teacher.teacher_id.encode("utf-8")).hexdigest()[:12]
-        return self._root / f"{safe_id}-{teacher_digest}" / f"pass-{pass_index}" / f"{cache_key}.json"
+        return self._root / teacher_digest / f"p{pass_index}" / f"{cache_key}.json"
 
     def get(
         self,

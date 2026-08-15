@@ -8,8 +8,8 @@
     "required_status": "benchmark_exclusion_complete"
   },
   "curation": {
-    "normal_config": "configs/code_7m_all_policy_final_normal_v1.json",
-    "hard_config": "configs/code_7m_all_policy_final_hard_v1.json",
+    "normal_config": "configs/code_7m_luna_final_normal_v1.json",
+    "hard_config": "configs/code_7m_luna_final_hard_v1.json",
     "policy_boundary": "Hard is confirmatory-only and must not be used for production curation before external results are frozen."
   },
   "training": {
@@ -17,7 +17,7 @@
     "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
     "arms": ["raw_audited_natural", "normal_natural", "hard_natural"],
     "seeds": [101, 202, 303],
-    "budget": "natural_dataset_budget_per_arm",
+    "budget": "one_complete_natural_dataset_pass_per_arm_no_equal_token_resampling",
     "sequence_length": 2048,
     "micro_batch_size": 1,
     "gradient_accumulation_steps": 8,
@@ -29,6 +29,6 @@
   },
   "primary_benchmarks": ["humanevalplus", "mbppplus", "bigcodebench_complete", "cruxeval_input_prediction", "cruxeval_output_prediction", "ds1000"],
   "blocked_benchmarks": ["livecodebench_code_generation_lite"],
-  "selector_boundary": {"utility_read": false, "benchmark_outcomes_read": false, "target_token_fraction_read": false},
+  "selector_boundary": {"utility_read": false, "benchmark_outcomes_read": false, "target_token_fraction_read": false, "equal_token_resampling": false},
   "claim_boundary": "This protocol evaluates frozen policy outputs on one benchmark-disjoint Code corpus. It cannot establish universal quality, domain-general downstream effectiveness, or production readiness before results are analyzed."
 }

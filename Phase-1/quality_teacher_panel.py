@@ -14,6 +14,7 @@ class PanelContractError(RuntimeError):
 
 class TeacherLocation(str, Enum):
     NVIDIA_BUILD = "nvidia_build"
+    OPENAI = "openai"
     LOCAL = "local"
 
 
@@ -29,6 +30,12 @@ class PanelDecision(str, Enum):
     ABSTAIN = "abstain"
 
 
+AggregationStrategy = Literal[
+    "three_teacher_stable_majority",
+    "single_teacher_confirmed_fail",
+]
+
+
 PolicyReasonCode = Annotated[
     str,
     StringConstraints(min_length=1, max_length=64, pattern=r"^[a-z][a-z0-9_]*$"),
@@ -38,6 +45,7 @@ ReasoningControl = Literal[
     "enable_thinking_false",
     "thinking_false",
     "reasoning_effort_none",
+    "reasoning_effort_low",
 ]
 
 
@@ -87,6 +95,7 @@ class TeacherSpec(BaseModel):
     request_timeout_seconds: int | None = Field(default=None, gt=0, le=900)
     maximum_transport_retries: int | None = Field(default=None, ge=0, le=2)
     maximum_concurrent_requests: int | None = Field(default=None, ge=1, le=16)
+    maximum_units_per_request: int | None = Field(default=None, ge=1, le=16)
     structured_output_mode: Literal["json_object"] | None
     temperature: float = Field(default=0.0, ge=0.0, le=2.0)
     top_p: float = Field(default=1.0, gt=0.0, le=1.0)
@@ -95,17 +104,17 @@ class TeacherSpec(BaseModel):
     @model_validator(mode="after")
     def validate_location_contract(self) -> "TeacherSpec":
         match self.location:
-            case TeacherLocation.NVIDIA_BUILD:
+            case TeacherLocation.NVIDIA_BUILD | TeacherLocation.OPENAI:
                 if self.endpoint_base_url is None or self.api_key_environment_variable is None:
-                    raise PanelContractError("NVIDIA Build teachers require endpoint and API-key variable")
+                    raise PanelContractError("Hosted teachers require endpoint and API-key variable")
                 if self.inference_precision != "endpoint_managed":
-                    raise PanelContractError("NVIDIA Build teachers must use endpoint-managed precision")
+                    raise PanelContractError("Hosted teachers must use endpoint-managed precision")
                 if (
                     self.request_timeout_seconds is None
                     or self.maximum_transport_retries is None
                     or self.structured_output_mode is None
                 ):
-                    raise PanelContractError("NVIDIA Build teachers require frozen transport controls")
+                    raise PanelContractError("Hosted teachers require frozen transport controls")
             case TeacherLocation.LOCAL:
                 if self.endpoint_base_url is not None or self.api_key_environment_variable is not None:
                     raise PanelContractError("Local teachers cannot declare a hosted endpoint or API key")
@@ -115,6 +124,7 @@ class TeacherSpec(BaseModel):
                     self.request_timeout_seconds is not None
                     or self.maximum_transport_retries is not None
                     or self.maximum_concurrent_requests is not None
+                    or self.maximum_units_per_request is not None
                     or self.structured_output_mode is not None
                 ):
                     raise PanelContractError("Local teachers cannot declare hosted transport controls")
@@ -174,9 +184,19 @@ class ResponseContract(BaseModel):
 class TeacherPanel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    schema_version: Literal["quality-teacher-panel-v1", "quality-teacher-panel-v2"]
-    lifecycle: Literal["candidate_qualification", "runtime_experiment_quality_deletion"]
+    schema_version: Literal[
+        "quality-teacher-panel-v1",
+        "quality-teacher-panel-v2",
+        "quality-teacher-panel-v3",
+    ]
+    lifecycle: Literal[
+        "candidate_qualification",
+        "runtime_experiment_quality_deletion",
+        "calibration_oracle",
+        "single_teacher_calibration_oracle",
+    ]
     runtime_activation: bool
+    aggregation_strategy: AggregationStrategy = "three_teacher_stable_majority"
     transport_mode: Literal[
         "single_policy_request",
         "all_policies_per_unit_request",
@@ -187,7 +207,7 @@ class TeacherPanel(BaseModel):
     initial_language_scope: tuple[Literal["english"], ...]
     allowed_external_data: tuple[Literal["public_license_compatible_calibration_samples"], ...]
     forbidden_inputs: tuple[str, ...]
-    teachers: tuple[TeacherSpec, TeacherSpec, TeacherSpec]
+    teachers: tuple[TeacherSpec, ...] = Field(min_length=1, max_length=3)
     policies: tuple[QualityPolicy, QualityPolicy, QualityPolicy, QualityPolicy]
     response_contract: ResponseContract
     fixture_matrix: FixtureMatrix
@@ -195,13 +215,19 @@ class TeacherPanel(BaseModel):
 
     @model_validator(mode="after")
     def validate_panel(self) -> "TeacherPanel":
-        expected_activation = self.lifecycle == "runtime_experiment_quality_deletion"
+        expected_activation = self.lifecycle in {
+            "runtime_experiment_quality_deletion",
+            "calibration_oracle",
+            "single_teacher_calibration_oracle",
+        }
         if self.runtime_activation is not expected_activation:
             raise PanelContractError(
                 "Panel lifecycle and runtime_activation must change together"
             )
-        if self.lifecycle == "runtime_experiment_quality_deletion" and self.schema_version != "quality-teacher-panel-v2":
-            raise PanelContractError("Only the frozen v2 hosted panel may be runtime-active")
+        if self.lifecycle in {"runtime_experiment_quality_deletion", "calibration_oracle"} and self.schema_version != "quality-teacher-panel-v2":
+            raise PanelContractError("The three-teacher runtime lifecycle requires panel v2")
+        if self.lifecycle == "single_teacher_calibration_oracle" and self.schema_version != "quality-teacher-panel-v3":
+            raise PanelContractError("The single-teacher calibration lifecycle requires panel v3")
         if self.runtime_activation and self.transport_mode != "all_policies_per_unit_request":
             raise PanelContractError("Runtime Quality deletion requires combined Q1-Q4 transport")
         if self.runtime_activation and self.unit_batch_size not in {4, 8, 16}:
@@ -209,14 +235,16 @@ class TeacherPanel(BaseModel):
                 "Runtime Quality deletion requires a frozen 4, 8, or 16-unit batch"
             )
         if self.runtime_activation and any(
-            teacher.maximum_concurrent_requests is None for teacher in self.teachers
+            teacher.maximum_concurrent_requests is None
+            or teacher.maximum_units_per_request is None
+            for teacher in self.teachers
         ):
             raise PanelContractError(
-                "Runtime Quality deletion requires provider concurrency limits"
+                "Runtime Quality deletion requires provider concurrency and unit-batch limits"
             )
-        if len({teacher.teacher_id for teacher in self.teachers}) != 3:
+        if len({teacher.teacher_id for teacher in self.teachers}) != len(self.teachers):
             raise PanelContractError("Teacher IDs must be unique")
-        if len({teacher.organization for teacher in self.teachers}) != 3:
+        if len({teacher.organization for teacher in self.teachers}) != len(self.teachers):
             raise PanelContractError("Teacher organizations must be independent")
         locations = Counter(teacher.location for teacher in self.teachers)
         match self.schema_version:
@@ -226,12 +254,31 @@ class TeacherPanel(BaseModel):
                 )
             case "quality-teacher-panel-v2":
                 expected_locations = Counter({TeacherLocation.NVIDIA_BUILD: 3})
+            case "quality-teacher-panel-v3":
+                if locations not in (
+                    Counter({TeacherLocation.NVIDIA_BUILD: 1}),
+                    Counter({TeacherLocation.OPENAI: 1}),
+                ):
+                    raise PanelContractError(
+                        "Panel v3 requires one hosted NVIDIA Build or OpenAI teacher"
+                    )
+                expected_locations = locations
             case unreachable:
                 assert_never(unreachable)
         if locations != expected_locations:
             raise PanelContractError(
                 f"{self.schema_version} has an invalid teacher-location topology"
             )
+        if self.schema_version in {"quality-teacher-panel-v1", "quality-teacher-panel-v2"}:
+            if self.aggregation_strategy != "three_teacher_stable_majority":
+                raise PanelContractError("Three-teacher panels require stable-majority aggregation")
+            if len(self.teachers) != 3:
+                raise PanelContractError("Three-teacher panels require exactly three teachers")
+        if self.schema_version == "quality-teacher-panel-v3":
+            if self.aggregation_strategy != "single_teacher_confirmed_fail":
+                raise PanelContractError("Panel v3 requires confirmed-fail aggregation")
+            if len(self.teachers) != 1:
+                raise PanelContractError("Panel v3 requires exactly one teacher")
         expected_policies = {
             "q1_correctness_evidence",
             "q2_semantic_coherence",
@@ -291,3 +338,35 @@ def decide_panel(
     if second_decision is first_decision and len(stable_supporters) >= 2:
         return PanelDecision(first_decision.value)
     return PanelDecision.ABSTAIN
+
+
+def decide_single_teacher(
+    first_pass: tuple[TeacherVote, ...],
+    second_pass: tuple[TeacherVote, ...] | None,
+) -> PanelDecision:
+    if len(first_pass) != 1:
+        raise PanelContractError("Single-teacher aggregation requires exactly one first-pass vote")
+    first = first_pass[0]
+    match first.decision:
+        case PolicyDecision.PASS:
+            return PanelDecision.PASS
+        case PolicyDecision.ABSTAIN:
+            return PanelDecision.ABSTAIN
+        case PolicyDecision.FAIL:
+            if second_pass is None:
+                return PanelDecision.ABSTAIN
+            if len(second_pass) != 1:
+                raise PanelContractError(
+                    "Single-teacher aggregation requires exactly one second-pass vote"
+                )
+            second = second_pass[0]
+            if first.teacher_id != second.teacher_id or first.policy_id != second.policy_id:
+                raise PanelContractError(
+                    "Single-teacher blinded repetition must preserve teacher and policy identity"
+                )
+            repeated_reason = set(first.reason_codes) & set(second.reason_codes)
+            if second.decision is PolicyDecision.FAIL and repeated_reason:
+                return PanelDecision.FAIL
+            return PanelDecision.ABSTAIN
+        case unreachable:
+            assert_never(unreachable)

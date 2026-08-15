@@ -35,8 +35,13 @@ from ingestion.candidate_processing import process_candidate
 from ingestion.input_adapter import adapt_raw_records
 from model_provider_contract import load_provider_registry
 from quality_rule_evidence import CANDIDATE_QUALITY_RULE_KEYS
-from quality_operating_points import CurationMode
-from quality_teacher_materialization import score_quality_rows
+from quality_operating_points import CurationMode, required_quality_pass_count
+from quality_runtime_dispatch import (
+    DistilledRuntimeConfig,
+    QualityRuntimeRequest,
+    TeacherOracleConfig,
+    score_quality_runtime,
+)
 from reason_code_audit import build_reason_code_impact_audit
 from redundancy_equivalence import RedundancyMode
 from redundancy_checkpoint import load_or_build_redundancy
@@ -60,8 +65,13 @@ STAGE_B_POLICY_REASON_CODES = {
             "redundancy_contained_payload_nonrepresentative",
         }
     ),
-    "stage_b_quality_teacher_panel_v2": frozenset(
-        {"quality_normal_unanimous_fail", "quality_hard_stable_majority_fail"}
+    "stage_b_quality_distilled_ranker_v1": frozenset(
+        {
+            "quality_normal_qualified_fail",
+            "quality_hard_qualified_fail",
+            "quality_normal_retention_threshold_not_met",
+            "quality_hard_retention_threshold_not_met",
+        }
     ),
     **STAGE_B_STRUCTURAL_POLICY_REASON_CODES,
 }
@@ -71,7 +81,8 @@ POLICY_FINGERPRINT_CONFIGS = (
     "configs/framework_objects_v1.json",
     "configs/framework_profiles_v1.json",
     "configs/framework_runtime_bridge_v1.json",
-    "configs/quality_teacher_panel_v2.json",
+    "configs/quality_teacher_luna_single_v1.json",
+    "configs/quality_ranker_v1.json",
     "configs/redundancy_v2.json",
     "configs/curation_contract.json",
     "configs/core_policy_registry.json",
@@ -145,6 +156,12 @@ POLICY_FINGERPRINT_RUNTIME_MODULES = (
     "quality_teacher_unit_runtime.py",
     "quality_teacher_batch_runtime.py",
     "quality_teacher_adapters.py",
+    "quality_ranker_artifact.py",
+    "quality_ranker_policy.py",
+    "quality_ranker_runtime.py",
+    "quality_operating_points.py",
+    "quality_stage_bridge.py",
+    "quality_runtime_dispatch.py",
     "quality_retention.py",
     "reason_code_audit.py",
     "redundancy_checkpoint.py",
@@ -235,6 +252,17 @@ def validate_run_policy_overrides(config: JsonMap, effective_policy: JsonMap) ->
         raise RuntimeError("Immutable profile is missing Stage-B policy.")
     if not isinstance(effective_policy.get("stage_b_policy"), dict):
         raise RuntimeError("Immutable profile is missing Stage-B removal policy.")
+    quality_runtime = effective_policy.get("quality_runtime")
+    if not isinstance(quality_runtime, dict):
+        raise RuntimeError("Immutable profile is missing the Quality runtime policy.")
+    operating_point = CurationMode(str(quality_runtime.get("operating_point")))
+    declared_pass_count = quality_runtime.get("minimum_passed_policies")
+    expected_pass_count = required_quality_pass_count(operating_point)
+    if declared_pass_count != expected_pass_count:
+        raise RuntimeError(
+            "Immutable profile Quality retention threshold differs from the frozen "
+            f"operating point: expected {expected_pass_count}, observed {declared_pass_count}"
+        )
     coverage = effective_policy.get("coverage")
     if not isinstance(coverage, dict) or coverage.get("enforce_materialization_invariants") is not True:
         raise RuntimeError("Immutable profile must enforce Coverage materialization invariants.")
@@ -511,14 +539,31 @@ def _coverage_impact_audit(
         "url_directory_only_chunk",
     }
 
-    def is_authorized_terminal_removal(row: JsonMap) -> bool:
+    def is_authorized_terminal_non_selection(row: JsonMap) -> bool:
         selection = row.get("stage_b_policy")
         if not isinstance(selection, dict):
             return False
         if selection.get("removed_reason") in explicit_non_payload_reasons:
             return True
         failed_policy_ids = selection.get("failed_policy_ids")
-        return isinstance(failed_policy_ids, list) and bool(failed_policy_ids)
+        if isinstance(failed_policy_ids, list) and bool(failed_policy_ids):
+            return True
+        quality_decision = row.get("quality_stage_decision")
+        if not isinstance(quality_decision, dict):
+            return False
+        passed_policy_ids = quality_decision.get("passed_policy_ids")
+        required_pass_count = quality_decision.get("required_pass_count")
+        return (
+            quality_decision.get("stage_b_action") == "not_select"
+            and quality_decision.get("stage_b_reason_code")
+            in {
+                "quality_normal_retention_threshold_not_met",
+                "quality_hard_retention_threshold_not_met",
+            }
+            and isinstance(passed_policy_ids, list)
+            and isinstance(required_pass_count, int)
+            and len(passed_policy_ids) < required_pass_count
+        )
 
     def resolve_representative_chain(representative: str) -> tuple[str, list[str], str | None]:
         chain: list[str] = []
@@ -538,7 +583,7 @@ def _coverage_impact_audit(
             if not isinstance(selection, dict):
                 return "missing", chain, None
             reason = str(selection.get("removed_reason"))
-            if is_authorized_terminal_removal(removed_row):
+            if is_authorized_terminal_non_selection(removed_row):
                 return "non_payload", chain, current
             next_representative = selection.get("representative_chunk_uid")
             if not isinstance(next_representative, str) or not next_representative:
@@ -592,7 +637,7 @@ def _coverage_impact_audit(
         has_curated_chunk = record_id in selected_by_record
         all_rows_explained = all(
             (
-                is_authorized_terminal_removal(row)
+                is_authorized_terminal_non_selection(row)
                 or (
                     isinstance(row["stage_b_policy"].get("representative_chunk_uid"), str)
                     and resolve_representative_chain(
@@ -678,12 +723,14 @@ def _coverage_impact_audit(
             "passed": not unexplained_interactions,
         },
         "passed": invariant_passed,
-        "stage_c_delta_from_raw": composition_audit["delta_from_raw"]["stage_c_curated"],
+        "stage_c_delta_from_eligible_chunks": composition_audit[
+            "delta_from_stage_b_pass"
+        ]["stage_c_curated"],
         "claim_boundary": "Audits structural retention effects, representative linkage, and explainable zero-survivor outcomes; it never enforces or restores a target composition.",
     }
 
 
-def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> JsonMap:
+def materialize(config_path: Path, *, quality_scorer=None) -> JsonMap:
     root = Path(__file__).resolve().parent
     foundation = load_runtime_foundation(root)
     stage_tickets: list[RuntimeStageTicket] = []
@@ -822,10 +869,17 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     )
     semantic_settings = stage_c_settings.get("semantic_coverage")
     semantic_provider = None
+    restoration_candidate_uids: frozenset[str] | None = None
     semantic_artifact_preflight: JsonMap = {
         "status": "deterministic_lineage_guard_only"
     }
     if isinstance(semantic_settings, dict):
+        parent_retained_path = semantic_settings.get("parent_retained_path")
+        if isinstance(parent_retained_path, str) and parent_retained_path.strip():
+            parent_rows = _read_jsonl((Path(parent_retained_path),))
+            restoration_candidate_uids = frozenset(
+                str(row["chunk_uid"]) for row in parent_rows
+            )
         registry_path = Path(str(semantic_settings["provider_registry_path"]))
         registry = load_provider_registry(registry_path)
         provider_id = str(semantic_settings["provider_id"])
@@ -851,17 +905,52 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         checkpoint_path=redundancy_checkpoint_path,
     )
     redundancy_result = checkpointed_redundancy.result
-    panel_path = Path(str(effective_policy["quality_teacher"]["panel"]))
+    panel_path = Path(str(effective_policy["quality_runtime"]["oracle_panel"]))
     if not panel_path.is_absolute():
         panel_path = root / panel_path
     dotenv_path = Path(str(quality_runtime.get("dotenv_path") or root.parent / ".env"))
-    quality_results, quality_scoring_audit = quality_scorer(
-        list(redundancy_result.survivors),
-        panel_path=panel_path,
-        dotenv_path=dotenv_path,
-        cache_path=quality_cache_path,
-        task_workers=int(quality_runtime.get("task_workers") or 8),
-    )
+    if quality_scorer is not None:
+        quality_results, quality_scoring_audit = quality_scorer(
+            list(redundancy_result.survivors),
+            panel_path=panel_path,
+            dotenv_path=dotenv_path,
+            cache_path=quality_cache_path,
+            task_workers=int(quality_runtime.get("task_workers") or 8),
+        )
+    else:
+        method = str(quality_runtime.get("method") or "")
+        if method != "distilled_quality_ranker_v1":
+            raise RuntimeError(
+                "Curation runtime requires quality_runtime.method=distilled_quality_ranker_v1; "
+                "the Teacher panel is calibration/oracle-only"
+            )
+        embedding_manifest_path = Path(str(quality_runtime["embedding_manifest_path"]))
+        ranker_manifest_path = Path(str(quality_runtime["ranker_manifest_path"]))
+        if not embedding_manifest_path.is_absolute():
+            embedding_manifest_path = root / embedding_manifest_path
+        if not ranker_manifest_path.is_absolute():
+            ranker_manifest_path = root / ranker_manifest_path
+        quality_results, quality_scoring_audit = score_quality_runtime(
+            QualityRuntimeRequest(
+                rows=tuple(redundancy_result.survivors),
+                distilled=DistilledRuntimeConfig(
+                    embedding_manifest_path=embedding_manifest_path,
+                    ranker_manifest_path=ranker_manifest_path,
+                    oracle_fallback_enabled=bool(
+                        quality_runtime.get("oracle_fallback_enabled", True)
+                    ),
+                    maximum_oracle_fraction=float(
+                        quality_runtime.get("maximum_oracle_fraction", 0.05)
+                    ),
+                ),
+                teacher=TeacherOracleConfig(
+                    panel_path=panel_path,
+                    dotenv_path=dotenv_path,
+                    cache_path=quality_cache_path,
+                    task_workers=int(quality_runtime.get("task_workers") or 8),
+                ),
+            )
+        )
     quality_result = apply_quality_policy(
         redundancy_result.survivors,
         results_by_chunk=quality_results,
@@ -871,7 +960,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     not_selected = [
         *structural_not_selected,
         *redundancy_result.removals,
-        *quality_result.removals,
+        *quality_result.not_selected,
     ]
     stage_b_proposed_survivors = [dict(row) for row in selected]
     stage_b_materialization_universe = _stage_b_materialization_universe(
@@ -885,7 +974,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
                 core_id=CoreId.COVERAGE,
                 supplied_categories=(
                     "stage_b_survivors",
-                    "typed_removal_proposals",
+                    "typed_non_selection_proposals",
                     "representative_links",
                     "prior_stage_reason_codes",
                 ),
@@ -904,11 +993,12 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         selected, semantic_coverage_audit = materialize_semantic_coverage(
             universe=stage_b_materialization_universe,
             proposed_survivors=tuple(selected),
-            removal_proposals=tuple(not_selected),
+            non_selection_proposals=tuple(not_selected),
             corpus_path=Path(str(semantic_settings["corpus_path"])),
             graph_path=Path(str(semantic_settings["graph_path"])),
             provider=semantic_provider,
             execution_scope=CoverageExecutionScope(execution_scope),
+            restoration_candidate_uids=restoration_candidate_uids,
             representative_families=coverage_families_from_redundancy_plan(
                 redundancy_result.plan
             ),
@@ -927,7 +1017,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         "stage_b_pass": output_dir / "stage_b_pass_chunks.jsonl",
         "stage_b_rejected": output_dir / "stage_b_rejected_chunks.jsonl",
         "stage_b_proposed_survivors": output_dir / "stage_b_proposed_survivors.jsonl",
-        "stage_b_removal_proposals": output_dir / "stage_b_removal_proposals.jsonl",
+        "stage_b_non_selection_proposals": output_dir / "stage_b_non_selection_proposals.jsonl",
         "stage_c_not_selected": output_dir / "stage_c_not_selected_chunks.jsonl",
         "stage_c_curated": output_dir / "stage_c_curated_chunks.jsonl",
         "stage_b_quality_candidate_transformations": output_dir / "stage_b_quality_candidate_transformations.jsonl",
@@ -937,7 +1027,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     _write_jsonl(paths["stage_b_pass"], passed)
     _write_jsonl(paths["stage_b_rejected"], rejected)
     _write_jsonl(paths["stage_b_proposed_survivors"], stage_b_proposed_survivors)
-    _write_jsonl(paths["stage_b_removal_proposals"], not_selected)
+    _write_jsonl(paths["stage_b_non_selection_proposals"], not_selected)
     _write_jsonl(paths["stage_c_not_selected"], final_not_selected)
     _write_jsonl(paths["stage_c_curated"], selected)
     _write_jsonl(paths["stage_b_quality_candidate_transformations"], quality_candidate_transformations)
@@ -955,11 +1045,11 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
     explanatory_composition = build_composition_artifacts(
         tuple(
             CompositionRecord(
-                str(row.get("candidate_id") or f"raw-{index}"),
+                str(row.get("chunk_uid") or f"eligible-{index}"),
                 str(row.get("text") or ""),
                 int(row.get("token_proxy") or len(str(row.get("text") or "").split())),
             )
-            for index, row in enumerate(candidates)
+            for index, row in enumerate(passed)
         ),
         tuple(
             CompositionRecord(
@@ -978,7 +1068,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
             "composition_audit_json": composition_paths.audit_json,
             "composition_by_route_csv": composition_paths.route_csv,
             "composition_by_language_csv": composition_paths.language_csv,
-            "raw_curated_composition_delta_csv": composition_paths.delta_csv,
+            "eligible_curated_composition_delta_csv": composition_paths.delta_csv,
         }
     )
     stage_a_role = (
@@ -1002,7 +1092,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
         "status": "curation_materialization_complete",
         "stage_contract": {
             "stage_a": stage_a_role,
-            "stage_b": "redundancy_and_quality_removal_proposals",
+            "stage_b": "redundancy_removal_and_positive_quality_selection",
             "stage_c": "coverage_veto_and_final_materialization",
             "external_evaluation": "not_started",
         },
@@ -1041,7 +1131,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
                 )
             ),
             "stage_b_redundancy_v2_removed_chunks": len(redundancy_result.removals),
-            "stage_b_quality_teacher_removed_chunks": len(quality_result.removals),
+            "stage_b_quality_not_selected_chunks": len(quality_result.not_selected),
             "stage_b_structural_scaffold_removed_chunks": int(selection_audit["structural_scaffold_removed_chunks"]),
             "stage_b_explicit_generated_artifact_removed_chunks": int(selection_audit["explicit_generated_artifact_removed_chunks"]),
             "stage_b_license_comment_only_removed_chunks": int(selection_audit["license_comment_only_removed_chunks"]),
@@ -1051,9 +1141,12 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
                 selection_audit["quality_retention"]["decision_counts"]["reject"]
             ),
             "stage_b_positive_quality_kept_chunks": int(
+                quality_result.audit["chunks_meeting_retention_threshold"]
+            ),
+            "stage_b_all_quality_policies_passed_chunks": int(
                 quality_result.audit["chunks_with_all_policy_pass"]
             ),
-            "stage_b_quality_abstain_retained_chunks": int(
+            "stage_b_quality_chunks_with_any_abstain": int(
                 quality_result.audit["chunks_with_any_abstain"]
             ),
             "stage_b_quality_candidate_span_transformations": len(quality_candidate_transformations),
@@ -1068,7 +1161,9 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
             "authority": explanatory_composition.authority,
             "consumed_by_selection": explanatory_composition.consumed_by_selection,
             "target_distribution_enforced": explanatory_composition.target_distribution_enforced,
-            "raw_tokens": explanatory_composition.raw_tokens,
+            "baseline_stage": explanatory_composition.baseline_stage,
+            "comparison_unit": explanatory_composition.comparison_unit,
+            "eligible_tokens": explanatory_composition.eligible_tokens,
             "curated_tokens": explanatory_composition.curated_tokens,
         },
         "reason_code_impact_audit": build_reason_code_impact_audit(
@@ -1094,7 +1189,7 @@ def materialize(config_path: Path, *, quality_scorer=score_quality_rows) -> Json
             "identity_sha256": checkpointed_redundancy.identity_sha256,
             "checkpoint_path": checkpointed_redundancy.checkpoint_path,
         },
-        "stage_b_quality_teacher": quality_result.audit,
+        "stage_b_quality": quality_result.audit,
         "quality_scoring": quality_scoring_audit,
         "stage_c_coverage": semantic_coverage_audit,
         "quality_candidate_runtime_audit": quality_candidate_runtime_audit,

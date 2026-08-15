@@ -10,6 +10,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from external_evaluation.runtime_paths import BenchmarkWorkerPaths
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROTOCOL = ROOT / "protocols" / "code_7m_normal_hard_confirmatory_v1.json"
 DEFAULT_INPUT_REPORT = Path(
@@ -56,7 +58,13 @@ def resolve_run(
     blocks_path = Path(str(arm_report["blocks_path"]))
     if not blocks_path.is_file() or sha256_file(blocks_path) != arm_report.get("blocks_sha256"):
         raise RuntimeError(f"Frozen token blocks are missing or changed for {arm}")
-    output_root = Path(str(training["output_root"]))
+    worker_paths = BenchmarkWorkerPaths.from_environment()
+    output_root = worker_paths.training_output_root(
+        Path(str(training["output_root"]))
+    )
+    snapshot_path = worker_paths.model_snapshot(
+        Path(str(training["snapshot_path"]))
+    )
     return {
         "protocol_path": protocol_path,
         "input_report_path": input_report_path,
@@ -65,6 +73,7 @@ def resolve_run(
         "input_report": report,
         "arm_report": arm_report,
         "blocks_path": blocks_path,
+        "snapshot_path": snapshot_path,
         "run_dir": output_root / "qlora_runs" / f"{arm}_seed{seed}_steps{arm_report['optimizer_steps']}",
         "seed": seed,
         "arm": arm,
@@ -131,6 +140,7 @@ def train(run: dict[str, Any], gpu: int) -> Path:
             "gradient_accumulation_steps": accumulation,
             "adapter": training["adapter"],
             "quantization": "4-bit NF4, double quantization, bfloat16 compute",
+            "loss_implementation": "transformers_full_logits_cross_entropy",
         },
     }
     write_json(run_dir / "run_manifest.json", manifest)
@@ -141,7 +151,7 @@ def train(run: dict[str, Any], gpu: int) -> Path:
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
     model = AutoModelForCausalLM.from_pretrained(
-        str(training["snapshot_path"]),
+        str(run["snapshot_path"]),
         local_files_only=True,
         quantization_config=quantization,
         device_map={"": gpu},

@@ -7,10 +7,11 @@
 
 ## Status
 
-This document freezes the next Quality and Coverage design. It is **not yet the
-active runtime contract**. The active implementation remains
-`configs/curation_contract.json`, where Quality is a rejection filter and an
-unmatched chunk is retained as `abstain_retain`.
+This document is historical and has no runtime authority. The current
+implementation is `configs/curation_contract.json` plus
+`docs/quality_coverage_formal_definition.md`, where Quality is a positive
+selection gate and an unmatched or abstaining chunk is not selected unless the
+Stage-C Coverage veto restores it.
 
 Activation requires the implementation, calibration, fixtures, development
 ablations, and frozen confirmatory evaluation named in

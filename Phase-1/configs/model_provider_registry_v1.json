@@ -6,7 +6,7 @@
   "slots": {
     "quality": {
       "role": "quality",
-      "allowed_effect": "typed_policy_evidence_consumed_by_frozen_normal_hard_consensus",
+      "allowed_effect": "frozen_distilled_q1_q4_evidence_consumed_by_calibrated_normal_hard_operating_points",
       "provider_output_alone_may_delete": false
     },
     "semantic": {
@@ -44,35 +44,55 @@
       "validation": null
     },
     {
-      "provider_id": "quality-teacher-panel-v2",
+      "provider_id": "quality-teacher-luna-single-v1",
       "role": "quality",
-      "provider_type": "composite_model",
-      "lifecycle": "runtime_experiment",
+      "provider_type": "remote_model",
+      "lifecycle": "audit_only",
       "artifacts": [
         {
-          "model_id": "z-ai/glm-5.2",
-          "revision": "build-endpoint-observed-2026-08-05",
-          "artifact_sha256": null
-        },
-        {
-          "model_id": "nvidia/nemotron-3-ultra-550b-a55b",
-          "revision": "build-endpoint-observed-2026-08-04",
-          "artifact_sha256": null
-        },
-        {
-          "model_id": "minimaxai/minimax-m3",
-          "revision": "build-endpoint-observed-2026-08-04",
+          "model_id": "gpt-5.6-luna",
+          "revision": "gpt-5.6-luna-api-alias-observed-2026-08-08",
           "artifact_sha256": null
         }
       ],
       "tokenizer_id": null,
       "tokenizer_revision": null,
-      "normalization": "independent_q1_q4_pass_fail_abstain_consensus_without_scalar_score",
-      "output_semantics": "typed_q1_q4_consensus_evidence_with_policy_mediated_deletion_authority",
-      "implementation_contract_path": "configs/quality_teacher_panel_v2.json",
-      "implementation_contract_identity_sha256": "b1192637bf0b728f3fe37203ca58465a8ff911aedb6c70e30a3d97766c195960",
+      "normalization": "single_teacher_q1_q4_pass_fail_abstain_with_confirmed_fail_second_pass",
+      "output_semantics": "offline_batch_calibration_labels_only_without_runtime_membership_authority",
+      "implementation_contract_path": "configs/quality_teacher_luna_single_v1.json",
+      "implementation_contract_identity_sha256": "4d01db1e1de41aabaf5c3b9df610fc1b05b2aea6b41e5285c98df2a0a89cc2c1",
       "supported_routes": ["code_artifact", "mathematical_content", "general_prose", "table_structured_data"],
       "supported_languages": ["english"],
+      "policy_contribution_authority": false,
+      "direct_deletion_authority": false,
+      "calibration": null,
+      "validation": null
+    },
+    {
+      "provider_id": "quality-distilled-ranker-v1",
+      "role": "quality",
+      "provider_type": "composite_model",
+      "lifecycle": "runtime_experiment",
+      "artifacts": [
+        {
+          "model_id": "Qwen/Qwen3-Embedding-0.6B",
+          "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+          "artifact_sha256": null
+        },
+        {
+          "model_id": "unlv/quality-ranker-q1-q4",
+          "revision": "candidate-artifact-pending-calibration",
+          "artifact_sha256": null
+        }
+      ],
+      "tokenizer_id": "Qwen/Qwen3-Embedding-0.6B",
+      "tokenizer_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+      "normalization": "l2_normalized_1024d_embedding_plus_independent_q1_q4_classifier_heads",
+      "output_semantics": "calibrated_pass_fail_abstain_evidence_where_only_confident_in_distribution_passes_support_retention",
+      "implementation_contract_path": "configs/quality_ranker_v1.json",
+      "implementation_contract_identity_sha256": "4e903b79bea8f263416fdc2558c26a24ba630bed179e9fa3c34637058393f071",
+      "supported_routes": ["code_artifact", "mathematical_content", "general_prose", "table_structured_data", "conversation", "instruction", "technical_documentation", "unknown"],
+      "supported_languages": ["english_initial_scope"],
       "policy_contribution_authority": true,
       "direct_deletion_authority": false,
       "calibration": null,

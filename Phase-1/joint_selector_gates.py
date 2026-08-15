@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -21,7 +22,7 @@ class QualityGateConfig(BaseModel):
 
 class CoverageGateConfig(BaseModel):
     model_config = ConfigDict(extra="ignore", frozen=True)
-    runtime_activation: bool
+    runtime_activation: bool | Literal["development_and_confirmatory_only"]
     all_required_views_empirically_ready: bool
 
 
@@ -54,7 +55,10 @@ def load_current_joint_gates(root: Path) -> JointGateBundle:
         origin=JointGateOrigin.FROZEN_REGISTRY,
         redundancy_ready=redundancy.runtime_activation,
         quality_ready=quality.runtime_activation and quality.all_registered_routes_empirically_ready,
-        coverage_ready=coverage.runtime_activation and coverage.all_required_views_empirically_ready,
+        coverage_ready=(
+            coverage.runtime_activation in (True, "development_and_confirmatory_only")
+            and coverage.all_required_views_empirically_ready
+        ),
         hard_extension_ready=hard.hard_extension_frozen and bool(hard.hard_extension_policy_ids),
         external_results_hidden=not protocol.split_and_leakage_contract.benchmark_feedback_to_runtime_allowed,
         evidence_artifact_hashes=tuple(_sha256(path) for path in (redundancy_path, quality_path, coverage_path)),

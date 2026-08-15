@@ -8,9 +8,9 @@ does not grant runtime authority.
 `curation_framework_v1.json` is the single machine-readable root for the next
 framework version. Its schema is
 `schemas/curation_framework_v1.schema.json`. It is design-only until Block 7;
-`framework_objects_v1.json`, `quality_teacher_panel_v1.json`, and
-`framework_profiles_v1.json` implement its typed registries and current Quality
-candidate. They are not
+`framework_objects_v1.json`, `quality_ranker_v1.json`,
+`quality_teacher_panel_v2.json`, and `framework_profiles_v1.json` implement its
+typed registries and current Quality candidate. They are not
 Policy promotion: Block 7 integrates their identity and Stage permissions into
 the runtime, while both new profiles remain release-disabled until their Policy
 gates close.
@@ -41,10 +41,14 @@ Coverage invariants. Qwen is enabled only for development/confirmatory runtime
 experiments; BGE-M3 remains audit-only. Promotion gates remain open, so the file
 does not grant production authority.
 
-`quality_teacher_panel_v1.json` freezes the current three-teacher Q1-Q4
-candidate, its consensus rules, forbidden inputs, fixture targets, and
-false-removal promotion bounds. It is qualification evidence only and grants no
-runtime authority.
+`quality_ranker_v1.json` freezes the full-corpus Quality runtime contract. It
+requires four independent Q1-Q4 heads. Normal retains a chunk with at least one
+confident in-distribution pass, while Hard requires at least two; any qualified
+fail blocks selection. OOD, low-confidence, and abstain outcomes provide no
+retention evidence and can be restored only by the Stage-C Coverage veto. The
+runtime reads no benchmark, Utility, source-reputation, quota, or budget input.
+`quality_teacher_panel_v2.json` freezes the offline annotation oracle used for
+calibration; Teacher output alone has no runtime membership authority.
 
 ## Runtime Contracts
 

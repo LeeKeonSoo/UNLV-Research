@@ -41,7 +41,7 @@ def test_active_policy_registry_declares_activation_and_safety_evidence() -> Non
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_teacher_panel_v2",
+        "stage_b_quality_distilled_ranker_v1",
         "stage_c_coverage_guard",
     }
     assert normal["authorized_but_disabled_policy_ids"] == []

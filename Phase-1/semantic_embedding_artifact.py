@@ -39,6 +39,7 @@ class EmbeddingArtifact:
     maximum_observed_tokens: int = 0
     windowed_records: int = 0
     total_windows: int = 0
+    text_sha256s: tuple[str, ...] | None = None
 
     def __post_init__(self) -> None:
         if not self.provider_id or not SHA256_RE.fullmatch(self.provider_identity_sha256):
@@ -51,6 +52,11 @@ class EmbeddingArtifact:
             raise SemanticEmbeddingArtifactError("Embedding vectors must be a finite matrix")
         if min(self.truncated_records, self.maximum_observed_tokens, self.windowed_records, self.total_windows) < 0:
             raise SemanticEmbeddingArtifactError("Embedding token audit cannot be negative")
+        if self.text_sha256s is not None and (
+            len(self.text_sha256s) != len(self.uids)
+            or any(SHA256_RE.fullmatch(value) is None for value in self.text_sha256s)
+        ):
+            raise SemanticEmbeddingArtifactError("Embedding text identities must match every UID")
 
 
 def _sha256_file(path: Path) -> str:
@@ -84,7 +90,10 @@ def write_embedding_artifact(artifact: EmbeddingArtifact, output_dir: Path) -> P
         raise SemanticEmbeddingArtifactError("Embedding vectors must have nonzero norm")
     vectors = np.asarray(artifact.vectors / norms, dtype=np.float32)
     vectors_path = output_dir / "embeddings.npz"
-    np.savez(vectors_path, uids=np.asarray(artifact.uids), vectors=vectors)
+    arrays = {"uids": np.asarray(artifact.uids), "vectors": vectors}
+    if artifact.text_sha256s is not None:
+        arrays["text_sha256s"] = np.asarray(artifact.text_sha256s)
+    np.savez(vectors_path, **arrays)
     manifest = {
         "schema_version": "semantic-embedding-artifact-v1",
         "provider_id": artifact.provider_id,
@@ -96,6 +105,7 @@ def write_embedding_artifact(artifact: EmbeddingArtifact, output_dir: Path) -> P
         "dimensions": int(vectors.shape[1]),
         "vectors_file": vectors_path.name,
         "vectors_sha256": _sha256_file(vectors_path),
+        "text_sha256_in_vectors": artifact.text_sha256s is not None,
         "model_files_sha256": artifact.model_files_sha256,
         "model_id": artifact.model_id,
         "revision": artifact.revision,

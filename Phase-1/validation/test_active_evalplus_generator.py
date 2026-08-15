@@ -7,26 +7,34 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from external_evaluation.evalplus_generator import adapter_directory, task_ids_for_scope, task_ids_for_split, trim_completion
+from external_evaluation.evalplus_generator import (
+    DATASETS,
+    adapter_directory,
+    benchmark_root,
+    resolve_datasets,
+    resolve_model_run,
+    trim_completion,
+)
 
 
 def main() -> int:
-    records = [
-        {"dataset": "HumanEval+", "task_id": "HumanEval/2", "assigned_split": "development"},
-        {"dataset": "HumanEval+", "task_id": "HumanEval/1", "assigned_split": "development"},
-        {"dataset": "HumanEval+", "task_id": "HumanEval/3", "assigned_split": "confirmatory"},
-    ]
-
-    assert task_ids_for_split(records, "HumanEval+", "development") == ["HumanEval/1", "HumanEval/2"]
-    all_tasks = {"HumanEval/1": {}, "HumanEval/2": {}, "HumanEval/3": {}}
-    assert task_ids_for_scope(records, all_tasks, "HumanEval+", "official_full") == [
-        "HumanEval/1",
-        "HumanEval/2",
-        "HumanEval/3",
-    ]
-    assert adapter_directory(Path("D:/runs"), "raw_safe_natural", 23, 429) == Path(
-        "D:/runs/qlora_runs/raw_safe_natural_seed23_steps429"
+    assert adapter_directory(Path("D:/runs"), "normal_natural", 202, 311) == Path(
+        "D:/runs/qlora_runs/normal_natural_seed202_steps311"
     )
+    protocol = {
+        "training": {
+            "arms": ["raw_audited_natural", "normal_natural", "hard_natural"],
+            "seeds": [101, 202, 303],
+            "output_root": "D:/runs",
+        }
+    }
+    report = {"arms": {"normal_natural": {"optimizer_steps": 311}}}
+    resolved = resolve_model_run(protocol, report, "normal_natural", 202)
+    assert resolved["adapter_path"] == Path("D:/runs/qlora_runs/normal_natural_seed202_steps311")
+    assert benchmark_root(protocol) == Path("D:/runs/benchmarks_v1")
+    assert resolve_datasets(None) == DATASETS
+    assert resolve_datasets("HumanEval+") == ("HumanEval+",)
+    assert resolve_datasets("MBPP+") == ("MBPP+",)
     assert trim_completion("```python\nreturn x\n```\n# Task next") == "return x\n"
     print("[active-evalplus-generator] pure contract: pass")
     return 0

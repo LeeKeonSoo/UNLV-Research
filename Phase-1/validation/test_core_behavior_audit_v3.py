@@ -46,9 +46,9 @@ def main() -> int:
         "non_trigger_retention",
     ]
     assert report["cores"]["quality"]["required_dimensions"] == [
-        "typed_deletion_authority",
-        "observable_trigger",
-        "false_positive_boundary",
+        "typed_quality_decision_authority",
+        "observable_evidence_trace",
+        "membership_boundary",
     ]
     assert report["cores"]["coverage"]["required_dimensions"] == [
         "materialization_invariant_authority",

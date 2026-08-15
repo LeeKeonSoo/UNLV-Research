@@ -99,10 +99,11 @@ def test_active_v2_panel_uses_glm_with_slow_endpoint_transport_budget() -> None:
         "minimaxai/minimax-m3",
     ]
     glm = panel.teachers[0]
-    assert glm.request_timeout_seconds == 600
+    assert glm.request_timeout_seconds == 180
     assert glm.maximum_transport_retries == 1
     assert glm.reasoning_control == "none"
     assert panel.runtime_activation is True
+    assert panel.lifecycle == "calibration_oracle"
     assert panel.unit_batch_size == 16
     assert all(teacher.maximum_new_tokens == 4096 for teacher in panel.teachers)
 
@@ -116,6 +117,14 @@ def test_active_v2_panel_freezes_observed_provider_concurrency_caps() -> None:
     } == {
         "z-ai/glm-5.2": 4,
         "nvidia/nemotron-3-ultra-550b-a55b": 4,
+        "minimaxai/minimax-m3": 1,
+    }
+    assert {
+        teacher.model_id: teacher.maximum_units_per_request
+        for teacher in panel.teachers
+    } == {
+        "z-ai/glm-5.2": 1,
+        "nvidia/nemotron-3-ultra-550b-a55b": 16,
         "minimaxai/minimax-m3": 1,
     }
 

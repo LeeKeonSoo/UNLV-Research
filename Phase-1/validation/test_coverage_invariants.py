@@ -13,7 +13,11 @@ from run_curation import _coverage_impact_audit
 
 
 def _composition_audit() -> dict[str, object]:
-    return {"delta_from_raw": {"stage_c_curated": {"content_domain": {"token_share": {}}}}}
+    return {
+        "delta_from_stage_b_pass": {
+            "stage_c_curated": {"content_domain": {"token_share": {}}}
+        },
+    }
 
 
 def main() -> int:
@@ -144,7 +148,7 @@ def main() -> int:
                 "chunk_uid": "quality-fail",
                 "stage_a_record_id": "quality-record",
                 "stage_b_policy": {
-                    "removed_reason": "quality_normal_unanimous_fail",
+                    "removed_reason": "quality_normal_qualified_fail",
                     "failed_policy_ids": ["q3_substantive_payload"],
                 },
             }
@@ -155,6 +159,7 @@ def main() -> int:
     )
     assert quality_removed["zero_survivor_invariant"]["passed"] is True
     assert quality_removed["passed"] is True
+
     print("[coverage-invariants] materialization representative linkage: pass")
     return 0
 

@@ -35,7 +35,7 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_teacher_panel_v2"
+        "stage_b_quality_distilled_ranker_v1"
       ],
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
@@ -48,7 +48,7 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_teacher_panel_v2",
+        "stage_b_quality_distilled_ranker_v1",
         "stage_c_coverage_guard"
       ],
       "excluded_policy_ids": [
@@ -77,7 +77,7 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_teacher_panel_v2"
+        "stage_b_quality_distilled_ranker_v1"
       ],
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
@@ -90,7 +90,7 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_teacher_panel_v2",
+        "stage_b_quality_distilled_ranker_v1",
         "stage_c_coverage_guard"
       ],
       "excluded_policy_ids": [
@@ -110,32 +110,32 @@
   },
   "core_decision_contracts": {
     "quality": {
-      "runtime_owner": "quality_retention.py",
+      "runtime_owner": "all_policy_stage_b.py",
+      "structural_prefilter_owner": "quality_retention.py",
       "execution_order": "after_redundancy_before_coverage_audit",
       "decisions": [
-        "keep",
-        "reject",
-        "abstain_retain"
+        "retain_supported",
+        "not_select_qualified_fail",
+        "not_select_insufficient_pass_evidence",
+        "coverage_veto_retain"
       ],
-      "abstain_action": "retain",
-      "reject_authority": "named_active_policy_with_explicit_non_payload_evidence",
-      "decision_contract": "quality_retention_deletion_authority_v2",
-      "reject_required_trace": [
-        "policy_scope_route",
-        "routing_precondition",
-        "policy_id",
-        "policy_version",
-        "reason_code",
-        "trigger",
-        "observed_evidence",
-        "representative_fixture_id",
-        "false_positive_fixture_id",
-        "original_text_sha256",
-        "policy_artifact_sha256",
-        "token_delta_proxy"
+      "abstain_action": "not_select_unless_coverage_veto",
+      "not_select_authority": "qualified_independent_policy_fail_or_mode_specific_positive_pass_count_not_met",
+      "decision_contract": "quality_positive_selection_authority_v3",
+      "decision_required_trace": [
+        "chunk_uid",
+        "mode",
+        "passed_policy_ids",
+        "failed_policy_ids",
+        "required_pass_count",
+        "stage_b_action",
+        "stage_b_reason_code",
+        "benchmark_outcomes_read",
+        "utility_read",
+        "token_budget_read"
       ],
-      "missing_trace_action": "reject_decision_construction_fails",
-      "keep_authority": "reserved_for_separately_validated_positive_retention_policy",
+      "missing_trace_action": "quality_decision_construction_fails_closed",
+      "keep_authority": "normal_requires_one_and_hard_requires_two_independent_q1_q4_passes_with_no_qualified_fail",
       "intrinsic_quality_score_used": false,
       "weighted_score_used": false,
       "benchmark_outcomes_read": false
@@ -881,31 +881,32 @@
       ]
     },
     {
-      "id": "stage_b_quality_teacher_panel_v2",
-      "version": "2.0.0",
-      "policy_card_id": "stage_b_quality_teacher_panel_v2",
+      "id": "stage_b_quality_distilled_ranker_v1",
+      "version": "1.0.0",
+      "policy_card_id": "stage_b_quality_distilled_ranker_v1",
       "core": "quality",
       "stage": "Stage B",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
-        "quality_normal_unanimous_fail",
-        "quality_hard_stable_majority_fail"
+        "quality_normal_qualified_fail",
+        "quality_hard_qualified_fail",
+        "quality_normal_retention_threshold_not_met",
+        "quality_hard_retention_threshold_not_met"
       ],
       "required_metadata": [],
-      "fixture": "validation/test_quality_teacher_materialization_v1.py",
+      "fixture": "validation/test_quality_ranker_runtime_v1.py",
       "false_positive_fixture": "validation/fixtures/policy_fixture_contract_v1.json",
-      "case_matrix_scenario": "three_teacher_q1_q4_consensus",
-      "coverage_impact_validation": "quality_rejection_is_stage_b_proposal_subject_to_stage_c_veto",
+      "case_matrix_scenario": "distilled_q1_q4_with_ood_and_confidence_abstention",
+      "coverage_impact_validation": "quality_non_selection_is_stage_b_proposal_subject_to_stage_c_veto",
       "runtime_implementation": [
-        "quality_teacher_materialization.py",
-        "quality_teacher_batch_cache.py",
-        "quality_teacher_json.py",
-        "quality_teacher_batch_runtime.py",
+        "quality_ranker_runtime.py",
+        "quality_ranker_policy.py",
+        "quality_runtime_dispatch.py",
         "all_policy_stage_b.py"
       ],
       "promotion_requirements": [
-        "protected_fixture_bound",
+        "teacher_calibration_and_disjoint_protected_fixture_bound",
         "reason_code_audit_complete",
         "confirmatory_evaluation_without_runtime_feedback"
       ]

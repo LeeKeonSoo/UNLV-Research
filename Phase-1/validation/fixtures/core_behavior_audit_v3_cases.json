@@ -700,10 +700,10 @@
       ]
     },
     {
-      "id": "quality-panel-normal-positive",
-      "policy_id": "stage_b_quality_teacher_panel_v2",
-      "executor": "stage_b_quality_panel",
-      "expected_code": "quality_normal_unanimous_fail",
+      "id": "quality-ranker-normal-positive",
+      "policy_id": "stage_b_quality_distilled_ranker_v1",
+      "executor": "stage_b_quality_ranker",
+      "expected_code": "quality_normal_qualified_fail",
       "expected_trigger": true,
       "config": {
         "mode": "normal"
@@ -711,14 +711,17 @@
       "policy_result": {
         "policy_id": "q3_substantive_payload",
         "decision": "fail",
-        "first_pass": ["fail", "fail", "fail"]
+        "failure_probability": 0.9,
+        "normal_failure_threshold": 0.8,
+        "hard_failure_threshold": 0.6,
+        "prediction_confidence": 0.9
       }
     },
     {
-      "id": "quality-panel-hard-positive",
-      "policy_id": "stage_b_quality_teacher_panel_v2",
-      "executor": "stage_b_quality_panel",
-      "expected_code": "quality_hard_stable_majority_fail",
+      "id": "quality-ranker-hard-positive",
+      "policy_id": "stage_b_quality_distilled_ranker_v1",
+      "executor": "stage_b_quality_ranker",
+      "expected_code": "quality_hard_qualified_fail",
       "expected_trigger": true,
       "config": {
         "mode": "hard"
@@ -726,41 +729,114 @@
       "policy_result": {
         "policy_id": "q3_substantive_payload",
         "decision": "fail",
-        "first_pass": ["fail", "fail", "pass"],
-        "second_pass": ["fail", "fail", "pass"]
+        "failure_probability": 0.7,
+        "normal_failure_threshold": 0.8,
+        "hard_failure_threshold": 0.6,
+        "prediction_confidence": 0.7
       }
     },
     {
-      "id": "quality-panel-normal-majority-negative",
-      "policy_id": "stage_b_quality_teacher_panel_v2",
-      "executor": "stage_b_quality_panel",
-      "expected_code": "quality_normal_unanimous_fail",
+      "id": "quality-ranker-normal-insufficient-support-positive",
+      "policy_id": "stage_b_quality_distilled_ranker_v1",
+      "executor": "stage_b_quality_ranker",
+      "expected_code": "quality_normal_retention_threshold_not_met",
+      "expected_trigger": true,
+      "config": {
+        "mode": "normal"
+      },
+      "policy_result": {
+        "policy_id": "q3_substantive_payload",
+        "decision": "abstain",
+        "failure_probability": 0.1,
+        "normal_failure_threshold": 0.8,
+        "hard_failure_threshold": 0.6,
+        "prediction_confidence": 0.4
+      }
+    },
+    {
+      "id": "quality-ranker-hard-insufficient-support-positive",
+      "policy_id": "stage_b_quality_distilled_ranker_v1",
+      "executor": "stage_b_quality_ranker",
+      "expected_code": "quality_hard_retention_threshold_not_met",
+      "expected_trigger": true,
+      "config": {
+        "mode": "hard"
+      },
+      "policy_result": {
+        "policy_id": "q4_learnable_relations",
+        "decision": "pass",
+        "failure_probability": 0.02,
+        "normal_failure_threshold": 0.8,
+        "hard_failure_threshold": 0.6,
+        "prediction_confidence": 0.95
+      }
+    },
+    {
+      "id": "quality-ranker-normal-pass-negative",
+      "policy_id": "stage_b_quality_distilled_ranker_v1",
+      "executor": "stage_b_quality_ranker",
+      "expected_code": "quality_normal_retention_threshold_not_met",
       "expected_trigger": false,
       "fixture_kind": "false_positive_guard",
       "config": {
         "mode": "normal"
       },
       "policy_result": {
-        "policy_id": "q3_substantive_payload",
-        "decision": "fail",
-        "first_pass": ["fail", "fail", "pass"],
-        "second_pass": ["fail", "fail", "pass"]
+        "policy_id": "q4_learnable_relations",
+        "decision": "pass",
+        "failure_probability": 0.02,
+        "normal_failure_threshold": 0.8,
+        "hard_failure_threshold": 0.6,
+        "prediction_confidence": 0.95
       }
     },
     {
-      "id": "quality-panel-abstain-negative",
-      "policy_id": "stage_b_quality_teacher_panel_v2",
-      "executor": "stage_b_quality_panel",
-      "expected_code": "quality_hard_stable_majority_fail",
+      "id": "quality-ranker-hard-two-pass-negative",
+      "policy_id": "stage_b_quality_distilled_ranker_v1",
+      "executor": "stage_b_quality_ranker",
+      "expected_code": "quality_hard_retention_threshold_not_met",
       "expected_trigger": false,
-      "fixture_kind": "adversarial_negative",
+      "fixture_kind": "false_positive_guard",
+      "config": {
+        "mode": "hard"
+      },
+      "policy_results": [
+        {
+          "policy_id": "q2_semantic_coherence",
+          "decision": "pass",
+          "failure_probability": 0.02,
+          "normal_failure_threshold": 0.8,
+          "hard_failure_threshold": 0.6,
+          "prediction_confidence": 0.95
+        },
+        {
+          "policy_id": "q4_learnable_relations",
+          "decision": "pass",
+          "failure_probability": 0.02,
+          "normal_failure_threshold": 0.8,
+          "hard_failure_threshold": 0.6,
+          "prediction_confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "quality-ranker-ood-fails-closed",
+      "policy_id": "stage_b_quality_distilled_ranker_v1",
+      "executor": "stage_b_quality_ranker",
+      "expected_code": "quality_hard_retention_threshold_not_met",
+      "expected_trigger": true,
+      "fixture_kind": "adversarial_positive",
       "config": {
         "mode": "hard"
       },
       "policy_result": {
         "policy_id": "q3_substantive_payload",
         "decision": "abstain",
-        "first_pass": ["fail", "pass", "abstain"]
+        "failure_probability": 0.95,
+        "normal_failure_threshold": 0.8,
+        "hard_failure_threshold": 0.6,
+        "prediction_confidence": 0.95,
+        "out_of_distribution": true
       }
     },
     {

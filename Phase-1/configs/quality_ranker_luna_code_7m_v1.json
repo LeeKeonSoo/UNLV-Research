@@ -1,0 +1,41 @@
+{
+  "schema_version": "quality-ranker-program-v1",
+  "status": "frozen_before_calibration",
+  "corpus_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/normal/corpus.jsonl",
+  "calibration_sample_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_v1/calibration/initial_1024.jsonl",
+  "calibration_sample_size": 1024,
+  "calibration_seed": "quality-ranker-code-7m-initial-v1",
+  "protected_sample_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_v1/protected/protected_800.jsonl",
+  "protected_sample_size": 800,
+  "protected_seed": "quality-ranker-code-7m-protected-v1",
+  "embedding": {
+    "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+    "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+    "model_path": "D:/UNLV-Research/models/Qwen3-Embedding-0.6B",
+    "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+    "pooling": "last_token",
+    "max_length": 2048,
+    "batch_size": 4,
+    "device": "cuda:0",
+    "cache_dir": "D:/UNLV-Research/hf_cache",
+    "append_eos": false,
+    "output_dir": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_v1/embeddings"
+  },
+  "training": {
+    "calibration_observation_paths": [
+      "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/calibration/teacher_observations.jsonl"
+    ],
+    "protected_observation_paths": [
+      "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/protected/teacher_observations.jsonl"
+    ],
+    "output_dir": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/ranker",
+    "seed": "quality-ranker-code-7m-luna-fit-v1",
+    "minimum_class_examples": 30,
+    "minimum_fail_predictions": 10,
+    "minimum_test_negatives": 600,
+    "normal_maximum_false_positive_rate": 0.005,
+    "hard_maximum_false_positive_rate": 0.02,
+    "minimum_decision_confidence": 0.8,
+    "ood_quantile": 0.01
+  }
+}

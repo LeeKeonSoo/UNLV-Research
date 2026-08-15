@@ -20,6 +20,7 @@ from quality_teacher_panel import (
     TeacherSpec,
     TeacherVote,
     decide_panel,
+    decide_single_teacher,
 )
 from quality_teacher_runtime import EvaluationUnit, PanelPolicyResult, TeacherGenerationUnavailable
 from quality_teacher_unit_runtime import (
@@ -86,6 +87,65 @@ class UnitBatchResult:
 NON_EVIDENCE_REASON_CODES: Final = frozenset(
     {"teacher_generation_unavailable", "invalid_teacher_response_schema"}
 )
+
+
+def build_policy_set_response_schema(
+    policies: tuple[QualityPolicy, ...],
+    units: tuple[EvaluationUnit, ...],
+) -> dict[str, object]:
+    policy_variants: list[dict[str, object]] = []
+    for policy in policies:
+        for decision in PolicyDecision:
+            policy_variants.append(
+                {
+                    "type": "object",
+                    "properties": {
+                        "policy_id": {"type": "string", "enum": [policy.policy_id]},
+                        "decision": {"type": "string", "enum": [decision.value]},
+                        "reason_codes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": list(policy.reason_codes.for_decision(decision)),
+                            },
+                            "minItems": 1,
+                        },
+                    },
+                    "required": ["policy_id", "decision", "reason_codes"],
+                    "additionalProperties": False,
+                }
+            )
+    unit_count = len(units)
+    policy_count = len(policies)
+    return {
+        "type": "object",
+        "properties": {
+            "units": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "unit_id": {
+                            "type": "string",
+                            "enum": [unit.unit_id for unit in units],
+                        },
+                        "policies": {
+                            "type": "array",
+                            "items": {"anyOf": policy_variants},
+                            "minItems": policy_count,
+                            "maxItems": policy_count,
+                        },
+                    },
+                    "required": ["unit_id", "policies"],
+                    "additionalProperties": False,
+                },
+                "minItems": unit_count,
+                "maxItems": unit_count,
+            }
+        },
+        "required": ["units"],
+        "additionalProperties": False,
+    }
 
 
 def parse_policy_set_batch_response(
@@ -175,7 +235,12 @@ class HostedPolicySetBatchAdapter:
                 model_id=request.model_id,
                 messages=_messages(request),
                 maximum_new_tokens=self.teacher.maximum_new_tokens,
-                response_format=StructuredResponseFormat("json_object", reason_codes),
+                response_format=StructuredResponseFormat(
+                    "json_object",
+                    reason_codes,
+                    json_schema_name="quality_policy_votes",
+                    json_schema=build_policy_set_response_schema(request.policies, request.units),
+                ),
                 temperature=self.teacher.temperature,
                 top_p=self.teacher.top_p,
                 reasoning_control=self.teacher.reasoning_control,
@@ -206,6 +271,22 @@ def _evaluate_teacher_batch(
     pass_index: Literal[1, 2],
     evidence_store: TeacherBatchEvidenceStoreProtocol | None,
 ) -> dict[str, tuple[TeacherVote, ...]]:
+    unit_limit = teacher.maximum_units_per_request or len(units)
+    if len(units) > unit_limit:
+        merged: dict[str, tuple[TeacherVote, ...]] = {}
+        for offset in range(0, len(units), unit_limit):
+            subset = units[offset : offset + unit_limit]
+            merged.update(
+                _evaluate_teacher_batch(
+                    adapter,
+                    teacher,
+                    policies,
+                    subset,
+                    pass_index,
+                    evidence_store,
+                )
+            )
+        return merged
     if evidence_store is not None:
         cached = evidence_store.get(teacher, policies, units, pass_index)
         if cached is not None:
@@ -314,7 +395,7 @@ def _run_pass(
     pass_index: Literal[1, 2],
     evidence_store: TeacherBatchEvidenceStoreProtocol | None,
 ) -> tuple[dict[str, tuple[TeacherVote, ...]], ...]:
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=len(panel.teachers)) as executor:
         return tuple(
             executor.map(
                 lambda teacher: _evaluate_teacher_batch(
@@ -330,11 +411,35 @@ def _run_pass(
         )
 
 
-def _needs_second(votes: tuple[TeacherVote, ...]) -> bool:
-    counts = Counter(vote.decision for vote in votes)
-    return decide_panel(votes, None) is PanelDecision.ABSTAIN and max(
-        counts[PolicyDecision.PASS], counts[PolicyDecision.FAIL]
-    ) == 2
+def _needs_second(panel: TeacherPanel, votes: tuple[TeacherVote, ...]) -> bool:
+    match panel.aggregation_strategy:
+        case "three_teacher_stable_majority":
+            counts = Counter(vote.decision for vote in votes)
+            return decide_panel(votes, None) is PanelDecision.ABSTAIN and max(
+                counts[PolicyDecision.PASS], counts[PolicyDecision.FAIL]
+            ) == 2
+        case "single_teacher_confirmed_fail":
+            return len(votes) == 1 and votes[0].decision is PolicyDecision.FAIL
+
+
+def _required_available_teachers(panel: TeacherPanel) -> int:
+    match panel.aggregation_strategy:
+        case "three_teacher_stable_majority":
+            return 2
+        case "single_teacher_confirmed_fail":
+            return 1
+
+
+def _decide_policy(
+    panel: TeacherPanel,
+    first_pass: tuple[TeacherVote, ...],
+    second_pass: tuple[TeacherVote, ...] | None,
+) -> PanelDecision:
+    match panel.aggregation_strategy:
+        case "three_teacher_stable_majority":
+            return decide_panel(first_pass, second_pass)
+        case "single_teacher_confirmed_fail":
+            return decide_single_teacher(first_pass, second_pass)
 
 
 def _teacher_batch_available(batch: Mapping[str, tuple[TeacherVote, ...]]) -> bool:
@@ -358,12 +463,14 @@ def evaluate_quality_units_batched(
         for teacher, batch in zip(panel.teachers, first, strict=True)
         if _teacher_batch_available(batch)
     )
-    if len(available) < 2:
+    if len(available) < _required_available_teachers(panel):
         raise InsufficientTeacherAvailability(",".join(unit.unit_id for unit in units), len(available))
     needs_by_unit: dict[str, tuple[bool, ...]] = {}
     for unit in units:
         first_by_policy = tuple(tuple(batch[unit.unit_id][index] for batch in first) for index in range(4))
-        needs_by_unit[unit.unit_id] = tuple(_needs_second(votes) for votes in first_by_policy)
+        needs_by_unit[unit.unit_id] = tuple(
+            _needs_second(panel, votes) for votes in first_by_policy
+        )
     second_units = tuple(unit for unit in units if any(needs_by_unit[unit.unit_id]))
     second = _run_pass(panel, adapters, second_units, 2, evidence_store) if second_units else None
     unavailable = tuple(teacher.teacher_id for teacher in panel.teachers if teacher.teacher_id not in available)
@@ -393,7 +500,7 @@ def evaluate_quality_units_batched(
             policy_results.append(
                 PanelPolicyResult(
                     policy.policy_id,
-                    decide_panel(first_votes, second_votes),
+                    _decide_policy(panel, first_votes, second_votes),
                     first_votes,
                     second_votes,
                 )

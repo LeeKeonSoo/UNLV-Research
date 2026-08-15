@@ -22,16 +22,16 @@
       "role": "benchmark-excluded collected corpus before runtime curation"
     },
     "normal_natural": {
-      "source": "D:/UNLV-Research/final_all_policy_v1/normal/stage_c_curated_chunks.jsonl",
-      "source_stage": "Normal Stage C output",
-      "role": "active structural runtime output"
+      "source": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/normal/stage_c_curated_chunks.jsonl",
+      "source_stage": "Luna-calibrated Normal Stage C output",
+      "role": "final Normal runtime output"
     },
     "hard_natural": {
-      "source": "D:/UNLV-Research/final_all_policy_v1/hard/stage_c_curated_chunks.jsonl",
-      "source_stage": "Hard Stage C output",
-      "role": "confirmatory-only structural span-compaction output"
+      "source": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/hard/stage_c_curated_chunks.jsonl",
+      "source_stage": "Luna-calibrated Hard Stage C output",
+      "role": "final Hard runtime output"
     }
   },
-  "output_root": "D:/UNLV-Research/final_all_policy_v1/training_inputs_v1",
+  "output_root": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/training_inputs_v1",
   "claim_boundary": "This artifact freezes external natural-budget training inputs. It does not alter runtime curation, read Utility or benchmark outcomes, or establish downstream performance."
 }

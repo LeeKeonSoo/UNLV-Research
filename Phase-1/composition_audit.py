@@ -227,14 +227,49 @@ def build_composition_audit(stage_rows: dict[str, Iterable[JsonMap]]) -> JsonMap
     coverage_stages = {name: _coverage_stage_distribution(rows) for name, rows in materialized.items()}
     raw = stages["raw_input"]
     coverage_raw = coverage_stages["raw_input"]
+    stage_units = {
+        name: "record" if name in {"raw_input", "stage_a_release"} else "chunk"
+        for name in stages
+    }
+    comparable_baseline_name = "stage_b_pass" if "stage_b_pass" in stages else "raw_input"
+    comparable_baseline = stages[comparable_baseline_name]
+    comparable_coverage_baseline = coverage_stages[comparable_baseline_name]
+    raw_comparable_stages = {
+        name: stage
+        for name, stage in stages.items()
+        if name != "raw_input" and stage_units[name] == stage_units["raw_input"]
+    }
+    raw_comparable_coverage_stages = {
+        name: stage
+        for name, stage in coverage_stages.items()
+        if name != "raw_input" and stage_units[name] == stage_units["raw_input"]
+    }
+    excluded_cross_unit_deltas = {
+        name: "record_to_chunk_delta_not_emitted"
+        for name in stages
+        if name != "raw_input" and stage_units[name] != stage_units["raw_input"]
+    }
     return {
         "authority": "audit_only",
         "consumed_by_stage_a": False,
         "consumed_by_stage_b": False,
         "consumed_by_stage_c": False,
         "method": "deterministic_four_axis_audit_v2",
+        "stage_units": stage_units,
         "stages": stages,
-        "delta_from_raw": {name: _stage_delta(raw, stage) for name, stage in stages.items() if name != "raw_input"},
+        "delta_from_raw": {
+            name: _stage_delta(raw, stage)
+            for name, stage in raw_comparable_stages.items()
+        },
+        "excluded_cross_unit_deltas": excluded_cross_unit_deltas,
+        "comparable_baseline_stage": comparable_baseline_name,
+        "delta_from_stage_b_pass": {
+            name: _stage_delta(comparable_baseline, stage)
+            for name, stage in stages.items()
+            if comparable_baseline_name == "stage_b_pass"
+            and name != comparable_baseline_name
+            and stage_units[name] == "chunk"
+        },
         "coverage_v1": {
             "taxonomy_version": TAXONOMY_VERSION,
             "authority": "audit_only",
@@ -243,16 +278,33 @@ def build_composition_audit(stage_rows: dict[str, Iterable[JsonMap]]) -> JsonMap
             "stages": coverage_stages,
             "delta_from_raw": {
                 name: _coverage_delta(coverage_raw, stage)
+                for name, stage in raw_comparable_coverage_stages.items()
+            },
+            "delta_from_stage_b_pass": {
+                name: _coverage_delta(comparable_coverage_baseline, stage)
                 for name, stage in coverage_stages.items()
-                if name != "raw_input"
+                if comparable_baseline_name == "stage_b_pass"
+                and name != comparable_baseline_name
+                and stage_units[name] == "chunk"
             },
             "jensen_shannon_divergence_from_raw": {
                 name: {
                     axis: _jensen_shannon_divergence(coverage_raw[axis], stage[axis])
                     for axis in AXES
                 }
+                for name, stage in raw_comparable_coverage_stages.items()
+            },
+            "jensen_shannon_divergence_from_stage_b_pass": {
+                name: {
+                    axis: _jensen_shannon_divergence(
+                        comparable_coverage_baseline[axis], stage[axis]
+                    )
+                    for axis in AXES
+                }
                 for name, stage in coverage_stages.items()
-                if name != "raw_input"
+                if comparable_baseline_name == "stage_b_pass"
+                and name != comparable_baseline_name
+                and stage_units[name] == "chunk"
             },
         },
     }

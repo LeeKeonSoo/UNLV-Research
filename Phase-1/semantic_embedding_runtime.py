@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -196,20 +197,24 @@ def encode_documents(
     torch.cuda.empty_cache()
     return write_embedding_artifact(
         EmbeddingArtifact(
-            spec.provider_id,
-            spec.provider_identity_sha256,
-            corpus_sha256,
-            spec.pooling,
-            spec.max_length,
-            tuple(item.uid for item in documents),
-            vectors,
-            model_hash,
-            spec.model_id,
-            spec.revision,
-            0,
-            maximum_observed_tokens,
-            windowed_records,
-            total_windows,
+            provider_id=spec.provider_id,
+            provider_identity_sha256=spec.provider_identity_sha256,
+            corpus_sha256=corpus_sha256,
+            pooling=spec.pooling,
+            max_length=spec.max_length,
+            uids=tuple(item.uid for item in documents),
+            vectors=vectors,
+            model_files_sha256=model_hash,
+            model_id=spec.model_id,
+            revision=spec.revision,
+            truncated_records=0,
+            maximum_observed_tokens=maximum_observed_tokens,
+            windowed_records=windowed_records,
+            total_windows=total_windows,
+            text_sha256s=tuple(
+                hashlib.sha256(document.text.encode("utf-8")).hexdigest()
+                for document in documents
+            ),
         ),
         output_dir,
     )

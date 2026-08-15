@@ -33,6 +33,9 @@ ACQUISITION_FAILURE_RE = re.compile(
     r"page not found|service unavailable|internal server error)\b",
     re.IGNORECASE,
 )
+ACQUISITION_FAILURE_STATUS_CODES = frozenset({401, 403, 404, 408, 429, 500, 502, 503, 504})
+ACQUISITION_FAILURE_STATUSES = frozenset({"blocked", "error", "failed", "timeout"})
+HTML_TAG_RE = re.compile(r"<[^>]+>")
 BENCHMARK_RE = re.compile(
     r"\b(?:MMLU|GSM8K|HumanEval|MBPP|EvalPlus|LiveCodeBench|SWE[- ]bench|HellaSwag|ARC[- ]Challenge|TruthfulQA)\b",
     re.IGNORECASE,
@@ -178,6 +181,24 @@ def detect_hazards(text: str, *, pii_context: str = "general") -> Dict[str, Any]
     }
 
 
+def _is_acquisition_failure(raw: Dict[str, Any], normalized_text: str) -> bool:
+    declared_status = str(raw.get("acquisition_status") or "").strip().casefold()
+    if declared_status in ACQUISITION_FAILURE_STATUSES:
+        return True
+    raw_http_status = raw.get("http_status")
+    try:
+        http_status = int(raw_http_status) if raw_http_status is not None else None
+    except (TypeError, ValueError):
+        http_status = None
+    if http_status in ACQUISITION_FAILURE_STATUS_CODES:
+        return ACQUISITION_FAILURE_RE.search(normalized_text) is not None
+    text_only_body = " ".join(HTML_TAG_RE.sub(" ", normalized_text).split())
+    return (
+        len(text_only_body.split()) <= 8
+        and ACQUISITION_FAILURE_RE.fullmatch(text_only_body) is not None
+    )
+
+
 def _validity_reasons(raw_text: Any, normalized_text: str, raw: Dict[str, Any]) -> List[str]:
     """Return only closed text-validity failures for the source-agnostic profile."""
     reasons: List[str] = []
@@ -189,7 +210,7 @@ def _validity_reasons(raw_text: Any, normalized_text: str, raw: Dict[str, Any]) 
     corruption = sum(character == "\ufffd" or unicodedata.category(character) == "Cc" for character in visible)
     if visible and corruption / len(visible) >= 0.2:
         reasons.append(STAGE_A_CORRUPTION_REASON)
-    if ACQUISITION_FAILURE_RE.search(normalized_text) and len(visible) < 300:
+    if _is_acquisition_failure(raw, normalized_text):
         reasons.append(STAGE_A_ACQUISITION_FAILURE_REASON)
     return reasons
 

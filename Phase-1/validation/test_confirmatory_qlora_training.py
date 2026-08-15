@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,12 +33,22 @@ def main() -> int:
         )
         protocol = root / "protocol.json"
         protocol.write_text(
-            json.dumps({"status": "frozen_before_curation_and_tokenizer_materialization", "training": {"arms": ["raw_audited_natural"], "seeds": [101], "output_root": str(root / "runs")}}),
+            json.dumps({"status": "frozen_before_curation_and_tokenizer_materialization", "training": {"arms": ["raw_audited_natural"], "seeds": [101], "output_root": str(root / "runs"), "snapshot_path": str(root / "protocol-model")}}),
             encoding="utf-8",
         )
-        run = resolve_run(protocol, report, "raw_audited_natural", 101)
+        worker_runs = root / "worker-runs"
+        worker_model = root / "worker-model"
+        with patch.dict(
+            os.environ,
+            {
+                "UNLV_TRAINING_OUTPUT_ROOT": str(worker_runs),
+                "UNLV_MODEL_SNAPSHOT_PATH": str(worker_model),
+            },
+        ):
+            run = resolve_run(protocol, report, "raw_audited_natural", 101)
         assert run["blocks_path"] == blocks
-        assert run["run_dir"] == root / "runs" / "qlora_runs" / "raw_audited_natural_seed101_steps1"
+        assert run["run_dir"] == worker_runs / "qlora_runs" / "raw_audited_natural_seed101_steps1"
+        assert run["snapshot_path"] == worker_model
     print("[confirmatory-qlora-training] frozen arm preflight: pass")
     return 0
 

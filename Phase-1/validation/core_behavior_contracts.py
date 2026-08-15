@@ -12,9 +12,9 @@ CORE_DIMENSIONS = {
         "non_trigger_retention",
     ],
     "quality": [
-        "typed_deletion_authority",
-        "observable_trigger",
-        "false_positive_boundary",
+        "typed_quality_decision_authority",
+        "observable_evidence_trace",
+        "membership_boundary",
     ],
     "coverage": [
         "materialization_invariant_authority",
@@ -41,9 +41,11 @@ def behavior_invariants(core: str, expected: bool, event: JsonMap) -> JsonMap:
         }
     elif core == "quality":
         checks = {
-            "typed_deletion_authority": not expected or _quality_authority_passed(event),
-            "observable_trigger": not expected or bool(event.get("reason_code")),
-            "false_positive_boundary": expected or event["action"] == "retain",
+            "typed_quality_decision_authority": not expected
+            or _quality_authority_passed(event),
+            "observable_evidence_trace": not expected
+            or bool(event.get("reason_code")),
+            "membership_boundary": expected or event["action"] == "retain",
         }
     elif core == "coverage":
         coverage = event.get("coverage") or {}
@@ -63,11 +65,31 @@ def behavior_invariants(core: str, expected: bool, event: JsonMap) -> JsonMap:
 
 def _quality_authority_passed(event: JsonMap) -> bool:
     decision = event.get("quality_decision") or {}
+    if event.get("quality_authority_kind") == "distilled_ranker":
+        reason_code = decision.get("stage_b_reason_code")
+        passed = decision.get("passed_policy_ids") or []
+        failed = decision.get("failed_policy_ids") or []
+        required = decision.get("required_pass_count")
+        qualified_fail = reason_code in {
+            "quality_normal_qualified_fail",
+            "quality_hard_qualified_fail",
+        } and bool(failed)
+        insufficient_support = reason_code in {
+            "quality_normal_retention_threshold_not_met",
+            "quality_hard_retention_threshold_not_met",
+        } and isinstance(required, int) and len(passed) < required
+        return (
+            decision.get("stage_b_action") == "not_select"
+            and (qualified_fail or insufficient_support)
+            and decision.get("benchmark_outcomes_read") is False
+            and decision.get("utility_read") is False
+            and decision.get("token_budget_read") is False
+        )
     if event.get("quality_authority_kind") == "teacher_panel":
         return (
-            decision.get("stage_b_action") == "remove"
+            decision.get("stage_b_action") == "not_select"
             and decision.get("stage_b_reason_code")
-            in {"quality_normal_unanimous_fail", "quality_hard_stable_majority_fail"}
+            in {"quality_normal_qualified_fail", "quality_hard_qualified_fail"}
             and bool(decision.get("failed_policy_ids"))
             and decision.get("benchmark_outcomes_read") is False
             and decision.get("utility_read") is False

@@ -1,0 +1,20 @@
+{
+  "schema_version": "quality-teacher-cross-model-audit-v1",
+  "status": "frozen_observational_audit",
+  "frozen_at": "2026-08-08T15:50:00+09:00",
+  "observation_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_v1/calibration/teacher_observations.jsonl",
+  "observation_sha256": "788c10350ab570f2a4a232e5d07d7ca31b3504135cdf6477e866a39f70911505",
+  "observation_count": 384,
+  "teacher_panel_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/Phase-1/configs/quality_teacher_panel_v2.json",
+  "teacher_panel_sha256": "9a5f9115a291edbb97c61a0803412ebbf8dcc05add613c99952856c749ebcf3f",
+  "teacher_ids": [
+    "glm-5-2-build-v2",
+    "nemotron-3-ultra-build-v2",
+    "minimax-m3-build-v2"
+  ],
+  "allowed_role": "cross_model_teacher_bias_audit_only",
+  "may_train_production_ranker": false,
+  "may_affect_runtime_membership": false,
+  "benchmark_outcomes_read": false,
+  "utility_read": false
+}

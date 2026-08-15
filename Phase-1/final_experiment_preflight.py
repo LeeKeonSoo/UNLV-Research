@@ -10,7 +10,7 @@ from typing import Any
 JsonMap = dict[str, Any]
 EXPECTED_STAGES = {
     "stage_a": "source_agnostic_text_normalization_and_integrity_handling",
-    "stage_b": "redundancy_and_quality_removal_proposals",
+    "stage_b": "redundancy_removal_and_positive_quality_selection",
     "stage_c": "coverage_veto_and_final_materialization",
     "external_evaluation": "not_started",
 }

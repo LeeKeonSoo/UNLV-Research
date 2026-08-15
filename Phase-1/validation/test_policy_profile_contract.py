@@ -46,7 +46,7 @@ def test_policy_profile_contract() -> None:
     assert normal["status"] == "confirmatory_candidate_release_blocked"
     assert normal["user_facing_mode"] == "normal"
     assert normal["stage_a_policy"] == "text_only_v2"
-    assert normal["selector"]["kind"] == "reason_coded_structural_and_teacher_evidence"
+    assert normal["selector"]["kind"] == "reason_coded_structural_and_distilled_quality_evidence"
     assert normal["selector"]["reads_source_identity"] is False
     assert normal["selector"]["reads_source_tier"] is False
     assert normal["selector"]["reads_rights"] is False
@@ -57,8 +57,13 @@ def test_policy_profile_contract() -> None:
     }
     assert normal["runtime_policy"]["stage_b"]["deduplicate_stage_a_text_exactly"] is True
     assert normal["runtime_policy"]["redundancy_v2"]["runtime_activation"] is True
-    assert normal["runtime_policy"]["quality_teacher"]["runtime_required"] is True
-    assert "stage_b_quality_teacher_panel_v2" in normal["enabled_policy_ids"]
+    assert normal["runtime_policy"]["quality_runtime"]["runtime_required"] is True
+    assert normal["runtime_policy"]["quality_runtime"]["minimum_passed_policies"] == 1
+    assert normal["runtime_policy"]["quality_runtime"]["abstain_action"] == (
+        "not_select_unless_coverage_veto"
+    )
+    assert normal["runtime_policy"]["quality_runtime"]["full_corpus_teacher_panel_forbidden"] is True
+    assert "stage_b_quality_distilled_ranker_v1" in normal["enabled_policy_ids"]
     assert "near_duplicate_compaction" not in normal["runtime_policy"]["stage_b_policy"]
     assert normal["runtime_policy"]["stage_b_policy"]["structural_scaffold_compaction"]["enabled"] is True
     assert normal["runtime_policy"]["stage_b_policy"]["structural_artifact_rules"] == {
@@ -72,10 +77,11 @@ def test_policy_profile_contract() -> None:
     hard = by_id["hard_structural_v1"]
     assert hard["status"] == "confirmatory_candidate_release_blocked"
     assert hard["user_facing_mode"] == "hard"
-    assert hard["selector"]["kind"] == "reason_coded_structural_and_teacher_evidence"
+    assert hard["selector"]["kind"] == "reason_coded_structural_and_distilled_quality_evidence"
     assert hard["forbids_implicit_fixed_fraction"] is True
     assert hard["runtime_policy"]["redundancy_v2"]["runtime_activation"] is True
-    assert hard["runtime_policy"]["quality_teacher"]["runtime_required"] is True
+    assert hard["runtime_policy"]["quality_runtime"]["runtime_required"] is True
+    assert hard["runtime_policy"]["quality_runtime"]["minimum_passed_policies"] == 2
     assert hard["enabled_policy_ids"] == normal["enabled_policy_ids"]
     assert "hard_span_compaction" not in hard["runtime_policy"]["stage_b_policy"]
     assert set(hard["candidate_policy_ids"]) == {

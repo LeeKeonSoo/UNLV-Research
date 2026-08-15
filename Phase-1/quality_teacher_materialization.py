@@ -13,7 +13,7 @@ from typing import Any, Callable, Mapping
 from dotenv import load_dotenv
 
 from quality_operating_points import CurationMode, QualityAction
-from quality_stage_bridge import apply_coverage_veto, propose_quality_removals
+from quality_stage_bridge import apply_coverage_veto, propose_quality_selections
 from quality_teacher_adapters import ConcurrencyLimitedBackend, NvidiaBuildBackend
 from quality_teacher_batch_cache import TeacherBatchEvidenceStore
 from quality_teacher_panel import (
@@ -124,6 +124,13 @@ def _result_to_mapping(result: PanelPolicyResult) -> JsonMap:
         "panel_decision": result.decision.value,
         "decision_source": result.decision_source,
         "decision_reason_codes": list(result.reason_codes),
+        "class_probabilities": dict(result.class_probabilities),
+        "failure_probability": result.failure_probability,
+        "normal_failure_threshold": result.normal_failure_threshold,
+        "hard_failure_threshold": result.hard_failure_threshold,
+        "prediction_confidence": result.prediction_confidence,
+        "out_of_distribution": result.out_of_distribution,
+        "ranker_artifact_sha256": result.ranker_artifact_sha256,
         "first_pass": [_vote_to_mapping(vote) for vote in result.first_pass],
         "second_pass": (
             None
@@ -151,6 +158,36 @@ def _result_from_mapping(payload: Mapping[str, Any]) -> PanelPolicyResult:
         ),
         decision_source=str(payload.get("decision_source") or "teacher_panel"),
         reason_codes=tuple(str(code) for code in payload.get("decision_reason_codes") or ()),
+        class_probabilities=tuple(
+            (str(label), float(probability))
+            for label, probability in dict(payload.get("class_probabilities") or {}).items()
+        ),
+        failure_probability=(
+            None
+            if payload.get("failure_probability") is None
+            else float(payload["failure_probability"])
+        ),
+        normal_failure_threshold=(
+            None
+            if payload.get("normal_failure_threshold") is None
+            else float(payload["normal_failure_threshold"])
+        ),
+        hard_failure_threshold=(
+            None
+            if payload.get("hard_failure_threshold") is None
+            else float(payload["hard_failure_threshold"])
+        ),
+        prediction_confidence=(
+            None
+            if payload.get("prediction_confidence") is None
+            else float(payload["prediction_confidence"])
+        ),
+        out_of_distribution=bool(payload.get("out_of_distribution") or False),
+        ranker_artifact_sha256=(
+            None
+            if payload.get("ranker_artifact_sha256") is None
+            else str(payload["ranker_artifact_sha256"])
+        ),
     )
 
 
@@ -170,7 +207,10 @@ def _load_cache(
     path: Path,
     panel_sha256: str,
     runtime_sha256: str,
+    minimum_available_teachers: int = 2,
 ) -> tuple[dict[str, JsonMap], int]:
+    if minimum_available_teachers not in (1, 2, 3):
+        raise ValueError("minimum_available_teachers must be 1, 2, or 3")
     if not path.exists():
         return {}, 0
     cached: dict[str, JsonMap] = {}
@@ -182,7 +222,7 @@ def _load_cache(
             raise RuntimeError(f"Quality observation panel identity mismatch in {path}")
         if row.get("quality_runtime_sha256") != runtime_sha256:
             raise RuntimeError(f"Quality observation runtime identity mismatch in {path}")
-        if len(tuple(row.get("available_teacher_ids") or ())) < 2:
+        if len(tuple(row.get("available_teacher_ids") or ())) < minimum_available_teachers:
             ignored_unavailable += 1
             continue
         if len(tuple(row.get("policy_results") or ())) != 4:
@@ -272,6 +312,8 @@ def score_quality_rows(
     dotenv_path: Path,
     cache_path: Path,
     task_workers: int,
+    minimum_available_teachers: int = 2,
+    runtime_sha256_override: str | None = None,
 ) -> tuple[dict[str, tuple[PanelPolicyResult, ...]], JsonMap]:
     if task_workers < 1:
         raise ValueError("task_workers must be positive")
@@ -280,9 +322,23 @@ def score_quality_rows(
     panel = load_teacher_panel(panel_path)
     if not panel.runtime_activation:
         raise RuntimeError("Quality teacher panel is not authorized for runtime materialization")
+    match panel.aggregation_strategy:
+        case "three_teacher_stable_majority":
+            if minimum_available_teachers not in (2, 3):
+                raise RuntimeError("Three-teacher materialization requires two or three teachers")
+        case "single_teacher_confirmed_fail":
+            if minimum_available_teachers != 1:
+                raise RuntimeError("Single-teacher materialization requires one available teacher")
     panel_sha256 = _sha256(panel_path)
-    runtime_sha256 = _quality_runtime_sha256()
-    cache, ignored_unavailable = _load_cache(cache_path, panel_sha256, runtime_sha256)
+    runtime_sha256 = runtime_sha256_override or _quality_runtime_sha256()
+    if len(runtime_sha256) != 64:
+        raise ValueError("runtime_sha256_override must be a SHA-256 digest")
+    cache, ignored_unavailable = _load_cache(
+        cache_path,
+        panel_sha256,
+        runtime_sha256,
+        minimum_available_teachers,
+    )
     expected_policy_ids = tuple(policy.policy_id for policy in panel.policies)
     adapters = _build_policy_set_adapters(panel)
     provider_cache_root = cache_path.with_suffix(cache_path.suffix + ".provider_batches")
@@ -343,6 +399,27 @@ def score_quality_rows(
                             )
                             continue
                         result_by_id = {item.unit_id: item.evidence for item in completed}
+                        insufficient = [
+                            unit_id
+                            for unit_id, result in result_by_id.items()
+                            if len(result.available_teacher_ids) < minimum_available_teachers
+                        ]
+                        if insufficient:
+                            failed_batch = {
+                                "chunk_uids": insufficient,
+                                "error": "minimum_available_teachers_not_met",
+                            }
+                            failed_batches.append(failed_batch)
+                            print(
+                                json.dumps(
+                                    {
+                                        "quality_batch_failure": insufficient,
+                                        "status": "deferred_for_teacher_resume",
+                                    }
+                                ),
+                                flush=True,
+                            )
+                            continue
                         for task_id, text_digest, unit in futures[future]:
                             result = result_by_id[unit.unit_id]
                             observation = {
@@ -350,6 +427,7 @@ def score_quality_rows(
                                 "task_id": task_id,
                                 "teacher_panel_sha256": panel_sha256,
                                 "quality_runtime_sha256": runtime_sha256,
+                                "aggregation_strategy": panel.aggregation_strategy,
                                 "chunk_uid": unit.unit_id,
                                 "text_sha256": text_digest,
                                 "available_teacher_ids": list(result.available_teacher_ids),
@@ -417,10 +495,15 @@ def score_quality_rows(
         "teacher_panel_path": str(panel_path),
         "teacher_panel_sha256": panel_sha256,
         "quality_runtime_sha256": runtime_sha256,
+        "quality_runtime_identity_source": (
+            "declared_resume_identity" if runtime_sha256_override else "current_runtime_modules"
+        ),
+        "aggregation_strategy": panel.aggregation_strategy,
         "quality_policy_ids": list(expected_policy_ids),
         "input_chunks": len(rows),
         "transport_mode": "all_q1_q4_policies_batched_per_teacher_request",
         "unit_batch_size": panel.unit_batch_size,
+        "minimum_available_teachers": minimum_available_teachers,
         "required_observations": len(rows),
         "new_observations": new_observations,
         "reused_observations": len(rows) - new_observations,
@@ -457,12 +540,12 @@ def materialize_modes(
     report_modes: JsonMap = {}
     normal_retained_ids: set[str] | None = None
     for mode in (CurationMode.NORMAL, CurationMode.HARD):
-        proposals = propose_quality_removals(results_by_chunk, mode)
+        proposals = propose_quality_selections(results_by_chunk, mode)
         # Coverage receives the full typed proposal set. No metadata quota or target mix
         # can create protected IDs; malformed proposals fail the invariant below.
         final = apply_coverage_veto(proposals, protected_uids=set())
         retained: list[JsonMap] = []
-        removed: list[JsonMap] = []
+        not_selected: list[JsonMap] = []
         reason_counts: dict[str, int] = {}
         for source_row in rows:
             chunk_uid = str(source_row["chunk_uid"])
@@ -470,52 +553,56 @@ def materialize_modes(
             decision = final[chunk_uid]
             row = _annotate_result(source_row, result)
             row["quality_stage_decision"] = asdict(decision)
-            if decision.final_action == QualityAction.REMOVE.value:
-                if not decision.failed_policy_ids:
-                    raise RuntimeError(f"Unreasoned Quality removal: {chunk_uid}")
-                removed.append(row)
+            if decision.final_action == QualityAction.NOT_SELECT.value:
+                if not decision.failed_policy_ids and (
+                    len(decision.passed_policy_ids) >= decision.required_pass_count
+                ):
+                    raise RuntimeError(f"Unreasoned Quality non-selection: {chunk_uid}")
+                not_selected.append(row)
                 reason_counts[decision.stage_b_reason_code] = (
                     reason_counts.get(decision.stage_b_reason_code, 0) + 1
                 )
             else:
                 retained.append(row)
         retained_ids = {str(row["chunk_uid"]) for row in retained}
-        removed_ids = {str(row["chunk_uid"]) for row in removed}
+        not_selected_ids = {str(row["chunk_uid"]) for row in not_selected}
         input_ids = {str(row["chunk_uid"]) for row in rows}
-        if retained_ids & removed_ids or retained_ids | removed_ids != input_ids:
+        if retained_ids & not_selected_ids or retained_ids | not_selected_ids != input_ids:
             raise RuntimeError(f"Quality materialization partition invariant failed for {mode.value}")
         if normal_retained_ids is None:
             normal_retained_ids = retained_ids
         elif not retained_ids.issubset(normal_retained_ids):
             raise RuntimeError("Hard retained set must be a subset of Normal retained set")
         retained_path = output_dir / f"{mode.value}_curated_chunks.jsonl"
-        removed_path = output_dir / f"{mode.value}_quality_removed_chunks.jsonl"
+        not_selected_path = output_dir / f"{mode.value}_quality_not_selected_chunks.jsonl"
         _write_jsonl(retained_path, retained)
-        _write_jsonl(removed_path, removed)
+        _write_jsonl(not_selected_path, not_selected)
         report_modes[mode.value] = {
             "input_chunks": len(rows),
             "retained_chunks": len(retained),
-            "removed_chunks": len(removed),
+            "not_selected_chunks": len(not_selected),
             "input_whitespace_token_proxy": sum(int(row.get("token_proxy") or 0) for row in rows),
             "retained_whitespace_token_proxy": sum(int(row.get("token_proxy") or 0) for row in retained),
-            "removed_whitespace_token_proxy": sum(int(row.get("token_proxy") or 0) for row in removed),
+            "not_selected_whitespace_token_proxy": sum(
+                int(row.get("token_proxy") or 0) for row in not_selected
+            ),
             "reason_code_counts": reason_counts,
             "retained_path": str(retained_path),
             "retained_sha256": _sha256(retained_path),
-            "removed_path": str(removed_path),
-            "removed_sha256": _sha256(removed_path),
+            "not_selected_path": str(not_selected_path),
+            "not_selected_sha256": _sha256(not_selected_path),
         }
     report = {
         "schema_version": REPORT_SCHEMA,
         "status": "quality_teacher_materialization_complete",
         "stage_contract": {
-            "stage_b": "Q1-Q4 typed Quality fail proposals",
+            "stage_b": "Q1-Q4 positive Quality retention threshold",
             "stage_c": "Coverage materialization invariant and veto boundary",
         },
         "scoring": dict(scoring_audit),
         "modes": report_modes,
         "forbidden_runtime_inputs_read": [],
-        "abstain_action": "retain",
+        "abstain_action": "not_select_unless_coverage_veto",
         "benchmark_outcomes_read": False,
         "utility_read": False,
         "token_budget_read": False,
@@ -535,6 +622,8 @@ def main() -> int:
     parser.add_argument("--cache", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--task-workers", type=int, default=8)
+    parser.add_argument("--minimum-available-teachers", type=int, choices=(1, 2, 3), default=2)
+    parser.add_argument("--runtime-sha256-override")
     args = parser.parse_args()
     rows = _read_jsonl(args.input)
     results, scoring = score_quality_rows(
@@ -543,6 +632,8 @@ def main() -> int:
         dotenv_path=args.dotenv,
         cache_path=args.cache,
         task_workers=args.task_workers,
+        minimum_available_teachers=args.minimum_available_teachers,
+        runtime_sha256_override=args.runtime_sha256_override,
     )
     report = materialize_modes(rows, results, output_dir=args.output_dir, scoring_audit=scoring)
     print(json.dumps({"status": report["status"], "modes": report["modes"]}, ensure_ascii=True))

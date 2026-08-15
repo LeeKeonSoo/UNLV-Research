@@ -19,7 +19,7 @@ from model_provider_contract import (
 
 
 REGISTRY = ROOT / "configs" / "model_provider_registry_v1.json"
-ACTIVE_PANEL = ROOT / "configs" / "quality_teacher_panel_v2.json"
+ACTIVE_PANEL = ROOT / "configs" / "quality_teacher_luna_single_v1.json"
 
 
 def test_registry_exposes_replaceable_roles_without_direct_deletion_authority() -> None:
@@ -36,17 +36,17 @@ def test_registry_exposes_replaceable_roles_without_direct_deletion_authority() 
     assert all(not slot.provider_output_alone_may_delete for slot in registry.slots.values())
 
 
-def test_teacher_panel_and_primary_embedding_are_runtime_experiments() -> None:
+def test_offline_teacher_and_primary_embedding_have_separate_authority() -> None:
     registry = load_provider_registry(REGISTRY)
     providers = {provider.provider_id: provider for provider in registry.providers}
 
-    teacher_panel = providers["quality-teacher-panel-v2"]
+    teacher_panel = providers["quality-teacher-luna-single-v1"]
     embedding = providers["qwen3-embedding-0.6b-semantic-candidate"]
     audit_embedding = providers["bge-m3-semantic-audit-candidate"]
-    assert teacher_panel.lifecycle is ProviderLifecycle.RUNTIME_EXPERIMENT
+    assert teacher_panel.lifecycle is ProviderLifecycle.AUDIT_ONLY
     assert embedding.lifecycle is ProviderLifecycle.RUNTIME_EXPERIMENT
     assert audit_embedding.lifecycle is ProviderLifecycle.AUDIT_ONLY
-    assert teacher_panel.policy_contribution_authority is True
+    assert teacher_panel.policy_contribution_authority is False
     assert embedding.policy_contribution_authority is True
     assert audit_embedding.policy_contribution_authority is False
     assert embedding.artifacts[0].model_id != audit_embedding.artifacts[0].model_id
@@ -55,14 +55,15 @@ def test_teacher_panel_and_primary_embedding_are_runtime_experiments() -> None:
 def test_teacher_provider_registry_matches_active_panel_identity() -> None:
     registry = load_provider_registry(REGISTRY)
     teacher_panel = next(
-        provider for provider in registry.providers if provider.provider_id == "quality-teacher-panel-v2"
+        provider
+        for provider in registry.providers
+        if provider.provider_id == "quality-teacher-luna-single-v1"
     )
 
-    assert [artifact.model_id for artifact in teacher_panel.artifacts] == [
-        "z-ai/glm-5.2",
-        "nvidia/nemotron-3-ultra-550b-a55b",
-        "minimaxai/minimax-m3",
-    ]
+    assert [artifact.model_id for artifact in teacher_panel.artifacts] == ["gpt-5.6-luna"]
+    assert teacher_panel.provider_type == "remote_model"
+    assert teacher_panel.tokenizer_id is None
+    assert teacher_panel.tokenizer_revision is None
     assert teacher_panel.implementation_contract_identity_sha256 == hashlib.sha256(
         ACTIVE_PANEL.read_bytes()
     ).hexdigest()
@@ -93,7 +94,7 @@ def test_changed_provider_fingerprint_cannot_inherit_calibration() -> None:
 
 if __name__ == "__main__":
     test_registry_exposes_replaceable_roles_without_direct_deletion_authority()
-    test_teacher_panel_and_primary_embedding_are_runtime_experiments()
+    test_offline_teacher_and_primary_embedding_have_separate_authority()
     test_teacher_provider_registry_matches_active_panel_identity()
     test_changed_provider_fingerprint_cannot_inherit_calibration()
     print("[model-provider-contract-v1] replacement and fail-closed gates: pass")

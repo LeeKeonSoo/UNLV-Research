@@ -7,10 +7,12 @@ import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+from quality_teacher_panel import PanelDecision
+from quality_teacher_runtime import PanelPolicyResult
 
 
 def _load_module() -> object:
@@ -18,12 +20,29 @@ def _load_module() -> object:
     spec = importlib.util.spec_from_file_location("run_curation", path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
 
 def _write_jsonl(path: Path, row: dict[str, object]) -> None:
     path.write_text(json.dumps(row) + "\n", encoding="utf-8")
+
+
+def _retain_quality_scorer(rows, **_kwargs):
+    return {
+        str(row["chunk_uid"]): (
+            PanelPolicyResult(
+                policy_id="q3_substantive_payload",
+                decision=PanelDecision.PASS,
+                first_pass=(),
+                second_pass=None,
+                decision_source="declared_verifier",
+                reason_codes=("source_contract_fixture_pass",),
+            ),
+        )
+        for row in rows
+    }, {"fixture": True, "input_chunks": len(rows)}
 
 
 def _source(path: Path, name: str) -> dict[str, object]:
@@ -88,6 +107,8 @@ def main() -> int:
                 {
                     "schema_version": "curation-run-contract-v1",
                     "status": "frozen_before_stage_a_b_c_materialization",
+                    "mode": "normal",
+                    "execution_scope": "development",
                     "input": {
                         "sources": [
                             _source(valid_path, "declared-code-source"),
@@ -105,7 +126,9 @@ def main() -> int:
             encoding="utf-8",
         )
 
-        report = _load_module().materialize(config_path)
+        report = _load_module().materialize(
+            config_path, quality_scorer=_retain_quality_scorer
+        )
         release = [
             json.loads(line)
             for line in (output_dir / "stage_a_release_candidates.jsonl").read_text(encoding="utf-8").splitlines()

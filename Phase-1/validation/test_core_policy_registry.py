@@ -20,11 +20,16 @@ def main() -> int:
         "structural_compression": "quality",
     }
     quality_contract = registry["core_decision_contracts"]["quality"]
-    assert quality_contract["runtime_owner"] == "quality_retention.py"
-    assert quality_contract["decisions"] == ["keep", "reject", "abstain_retain"]
-    assert quality_contract["abstain_action"] == "retain"
-    assert quality_contract["decision_contract"] == "quality_retention_deletion_authority_v2"
-    assert quality_contract["missing_trace_action"] == "reject_decision_construction_fails"
+    assert quality_contract["runtime_owner"] == "all_policy_stage_b.py"
+    assert quality_contract["decisions"] == [
+        "retain_supported",
+        "not_select_qualified_fail",
+        "not_select_insufficient_pass_evidence",
+        "coverage_veto_retain",
+    ]
+    assert quality_contract["abstain_action"] == "not_select_unless_coverage_veto"
+    assert quality_contract["decision_contract"] == "quality_positive_selection_authority_v3"
+    assert quality_contract["missing_trace_action"] == "quality_decision_construction_fails_closed"
     assert quality_contract["intrinsic_quality_score_used"] is False
     route_quality = registry["core_decision_contracts"]["candidate_route_conditioned_quality_v2"]
     assert route_quality["required_heads"] == ["substantive_payload", "route_specific_evidence"]

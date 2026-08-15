@@ -30,7 +30,7 @@
       "id": "normal_structural_v1",
       "status": "confirmatory_candidate_release_blocked",
       "user_facing_mode": "normal",
-      "description": "Default source-agnostic A-B-C profile. It uses reason-coded structural evidence plus the frozen three-teacher Quality panel; source, rights, hazard, language, and path fields are audit-only when supplied.",
+      "description": "Default source-agnostic A-B-C profile. It uses reason-coded structural evidence plus a frozen distilled Q1-Q4 Quality ranker; the three-teacher panel is calibration and uncertain-case oracle only.",
       "stage_a_policy": "text_only_v2",
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
@@ -43,7 +43,7 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_teacher_panel_v2",
+        "stage_b_quality_distilled_ranker_v1",
         "stage_c_coverage_guard"
       ],
       "stage_b_policy_ids": [
@@ -98,15 +98,20 @@
           "enforce_materialization_invariants": true,
           "selection_authority": false
         },
-        "quality_teacher": {
-          "panel": "configs/quality_teacher_panel_v2.json",
+        "quality_runtime": {
+          "contract": "configs/quality_ranker_v1.json",
+          "oracle_panel": "configs/quality_teacher_luna_single_v1.json",
           "operating_point": "normal",
-          "abstain_action": "retain",
-          "runtime_required": true
+          "minimum_passed_policies": 1,
+          "qualified_fail_action": "not_select",
+          "abstain_action": "not_select_unless_coverage_veto",
+          "runtime_method": "distilled_quality_ranker_v1",
+          "runtime_required": true,
+          "full_corpus_teacher_panel_forbidden": true
         }
       },
       "selector": {
-        "kind": "reason_coded_structural_and_teacher_evidence",
+        "kind": "reason_coded_structural_and_distilled_quality_evidence",
         "reads_utility": false,
         "reads_benchmark_outcomes": false,
         "reads_target_retention_fraction": false,
@@ -136,7 +141,7 @@
         "stage_b_structural_scaffold",
         "stage_b_empty_html_shell",
         "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_teacher_panel_v2",
+        "stage_b_quality_distilled_ranker_v1",
         "stage_c_coverage_guard"
       ],
       "stage_b_policy_ids": [
@@ -196,15 +201,20 @@
           "enforce_materialization_invariants": true,
           "selection_authority": false
         },
-        "quality_teacher": {
-          "panel": "configs/quality_teacher_panel_v2.json",
+        "quality_runtime": {
+          "contract": "configs/quality_ranker_v1.json",
+          "oracle_panel": "configs/quality_teacher_luna_single_v1.json",
           "operating_point": "hard",
-          "abstain_action": "retain",
-          "runtime_required": true
+          "minimum_passed_policies": 2,
+          "qualified_fail_action": "not_select",
+          "abstain_action": "not_select_unless_coverage_veto",
+          "runtime_method": "distilled_quality_ranker_v1",
+          "runtime_required": true,
+          "full_corpus_teacher_panel_forbidden": true
         }
       },
       "selector": {
-        "kind": "reason_coded_structural_and_teacher_evidence",
+        "kind": "reason_coded_structural_and_distilled_quality_evidence",
         "reads_utility": false,
         "reads_benchmark_outcomes": false,
         "reads_target_retention_fraction": false,

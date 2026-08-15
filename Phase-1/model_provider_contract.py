@@ -68,7 +68,7 @@ class ProviderManifest(BaseModel):
 
     provider_id: str = Field(min_length=1)
     role: ProviderRole
-    provider_type: Literal["deterministic", "model", "composite_model"]
+    provider_type: Literal["deterministic", "model", "composite_model", "remote_model"]
     lifecycle: ProviderLifecycle
     artifacts: tuple[FrozenModel, ...]
     tokenizer_id: str | None

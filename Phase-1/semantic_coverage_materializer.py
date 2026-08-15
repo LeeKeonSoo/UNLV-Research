@@ -89,22 +89,43 @@ def validate_semantic_coverage_artifacts(
 
 def _families(proposals: tuple[JsonMap, ...]) -> tuple[RepresentativeFamily, ...]:
     members: dict[str, set[str]] = {}
+    identities: dict[str, tuple[str | None, str | None, str]] = {}
     for row in proposals:
         trace = row.get("stage_b_policy")
         if not isinstance(trace, dict):
             continue
         representative = trace.get("representative_chunk_uid")
         if isinstance(representative, str) and representative:
-            members.setdefault(representative, {representative}).add(str(row["chunk_uid"]))
+            family_id = trace.get("family_id")
+            evidence_sha256 = trace.get("evidence_sha256")
+            has_upstream_identity = (
+                isinstance(family_id, str)
+                and bool(family_id)
+                and isinstance(evidence_sha256, str)
+                and bool(evidence_sha256)
+            )
+            key = f"family:{family_id}" if has_upstream_identity else f"representative:{representative}"
+            members.setdefault(key, {representative}).add(str(row["chunk_uid"]))
+            identity = (
+                family_id if has_upstream_identity else None,
+                evidence_sha256 if has_upstream_identity else None,
+                representative,
+            )
+            if key in identities and identities[key] != identity:
+                raise SemanticCoverageMaterializationError(
+                    "Representative family trace identity differs"
+                )
+            identities[key] = identity
     result = []
-    for representative, family_members in sorted(members.items()):
+    for key, family_members in sorted(members.items()):
+        family_id, upstream_evidence, representative = identities[key]
         payload = json.dumps(sorted(family_members), separators=(",", ":")).encode()
-        evidence = hashlib.sha256(payload).hexdigest()
+        inferred_evidence = hashlib.sha256(payload).hexdigest()
         result.append(
             RepresentativeFamily(
-                f"stage-b-family:{evidence[:16]}",
+                family_id or f"stage-b-family:{inferred_evidence[:16]}",
                 frozenset(family_members),
-                evidence,
+                upstream_evidence or inferred_evidence,
                 representative,
             )
         )
@@ -115,11 +136,12 @@ def materialize_semantic_coverage(
     *,
     universe: tuple[JsonMap, ...],
     proposed_survivors: tuple[JsonMap, ...],
-    removal_proposals: tuple[JsonMap, ...],
+    non_selection_proposals: tuple[JsonMap, ...],
     corpus_path: Path,
     graph_path: Path,
     provider: ProviderManifest,
     execution_scope: CoverageExecutionScope,
+    restoration_candidate_uids: frozenset[str] | None = None,
     representative_families: tuple[RepresentativeFamily, ...] = (),
 ) -> tuple[list[JsonMap], JsonMap]:
     graph, corpus_sha, by_uid = _validated_artifacts(
@@ -151,6 +173,29 @@ def materialize_semantic_coverage(
     tags = tuple(
         coverage_tag_from_text(uid, str(row["text"])) for uid, row in sorted(by_uid.items())
     )
+    combined_families = tuple(
+        {
+            family.family_id: family
+            for family in (
+                *_families(non_selection_proposals),
+                *representative_families,
+            )
+        }.values()
+    )
+    families_outside_restoration_ceiling = (
+        ()
+        if restoration_candidate_uids is None
+        else tuple(
+            family.family_id
+            for family in combined_families
+            if not family.member_uids & restoration_candidate_uids
+        )
+    )
+    active_families = tuple(
+        family
+        for family in combined_families
+        if family.family_id not in families_outside_restoration_ceiling
+    )
     request = CoverageRequest(
         chunks=tuple(
             CoverageChunk(uid, max(1, int(row.get("token_proxy") or len(str(row["text"]).split()))))
@@ -158,12 +203,7 @@ def materialize_semantic_coverage(
         ),
         proposed_survivors=proposed_ids,
         strata=semantic_strata + build_multiview_strata(tags, corpus_sha),
-        redundancy_families=tuple(
-            {
-                family.family_id: family
-                for family in (*_families(removal_proposals), *representative_families)
-            }.values()
-        ),
+        redundancy_families=active_families,
         similarities=tuple(
             FrozenSimilarity(
                 edge["left_uid"], edge["right_uid"], float(edge["similarity"]), graph_hash
@@ -174,11 +214,16 @@ def materialize_semantic_coverage(
         provider_id=provider.provider_id,
         provider_identity_sha256=provider.identity_sha256(),
         execution_scope=execution_scope,
+        restoration_candidate_uids=restoration_candidate_uids,
     )
     result = rematerialize_with_coverage(request, provider)
     if result.initial_decision.status is CoverageStatus.ABSTAIN:
         raise SemanticCoverageMaterializationError(result.initial_decision.reason_code)
     final_ids = frozenset(result.final_survivor_uids)
+    if restoration_candidate_uids is not None and not final_ids <= restoration_candidate_uids:
+        raise SemanticCoverageMaterializationError(
+            "Coverage materialization escaped the declared restoration ceiling"
+        )
     restored = set(result.required_retain_uids)
     final = []
     for uid, row in by_uid.items():
@@ -209,5 +254,15 @@ def materialize_semantic_coverage(
         "benchmark_outcomes_read": False,
         "utility_read": False,
         "explicit_representative_families_consumed": len(representative_families),
+        "representative_families_evaluated": len(active_families),
+        "families_outside_restoration_ceiling": list(
+            families_outside_restoration_ceiling
+        ),
+        "restoration_ceiling_applied": restoration_candidate_uids is not None,
+        "restoration_candidate_count": (
+            len(restoration_candidate_uids)
+            if restoration_candidate_uids is not None
+            else len(by_uid)
+        ),
     }
     return final, audit

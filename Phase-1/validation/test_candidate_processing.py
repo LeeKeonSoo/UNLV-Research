@@ -202,6 +202,37 @@ def main() -> int:
     unknown_rights = _candidate("rights", "Useful content with unknown rights cannot be released.", rights="unknown")
     assert "rights_unknown" in unknown_rights["quarantine"]["reasons"], unknown_rights
 
+    error_handler_source = process_candidate(
+        {
+            "id": "valid-error-handler-source",
+            "text": (
+                "from django.shortcuts import render\n\n"
+                "def error_404(request):\n"
+                "    return render(request, '404.html', {'title': 'Page Not Found'})\n\n"
+                "def error_500(request):\n"
+                "    return render(request, '500.html', {'title': 'Internal Server Error'})\n"
+            ),
+            "source_name": "test",
+            "source_uri": "https://example.invalid/valid-error-handler-source",
+            "collected_at": "2026-08-10T00:00:00Z",
+            "language": {"code": "python", "confidence": 1.0},
+            "rights": {"status": "allowed", "license": "fixture-only"},
+            "pii_context": "repository_code",
+        },
+        stage_a_policy="text_only_v2",
+    )
+    assert "acquisition_failure" not in error_handler_source["quarantine"]["reasons"], error_handler_source
+
+    explicit_failed_response = process_candidate(
+        {
+            "id": "failed-response",
+            "text": "Internal Server Error",
+            "acquisition_status": "failed",
+        },
+        stage_a_policy="text_only_v2",
+    )
+    assert "acquisition_failure" in explicit_failed_response["quarantine"]["reasons"], explicit_failed_response
+
     missing_provenance = process_candidate(
         {
             "id": "missing-provenance",

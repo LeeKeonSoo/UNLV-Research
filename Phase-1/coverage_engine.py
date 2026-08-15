@@ -140,6 +140,11 @@ def evaluate_coverage(request: CoverageRequest, provider: ProviderManifest) -> C
 
     excluded = frozenset(exclusion.chunk_uid for exclusion in request.exclusions)
     eligible = frozenset(chunk.uid for chunk in request.chunks) - excluded
+    restoration_candidates = (
+        eligible
+        if request.restoration_candidate_uids is None
+        else eligible & request.restoration_candidate_uids
+    )
     eligible_order = tuple(sorted(eligible))
     working = set(request.proposed_survivors)
     protected: set[str] = set()
@@ -159,7 +164,11 @@ def evaluate_coverage(request: CoverageRequest, provider: ProviderManifest) -> C
             permitted.add(f"family:{family.family_id}")
             continue
         surviving_candidates = candidates & working
-        choice_pool = frozenset(surviving_candidates or candidates)
+        choice_pool = frozenset(
+            surviving_candidates or (candidates & restoration_candidates)
+        )
+        if not choice_pool:
+            return _abstain(request, "coverage_restoration_candidate_ceiling_exhausted")
         preferred = family.preferred_representative_uid
         if preferred is not None and preferred in choice_pool:
             representative = preferred
@@ -184,7 +193,10 @@ def evaluate_coverage(request: CoverageRequest, provider: ProviderManifest) -> C
             continue
         if candidates & working:
             continue
-        representative, _ = choose_by_marginal_gain(frozenset(candidates), frozenset(working), eligible_order, request.similarities)
+        choice_pool = frozenset(candidates & restoration_candidates)
+        if not choice_pool:
+            return _abstain(request, "coverage_restoration_candidate_ceiling_exhausted")
+        representative, _ = choose_by_marginal_gain(choice_pool, frozenset(working), eligible_order, request.similarities)
         working.add(representative)
         protected.add(representative)
 

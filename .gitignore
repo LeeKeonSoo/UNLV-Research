@@ -5,4 +5,12 @@
 .vscode/
 .ignore
 outputs/
+output/
 tmp/
+Phase-1/output/
+Phase-1/.debug-journal.md
+Phase-1/*.code-workspace
+paper/build/
+paper/build_*/
+paper/render_*/
+paper/tmp/

@@ -83,8 +83,17 @@ class PanelPolicyResult:
     decision: PanelDecision
     first_pass: tuple[TeacherVote, ...]
     second_pass: tuple[TeacherVote, ...] | None
-    decision_source: Literal["teacher_panel", "declared_verifier"] = "teacher_panel"
+    decision_source: Literal[
+        "teacher_panel", "declared_verifier", "distilled_ranker"
+    ] = "teacher_panel"
     reason_codes: tuple[str, ...] = ()
+    class_probabilities: tuple[tuple[str, float], ...] = ()
+    failure_probability: float | None = None
+    normal_failure_threshold: float | None = None
+    hard_failure_threshold: float | None = None
+    prediction_confidence: float | None = None
+    out_of_distribution: bool = False
+    ranker_artifact_sha256: str | None = None
 
 
 def _request(

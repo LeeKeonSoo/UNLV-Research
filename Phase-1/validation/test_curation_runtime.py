@@ -251,11 +251,13 @@ def main() -> int:
         assert report["summary"]["stage_b_near_duplicate_removed_chunks"] == 0
         assert report["summary"]["stage_b_structural_scaffold_removed_chunks"] == 0
         assert report["stage_contract"]["stage_a"] == "source_agnostic_text_normalization_and_integrity_handling"
-        assert report["stage_contract"]["stage_b"] == "redundancy_and_quality_removal_proposals"
+        assert report["stage_contract"]["stage_b"] == (
+            "redundancy_removal_and_positive_quality_selection"
+        )
         assert report["stage_contract"]["stage_c"] == "coverage_veto_and_final_materialization"
         assert report["summary"]["stage_b_explicit_non_payload_rejected_chunks"] == 0
-        assert report["summary"]["stage_b_quality_teacher_removed_chunks"] == 0
-        assert report["stage_b_quality_teacher"]["retained_chunks"] == 3
+        assert report["summary"]["stage_b_quality_not_selected_chunks"] == 0
+        assert report["stage_b_quality"]["retained_chunks"] == 3
         assert report["curation_mode"]["mode"] == "normal"
         assert report["curation_mode"]["profile_id"] == "normal_structural_v1"
         assert len(report["curation_mode"]["effective_policy_sha256"]) == 64
@@ -266,7 +268,9 @@ def main() -> int:
         assert composition["stages"]["raw_input"]["content_domain"]["records"]["code"] == 1
         assert composition["stages"]["raw_input"]["content_domain"]["records"]["mathematics"] == 1
         assert composition["stages"]["stage_c_curated"]["language_script"]["records"]["non_latin"] == 1
-        assert "code" in composition["delta_from_raw"]["stage_c_curated"]["content_domain"]["token_share"]
+        assert "stage_c_curated" not in composition["delta_from_raw"]
+        assert composition["excluded_cross_unit_deltas"]["stage_c_curated"] == "record_to_chunk_delta_not_emitted"
+        assert "code" in composition["delta_from_stage_b_pass"]["stage_c_curated"]["content_domain"]["token_share"]
         explanatory = report["composition_artifacts"]
         assert explanatory["authority"] == "audit_only"
         assert explanatory["consumed_by_selection"] is False
@@ -275,7 +279,7 @@ def main() -> int:
             "composition_audit.json",
             "composition_by_route.csv",
             "composition_by_language.csv",
-            "raw_curated_composition_delta.csv",
+            "eligible_curated_composition_delta.csv",
         ):
             assert (output_dir / name).is_file()
         reason_impact = report["reason_code_impact_audit"]
@@ -345,6 +349,12 @@ def main() -> int:
             "quality_teacher_batch_cache.py",
             "quality_teacher_unit_runtime.py",
             "quality_teacher_batch_runtime.py",
+            "quality_ranker_artifact.py",
+            "quality_ranker_policy.py",
+            "quality_ranker_runtime.py",
+            "quality_operating_points.py",
+            "quality_stage_bridge.py",
+            "quality_runtime_dispatch.py",
             "run_curation.py",
             "stage_b_policy.py",
             "stage_c_selection.py",
@@ -363,7 +373,7 @@ def main() -> int:
         assert code_chunk["quality_retention_decision"]["schema_version"] == "quality-retention-decision-v2"
         assert code_chunk["quality_retention_decision"]["routing_precondition"]["quality_evidence"] is False
         assert code_chunk["stage_b_redundancy_v2"]["action"] == "retain"
-        assert len(code_chunk["quality_teacher_evidence"]) == 4
+        assert len(code_chunk["quality_policy_evidence"]) == 4
         assert code_chunk["quality_stage_decision"]["stage_b_action"] == "retain"
         assert code_chunk["stage_b_policy_metadata"] == {}
         assert code_chunk["stage_b_selector_visible"]["source_name"] is False

@@ -7,7 +7,7 @@
   "curation_engine": {
     "included_stages": ["Stage A", "Stage B", "Stage C"],
     "curated_output": "full_reason_coded_curated_pool",
-    "completion_rule": "A run completes only after Stage-C Coverage evaluates Stage-B removal proposals and final materialization passes a complete recheck.",
+    "completion_rule": "A run completes only after Stage-C Coverage evaluates Stage-B non-selection proposals and final materialization passes a complete recheck.",
     "public_modes": ["normal", "hard"],
     "release_enabled_modes": [],
     "fixed_retention_fraction_allowed": false,
@@ -38,12 +38,12 @@
     "uncertainty_action": "retain_or_quarantine_without_quality_claim"
   },
   "stage_b": {
-    "role": "redundancy_and_quality_removal_proposals",
+    "role": "redundancy_removal_and_positive_quality_selection",
     "core_ids": ["redundancy", "quality"],
     "implemented_decisions": [
       "stable_family_nonrepresentative_proposal",
-      "promoted_typed_quality_policy_proposal",
-      "reason_coded_abstain_retain"
+      "positive_quality_retention_threshold",
+      "reason_coded_quality_not_select"
     ],
     "required_trace": [
       "chunk_uid",
@@ -52,21 +52,22 @@
       "policy_version",
       "reason_code",
       "observed_evidence",
-      "representative_chunk_uid",
+      "passed_and_failed_policy_ids_when_quality",
+      "representative_chunk_uid_when_redundancy",
       "evidence_artifact_sha256",
       "token_delta_proxy"
     ],
     "proposal_is_final_membership": false,
     "similarity_alone_may_delete": false,
-    "teacher_output_alone_may_delete": false,
-    "uncertainty_action": "retain"
+    "teacher_output_alone_may_select_or_delete": false,
+    "uncertainty_action": "not_select_unless_coverage_veto"
   },
   "stage_c": {
     "role": "coverage_veto_and_final_materialization",
     "core_ids": ["coverage"],
     "may_create_new_removal": false,
     "may_rank_or_impose_quota": false,
-    "allowed_effects": ["accept_stage_b_proposal", "veto_unexplained_support_loss"],
+    "allowed_effects": ["accept_stage_b_non_selection", "veto_unexplained_support_loss"],
     "semantic_candidate_contract": "configs/semantic_coverage_v3.json",
     "required_retain_is_explicit": true,
     "silent_restore_allowed": false,
@@ -85,7 +86,7 @@
     },
     "quality": {
       "stage": "Stage B",
-      "authority": "propose removal or retention only through promoted independent typed Policies"
+      "authority": "retain only when the mode-specific number of independent Q1-Q4 Policies passes and no qualified fail fires"
     },
     "coverage": {
       "stage": "Stage C",
@@ -96,6 +97,9 @@
     "authority": "audit_only",
     "may_remove_or_select": false,
     "target_distribution_enforced": false,
+    "comparable_baseline_stage": "Stage B pass",
+    "comparison_unit": "chunk",
+    "raw_record_to_chunk_delta_authority": "descriptive_only_cross_unit",
     "reported_axes": ["content_route", "language_script", "format_morphology"]
   },
   "core_behavior_audit": {
@@ -106,7 +110,7 @@
     "required_dimensions": {
       "validity": ["reason_coded_action", "non_trigger_retention"],
       "redundancy": ["representative_linkage", "representative_survival", "non_trigger_retention"],
-      "quality": ["typed_deletion_authority", "observable_trigger", "false_positive_boundary"],
+      "quality": ["typed_quality_decision_authority", "observable_evidence_trace", "membership_boundary"],
       "coverage": ["materialization_invariant_authority", "representative_linkage_detection", "zero_survivor_detection"]
     },
     "claim_boundary": "Passing constructed fixtures establishes declared behavior only, not corpus-wide validity or downstream effectiveness."
@@ -116,7 +120,8 @@
     "runtime_stage": false,
     "selector_visible": false,
     "may_mutate_or_reselect_frozen_output": false,
-    "natural_token_budget_primary": true,
+    "natural_token_training": true,
+    "equal_token_resampling_allowed": false,
     "seeds": [101, 202, 303]
   }
 }
