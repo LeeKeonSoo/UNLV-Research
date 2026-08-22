@@ -1,93 +1,100 @@
-# Paper working notes
+# Paper Working Notes
 
 Target: IEEE BigData 2026 full-length paper, at most 10 pages in IEEE
-two-column format with references counted in the limit.
+two-column format with references included in the limit.
 
-## Current snapshot
+## Current Snapshot
 
-- Working title: **Evidence-Bound Curation: Auditable Membership Decisions for
-  Language-Model Pretraining Data**.
-- The draft follows a systems/data-curation structure rather than an RQ
-  structure.
-- `IEEEtran` is used in `conference` mode at the class-default 10 pt size, with
-  Times-compatible TeX Gyre Termes/NewTX text and math fonts.
-- The compiled manuscript is US Letter, two-column, and 10 pages including
-  references. It has no manual margin, font-size, or line-spacing overrides.
-- The submission is single-blind, so author names and affiliations remain.
-- Local QA currently reports no overfull boxes, undefined references, or
-  undefined citations. A final IEEE PDF Checker/PDF eXpress pass is still
-  required when the conference exposes its checker or conference ID.
+- Working title: **Evidence-Bound Curation: A Traceable Framework for
+  Language-Model Training Data**.
+- `draft.tex` uses the IEEE conference template and reports the final frozen
+  policy, not the earlier Normal/Hard development profiles.
+- The final manuscript arms are `Base`, `Raw`, `Ours`, `Data-Juicer`, and
+  `NeMo Curator`.
+- Every trained arm uses one complete natural-budget pass with seeds 101, 202,
+  and 303. Base is the no-update reference.
+- BigCodeBench values come only from one common frozen ground-truth cache and
+  evaluator configuration recorded in
+  `reproducibility/bigcodebench_common_cache_results.json`.
 
-## Central claim and boundary
+## Claim and Boundary
 
-The paper's central claim is that heterogeneous filter signals should not own
-corpus membership directly. Evidence producers retrieve candidates, compare
-units, or estimate bounded properties; only a typed, versioned policy may
-authorize a membership transition. The implemented roles are closed Validity,
-witnessed Redundancy, positive-selection Quality, and veto-only Coverage.
+The framework separates curation evidence from corpus-membership authority.
+Validity can isolate explicit input failures. Redundancy can remove a unit only
+after a relation is verified and a representative is retained. Quality selects
+units through positive Q2--Q4 support, while a qualified Q1 failure is a veto.
+Coverage can restore support lost after earlier proposals but cannot create a
+new removal.
 
-The curation runtime does not read benchmark outcomes, pretraining loss, NLL,
-utility estimates, target source mixtures, or a target token budget. Raw,
-Normal, and Hard are frozen first and are then evaluated externally by
-natural-token continued pretraining. The evidence supports implemented
-authority separation and one frozen corpus materialization. It does not support
-a universal data-quality claim or a production-scale comparison. Downstream
-results qualify only the frozen code-corpus profiles under the declared model,
-recipe, and benchmark hierarchy.
+The final confirmatory runs materialized Coverage decisions and passed the
+complete post-Coverage recheck in both domains. The packaged policy remains a
+`beta_release`: the paper does not claim production promotion, universal
+quality measurement, or uniform downstream improvement across domains.
+Benchmarks, training loss, utility, source reputation, target mixtures, and
+token budgets are not selector inputs.
 
-## Frozen evidence map
+## Final Curation Facts
 
-| Paper content | Repository authority |
-|---|---|
-| Offline Q1--Q4 calibration | `Phase-1/configs/quality_teacher_luna_single_v1.json` |
-| Local four-head Quality ranker | `Phase-1/configs/quality_ranker_v1.json` |
-| Normal/Hard policy thresholds | `Phase-1/configs/policy_profiles.json` |
-| MinHash retrieval and typed redundancy bounds | `Phase-1/configs/redundancy_v2.json` |
-| Quality/Coverage formal contract | `Phase-1/docs/quality_coverage_formal_definition.md` |
-| Corpus sources and token materialization | `Phase-1/docs/code_7m_corpus_provenance.md` |
-| Corpus, policy, and integrity audit | `Phase-1/docs/code_7m_dataset_integrity_audit.md` |
-| Frozen external evaluation protocol | `Phase-1/protocols/code_reasoning_primary_amendment_v1.json` |
+| Domain | Raw packed tokens | Ours packed tokens | Retention | Stage-A chunks | Final chunks | Quality not selected | Redundancy removals | Coverage restores |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Code | 6,979,584 | 6,242,304 | 89.44% | 8,026 | 7,270 | 816 | 3 | 104 |
+| Math | 6,979,584 | 5,767,168 | 82.63% | 6,619 | 5,528 | 1,223 | 6 | 143 |
 
-The manuscript reports frozen facts only: 4,890 Raw records; 7,147 Normal
-chunks; 5,859 Hard chunks; 87.70%/72.05% natural-token retention; two/three
-witnessed redundancy exclusions; 99/429 Coverage restores; and zero unexplained
-extinctions after the complete recheck. MinHash is candidate retrieval only;
-the frozen corpus contains no MinHash-only deletion.
+The copied final runtime reports are:
 
-The authority contract is expressed through the runtime's existing checks:
-complete reason-coded traces, representative survival, Coverage zero-survivor
-restoration, forbidden-input isolation, and identity-bound deterministic
-replay. The accompanying transition-induction argument applies to accepted
-materializations under the stated implementation assumptions; it is not a
-claim that arbitrary software defects are impossible.
+- `reproducibility/final_code_curation_report.json`
+- `reproducibility/final_code_coverage_audit.json`
+- `reproducibility/final_math_curation_report.json`
+- `reproducibility/final_math_coverage_audit.json`
+- `reproducibility/final_code_training_inputs_report.json`
+- `reproducibility/final_math_training_inputs_report.json`
 
-## Final result surface
+Both Coverage audits report `complete_recheck_passed=true`,
+`rematerialization_applied=true`, `may_create_new_removal=false`, and
+`scientific_promotion_claimed=false`.
 
-The final block delimited by `FINAL_RESULTS_BLOCK_BEGIN` and
-`FINAL_RESULTS_BLOCK_END` in `draft.tex` contains the frozen Table V
-(`tab:downstream`). It includes:
+## Final Benchmark Means
 
-- all six official benchmark scores in seed order 101/202/303;
-- three-seed mean plus sample standard deviation for each trained arm;
-- the unweighted primary macro over BigCodeBench Complete, CRUXEval-I,
-  CRUXEval-O, and DS-1000 after seed aggregation; and
-- HumanEval+ and MBPP+ as mandatory secondary diagnostics.
+All trained-arm entries are three-seed means in percent.
 
-The frozen machine-readable summary can be regenerated with:
+| Code benchmark | Base | Raw | Ours | Data-Juicer | NeMo Curator |
+|---|---:|---:|---:|---:|---:|
+| HumanEval+ | 31.10 | 28.86 | 31.50 | 28.25 | 30.08 |
+| MBPP+ | 58.47 | 48.94 | 54.67 | 41.27 | 50.97 |
+| BigCodeBench Complete | 39.65 | 40.61 | 39.12 | 40.35 | 40.41 |
+| CRUXEval-I | 3.50 | 7.17 | 5.79 | 9.79 | 7.42 |
+| CRUXEval-O | 2.13 | 2.08 | 2.83 | 1.83 | 2.25 |
+| DS-1000 | 28.00 | 33.20 | 34.13 | 34.23 | 34.63 |
 
-    conda run -n research python Phase-1\external_evaluation\collect_confirmatory_benchmark_results.py --seeds 101 202 303
+| Math benchmark | Base | Raw | Ours | Data-Juicer | NeMo Curator |
+|---|---:|---:|---:|---:|---:|
+| GSM8K strict | 75.13 | 77.79 | 77.53 | 78.72 | 78.29 |
+| GSM8K flexible | 57.54 | 71.19 | 63.08 | 67.60 | 64.87 |
+| GSM8K normalized | 76.42 | 80.11 | 79.05 | 79.78 | 80.34 |
+| MATH-500 | 3.80 | 8.67 | 7.07 | 8.07 | 8.07 |
 
-Use `confirmatory_benchmark_results.json` as the numeric authority and its
-Markdown companion as a cross-check. Do not select a best seed, omit a weak
-benchmark, alter a curation profile, or add result-direction-dependent prose.
-All 60 cells in the final table were recomputed from 42,820 task-level
-judgments and passed the artifact-provenance audit.
+The paper therefore states the bounded result: Ours exceeds both executable
+curation baselines on three of six code benchmarks, while trailing both on all
+four reported math scores.
 
-## Release artifacts
+## Numeric Authority
 
-- `Evidence_Bound_Curation_Draft.pdf`: compiled 10-page manuscript.
-- `Evidence_Bound_Curation_Overleaf.zip`: self-contained TeX source and figure.
-- `Evidence_Bound_Curation_Reproducibility.zip`: compact manifest package with
-  frozen protocols, configurations, run manifests, relevant source entry
-  points, and SHA-256 hashes. It intentionally excludes corpora, model weights,
-  adapters, and task-level generations for size and distribution-rights reasons.
+- Final Code Ours: `reproducibility/framework_code_results.json`
+- Final Math Ours: `reproducibility/framework_math_results.json`
+- Common-cache BigCodeBench: `reproducibility/bigcodebench_common_cache_results.json`
+- Data-Juicer aggregate: `reproducibility/same_corpus_baseline_results.json`
+- NeMo Code: `reproducibility/nemo_curator_baseline_results.json`
+- NeMo Math: `reproducibility/nemo_curator_math_baseline_results.json`
+- Final variability summary: `reproducibility/seed_robustness_summary.json`
+
+`benchmark_results.json`, `math_transfer_results.json`, and the Normal/Hard
+reports are retained as historical development artifacts. They are not the
+numeric authority for the final manuscript.
+
+## Release Artifacts
+
+- `Evidence_Bound_Curation_Draft.pdf`: compiled manuscript.
+- `Evidence_Bound_Curation_Overleaf.zip`: self-contained TeX source and figures.
+- `Evidence_Bound_Curation_Reproducibility.zip`: compact protocols, reports,
+  result summaries, source entry points, and SHA-256 manifest. Corpora, model
+  weights, adapters, and large task-level generations remain excluded.

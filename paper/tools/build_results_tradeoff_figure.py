@@ -1,4 +1,11 @@
-"""Build the vector results figure used by the paper."""
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["matplotlib>=3.9", "numpy>=2.0", "seaborn>=0.13"]
+# ///
+# --- How to run ---
+# uv run paper/tools/build_results_tradeoff_figure.py
+
+"""Build the paper's result-summary and mechanism-action figures."""
 
 from __future__ import annotations
 
@@ -6,174 +13,377 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.pdfmetrics import stringWidth
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen.canvas import Canvas
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.patches import Rectangle
 
+FULL_WIDTH: Final = 516.0
+RESULTS_HEIGHT: Final = 190.0
+COLUMN_WIDTH: Final = 246.0
+MECHANISM_HEIGHT: Final = 152.0
 
-PAGE_WIDTH: Final = 516.0
-PAGE_HEIGHT: Final = 188.0
-FONT: Final = "PaperArial"
-FONT_BOLD: Final = "PaperArial-Bold"
-FONT_PATH: Final = Path("C:/Windows/Fonts/arial.ttf")
-FONT_BOLD_PATH: Final = Path("C:/Windows/Fonts/arialbd.ttf")
-BLUE: Final = (0.12, 0.34, 0.62)
-BLUE_LIGHT: Final = (0.72, 0.82, 0.93)
-ORANGE: Final = (0.88, 0.45, 0.10)
-ORANGE_LIGHT: Final = (0.95, 0.69, 0.43)
-GRID: Final = (0.86, 0.86, 0.86)
+BLUE: Final = (0.10, 0.32, 0.62)
+ORANGE: Final = (0.90, 0.45, 0.08)
+GREEN: Final = (0.08, 0.52, 0.32)
+CODE_COLOR: Final = (0.15, 0.38, 0.67)
+MATH_COLOR: Final = (0.86, 0.38, 0.10)
 
 
 @dataclass(frozen=True, slots=True)
-class ArmPoint:
+class Method:
     name: str
-    retention: float
-    macro: float
-    standard_deviation: float
     color: tuple[float, float, float]
 
 
-ARMS: Final = (
-    ArmPoint("Hard", 72.05, 20.80, 0.44, ORANGE),
-    ArmPoint("Normal", 87.70, 20.59, 0.83, BLUE),
-    ArmPoint("Raw", 100.00, 20.86, 0.35, (0.08, 0.08, 0.08)),
+@dataclass(frozen=True, slots=True)
+class Retention:
+    domain: str
+    method: Method
+    percent: float
+    tokens: int
+
+
+@dataclass(frozen=True, slots=True)
+class BenchmarkDelta:
+    domain: str
+    benchmark: str
+    ours: float
+    data_juicer: float
+    nemo: float
+
+
+@dataclass(frozen=True, slots=True)
+class MechanismAction:
+    label: str
+    code_count: int
+    math_count: int
+
+
+OURS: Final = Method("Ours", BLUE)
+DATA_JUICER: Final = Method("Data-Juicer", ORANGE)
+NEMO: Final = Method("NeMo Curator", GREEN)
+METHODS: Final = (OURS, DATA_JUICER, NEMO)
+
+RETENTION: Final = (
+    Retention("Code", OURS, 89.44, 6_242_304),
+    Retention("Code", DATA_JUICER, 78.87, 5_505_024),
+    Retention("Code", NEMO, 86.38, 6_029_312),
+    Retention("Math", OURS, 82.63, 5_767_168),
+    Retention("Math", DATA_JUICER, 65.96, 4_603_904),
+    Retention("Math", NEMO, 84.27, 5_881_856),
 )
 
-BENCHMARKS: Final = (
-    "HumanEval+",
-    "MBPP+",
-    "BigCodeBench",
-    "CRUXEval-I",
-    "CRUXEval-O",
-    "DS-1000",
+DELTAS: Final = (
+    BenchmarkDelta("Code", "HumanEval+", 2.64, -0.61, 1.22),
+    BenchmarkDelta("Code", "MBPP+", 5.73, -7.67, 2.03),
+    BenchmarkDelta("Code", "BigCodeBench", -1.49, -0.26, -0.20),
+    BenchmarkDelta("Code", "CRUXEval-I", -1.38, 2.62, 0.25),
+    BenchmarkDelta("Code", "CRUXEval-O", 0.75, -0.25, 0.17),
+    BenchmarkDelta("Code", "DS-1000", 0.93, 1.03, 1.43),
+    BenchmarkDelta("Math", "GSM8K strict", -0.26, 0.93, 0.50),
+    BenchmarkDelta("Math", "GSM8K flexible", -8.11, -3.59, -6.32),
+    BenchmarkDelta("Math", "GSM8K normalized", -1.06, -0.33, 0.23),
+    BenchmarkDelta("Math", "MATH-500", -1.60, -0.60, -0.60),
 )
-NORMAL_DELTAS: Final = (2.85, 4.76, -1.49, -0.83, 2.54, -1.30)
-HARD_DELTAS: Final = (1.83, 5.56, -1.14, -1.00, 2.83, -0.93)
+
+MECHANISM_ACTIONS: Final = (
+    MechanismAction("Explicit exclusion", 40, 1),
+    MechanismAction("Deduplication", 4, 10),
+    MechanismAction("Quality not selected", 816, 1_223),
+    MechanismAction("Coverage restoration", 104, 143),
+)
+STAGE_A_COUNTS: Final = {"Code": 8_026, "Math": 6_619}
 
 
-def draw_text(canvas: Canvas, x: float, y: float, text: str, size: float = 7.0) -> None:
-    canvas.setFont(FONT, size)
-    canvas.setFillColorRGB(0.08, 0.08, 0.08)
-    canvas.drawString(x, y, text)
+def build_results_figure(output: Path) -> None:
+    sns.set_theme(style="white", rc={"font.family": "Arial"})
+    mpl.rcParams.update(
+        {
+            "font.family": "Arial",
+            "font.size": 7.0,
+            "pdf.fonttype": 42,
+            "axes.titleweight": "bold",
+            "axes.titlesize": 8.2,
+            "axes.labelsize": 6.8,
+            "xtick.labelsize": 6.3,
+            "ytick.labelsize": 6.3,
+        }
+    )
+    figure, (retention_axis, delta_axis) = plt.subplots(
+        1,
+        2,
+        figsize=(FULL_WIDTH / 72.0, RESULTS_HEIGHT / 72.0),
+        gridspec_kw={"width_ratios": (0.42, 0.58)},
+    )
+    figure.subplots_adjust(left=0.115, right=0.995, bottom=0.19, top=0.79, wspace=0.44)
+
+    y_positions = np.array((5.15, 4.25, 3.35, 1.75, 0.85, -0.05))
+    percentages = np.array(tuple(item.percent for item in RETENTION))
+    method_colors = tuple(item.method.color for item in RETENTION)
+    retention_axis.barh(
+        y_positions,
+        np.full(len(RETENTION), 100.0),
+        height=0.54,
+        color="#EEF1F4",
+        edgecolor="#D6DCE2",
+        linewidth=0.45,
+    )
+    retention_axis.barh(
+        y_positions,
+        percentages,
+        height=0.54,
+        color=method_colors,
+        edgecolor="white",
+        linewidth=0.45,
+    )
+    for y, item in zip(y_positions, RETENTION, strict=True):
+        retention_axis.text(
+            2.2,
+            y,
+            f"{item.percent:.1f}%",
+            color="white",
+            fontsize=6.4,
+            fontweight="bold",
+            ha="left",
+            va="center",
+        )
+        retention_axis.text(
+            item.percent + 1.5,
+            y,
+            f"{item.tokens / 1_000_000:.2f}M",
+            color="#343A40",
+            fontsize=6.1,
+            ha="left",
+            va="center",
+        )
+    retention_axis.set_yticks(y_positions, tuple(item.method.name for item in RETENTION))
+    retention_axis.set_xlim(0, 116)
+    retention_axis.set_ylim(-0.55, 5.75)
+    retention_axis.set_xticks((0, 25, 50, 75, 100))
+    retention_axis.set_xlabel("Raw packed tokens retained (%)", labelpad=2)
+    retention_axis.set_title("(a) Packed-token retention", loc="left", pad=20)
+    retention_axis.axvline(100, color="#636B74", linewidth=0.8, linestyle=(0, (2, 2)))
+    retention_axis.axhline(2.55, color="#D6DCE2", linewidth=0.7)
+    retention_axis.text(
+        0.0,
+        5.66,
+        "CODE",
+        color="#5B6570",
+        fontsize=6.2,
+        fontweight="bold",
+        ha="left",
+        va="center",
+    )
+    retention_axis.text(
+        0.0,
+        2.50,
+        "MATH",
+        color="#5B6570",
+        fontsize=6.2,
+        fontweight="bold",
+        ha="left",
+        va="center",
+    )
+    retention_axis.grid(axis="x", color="#E1E5E9", linewidth=0.45)
+    retention_axis.grid(axis="y", visible=False)
+    retention_axis.tick_params(axis="both", length=0)
+    sns.despine(ax=retention_axis, left=True, bottom=True)
+
+    delta_values = np.array(
+        tuple((item.ours, item.data_juicer, item.nemo) for item in DELTAS)
+    )
+    delta_labels = np.array(
+        tuple(tuple(f"{value:+.2f}" for value in row) for row in delta_values)
+    )
+    diverging_map = LinearSegmentedColormap.from_list(
+        "paper_delta",
+        ("#C5663E", "#F7F7F5", "#2A64A8"),
+    )
+    sns.heatmap(
+        delta_values,
+        ax=delta_axis,
+        annot=delta_labels,
+        fmt="",
+        cmap=diverging_map,
+        center=0.0,
+        vmin=-8.5,
+        vmax=8.5,
+        cbar=False,
+        linewidths=1.2,
+        linecolor="white",
+        xticklabels=tuple(method.name for method in METHODS),
+        yticklabels=(
+            "HumanEval+",
+            "MBPP+",
+            "BigCodeBench",
+            "CRUXEval-I",
+            "CRUXEval-O",
+            "DS-1000",
+            "GSM8K strict",
+            "GSM8K flexible",
+            "GSM8K normalized",
+            "MATH-500",
+        ),
+        annot_kws={"fontsize": 6.2, "fontweight": "bold"},
+    )
+    for text_label, value in zip(delta_axis.texts, delta_values.flat, strict=True):
+        text_label.set_color("white" if abs(value) >= 4.5 else "#20252A")
+    delta_axis.xaxis.tick_top()
+    delta_axis.tick_params(axis="x", length=0, pad=4)
+    delta_axis.tick_params(axis="y", length=0, pad=3)
+    delta_axis.set_xticklabels(
+        tuple(method.name for method in METHODS),
+        rotation=0,
+        fontsize=6.5,
+        fontweight="bold",
+    )
+    delta_axis.set_yticklabels(delta_axis.get_yticklabels(), rotation=0, fontsize=6.1)
+    delta_axis.set_title("(b) Score change from Raw (pp)", loc="left", pad=20)
+    delta_axis.axhline(6, color="#6B737C", linewidth=1.15)
+    delta_axis.add_patch(
+        Rectangle(
+            (0, 0),
+            1,
+            len(DELTAS),
+            fill=False,
+            edgecolor="#1B4F8A",
+            linewidth=1.25,
+            clip_on=False,
+        )
+    )
+    delta_axis.text(
+        0.0,
+        -0.11,
+        "orange = lower than Raw",
+        transform=delta_axis.transAxes,
+        color="#8E4A2D",
+        fontsize=5.7,
+        ha="left",
+    )
+    delta_axis.text(
+        1.0,
+        -0.11,
+        "blue = higher than Raw",
+        transform=delta_axis.transAxes,
+        color="#1B4F8A",
+        fontsize=5.7,
+        ha="right",
+    )
+
+    figure.savefig(output, format="pdf", facecolor="white")
+    plt.close(figure)
 
 
-def draw_centered(canvas: Canvas, x: float, y: float, text: str, size: float = 7.0) -> None:
-    canvas.setFont(FONT, size)
-    canvas.setFillColorRGB(0.08, 0.08, 0.08)
-    canvas.drawCentredString(x, y, text)
+def build_mechanism_figure(output: Path) -> None:
+    sns.set_theme(style="white", rc={"font.family": "Arial"})
+    mpl.rcParams.update(
+        {
+            "font.family": "Arial",
+            "font.size": 6.4,
+            "pdf.fonttype": 42,
+            "axes.titleweight": "bold",
+            "axes.titlesize": 7.8,
+            "axes.labelsize": 6.2,
+            "xtick.labelsize": 5.8,
+            "ytick.labelsize": 5.9,
+        }
+    )
+    figure, axis = plt.subplots(
+        figsize=(COLUMN_WIDTH / 72.0, MECHANISM_HEIGHT / 72.0)
+    )
+    figure.subplots_adjust(left=0.37, right=0.985, bottom=0.22, top=0.78)
 
+    row_positions = np.arange(len(MECHANISM_ACTIONS), dtype=float)
+    bar_height = 0.27
+    code_percentages = np.array(
+        tuple(
+            action.code_count / STAGE_A_COUNTS["Code"] * 100.0
+            for action in MECHANISM_ACTIONS
+        )
+    )
+    math_percentages = np.array(
+        tuple(
+            action.math_count / STAGE_A_COUNTS["Math"] * 100.0
+            for action in MECHANISM_ACTIONS
+        )
+    )
+    code_bars = axis.barh(
+        row_positions - bar_height / 1.7,
+        code_percentages,
+        height=bar_height,
+        color=CODE_COLOR,
+        edgecolor="white",
+        linewidth=0.45,
+        label="Code",
+    )
+    math_bars = axis.barh(
+        row_positions + bar_height / 1.7,
+        math_percentages,
+        height=bar_height,
+        color=MATH_COLOR,
+        edgecolor="white",
+        linewidth=0.45,
+        label="Math",
+    )
+    for bars, counts, percentages, color in (
+        (
+            code_bars,
+            tuple(action.code_count for action in MECHANISM_ACTIONS),
+            code_percentages,
+            CODE_COLOR,
+        ),
+        (
+            math_bars,
+            tuple(action.math_count for action in MECHANISM_ACTIONS),
+            math_percentages,
+            MATH_COLOR,
+        ),
+    ):
+        for bar, count, percent in zip(bars, counts, percentages, strict=True):
+            axis.text(
+                max(percent + 0.38, 0.42),
+                bar.get_y() + bar.get_height() / 2,
+                f"{count} ({percent:.2f}%)",
+                color=color,
+                fontsize=5.4,
+                fontweight="bold",
+                ha="left",
+                va="center",
+            )
 
-def draw_left_panel(canvas: Canvas) -> None:
-    left, bottom, width, height = 40.0, 39.0, 198.0, 118.0
-    x_min, x_max = 68.0, 102.0
-    y_min, y_max = 18.0, 22.0
-    x_pos = lambda value: left + (value - x_min) / (x_max - x_min) * width
-    y_pos = lambda value: bottom + (value - y_min) / (y_max - y_min) * height
+    axis.set_yticks(row_positions, tuple(action.label for action in MECHANISM_ACTIONS))
+    axis.invert_yaxis()
+    axis.set_xlim(0, 23.5)
+    axis.set_xticks((0, 5, 10, 15, 20))
+    axis.set_xlabel("Share of Stage A chunks (%)", labelpad=3)
+    axis.set_title("Membership-changing actions", loc="left", pad=18)
+    axis.legend(
+        loc="upper right",
+        bbox_to_anchor=(1.0, 1.23),
+        ncol=2,
+        frameon=False,
+        handlelength=1.1,
+        handletextpad=0.4,
+        columnspacing=1.0,
+        fontsize=5.9,
+    )
+    axis.grid(axis="x", color="#E0E4E8", linewidth=0.45)
+    axis.grid(axis="y", visible=False)
+    axis.tick_params(axis="both", length=0)
+    sns.despine(ax=axis, left=True, bottom=True)
 
-    canvas.setLineWidth(0.35)
-    for tick in (70, 80, 90, 100):
-        x = x_pos(float(tick))
-        canvas.setStrokeColorRGB(*GRID)
-        canvas.line(x, bottom, x, bottom + height)
-        draw_centered(canvas, x, bottom - 11, str(tick), 6.5)
-    for tick in (18, 19, 20, 21, 22):
-        y = y_pos(float(tick))
-        canvas.setStrokeColorRGB(*GRID)
-        canvas.line(left, y, left + width, y)
-        draw_text(canvas, left - 14, y - 2, str(tick), 6.5)
-
-    canvas.setStrokeColorRGB(0.25, 0.25, 0.25)
-    canvas.line(left, bottom, left + width, bottom)
-    canvas.line(left, bottom, left, bottom + height)
-    canvas.setDash(3, 2)
-    canvas.line(left, y_pos(18.38), left + width, y_pos(18.38))
-    canvas.setDash()
-    draw_text(canvas, left + 3, y_pos(18.38) + 3, "Base 18.38", 6.5)
-
-    for arm in ARMS:
-        x, y = x_pos(arm.retention), y_pos(arm.macro)
-        low, high = y_pos(arm.macro - arm.standard_deviation), y_pos(arm.macro + arm.standard_deviation)
-        canvas.setStrokeColorRGB(*arm.color)
-        canvas.setFillColorRGB(*arm.color)
-        canvas.setLineWidth(0.8)
-        canvas.line(x, low, x, high)
-        canvas.line(x - 2.5, low, x + 2.5, low)
-        canvas.line(x - 2.5, high, x + 2.5, high)
-        canvas.circle(x, y, 2.8, stroke=1, fill=1)
-        label_x = x + 4 if arm.name != "Raw" else x - stringWidth(arm.name, FONT, 6.5) - 4
-        draw_text(canvas, label_x, y + 4, arm.name, 6.5)
-
-    draw_centered(canvas, left + width / 2, 16, "Raw stream tokens retained (%)", 7.0)
-    canvas.saveState()
-    canvas.translate(12, bottom + height / 2)
-    canvas.rotate(90)
-    draw_centered(canvas, 0, 0, "Primary macro (%)", 7.0)
-    canvas.restoreState()
-    canvas.setFont(FONT_BOLD, 7.3)
-    canvas.drawCentredString(left + width / 2, 176, "(a) Compression versus primary macro")
-
-
-def draw_right_panel(canvas: Canvas) -> None:
-    left, bottom, width, height = 332.0, 34.0, 172.0, 122.0
-    x_min, x_max = -2.2, 6.2
-    x_pos = lambda value: left + (value - x_min) / (x_max - x_min) * width
-    row_step = height / len(BENCHMARKS)
-
-    canvas.setLineWidth(0.35)
-    for tick in (-2, 0, 2, 4, 6):
-        x = x_pos(float(tick))
-        canvas.setStrokeColorRGB(*GRID)
-        canvas.line(x, bottom, x, bottom + height)
-        draw_centered(canvas, x, bottom - 10, str(tick), 6.5)
-    canvas.setStrokeColorRGB(0.25, 0.25, 0.25)
-    canvas.setLineWidth(0.7)
-    canvas.line(x_pos(0), bottom, x_pos(0), bottom + height)
-
-    zero = x_pos(0)
-    for index, name in enumerate(BENCHMARKS):
-        y = bottom + height - (index + 0.5) * row_step
-        label_width = stringWidth(name, FONT, 6.1)
-        draw_text(canvas, left - label_width - 5, y - 2, name, 6.1)
-        for offset, value, fill, stroke in (
-            (2.6, NORMAL_DELTAS[index], BLUE_LIGHT, BLUE),
-            (-3.6, HARD_DELTAS[index], ORANGE_LIGHT, ORANGE),
-        ):
-            endpoint = x_pos(value)
-            canvas.setFillColorRGB(*fill)
-            canvas.setStrokeColorRGB(*stroke)
-            canvas.rect(min(zero, endpoint), y + offset, abs(endpoint - zero), 3.8, stroke=1, fill=1)
-
-    legend_y = 163.0
-    canvas.setFillColorRGB(*BLUE_LIGHT)
-    canvas.setStrokeColorRGB(*BLUE)
-    canvas.rect(394, legend_y, 9, 5, stroke=1, fill=1)
-    draw_text(canvas, 406, legend_y, "Normal", 6.5)
-    canvas.setFillColorRGB(*ORANGE_LIGHT)
-    canvas.setStrokeColorRGB(*ORANGE)
-    canvas.rect(447, legend_y, 9, 5, stroke=1, fill=1)
-    draw_text(canvas, 459, legend_y, "Hard", 6.5)
-    draw_centered(canvas, left + width / 2, 12, "Mean change from Raw (percentage points)", 7.0)
-    canvas.setFont(FONT_BOLD, 7.3)
-    canvas.setFillColorRGB(0.08, 0.08, 0.08)
-    canvas.drawCentredString(left + width / 2, 176, "(b) Per-benchmark mean change from Raw")
+    figure.savefig(output, format="pdf", facecolor="white")
+    plt.close(figure)
 
 
 def main() -> None:
-    output = Path(__file__).resolve().parents[1] / "figures" / "results_tradeoff.pdf"
-    pdfmetrics.registerFont(TTFont(FONT, FONT_PATH))
-    pdfmetrics.registerFont(TTFont(FONT_BOLD, FONT_BOLD_PATH))
-    canvas = Canvas(
-        str(output),
-        pagesize=(PAGE_WIDTH, PAGE_HEIGHT),
-        pageCompression=1,
-        initialFontName=FONT,
-        initialFontSize=7.0,
-    )
-    draw_left_panel(canvas)
-    draw_right_panel(canvas)
-    canvas.showPage()
-    canvas.save()
+    figures = Path(__file__).resolve().parents[1] / "figures"
+    figures.mkdir(parents=True, exist_ok=True)
+    build_results_figure(figures / "results_tradeoff.pdf")
+    build_mechanism_figure(figures / "mechanism_actions.pdf")
 
 
 if __name__ == "__main__":

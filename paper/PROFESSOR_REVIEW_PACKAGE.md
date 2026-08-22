@@ -6,89 +6,119 @@
 
 Dear Professor Arifuzzaman,
 
-I have completed a full draft of our paper, **“Evidence-Bound Curation: Auditable Membership Decisions for Language-Model Pretraining Data.”** The paper frames curation as a corpus-membership decision problem: evidence producers may score, retrieve, or compare data, but only typed and auditable policies can remove data. The runtime separates Validity, Redundancy, Quality, and Coverage authority across three stages, records every membership transition, and excludes benchmark results, training loss, utility, source reputation, target mixtures, and token budgets from runtime decisions.
+I have completed the current draft of **“Evidence-Bound Curation: A Traceable
+Framework for Language-Model Training Data.”** The paper introduces a curation
+framework that separates evidence generation from the authority to change
+corpus membership. Validity, Redundancy, Quality, and Coverage therefore have
+different permissions instead of acting as interchangeable keep/drop votes.
+Each accepted action records its reason, policy version, content identity, and
+any representative or restoration link.
 
-The final code-domain experiment uses a 6.98M-token audited Python corpus and Qwen3-4B-Base. Raw, Normal, and Hard are trained with their own natural token budgets across seeds 101, 202, and 303. Normal retains 87.70% of Raw tokens and Hard retains 72.05%. Across BigCodeBench Complete, CRUXEval-I, CRUXEval-O, and DS-1000, the primary macro scores are 18.38 for Base, 20.86 for Raw, 20.59 for Normal, and 20.80 for Hard. Thus, Hard uses 27.95% fewer tokens and finishes 0.06 percentage points below Raw on the primary macro. HumanEval+ and MBPP+ are retained as mandatory secondary diagnostics; their mixed pattern is reported rather than omitted.
+The final frozen policy was evaluated on similarly sized Code and Math corpora
+with Qwen3-4B-Base. Every trained arm used all naturally retained packed tokens
+for one pass and seeds 101, 202, and 303. The same source corpora were also
+processed with frozen Data-Juicer and NeMo Curator recipes. BigCodeBench was
+rescored for every arm and seed with one common evaluator source, dataset hash,
+and frozen ground-truth cache.
 
-The intended contribution is not a universal quality score or a claim that curation always improves downstream performance. It is an auditable framework that makes the evidence-to-membership boundary executable through existing runtime checks: complete reason-coded traces, representative survival, Coverage zero-survivor restoration, forbidden-input isolation, and identity-bound deterministic replay. Unsupported similarity edges cannot delete data, Coverage can veto provisional removals, identity mutations invalidate inherited evidence, and external evaluation cannot retroactively change corpus membership. All 60 model-benchmark cells were recomputed from 42,820 task-level judgments and passed the provenance audit.
+The three most important empirical results are:
 
-I would appreciate your feedback on three points: (1) whether the systems contribution and claim boundary are sufficiently clear, (2) whether the compression-with-near-retention result is presented with appropriate caution, and (3) which limitation should receive the most emphasis in the final revision. The current draft is 10 pages including references and compiles in IEEE conference format.
+1. Ours retained 6,242,304 of 6,979,584 Code packed tokens (89.44%) and
+   5,767,168 of 6,979,584 Math packed tokens (82.63%). Final Coverage restored
+   104 Code and 143 Math units, after which both complete rechecks passed.
+2. In Code, Ours exceeded both executable curation baselines on three of six
+   benchmarks: HumanEval+ (31.50), MBPP+ (54.67), and CRUXEval-O (2.83).
+   Data-Juicer and NeMo were stronger on BigCodeBench, CRUXEval-I, and DS-1000.
+3. In Math, Ours improved over the no-update Base on all four reported scores,
+   but trailed both curation baselines on all four. This result limits the
+   downstream claim while preserving the paper's auditable decision-system
+   contribution.
 
-Sincerely,
+The intended contribution is not a universal quality score or a claim that one
+frozen policy always improves training. It is an executable authority model in
+which unsupported similarity cannot delete data, a removed duplicate must name
+a surviving representative, Coverage can restore but cannot delete, stale
+evidence is rejected by content identity, and benchmark outcomes cannot feed
+back into the frozen selector.
+
+I would appreciate your feedback on whether the technical contribution and its
+claim boundary are clear, and whether the mixed Code/Math evidence is explained
+appropriately.
+
+Sincerely,  
 Keonsoo Lee
 
-## Evidence Snapshot
+## Final Token Exposure
 
-| Arm | Natural stream tokens | Retention vs. Raw | Primary macro, mean +/- sample SD |
-|---|---:|---:|---:|
-| Base | No update | N/A | 18.38 |
-| Raw | 6,984,438 | 100.00% | 20.86 +/- 0.35 |
-| Normal | 6,125,213 | 87.70% | 20.59 +/- 0.83 |
-| Hard | 5,032,400 | 72.05% | 20.80 +/- 0.44 |
+| Domain and arm | Packed training tokens | Retention vs. Raw |
+|---|---:|---:|
+| Code Raw | 6,979,584 | 100.00% |
+| Code Ours | 6,242,304 | 89.44% |
+| Code Data-Juicer | 5,505,024 | 78.87% |
+| Code NeMo Curator | 6,029,312 | 86.38% |
+| Math Raw | 6,979,584 | 100.00% |
+| Math Ours | 5,767,168 | 82.63% |
+| Math Data-Juicer | 4,603,904 | 65.96% |
+| Math NeMo Curator | 5,881,856 | 84.27% |
 
-The primary macro is the unweighted mean over BigCodeBench Complete, CRUXEval-I, CRUXEval-O, and DS-1000 after seed aggregation. HumanEval+ and MBPP+ remain visible secondary diagnostics.
+## Final Benchmark Matrix
 
-## Complete Benchmark Matrix (Table V)
+All trained-arm values are three-seed means in percent. Base is the no-update
+reference.
 
-All values are percentages. Trained-arm values preserve seed order `101 / 202 / 303`; Base is evaluated once as the no-update reference.
+| Code benchmark | Base | Raw | Ours | Data-Juicer | NeMo Curator |
+|---|---:|---:|---:|---:|---:|
+| HumanEval+ | 31.10 | 28.86 | 31.50 | 28.25 | 30.08 |
+| MBPP+ | 58.47 | 48.94 | 54.67 | 41.27 | 50.97 |
+| BigCodeBench Complete | 39.65 | 40.61 | 39.12 | 40.35 | 40.41 |
+| CRUXEval-I | 3.50 | 7.17 | 5.79 | 9.79 | 7.42 |
+| CRUXEval-O | 2.13 | 2.08 | 2.83 | 1.83 | 2.25 |
+| DS-1000 | 28.00 | 33.20 | 34.13 | 34.23 | 34.63 |
 
-| Benchmark | Base | Raw 101 | Raw 202 | Raw 303 | Normal 101 | Normal 202 | Normal 303 | Hard 101 | Hard 202 | Hard 303 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| HumanEval+ | 31.10 | 30.49 | 28.66 | 27.44 | 32.93 | 32.93 | 29.27 | 29.88 | 32.93 | 29.27 |
-| MBPP+ | 58.47 | 45.50 | 50.00 | 51.32 | 54.76 | 52.65 | 53.70 | 54.76 | 54.76 | 53.97 |
-| BigCodeBench Complete | 39.91 | 40.35 | 41.84 | 40.79 | 40.18 | 38.95 | 39.39 | 39.12 | 40.09 | 40.35 |
-| CRUXEval-I | 3.50 | 6.38 | 7.63 | 7.50 | 8.75 | 5.50 | 4.75 | 5.63 | 6.25 | 6.63 |
-| CRUXEval-O | 2.13 | 2.88 | 2.00 | 1.38 | 5.63 | 3.25 | 5.00 | 5.38 | 5.25 | 4.13 |
-| DS-1000 | 28.00 | 33.10 | 33.60 | 32.90 | 31.60 | 32.20 | 31.90 | 31.10 | 33.00 | 32.70 |
-| **Primary macro** | **18.38** | **20.68** | **21.27** | **20.64** | **21.54** | **19.97** | **20.26** | **20.31** | **21.15** | **20.95** |
+| Math benchmark | Base | Raw | Ours | Data-Juicer | NeMo Curator |
+|---|---:|---:|---:|---:|---:|
+| GSM8K strict | 75.13 | 77.79 | 77.53 | 78.72 | 78.29 |
+| GSM8K flexible | 57.54 | 71.19 | 63.08 | 67.60 | 64.87 |
+| GSM8K normalized | 76.42 | 80.11 | 79.05 | 79.78 | 80.34 |
+| MATH-500 | 3.80 | 8.67 | 7.07 | 8.07 | 8.07 |
 
-| Summary | Base | Raw | Normal | Hard |
-|---|---:|---:|---:|---:|
-| **Primary macro mean +/- sample SD** | **18.38** | **20.86 +/- 0.35** | **20.59 +/- 0.83** | **20.80 +/- 0.44** |
+## Final Framework Evidence
 
-The primary macro excludes HumanEval+ and MBPP+ by the timestamped analysis hierarchy. No seed or secondary diagnostic is omitted from the reported matrix.
+- Code: Stage A 8,026 chunks; final 7,270; Quality not-selected 816;
+  Redundancy removals 3; Coverage restores 104.
+- Math: Stage A 6,619 chunks; final 5,528; Quality not-selected 1,223;
+  Redundancy removals 6; Coverage restores 143.
+- Both Coverage audits report `complete_recheck_passed=true` and
+  `may_create_new_removal=false`.
+- The policy is packaged as `beta_release`; neither Coverage audit claims
+  production or scientific promotion.
 
 ## What the Draft Supports
 
-- The framework implements separate, typed decision authority for Validity, Redundancy, Quality, and Coverage.
-- Its authority contract is stated through five machine-checkable runtime invariants and a contract-checked-materialization proposition with a transition-induction proof sketch.
-- Every final membership decision is traceable to versioned evidence, a policy, a reason code, and, when applicable, a representative.
-- Stage C materially affected the output by restoring 99 Normal and 429 Hard chunks before final invariant checks.
-- On this frozen Code corpus and training recipe, Hard removed 27.95% of Raw natural tokens while nearly retaining the primary macro.
-- The complete 3-seed, 4-arm, 6-benchmark matrix is present and provenance-audited.
+- A single frozen, domain-neutral decision contract can be run on Code and Math
+  without domain quotas or benchmark feedback.
+- Every membership change is tied to typed evidence and a reason-coded trace.
+- Coverage materially changed both final corpora and passed complete rechecks.
+- Ours is competitive on selected Code capabilities while using fewer tokens
+  than Raw.
+- The unfavorable Math comparison is reported directly and bounds the
+  downstream-effectiveness claim.
 
 ## What the Draft Does Not Claim
 
-- It does not measure a universal or intrinsic notion of data quality.
-- It does not show statistical non-inferiority; no benchmark-specific margin and paired decision rule were frozen for this final matrix.
-- It does not establish consistent curated-over-Raw superiority.
-- It does not establish cross-domain effectiveness or production readiness.
-- It does not attribute downstream changes to an individual Quality or Coverage policy.
-
-## Remaining Scientific Decisions
-
-These are genuine evidence limits, not wording defects:
-
-1. **Boundary-control experiment:** a Chunked-All control is needed to separate corpus-membership effects from whole-record versus chunk-boundary effects.
-2. **Cross-domain evidence:** an independently frozen Math or general-text corpus and external suite are needed before claiming downstream effectiveness beyond Code.
-3. **Quality reproducibility:** the fitted Quality gate includes proprietary-teacher observations and targeted synthetic enrichment; independent teachers or a releasable annotation artifact would strengthen reproducibility.
-4. **Runtime-version closure:** the frozen models were trained on pre-fix artifacts affected by the 112-token source-record acquisition rule. The corrected runtime no longer makes that error, but a strict final-release claim would require retraining from corrected artifacts.
-5. **Metadata closure:** 662 reference records lack complete record-level rights metadata. Rights are not selector inputs, but release requires a self-contained metadata repair.
-
-The current paper discloses all five issues. They do not invalidate the decision-authority mechanism, but they bound the empirical and release claims.
+- It does not measure universal intrinsic data quality.
+- It does not show that the frozen policy improves every benchmark or domain.
+- It does not claim production promotion from the two confirmatory corpora.
+- It does not claim that the tested Data-Juicer or NeMo recipe represents every
+  configuration available in those systems.
 
 ## Submission Checklist
 
-- [x] Complete IEEE conference-format manuscript
-- [x] Ten pages including references
-- [x] Full 60-cell benchmark table with all seed values
-- [x] Compression and benchmark-delta figure
-- [x] Artifact-level provenance audit for all benchmark cells
-- [x] Compact reproducibility manifest with frozen protocols, configurations, run manifests, source entry points, and SHA-256 hashes
-- [x] Explicit distinction between framework, policy, and external evaluation
-- [x] Explicit disclosure of the post-EvalPlus analysis-hierarchy amendment
-- [x] Balanced final-page reference columns
+- [x] Final five-arm, three-seed Code and Math result surface
+- [x] Common-cache BigCodeBench recheck for every displayed arm and seed
+- [x] Final Code and Math curation and Coverage reports packaged
+- [x] Q1 veto and Q2--Q4 positive-selection rule stated consistently
+- [x] Historical Normal/Hard and matched-random artifacts excluded from final claims
+- [x] Reproducibility manifest and SHA-256 identities
 - [ ] Professor review and author approval
-- [ ] Final proofreading after comments
-- [ ] Overleaf clean build from the upload bundle
-- [ ] Submission-system metadata and final PDF compliance check
+- [ ] Final Overleaf clean build and submission-system PDF check
