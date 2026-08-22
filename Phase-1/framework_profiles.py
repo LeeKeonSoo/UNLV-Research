@@ -24,8 +24,7 @@ class ProfileContractError(ValueError):
 
 
 class ProfileId(str, Enum):
-    NORMAL = "normal"
-    HARD = "hard"
+    FRAMEWORK = "framework"
 
 
 class PolicyLifecycleSnapshot(BaseModel):
@@ -39,9 +38,9 @@ class ProfileSpec(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     id: ProfileId
-    inherits_profile: Literal["normal"] | None
+    inherits_profile: None
     policy_ids: tuple[str, ...] = Field(min_length=1)
-    operating_point_id: Literal["normal_v1", "hard_v1"]
+    operating_point_id: Literal["framework_v2"]
     strength_rank: int = Field(ge=1)
     calibration_artifact_sha256: Sha256 | None
     release_enabled: bool
@@ -68,7 +67,7 @@ class ProfileRegistry(BaseModel):
     policy_lifecycles: tuple[PolicyLifecycleSnapshot, ...]
     profiles: tuple[ProfileSpec, ...]
     blocker_codes: tuple[str, ...]
-    retained_set_invariant: Literal["hard_subset_or_equal_normal"]
+    retained_set_invariant: Literal["single_profile"]
 
     @model_validator(mode="after")
     def validate_composition(self) -> "ProfileRegistry":
@@ -78,19 +77,14 @@ class ProfileRegistry(BaseModel):
         by_id = {profile.id: profile for profile in self.profiles}
         if set(by_id) != set(ProfileId) or len(by_id) != len(self.profiles):
             raise ProfileContractError("profile_public_inventory_invalid")
-        normal = by_id[ProfileId.NORMAL]
-        hard = by_id[ProfileId.HARD]
-        if normal.inherits_profile is not None:
-            raise ProfileContractError("profile_normal_inheritance_invalid")
-        if hard.inherits_profile != ProfileId.NORMAL.value:
-            raise ProfileContractError("profile_hard_inheritance_invalid")
-        if normal.policy_ids != hard.policy_ids:
-            raise ProfileContractError("profile_policy_family_mismatch")
-        if normal.operating_point_id != "normal_v1" or hard.operating_point_id != "hard_v1":
+        profile = by_id[ProfileId.FRAMEWORK]
+        if profile.inherits_profile is not None:
+            raise ProfileContractError("profile_inheritance_invalid")
+        if profile.operating_point_id != "framework_v2":
             raise ProfileContractError("profile_operating_point_identity_mismatch")
-        if normal.strength_rank >= hard.strength_rank:
-            raise ProfileContractError("profile_strength_order_invalid")
-        referenced = set(normal.policy_ids)
+        if profile.strength_rank != 1:
+            raise ProfileContractError("profile_strength_rank_invalid")
+        referenced = set(profile.policy_ids)
         missing = tuple(sorted(referenced - set(lifecycle_by_id)))
         if missing:
             raise ProfileContractError("profile_policy_lifecycle_missing", missing)
@@ -139,18 +133,8 @@ def load_profile_registry(
     return registry
 
 
-def validate_retained_set_monotonicity(
-    normal_retained: tuple[str, ...],
-    hard_retained: tuple[str, ...],
-) -> None:
-    hard_only = tuple(sorted(set(hard_retained) - set(normal_retained)))
-    if hard_only:
-        raise ProfileContractError("profile_hard_retained_set_not_subset", hard_only)
-
-
 __all__ = [
     "ProfileContractError",
     "ProfileRegistry",
     "load_profile_registry",
-    "validate_retained_set_monotonicity",
 ]

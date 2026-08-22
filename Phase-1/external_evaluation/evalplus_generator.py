@@ -21,9 +21,13 @@ INPUT_REPORT_PATH: Final = BenchmarkWorkerPaths.from_environment().input_report
 DATASETS: Final = ("HumanEval+", "MBPP+")
 ARMS: Final = (
     "base_no_update",
+    "framework_curated_natural",
     "raw_audited_natural",
     "normal_natural",
     "hard_natural",
+    "nemo_natural",
+    "random72_matched",
+    "data_juicer_natural",
 )
 
 
@@ -164,6 +168,11 @@ def _output_path(root: Path, dataset: str, arm: str, seed: int | None) -> Path:
     return root / "evalplus" / f"{slug}_{arm}_{suffix}.jsonl"
 
 
+def is_complete_output(path: Path) -> bool:
+    """Treat only a nonempty atomically published sample file as complete."""
+    return path.is_file() and path.stat().st_size > 0
+
+
 @torch.no_grad()
 def generate(
     arm: str,
@@ -186,7 +195,11 @@ def generate(
     samples_root = benchmark_root(protocol) / "samples"
     requested = resolve_datasets(dataset)
     completed = [_output_path(samples_root, item, arm, seed) for item in requested]
-    pending = [item for item, output in zip(requested, completed, strict=True) if not output.is_file()]
+    pending = [
+        item
+        for item, output in zip(requested, completed, strict=True)
+        if not is_complete_output(output)
+    ]
     if not pending:
         return completed
     model, tokenizer = load_model(protocol, input_report, arm, seed)

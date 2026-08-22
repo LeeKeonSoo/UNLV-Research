@@ -1,0 +1,48 @@
+{
+  "schema_version": "code-7m-data-juicer-external-baseline-v1",
+  "status": "frozen_before_external_curation",
+  "purpose": "Apply Data-Juicer's published The Stack code-refinement recipe to the identical audited Code corpus without benchmark tuning or a target token budget.",
+  "implementation": {
+    "project": "datajuicer/data-juicer",
+    "version": "1.5.5",
+    "commit": "12cd01fbdd696bed2ec5e7fb7102c538a8cc2b5e",
+    "license": "Apache-2.0"
+  },
+  "published_recipe": {
+    "project": "datajuicer/data-juicer-hub",
+    "path": "refined_recipes/github_code/stack-code-refine.yaml",
+    "commit": "47fc34588b5d4258c13747cea37c2b63cf4e11b0",
+    "sha256": "8a0a6906116bc4ff22fd8591ef1842146c5828d80fee9ee3618c7d30f7ca9147",
+    "threshold_source": "Data-Juicer-Hub published 3-sigma recipe",
+    "local_adaptation": "configs/data_juicer_stack_code_external_v1.yaml",
+    "local_adaptation_sha256": "524fbabe7f2844542f8e3eede9416e8d49b9be4ea62231b08b8bc2ec6ba97f39",
+    "allowed_changes": [
+      "dataset and export paths",
+      "text field name from content to text",
+      "worker count from 50 to 32",
+      "explicit removal of intermediate stats and hashes from exported rows"
+    ]
+  },
+  "input": {
+    "local_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+    "remote_path": "/workspace/unlv/data/raw_code_7m.jsonl",
+    "sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7",
+    "records": 4890,
+    "text_field": "text",
+    "id_field": "record_id"
+  },
+  "output": {
+    "remote_path": "/workspace/unlv/data_juicer/output/data_juicer_code_7m.jsonl",
+    "local_root": "D:/UNLV-Research/data_juicer_code_7m_v1",
+    "canonical_path": "D:/UNLV-Research/data_juicer_code_7m_v1/curated/data_juicer_curated.jsonl",
+    "report": "D:/UNLV-Research/data_juicer_code_7m_v1/data_juicer_code_7m_report.json"
+  },
+  "execution": {
+    "platform": "RunPod",
+    "container": "runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404",
+    "tracing": true,
+    "target_token_budget": null,
+    "benchmark_feedback": false
+  },
+  "claim_boundary": "This is one published Data-Juicer recipe selected before execution because the corpus contains The Stack code. It does not represent every Data-Juicer configuration, and its thresholds are not tuned on this experiment's benchmark outcomes."
+}

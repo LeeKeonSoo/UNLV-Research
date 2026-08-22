@@ -148,7 +148,7 @@ def main() -> int:
                 "chunk_uid": "quality-fail",
                 "stage_a_record_id": "quality-record",
                 "stage_b_policy": {
-                    "removed_reason": "quality_normal_qualified_fail",
+                    "removed_reason": "quality_qualified_fail",
                     "failed_policy_ids": ["q3_substantive_payload"],
                 },
             }
@@ -159,6 +159,28 @@ def main() -> int:
     )
     assert quality_removed["zero_survivor_invariant"]["passed"] is True
     assert quality_removed["passed"] is True
+
+    teacher_no_support_removed = _coverage_impact_audit(
+        passed=[{"chunk_uid": "teacher-no-support", "stage_a_record_id": "teacher-record"}],
+        selected=[],
+        rejected=[],
+        not_selected=[
+            {
+                "chunk_uid": "teacher-no-support",
+                "stage_a_record_id": "teacher-record",
+                "stage_b_policy": {
+                    "action": "not_select",
+                    "removed_reason": "quality_teacher_no_positive_support",
+                    "failed_policy_ids": [],
+                },
+            }
+        ],
+        span_transformations=[],
+        minimum_residual_chars=40,
+        composition_audit=_composition_audit(),
+    )
+    assert teacher_no_support_removed["zero_survivor_invariant"]["passed"] is True
+    assert teacher_no_support_removed["passed"] is True
 
     print("[coverage-invariants] materialization representative linkage: pass")
     return 0

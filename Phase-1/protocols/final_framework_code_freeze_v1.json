@@ -1,0 +1,62 @@
+{
+  "schema_version": "final-framework-code-freeze-v1",
+  "status": "frozen_before_external_training",
+  "frozen_at": "2026-08-21",
+  "framework_profile": "framework",
+  "quality_membership_contract": {
+    "q1_role": "qualified_failure_veto",
+    "positive_support_rule": "q2_and_q3_and_q4",
+    "incomplete_local_evidence_action": "luna_fallback",
+    "completed_fallback_without_positive_support_action": "not_select",
+    "missing_or_invalid_provider_evidence_action": "stop_without_membership_change"
+  },
+  "artifacts": {
+    "run_config": {
+      "path": "tmp/framework_replay_20260821_final_v1/code_framework.json",
+      "sha256": "08a3f8d3f1a1de6ff6bd15d42978e12382c65b5ef516839f15e591551deb9c57"
+    },
+    "raw_corpus": {
+      "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+      "sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7",
+      "records": 4890,
+      "qwen3_4b_stream_tokens": 6984438
+    },
+    "curated_corpus": {
+      "path": "D:/UNLV-Research/framework_replay_20260821_final_v1/code/framework/stage_c_curated_chunks.jsonl",
+      "sha256": "09a2cfba6bb85e80117f0444224c981603ff39a8fbe61517e2184003943c2bee",
+      "chunks": 7270,
+      "qwen3_4b_stream_tokens": 6249197
+    },
+    "curation_report": {
+      "path": "D:/UNLV-Research/framework_replay_20260821_final_v1/code/framework/curation_report.json",
+      "sha256": "13c3c3ad8f1282949ebbd9c9678b7426a08546f365346201df9b8c16c5d69d10"
+    },
+    "quality_observations": {
+      "path": "D:/UNLV-Research/framework_replay_20260821_luna_conjunctive_v2/code/quality_teacher_observations_merged.jsonl",
+      "sha256": "cc80022a6e83d6cdd63b8aa2e3745185d93685d388ea6ceb70af059428fe0c66"
+    },
+    "quality_ranker_contract": {
+      "path": "configs/quality_ranker_v1.json",
+      "sha256": "b8395b10bab96c1e72539103c2e2fc473e8e90dc304a82e7ec3f3f6c070fb19d"
+    },
+    "runtime_policy_profile": {
+      "path": "configs/runtime_policy_profiles_v1.json",
+      "sha256": "3bfd4716c2f024b5fa1e15fa53f28dcc2e22d76fe333ff806c72498f52f43d0a"
+    },
+    "curation_contract": {
+      "path": "configs/curation_contract.json",
+      "sha256": "f5a7c20d2213a2215e7b6c187a2849b175b6ec3a1ac286cf10e300eac223f96a"
+    }
+  },
+  "token_delta": {
+    "removed_tokens": 735241,
+    "removed_percent": 10.526845538610266,
+    "retained_percent": 89.47315446138974
+  },
+  "external_evaluation_boundary": {
+    "natural_token_training": true,
+    "equal_token_resampling": false,
+    "seeds": [101, 202, 303],
+    "benchmark_results_may_mutate_policy": false
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "code-7m-data-juicer-training-materialization-v2",
+  "status": "frozen_before_tokenizer_materialization",
+  "purpose": "Materialize the corrected Data-Juicer external baseline under the identical Qwen tokenizer and natural-budget packing contract.",
+  "tokenizer": {
+    "model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "gradient_accumulation_steps": 8,
+    "budget": "one_complete_natural_dataset_pass_no_equal_token_resampling"
+  },
+  "arms": {
+    "data_juicer_natural": {
+      "source": "D:/UNLV-Research/data_juicer_code_7m_v2/curated/data_juicer_curated.jsonl",
+      "source_stage": "frozen_data_juicer_stack_code_recipe_v2_compatibility_corrected"
+    }
+  },
+  "output_root": "D:/UNLV-Research/data_juicer_code_7m_v2/training_inputs_v2",
+  "claim_boundary": "This materialization preserves the corrected Data-Juicer natural output size. It does not impose another arm's target size, resample tokens, or read benchmark outcomes."
+}

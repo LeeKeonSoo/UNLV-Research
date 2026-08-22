@@ -1,0 +1,27 @@
+{
+  "schema_version": "math-7m-data-juicer-evaluation-v1",
+  "status": "frozen_before_evaluation",
+  "training_protocol": "protocols/math_7m_data_juicer_training_v1.json",
+  "training": {
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["data_juicer_math_natural"],
+    "seeds": [101, 202, 303],
+    "output_root": "D:/UNLV-Research/data_juicer_math_7m_v1/external_training_v1"
+  },
+  "evaluation_arms": ["data_juicer_math_natural"],
+  "benchmarks": [
+    {"id": "gsm8k_cot_zeroshot", "records": 1319, "metric": "exact_match"},
+    {"id": "hendrycks_math500", "records": 500, "metric": "exact_match"}
+  ],
+  "evaluator": {
+    "implementation": "EleutherAI lm-evaluation-harness",
+    "version": "0.4.12",
+    "model_quantization": "4-bit NF4 double-quantization",
+    "compute_dtype": "bfloat16",
+    "batch_size": 4,
+    "bootstrap_iters": 1000,
+    "evaluation_seed": 1234,
+    "decoding": "task-defined deterministic generation"
+  },
+  "claim_boundary": "Data-Juicer Math uses the same official tasks, model loader, prompts, deterministic decoding, and metrics as the other Math arms."
+}

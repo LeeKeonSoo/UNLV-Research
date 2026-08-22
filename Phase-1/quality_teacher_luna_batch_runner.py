@@ -26,11 +26,11 @@ from quality_teacher_openai_batch import (
     summarize_luna_batch_usage,
 )
 from quality_teacher_openai import openai_text_format
-from quality_teacher_materialization import (
+from quality_teacher_observation_codec import (
     OBSERVATION_SCHEMA,
-    _quality_runtime_sha256,
-    _result_to_mapping,
-    _task_id,
+    panel_result_to_mapping,
+    quality_runtime_sha256,
+    quality_task_id,
 )
 from quality_teacher_panel import PolicyDecision, TeacherVote, decide_single_teacher, load_teacher_panel
 from quality_teacher_runtime import DeclaredVerifierEvidence, EvaluationUnit, PanelPolicyResult
@@ -455,7 +455,7 @@ def materialize_observations(args: argparse.Namespace) -> None:
         )
 
     panel_sha256 = _sha256(panel_path)
-    runtime_sha256 = _quality_runtime_sha256()
+    runtime_sha256 = quality_runtime_sha256()
     decision_counts = {"pass": 0, "fail": 0, "abstain": 0}
     first_fail_votes = 0
     confirmed_fail_votes = 0
@@ -504,7 +504,7 @@ def materialize_observations(args: argparse.Namespace) -> None:
                     confirmed_fail_votes += 1
                 decision_counts[decision.value] += 1
                 policy_results.append(
-                    _result_to_mapping(
+                    panel_result_to_mapping(
                         PanelPolicyResult(
                             policy_id=policy.policy_id,
                             decision=decision,
@@ -515,7 +515,7 @@ def materialize_observations(args: argparse.Namespace) -> None:
                 )
             observation = {
                 "schema_version": OBSERVATION_SCHEMA,
-                "task_id": _task_id(
+                "task_id": quality_task_id(
                     panel_sha256,
                     runtime_sha256,
                     chunk_uid,

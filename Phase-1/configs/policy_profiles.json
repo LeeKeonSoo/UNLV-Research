@@ -35,8 +35,9 @@
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
         "stage_a_bom_normalization",
-        "stage_b_invalid_chunk",
+        "stage_a_chunk_integrity",
         "stage_b_exact_duplicate",
+        "stage_b_intra_chunk_exact_sentence_compaction",
         "stage_b_symmetric_near_duplicate",
         "stage_b_explicit_generated_artifact",
         "stage_b_license_comment_only",
@@ -47,6 +48,7 @@
         "stage_c_coverage_guard"
       ],
       "stage_b_policy_ids": [
+        "stage_b_intra_chunk_exact_sentence_compaction",
         "stage_b_symmetric_near_duplicate",
         "stage_b_explicit_generated_artifact",
         "stage_b_license_comment_only",
@@ -81,6 +83,11 @@
           }
         },
         "stage_b_policy": {
+          "intra_chunk_exact_sentence_compaction": {
+            "enabled": true,
+            "minimum_occurrences": 3,
+            "minimum_lexical_tokens": 12
+          },
           "structural_scaffold_compaction": {
             "enabled": true
           },
@@ -89,9 +96,6 @@
             "license_comment_only_chunk": true,
             "empty_html_shell": true,
             "web_chrome_only_chunk": true
-          },
-          "quality_span_candidate_rules": {
-            "web_control_and_url_directory": false
           }
         },
         "coverage": {
@@ -100,14 +104,12 @@
         },
         "quality_runtime": {
           "contract": "configs/quality_ranker_v1.json",
-          "oracle_panel": "configs/quality_teacher_luna_single_v1.json",
           "operating_point": "normal",
           "minimum_passed_policies": 1,
           "qualified_fail_action": "not_select",
           "abstain_action": "not_select_unless_coverage_veto",
           "runtime_method": "distilled_quality_ranker_v1",
-          "runtime_required": true,
-          "full_corpus_teacher_panel_forbidden": true
+          "runtime_required": true
         }
       },
       "selector": {
@@ -133,8 +135,9 @@
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
         "stage_a_bom_normalization",
-        "stage_b_invalid_chunk",
+        "stage_a_chunk_integrity",
         "stage_b_exact_duplicate",
+        "stage_b_intra_chunk_exact_sentence_compaction",
         "stage_b_symmetric_near_duplicate",
         "stage_b_explicit_generated_artifact",
         "stage_b_license_comment_only",
@@ -145,6 +148,7 @@
         "stage_c_coverage_guard"
       ],
       "stage_b_policy_ids": [
+        "stage_b_intra_chunk_exact_sentence_compaction",
         "stage_b_symmetric_near_duplicate",
         "stage_b_explicit_generated_artifact",
         "stage_b_license_comment_only",
@@ -184,6 +188,11 @@
           }
         },
         "stage_b_policy": {
+          "intra_chunk_exact_sentence_compaction": {
+            "enabled": true,
+            "minimum_occurrences": 3,
+            "minimum_lexical_tokens": 12
+          },
           "structural_scaffold_compaction": {
             "enabled": true
           },
@@ -192,9 +201,6 @@
             "license_comment_only_chunk": true,
             "empty_html_shell": true,
             "web_chrome_only_chunk": true
-          },
-          "quality_span_candidate_rules": {
-            "web_control_and_url_directory": false
           }
         },
         "coverage": {
@@ -203,14 +209,12 @@
         },
         "quality_runtime": {
           "contract": "configs/quality_ranker_v1.json",
-          "oracle_panel": "configs/quality_teacher_luna_single_v1.json",
           "operating_point": "hard",
           "minimum_passed_policies": 2,
           "qualified_fail_action": "not_select",
           "abstain_action": "not_select_unless_coverage_veto",
           "runtime_method": "distilled_quality_ranker_v1",
-          "runtime_required": true,
-          "full_corpus_teacher_panel_forbidden": true
+          "runtime_required": true
         }
       },
       "selector": {

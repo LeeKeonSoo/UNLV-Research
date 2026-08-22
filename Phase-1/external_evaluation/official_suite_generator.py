@@ -64,6 +64,11 @@ def jsonl_resume_count(path: Path) -> int:
     return count
 
 
+def is_complete_output(path: Path) -> bool:
+    """Treat only non-empty final artifacts as completed generations."""
+    return path.is_file() and path.stat().st_size > 0
+
+
 def resolve_bigcodebench_data_root() -> Path:
     paths = BenchmarkWorkerPaths.from_environment()
     if paths.bigcodebench_data_root is not None:
@@ -272,13 +277,14 @@ def ds1000_records(
     max_new_tokens: int,
     batch_size: int,
     max_batch_context_tokens: int,
+    completed: int = 0,
 ) -> Iterable[dict[str, str]]:
     prompts: list[str] = []
     with gzip.open(ds1000_data_path(), "rt", encoding="utf-8") as handle:
         for line in handle:
             item = json.loads(line)
             prompts.append(str(item["prompt"]))
-    for batch in batches(prompts, batch_size):
+    for batch in batches(prompts[completed:], batch_size):
         generated = generate_texts(
             model,
             tokenizer,
@@ -291,12 +297,15 @@ def ds1000_records(
 
 
 def preflight_suite(suite: str) -> None:
-    required = {
-        "bigcodebench": (bigcodebench_parquet_path(resolve_bigcodebench_data_root()),),
-        "cruxeval_input": (cruxeval_data_path(),),
-        "cruxeval_output": (cruxeval_data_path(),),
-        "ds1000": (ds1000_data_path(),),
-    }[suite]
+    match suite:
+        case "bigcodebench":
+            required = (bigcodebench_parquet_path(resolve_bigcodebench_data_root()),)
+        case "cruxeval_input" | "cruxeval_output":
+            required = (cruxeval_data_path(),)
+        case "ds1000":
+            required = (ds1000_data_path(),)
+        case _:
+            raise ValueError(f"Unsupported official suite: {suite}")
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
         raise FileNotFoundError(f"{suite} preflight failed; missing required files: {missing}")
@@ -358,14 +367,16 @@ def write_records(
             )
             mode = "a" if completed else "w"
         else:
+            completed = jsonl_resume_count(temporary)
             records = ds1000_records(
                 model,
                 tokenizer,
                 max_new_tokens,
                 batch_size,
                 max_batch_context_tokens,
+                completed,
             )
-            mode = "w"
+            mode = "a" if completed else "w"
         with temporary.open(mode, encoding="utf-8", newline="\n") as handle:
             for record in records:
                 handle.write(json.dumps(record) + "\n")
@@ -405,7 +416,7 @@ def generate_suites(
         output = output_path(
             samples_root, suite, arm, seed, crux_prompt_style
         )
-        if output.is_file():
+        if is_complete_output(output):
             outputs.append(output)
             continue
         write_records(

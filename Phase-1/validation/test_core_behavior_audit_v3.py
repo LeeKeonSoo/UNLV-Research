@@ -15,14 +15,20 @@ from validation.core_behavior_audit_v3 import build_audit
 
 def main() -> int:
     report = build_audit(ROOT / "validation" / "fixtures" / "core_behavior_audit_v3_cases.json")
-    registry = json.loads((ROOT / "configs" / "core_policy_registry.json").read_text(encoding="utf-8"))
+    registry = json.loads(
+        (ROOT / "configs" / "runtime_policy_registry_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
     contract = json.loads((ROOT / "configs" / "curation_contract.json").read_text(encoding="utf-8"))
-    active_policy_ids = {policy["id"] for policy in registry["policies"] if policy["status"] == "active"}
-    audited_policy_ids = active_policy_ids | {"stage_c_coverage_guard"}
+    active_policy_ids = {policy["id"] for policy in registry["policies"]}
+    audited_policy_ids = active_policy_ids
     declared_reason_codes = {
-        policy["id"]: set(policy["reason_codes"])
+        policy["id"]: set(
+            policy.get("not_select_reason_codes", policy["reason_codes"])
+        )
         for policy in registry["policies"]
-        if policy["status"] == "active" and policy["reason_codes"]
+        if policy["reason_codes"]
     }
     observed_positive_codes: dict[str, set[str]] = {}
     for case in report["cases"]:

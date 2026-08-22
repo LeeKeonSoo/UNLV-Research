@@ -1,0 +1,41 @@
+{
+  "schema_version": "math-7m-random-hard-matched-training-v1",
+  "status": "frozen_before_curation_and_tokenizer_materialization",
+  "purpose": "Three-seed QLoRA evaluation of one fixed Math Hard-size-matched random full-record subset.",
+  "control": {
+    "materialization_protocol": "protocols/math_7m_random_hard_matched_materialization_v1.json",
+    "sampling_seed": 1701,
+    "target_arm": "hard_math_natural",
+    "runtime_policy": false
+  },
+  "training": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["random_math_hard_matched"],
+    "seeds": [101, 202, 303],
+    "budget": "fixed_math_hard_size_matched_diagnostic_control",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "output_root": "D:/UNLV-Research/math_random_hard_matched_v1/external_training_v1"
+  },
+  "primary_benchmarks": [
+    "gsm8k_cot_zeroshot",
+    "hendrycks_math500"
+  ],
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "source_reputation_read": false
+  },
+  "claim_boundary": "This diagnostic isolates Math Hard selection from packed token count under one frozen random subset and three optimizer seeds. It is not a deployable policy and does not estimate variance across random subset draws."
+}

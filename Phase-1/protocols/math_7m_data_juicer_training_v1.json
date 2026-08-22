@@ -1,0 +1,39 @@
+{
+  "schema_version": "math-7m-data-juicer-training-v1",
+  "status": "frozen_before_curation_and_tokenizer_materialization",
+  "purpose": "Three-seed natural-budget QLoRA evaluation of the frozen Data-Juicer Math baseline.",
+  "baseline": {
+    "curation_protocol": "protocols/math_7m_data_juicer_baseline_v1.json",
+    "materialization_protocol": "protocols/math_7m_data_juicer_training_materialization_v1.json",
+    "runtime_policy": false,
+    "target_token_budget": null,
+    "benchmark_feedback": false
+  },
+  "training": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["data_juicer_math_natural"],
+    "seeds": [101, 202, 303],
+    "budget": "one_complete_natural_dataset_pass_no_equal_token_resampling",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "output_root": "D:/UNLV-Research/data_juicer_math_7m_v1/external_training_v1"
+  },
+  "primary_benchmarks": ["gsm8k_cot_zeroshot", "hendrycks_math500"],
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "equal_token_resampling": false
+  },
+  "claim_boundary": "This evaluates one published Data-Juicer academic-text recipe under its natural output size. It is not tuned to match Hard and does not represent every possible Data-Juicer configuration."
+}

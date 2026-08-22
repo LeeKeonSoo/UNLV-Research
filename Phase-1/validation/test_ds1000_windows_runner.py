@@ -4,8 +4,10 @@ from __future__ import annotations
 import gzip
 import json
 from pathlib import Path
+import shutil
 import sys
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, gettempdir
+import time
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,12 +15,52 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from external_evaluation.ds1000_windows_runner import (
+    Problem,
     evaluate_corpus,
     load_answers,
     load_problems,
     load_reference_answers,
     render_summary,
 )
+
+
+def test_surviving_descendant_does_not_break_temporary_directory_cleanup() -> None:
+    existing_directories = set(Path(gettempdir()).glob("ds1000-*"))
+    problem: Problem = {
+        "metadata": {
+            "problem_id": 8,
+            "library": "stdlib",
+            "perturbation_type": "descendant_fixture",
+        },
+        "code_context": (
+            "def test_execution(code):\n"
+            "    namespace = {}\n"
+            "    exec(code, namespace)\n"
+        ),
+    }
+    answer = (
+        "import subprocess, sys\n"
+        "subprocess.Popen([sys.executable, '-c', "
+        "'import time; time.sleep(0.5)'])\n"
+    )
+
+    try:
+        results = evaluate_corpus(
+            [problem],
+            [answer],
+            python_executable=Path(sys.executable),
+            timeout_seconds=5.0,
+            workers=1,
+        )
+    finally:
+        time.sleep(0.6)
+        created_directories = (
+            set(Path(gettempdir()).glob("ds1000-*")) - existing_directories
+        )
+        for directory in created_directories:
+            shutil.rmtree(directory, ignore_errors=True)
+
+    assert results[0].passed is True
 
 
 def test_windows_runner_preserves_ds1000_test_program_contract() -> None:
@@ -73,5 +115,6 @@ def test_windows_runner_preserves_ds1000_test_program_contract() -> None:
 
 
 if __name__ == "__main__":
+    test_surviving_descendant_does_not_break_temporary_directory_cleanup()
     test_windows_runner_preserves_ds1000_test_program_contract()
     print("DS-1000 Windows runner contract passed")

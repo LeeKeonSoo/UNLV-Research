@@ -1,0 +1,36 @@
+{
+  "schema_version": "matched-random-control-materialization-v1",
+  "status": "frozen_before_materialization",
+  "purpose": "Create one fixed full-record random control with exactly the Hard arm's packed token count. This is a diagnostic training control, not a curation policy.",
+  "source": {
+    "path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+    "sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7",
+    "raw_materialized_tokens": 6979584
+  },
+  "target": {
+    "report": "D:/UNLV-Research/final_all_policy_v1/luna_final_v1/training_inputs_v1/training_inputs_report.json",
+    "report_sha256": "f0be5435a13ea7d79c24b0763b2f9d30ee4069d0d6e6f7f1625fff306132d475",
+    "arm": "hard_natural",
+    "materialized_tokens": 5029888
+  },
+  "sampling": {
+    "seed": 1701,
+    "unit": "full_nonempty_source_record",
+    "priority": "sha256(seed:source_index:record_id)",
+    "preserve_source_order": true,
+    "fit_rule": "greedily admit random-priority full records while the stream remains below target plus one optimizer group"
+  },
+  "tokenizer": {
+    "model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "gradient_accumulation_steps": 8
+  },
+  "output_root": "D:/UNLV-Research/random72_code_7m_v1/training_inputs_v1",
+  "claim_boundary": "The target size is imposed only to diagnose whether frozen Hard selection outperforms an equally sized random subset. The control is excluded from the curation runtime and does not read benchmark outcomes."
+}

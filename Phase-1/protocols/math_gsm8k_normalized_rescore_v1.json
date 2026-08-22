@@ -1,0 +1,36 @@
+{
+  "schema_version": "math-gsm8k-normalized-rescore-v1",
+  "status": "frozen_before_normalized_rescore",
+  "declared_timing": "Post-hoc after observing official strict/flexible disagreement; before computing normalized scores.",
+  "purpose": "Determine how much GSM8K accuracy depends on answer formatting and over-generated next-problem text without rerunning model inference.",
+  "scope": {
+    "task": "gsm8k_cot_zeroshot",
+    "arms": [
+      "base_no_update",
+      "raw_math_natural_seed101",
+      "raw_math_natural_seed202",
+      "normal_math_natural_seed101",
+      "normal_math_natural_seed202",
+      "hard_math_natural_seed101",
+      "hard_math_natural_seed202"
+    ],
+    "expected_records_per_arm": 1319
+  },
+  "parser_contract": {
+    "segment_boundary": "Truncate before the first generated newline-prefixed Q:, Question:, or [Question] marker.",
+    "explicit_answer_precedence": "Within the retained segment, use the last explicit answer, final-answer, ####, or boxed numeric marker.",
+    "fallback": "If no explicit marker exists, use the last numeric token in the retained segment.",
+    "normalization": "Remove currency and thousands separators and compare exact rational numeric values.",
+    "unparsed": "Responses with no numeric candidate remain incorrect and are counted explicitly."
+  },
+  "reporting_contract": {
+    "preserve_official_strict": true,
+    "preserve_official_flexible": true,
+    "normalized_score_role": "post-hoc sensitivity audit only",
+    "primary_metric_replacement": false,
+    "apply_identical_parser_to_all_arms": true,
+    "report_source_sha256": true,
+    "report_extraction_and_truncation_counts": true
+  },
+  "claim_boundary": "The normalized score may diagnose evaluator sensitivity but cannot retroactively become the preregistered primary endpoint."
+}

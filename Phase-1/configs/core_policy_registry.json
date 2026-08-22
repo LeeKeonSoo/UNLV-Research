@@ -22,13 +22,14 @@
     "confirmatory_evaluation_without_runtime_feedback"
   ],
   "runtime_profile_authorization": {
-    "normal_structural_v1": {
+    "framework_structural_v2": {
       "stage_a_policy": "text_only_v2",
       "authorized_policy_ids": [
         "stage_a_normalized_text_integrity",
         "stage_a_bom_normalization",
-        "stage_b_invalid_chunk",
+        "stage_a_chunk_integrity",
         "stage_b_exact_duplicate",
+        "stage_b_intra_chunk_exact_sentence_compaction",
         "stage_b_symmetric_near_duplicate",
         "stage_b_explicit_generated_artifact",
         "stage_b_license_comment_only",
@@ -40,8 +41,9 @@
       "enabled_policy_ids": [
         "stage_a_normalized_text_integrity",
         "stage_a_bom_normalization",
-        "stage_b_invalid_chunk",
+        "stage_a_chunk_integrity",
         "stage_b_exact_duplicate",
+        "stage_b_intra_chunk_exact_sentence_compaction",
         "stage_b_symmetric_near_duplicate",
         "stage_b_explicit_generated_artifact",
         "stage_b_license_comment_only",
@@ -62,45 +64,6 @@
         "stage_c_explicit_error_navigation_only_candidate",
         "stage_c_url_directory_only_candidate"
       ],
-      "authorized_but_disabled_policy_ids": []
-    },
-    "hard_structural_v1": {
-      "stage_a_policy": "text_only_v2",
-      "authorized_policy_ids": [
-        "stage_a_normalized_text_integrity",
-        "stage_a_bom_normalization",
-        "stage_b_invalid_chunk",
-        "stage_b_exact_duplicate",
-        "stage_b_symmetric_near_duplicate",
-        "stage_b_explicit_generated_artifact",
-        "stage_b_license_comment_only",
-        "stage_b_structural_scaffold",
-        "stage_b_empty_html_shell",
-        "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_distilled_ranker_v1"
-      ],
-      "enabled_policy_ids": [
-        "stage_a_normalized_text_integrity",
-        "stage_a_bom_normalization",
-        "stage_b_invalid_chunk",
-        "stage_b_exact_duplicate",
-        "stage_b_symmetric_near_duplicate",
-        "stage_b_explicit_generated_artifact",
-        "stage_b_license_comment_only",
-        "stage_b_structural_scaffold",
-        "stage_b_empty_html_shell",
-        "stage_b_web_chrome_only_chunk",
-        "stage_b_quality_distilled_ranker_v1",
-        "stage_c_coverage_guard"
-      ],
-      "excluded_policy_ids": [
-        "stage_a_provenance_contract",
-        "stage_a_risk_quarantine",
-        "stage_a_b_validity_recovery_candidate",
-        "stage_c_route_conditioned_quality_candidate",
-        "stage_c_calibrated_quality_effect_candidate",
-        "stage_c_coverage_support_candidate"
-      ],
       "authorized_but_disabled_policy_ids": [
         "stage_b_inline_license_header_candidate",
         "stage_b_inline_license_comment_block_candidate",
@@ -114,20 +77,21 @@
       "structural_prefilter_owner": "quality_retention.py",
       "execution_order": "after_redundancy_before_coverage_audit",
       "decisions": [
-        "retain_supported",
-        "not_select_qualified_fail",
-        "not_select_insufficient_pass_evidence",
+        "retain_local_positive_support",
+        "retain_teacher_positive_support",
+        "not_select_qualified_local_fail",
+        "not_select_teacher_confirmed_fail",
+        "not_select_teacher_no_positive_support",
         "coverage_veto_retain"
       ],
-      "abstain_action": "not_select_unless_coverage_veto",
-      "not_select_authority": "qualified_independent_policy_fail_or_mode_specific_positive_pass_count_not_met",
-      "decision_contract": "quality_positive_selection_authority_v3",
+      "abstain_action": "luna_fallback_then_not_select_without_positive_support",
+      "not_select_authority": "qualified_failure_or_completed_fallback_without_positive_support",
+      "decision_contract": "quality_conjunctive_positive_support_with_luna_fallback_v2",
       "decision_required_trace": [
         "chunk_uid",
-        "mode",
         "passed_policy_ids",
         "failed_policy_ids",
-        "required_pass_count",
+        "abstained_policy_ids",
         "stage_b_action",
         "stage_b_reason_code",
         "benchmark_outcomes_read",
@@ -135,7 +99,8 @@
         "token_budget_read"
       ],
       "missing_trace_action": "quality_decision_construction_fails_closed",
-      "keep_authority": "normal_requires_one_and_hard_requires_two_independent_q1_q4_passes_with_no_qualified_fail",
+      "keep_authority": "q2_and_q3_and_q4_pass_from_local_or_frozen_luna_evidence",
+      "missing_provider_evidence_action": "emit_requests_and_stop_without_membership_change",
       "intrinsic_quality_score_used": false,
       "weighted_score_used": false,
       "benchmark_outcomes_read": false
@@ -215,7 +180,7 @@
       "normal_action": "compact_typed_redundancy_and_calibrated_quality_rejects_subject_to_coverage",
       "hard_action": "blocked_until_block_8_freezes_one_additional_extension",
       "missing_gate_action": "discard_complete_candidate_and_retain_base",
-      "existing_active_profile_preserved": "normal_structural_v1",
+      "existing_active_profile_preserved": "framework_structural_v2",
       "post_run_override_allowed": false,
       "benchmark_feedback_allowed": false,
       "source_selection_axis_used": false,
@@ -717,11 +682,11 @@
       ]
     },
     {
-      "id": "stage_b_invalid_chunk",
+      "id": "stage_a_chunk_integrity",
       "version": "1.0.0",
-      "policy_card_id": "stage_b_invalid_chunk",
+      "policy_card_id": "stage_a_chunk_integrity",
       "core": "validity",
-      "stage": "Stage B",
+      "stage": "Stage A",
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
@@ -759,6 +724,33 @@
       "case_matrix_scenario": "exact_duplicate_family",
       "coverage_impact_validation": "stable_first_representative_for_exact_duplicates",
       "runtime_implementation": [
+        "run_curation.py"
+      ],
+      "promotion_requirements": [
+        "structural_fixture_passed",
+        "reason_code_audit_complete",
+        "development_ablation_pre_registered",
+        "confirmatory_evaluation_without_runtime_feedback"
+      ]
+    },
+    {
+      "id": "stage_b_intra_chunk_exact_sentence_compaction",
+      "version": "1.0.0",
+      "policy_card_id": "stage_b_intra_chunk_exact_sentence_compaction",
+      "core": "redundancy",
+      "stage": "Stage A",
+      "status": "active",
+      "activation_state": "runtime_executable",
+      "reason_codes": [
+        "redundancy_intra_chunk_exact_sentence_repeat_compacted"
+      ],
+      "required_metadata": [],
+      "fixture": "validation/test_repeated_sentence_compaction.py",
+      "false_positive_fixture": "validation/test_repeated_sentence_compaction.py",
+      "case_matrix_scenario": "intra_chunk_exact_sentence_repetition",
+      "coverage_impact_validation": "first_occurrence_and_rewritten_chunk_survive_with_residual_boundary",
+      "runtime_implementation": [
+        "repeated_sentence_compaction.py",
         "run_curation.py"
       ],
       "promotion_requirements": [
@@ -889,10 +881,7 @@
       "status": "active",
       "activation_state": "runtime_executable",
       "reason_codes": [
-        "quality_normal_qualified_fail",
-        "quality_hard_qualified_fail",
-        "quality_normal_retention_threshold_not_met",
-        "quality_hard_retention_threshold_not_met"
+        "quality_qualified_fail"
       ],
       "required_metadata": [],
       "fixture": "validation/test_quality_ranker_runtime_v1.py",
@@ -900,9 +889,11 @@
       "case_matrix_scenario": "distilled_q1_q4_with_ood_and_confidence_abstention",
       "coverage_impact_validation": "quality_non_selection_is_stage_b_proposal_subject_to_stage_c_veto",
       "runtime_implementation": [
+        "quality_model_evidence.py",
+        "quality_operating_points.py",
         "quality_ranker_runtime.py",
         "quality_ranker_policy.py",
-        "quality_runtime_dispatch.py",
+        "quality_stage_bridge.py",
         "all_policy_stage_b.py"
       ],
       "promotion_requirements": [
@@ -926,6 +917,20 @@
       "case_matrix_scenario": "clean_corpus_retains",
       "coverage_impact_validation": "materialization_coverage_impact_audit",
       "runtime_implementation": [
+        "coverage_contract.py",
+        "coverage_engine.py",
+        "coverage_metrics.py",
+        "coverage_redundancy_bridge.py",
+        "coverage_rematerialization.py",
+        "runtime_artifact_materialization.py",
+        "semantic_coverage_bundle.py",
+        "semantic_coverage_corpus_runner.py",
+        "semantic_coverage_empirical_audit.py",
+        "semantic_coverage_graph.py",
+        "semantic_coverage_materializer.py",
+        "semantic_embedding_artifact.py",
+        "semantic_embedding_runtime.py",
+        "semantic_neighbor_runtime.py",
         "run_curation.py"
       ],
       "promotion_requirements": [

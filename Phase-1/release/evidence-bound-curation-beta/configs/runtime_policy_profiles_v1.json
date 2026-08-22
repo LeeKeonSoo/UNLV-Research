@@ -1,0 +1,98 @@
+{
+  "schema_version": "runtime-policy-profiles-v2",
+  "status": "beta_release",
+  "profiles": [
+    {
+      "id": "framework_structural_v2",
+      "user_facing_mode": "framework",
+      "status": "beta_release",
+      "description": "Single budget-free curation profile. Local Q1-Q4 evidence retains only positive support, unsupported cases are resolved by frozen Luna Batch evidence, and approximate similarity only retrieves Redundancy candidates.",
+      "enabled_policy_ids": [
+        "stage_a_normalized_text_integrity",
+        "stage_a_bom_normalization",
+        "stage_a_chunk_integrity",
+        "stage_b_exact_duplicate",
+        "stage_b_intra_chunk_exact_sentence_compaction",
+        "stage_b_symmetric_near_duplicate",
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_structural_scaffold",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk",
+        "stage_b_quality_distilled_ranker_v1",
+        "stage_c_coverage_guard"
+      ],
+      "runtime_policy": {
+        "stage_a": {
+          "policy": "text_only_v2",
+          "normalization_context_default": "preserve"
+        },
+        "stage_b": {
+          "deduplicate_stage_a_text_exactly": true
+        },
+        "redundancy_v2": {
+          "contract": "configs/redundancy_v2.json",
+          "settings": {
+            "short_exact_only_max_tokens": 32,
+            "near_min_tokens": 64,
+            "near_max_changed_ratio": 0.02,
+            "near_max_changed_tokens": 4,
+            "containment_min_tokens": 12,
+            "repeated_span_min_lexical_tokens": 12,
+            "complementary_overlap_floor": 0.18,
+            "retrieval_min_tokens": 24,
+            "retrieval_shingle_size": 5,
+            "retrieval_signature_size": 32,
+            "retrieval_bands": 8,
+            "character_ngram_size": 24,
+            "character_minhash_bands": 20,
+            "character_minhashes_per_band": 13,
+            "retrieve_repeated_span_candidates": false
+          }
+        },
+        "stage_b_policy": {
+          "intra_chunk_exact_sentence_compaction": {
+            "enabled": true,
+            "minimum_occurrences": 3,
+            "minimum_lexical_tokens": 12
+          },
+          "structural_scaffold_compaction": {"enabled": true},
+          "structural_artifact_rules": {
+            "explicit_generated_artifact": true,
+            "license_comment_only_chunk": true,
+            "empty_html_shell": true,
+            "web_chrome_only_chunk": true
+          }
+        },
+        "coverage": {
+          "enforce_materialization_invariants": true,
+          "selection_authority": false
+        },
+        "quality_runtime": {
+          "contract": "configs/quality_ranker_v1.json",
+          "operating_point": "framework",
+          "decision_rule": "positive_support_with_luna_fallback",
+          "qualified_fail_threshold_field": "failure_threshold",
+          "qualified_fail_action": "not_select",
+          "positive_support_rule": "q2_and_q3_and_q4",
+          "pass_action": "retain_only_when_positive_support_rule_holds",
+          "abstain_action": "luna_fallback",
+          "out_of_distribution_action": "luna_fallback",
+          "low_confidence_action": "luna_fallback",
+          "teacher_fallback": {
+            "enabled": true,
+            "provider_contract": "configs/quality_teacher_luna_single_v1.json",
+            "transport": "openai_batch_api",
+            "confirmed_fail_action": "not_select",
+            "positive_support_action": "retain",
+            "unresolved_action": "not_select",
+            "missing_observation_action": "emit_requests_and_stop",
+            "transport_failure_action": "stop_without_membership_change"
+          },
+          "runtime_method": "distilled_quality_ranker_v1",
+          "runtime_required": true
+        }
+      }
+    }
+  ]
+}

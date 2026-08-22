@@ -1,0 +1,40 @@
+{
+  "schema_version": "curation-run-contract-v1",
+  "status": "frozen_before_stage_a_b_c_materialization",
+  "curation_mode": "normal",
+  "execution_scope": "confirmatory",
+  "input": {
+    "candidate_files": [
+      "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl"
+    ],
+    "text_fields": ["text", "content", "document", "body"],
+    "defaults": {}
+  },
+  "output_dir": "D:/UNLV-Research/final_all_policy_v1/coverage_trace_replay_v1/normal",
+  "pretraining_audit_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/benchmark_exclusion_audit_v2.json",
+  "stage_b": {
+    "max_chunk_chars": 6000
+  },
+  "quality_runtime": {
+    "method": "distilled_quality_ranker_v1",
+    "embedding_manifest_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/augmented/embeddings/embedding_manifest.json",
+    "ranker_manifest_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/ranker_v2/quality_ranker_manifest.json",
+    "oracle_fallback_enabled": false,
+    "maximum_oracle_fraction": 0.0,
+    "dotenv_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/.env",
+    "observation_cache_path": "D:/UNLV-Research/final_all_policy_v1/quality_ranker_luna_v1/runtime_review/teacher_observations.jsonl",
+    "redundancy_checkpoint_path": "D:/UNLV-Research/final_all_policy_v1/checkpoints/luna_final_v1/normal_stage_b_redundancy.json",
+    "task_workers": 1
+  },
+  "stage_c": {
+    "minimum_residual_chars": 120,
+    "no_binding_budget_action": "selection_without_binding_budget",
+    "semantic_coverage": {
+      "provider_registry_path": "C:/Users/ksl11/Desktop/Code/Projects/unlv/UNLV-Research/Phase-1/configs/model_provider_registry_v1.json",
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "corpus_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/normal/corpus.jsonl",
+      "graph_path": "D:/UNLV-Research/final_all_policy_v1/semantic_coverage/normal/semantic_coverage_graph.json"
+    }
+  },
+  "claim_boundary": "Coverage trace-only replay of the frozen Code confirmatory materialization. It may add audit metadata but may not change membership authority, thresholds, or forbidden inputs."
+}

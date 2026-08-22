@@ -2,7 +2,7 @@
   "schema_version": "stage-c2-promotion-decision-v1",
   "candidate_policy_id": "stage_c2_model_relative_representative_candidate",
   "decision": "not_promoted_candidate_archive",
-  "active_runtime_profile": "normal_structural_v1",
+  "active_runtime_profile": "framework_structural_v2",
   "decision_scope": "frozen_before_7m_external_experiment",
   "development_protocol": {
     "corpora": ["code_raw_like", "math_raw_like", "general_text_raw_like"],

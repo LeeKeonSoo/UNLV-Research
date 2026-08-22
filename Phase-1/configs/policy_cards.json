@@ -398,13 +398,13 @@
       "empirical_status": "unvalidated_structural_policy"
     },
     {
-      "id": "stage_b_invalid_chunk",
+      "id": "stage_a_chunk_integrity",
       "version": "1.0.0",
       "core": "validity",
-      "stage": "Stage B",
-      "hypothesis": "Only an empty or corrupted chunk result may fail the Stage-B validity gate.",
+      "stage": "Stage A",
+      "hypothesis": "Only an empty or corrupted chunk result may fail the Stage-A validity gate.",
       "decision_unit": "chunk",
-      "deployment_scope": "all Stage-A release candidates",
+      "deployment_scope": "all normalized input records after deterministic chunking",
       "allowed_inputs": [
         "chunk text"
       ],
@@ -467,6 +467,49 @@
         "run_curation.py"
       ],
       "empirical_status": "unvalidated_structural_policy"
+    },
+    {
+      "id": "stage_b_intra_chunk_exact_sentence_compaction",
+      "version": "1.0.0",
+      "core": "redundancy",
+      "stage": "Stage B",
+      "hypothesis": "Three or more exact normalized occurrences of the same sufficiently long sentence within one retained chunk repeat learning payload; retaining the first occurrence preserves that payload.",
+      "decision_unit": "nonrepresentative exact sentence occurrence within a retained chunk",
+      "deployment_scope": "all Stage-B selected chunks in Normal and Hard",
+      "allowed_inputs": [
+        "chunk text",
+        "stable chunk identifier",
+        "declared occurrence threshold",
+        "declared lexical-token boundary",
+        "declared residual-character boundary"
+      ],
+      "forbidden_inputs": [
+        "intrinsic_quality_score",
+        "human_quality_label",
+        "Utility",
+        "NLL",
+        "benchmark_outcomes",
+        "target_retention_fraction",
+        "source_pool_role",
+        "source_tier",
+        "composition"
+      ],
+      "reason_codes": [
+        "redundancy_intra_chunk_exact_sentence_repeat_compacted"
+      ],
+      "negative_conditions": [
+        "one or two occurrences remain unchanged",
+        "sentences below the lexical-token boundary remain unchanged",
+        "nonidentical sentence families remain separate",
+        "a compaction that violates the residual-character boundary is blocked"
+      ],
+      "coverage_impact": "the chunk survives, the first exact occurrence remains, and Stage C verifies the residual boundary before final materialization",
+      "rollback_behavior": "disable the immutable profile rule and preserve the original chunk text",
+      "runtime_implementation": [
+        "repeated_sentence_compaction.py",
+        "run_curation.py"
+      ],
+      "empirical_status": "runtime_executable_fixture_validated_pending_external_evaluation"
     },
     {
       "id": "stage_b_symmetric_near_duplicate",
@@ -645,10 +688,7 @@
         "composition"
       ],
       "reason_codes": [
-        "quality_normal_qualified_fail",
-        "quality_hard_qualified_fail",
-        "quality_normal_retention_threshold_not_met",
-        "quality_hard_retention_threshold_not_met"
+        "quality_qualified_fail"
       ],
       "negative_conditions": [
         "OOD or low-confidence prediction supplies no positive retention evidence",

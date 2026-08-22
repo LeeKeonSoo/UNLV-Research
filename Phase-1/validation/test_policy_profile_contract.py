@@ -62,9 +62,18 @@ def test_policy_profile_contract() -> None:
     assert normal["runtime_policy"]["quality_runtime"]["abstain_action"] == (
         "not_select_unless_coverage_veto"
     )
-    assert normal["runtime_policy"]["quality_runtime"]["full_corpus_teacher_panel_forbidden"] is True
     assert "stage_b_quality_distilled_ranker_v1" in normal["enabled_policy_ids"]
+    assert "stage_b_intra_chunk_exact_sentence_compaction" in normal[
+        "enabled_policy_ids"
+    ]
     assert "near_duplicate_compaction" not in normal["runtime_policy"]["stage_b_policy"]
+    assert normal["runtime_policy"]["stage_b_policy"][
+        "intra_chunk_exact_sentence_compaction"
+    ] == {
+        "enabled": True,
+        "minimum_occurrences": 3,
+        "minimum_lexical_tokens": 12,
+    }
     assert normal["runtime_policy"]["stage_b_policy"]["structural_scaffold_compaction"]["enabled"] is True
     assert normal["runtime_policy"]["stage_b_policy"]["structural_artifact_rules"] == {
         "explicit_generated_artifact": True,
@@ -119,10 +128,16 @@ def test_policy_profile_contract() -> None:
 
     from run_curation import resolve_curation_mode, validate_run_policy_overrides
 
-    resolved = resolve_curation_mode("normal", execution_scope="development")
-    assert resolved["profile_id"] == "normal_structural_v1"
+    runtime_profiles = json.loads(
+        (ROOT / "configs" / "runtime_policy_profiles_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    framework = runtime_profiles["profiles"][0]
+    resolved = resolve_curation_mode("framework", execution_scope="development")
+    assert resolved["profile_id"] == "framework_structural_v2"
     assert len(resolved["effective_policy_sha256"]) == 64
-    assert resolved["effective_policy"] == normal["runtime_policy"]
+    assert resolved["effective_policy"] == framework["runtime_policy"]
     validate_run_policy_overrides({}, resolved["effective_policy"])
     try:
         validate_run_policy_overrides(

@@ -14,7 +14,7 @@ def test_stage_c2_is_archived_not_promoted_to_the_frozen_runtime_profile() -> No
 
     # When: the candidate lifecycle is checked before a 7M run.
     candidate = next(policy for policy in registry["policies"] if policy["id"] == decision["candidate_policy_id"])
-    active = registry["runtime_profile_authorization"]["normal_structural_v1"]
+    active = registry["runtime_profile_authorization"]["framework_structural_v2"]
 
     # Then: the candidate has no runtime authorization or promotion claim.
     assert decision["decision"] == "not_promoted_candidate_archive"

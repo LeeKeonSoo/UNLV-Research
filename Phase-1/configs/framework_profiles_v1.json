@@ -1,49 +1,32 @@
 {
   "schema_version": "framework-profiles-v1",
   "status": "runtime_integrated_block_7",
-  "framework_manifest_sha256": "8fd37bb61cd1367dbecd5681e517822cae5a2c4b9c2bf007723c94eeeca9e530",
-  "object_registry_sha256": "9119f44e0169a026be5a7c64a91232b5030729d3597de4160c8a821416598a08",
+  "framework_manifest_sha256": "4eb0b0946efa4be9c12385a84d971a44f8535cf537c8751ba68e458efaec072d",
+  "object_registry_sha256": "1a4331fe2fa3a042633b0e07c1d3e57a2d96c191647b66b344cd3fc6f703b502",
   "policy_lifecycles": [
     {"policy_id": "validity.interpretable_text", "lifecycle": "candidate"},
     {"policy_id": "redundancy.exact_text_family", "lifecycle": "development_passed"},
     {"policy_id": "redundancy.symmetric_near_duplicate_candidate", "lifecycle": "candidate"},
+    {"policy_id": "redundancy.intra_chunk_exact_sentence_compaction", "lifecycle": "candidate"},
     {"policy_id": "quality.explicit_nonpayload", "lifecycle": "candidate"},
     {"policy_id": "coverage.representative_guard", "lifecycle": "candidate"},
     {"policy_id": "quality.distilled_ranker_v1", "lifecycle": "candidate"}
   ],
   "profiles": [
     {
-      "id": "normal",
+      "id": "framework",
       "inherits_profile": null,
       "policy_ids": [
         "validity.interpretable_text",
         "redundancy.exact_text_family",
         "redundancy.symmetric_near_duplicate_candidate",
+        "redundancy.intra_chunk_exact_sentence_compaction",
         "quality.explicit_nonpayload",
         "coverage.representative_guard",
         "quality.distilled_ranker_v1"
       ],
-      "operating_point_id": "normal_v1",
+      "operating_point_id": "framework_v2",
       "strength_rank": 1,
-      "calibration_artifact_sha256": null,
-      "release_enabled": false,
-      "fixed_retention_fraction_allowed": false,
-      "maximum_token_budget_allowed": false,
-      "output": "full_reason_coded_curated_pool"
-    },
-    {
-      "id": "hard",
-      "inherits_profile": "normal",
-      "policy_ids": [
-        "validity.interpretable_text",
-        "redundancy.exact_text_family",
-        "redundancy.symmetric_near_duplicate_candidate",
-        "quality.explicit_nonpayload",
-        "coverage.representative_guard",
-        "quality.distilled_ranker_v1"
-      ],
-      "operating_point_id": "hard_v1",
-      "strength_rank": 2,
       "calibration_artifact_sha256": null,
       "release_enabled": false,
       "fixed_retention_fraction_allowed": false,
@@ -55,5 +38,5 @@
     "profile_contains_unpromoted_policy",
     "profile_operating_points_uncalibrated"
   ],
-  "retained_set_invariant": "hard_subset_or_equal_normal"
+  "retained_set_invariant": "single_profile"
 }

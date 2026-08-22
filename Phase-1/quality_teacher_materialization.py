@@ -12,8 +12,6 @@ from typing import Any, Callable, Mapping
 
 from dotenv import load_dotenv
 
-from quality_operating_points import CurationMode, QualityAction
-from quality_stage_bridge import apply_coverage_veto, propose_quality_selections
 from quality_teacher_adapters import ConcurrencyLimitedBackend, NvidiaBuildBackend
 from quality_teacher_batch_cache import TeacherBatchEvidenceStore
 from quality_teacher_panel import (
@@ -537,47 +535,53 @@ def materialize_modes(
     scoring_audit: Mapping[str, Any],
 ) -> JsonMap:
     output_dir.mkdir(parents=True, exist_ok=True)
-    report_modes: JsonMap = {}
-    normal_retained_ids: set[str] | None = None
-    for mode in (CurationMode.NORMAL, CurationMode.HARD):
-        proposals = propose_quality_selections(results_by_chunk, mode)
-        # Coverage receives the full typed proposal set. No metadata quota or target mix
-        # can create protected IDs; malformed proposals fail the invariant below.
-        final = apply_coverage_veto(proposals, protected_uids=set())
-        retained: list[JsonMap] = []
-        not_selected: list[JsonMap] = []
-        reason_counts: dict[str, int] = {}
-        for source_row in rows:
-            chunk_uid = str(source_row["chunk_uid"])
-            result = results_by_chunk[chunk_uid]
-            decision = final[chunk_uid]
-            row = _annotate_result(source_row, result)
-            row["quality_stage_decision"] = asdict(decision)
-            if decision.final_action == QualityAction.NOT_SELECT.value:
-                if not decision.failed_policy_ids and (
-                    len(decision.passed_policy_ids) >= decision.required_pass_count
-                ):
-                    raise RuntimeError(f"Unreasoned Quality non-selection: {chunk_uid}")
-                not_selected.append(row)
-                reason_counts[decision.stage_b_reason_code] = (
-                    reason_counts.get(decision.stage_b_reason_code, 0) + 1
-                )
-            else:
-                retained.append(row)
-        retained_ids = {str(row["chunk_uid"]) for row in retained}
-        not_selected_ids = {str(row["chunk_uid"]) for row in not_selected}
-        input_ids = {str(row["chunk_uid"]) for row in rows}
-        if retained_ids & not_selected_ids or retained_ids | not_selected_ids != input_ids:
-            raise RuntimeError(f"Quality materialization partition invariant failed for {mode.value}")
-        if normal_retained_ids is None:
-            normal_retained_ids = retained_ids
-        elif not retained_ids.issubset(normal_retained_ids):
-            raise RuntimeError("Hard retained set must be a subset of Normal retained set")
-        retained_path = output_dir / f"{mode.value}_curated_chunks.jsonl"
-        not_selected_path = output_dir / f"{mode.value}_quality_not_selected_chunks.jsonl"
-        _write_jsonl(retained_path, retained)
-        _write_jsonl(not_selected_path, not_selected)
-        report_modes[mode.value] = {
+    retained: list[JsonMap] = []
+    not_selected: list[JsonMap] = []
+    reason_counts: dict[str, int] = {}
+    for source_row in rows:
+        chunk_uid = str(source_row["chunk_uid"])
+        results = results_by_chunk[chunk_uid]
+        failed = tuple(
+            result.policy_id for result in results if result.decision is PanelDecision.FAIL
+        )
+        passed = frozenset(
+            result.policy_id for result in results if result.decision is PanelDecision.PASS
+        )
+        positive_support = {
+            "q2_semantic_coherence",
+            "q3_substantive_payload",
+            "q4_learnable_relations",
+        }.issubset(passed)
+        row = _annotate_result(source_row, results)
+        if failed:
+            reason_code = "quality_teacher_confirmed_fail"
+        elif positive_support:
+            reason_code = "quality_teacher_positive_support"
+        else:
+            reason_code = "quality_teacher_no_positive_support"
+        row["quality_stage_decision"] = {
+            "final_action": "retain" if positive_support and not failed else "not_select",
+            "stage_b_reason_code": reason_code,
+            "failed_policy_ids": list(failed),
+            "passed_policy_ids": sorted(passed),
+            "decision_source": "teacher_panel",
+        }
+        if positive_support and not failed:
+            retained.append(row)
+        else:
+            not_selected.append(row)
+            reason_counts[reason_code] = reason_counts.get(reason_code, 0) + 1
+    retained_ids = {str(row["chunk_uid"]) for row in retained}
+    not_selected_ids = {str(row["chunk_uid"]) for row in not_selected}
+    input_ids = {str(row["chunk_uid"]) for row in rows}
+    if retained_ids & not_selected_ids or retained_ids | not_selected_ids != input_ids:
+        raise RuntimeError("Quality materialization partition invariant failed")
+    retained_path = output_dir / "framework_curated_chunks.jsonl"
+    not_selected_path = output_dir / "framework_quality_not_selected_chunks.jsonl"
+    _write_jsonl(retained_path, retained)
+    _write_jsonl(not_selected_path, not_selected)
+    report_modes: JsonMap = {
+        "framework": {
             "input_chunks": len(rows),
             "retained_chunks": len(retained),
             "not_selected_chunks": len(not_selected),
@@ -592,6 +596,7 @@ def materialize_modes(
             "not_selected_path": str(not_selected_path),
             "not_selected_sha256": _sha256(not_selected_path),
         }
+    }
     report = {
         "schema_version": REPORT_SCHEMA,
         "status": "quality_teacher_materialization_complete",
@@ -602,7 +607,7 @@ def materialize_modes(
         "scoring": dict(scoring_audit),
         "modes": report_modes,
         "forbidden_runtime_inputs_read": [],
-        "abstain_action": "not_select_unless_coverage_veto",
+        "abstain_action": "not_select_without_positive_support",
         "benchmark_outcomes_read": False,
         "utility_read": False,
         "token_budget_read": False,
@@ -614,7 +619,7 @@ def materialize_modes(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Apply the frozen Q1-Q4 Quality panel and materialize Normal/Hard outputs."
+        description="Apply the frozen Q1-Q4 Quality panel and materialize one framework output."
     )
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--panel", type=Path, required=True)

@@ -1,0 +1,75 @@
+{
+  "schema_version": "semantic-coverage-v3",
+  "status": "development_and_confirmatory_runtime_experiment",
+  "runtime_activation": "development_and_confirmatory_only",
+  "definition": "prevent unexplained extinction of stable semantic support after Stage-B removal proposals",
+  "authority": "final_corpus_veto_with_explicit_required_retain_and_full_recheck",
+  "primary_provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+  "audit_provider_id": "bge-m3-semantic-audit-candidate",
+  "providers_must_be_independent": true,
+  "provider_replacement_invalidates_calibration": true,
+  "multilingual_scope": "100_plus_language_capable_models_with_language_script_unknown_and_mixed_audit",
+  "graph": {
+    "candidate_backend": "pluggable_ann_mutual_knn",
+    "fixture_backend": "deterministic_exact_cosine",
+    "neighbor_count_candidate": 8,
+    "neighbor_count_requires_development_calibration": true,
+    "stable_component_rule": "shared_local_reciprocal_neighbor_support_under_primary_and_audit_mutual_knn",
+    "disagreement_rule": "non_singleton_union_neighborhood_prevents_group_extinction_without_individual_retain_authority",
+    "embedding_similarity_alone_may_delete": false
+  },
+  "views": {
+    "veto_eligible_after_validation": [
+      "redundancy_family",
+      "content_route",
+      "language_script",
+      "format_morphology",
+      "semantic_skill",
+      "uncertain_intersection"
+    ],
+    "distribution_audit_only": [
+      "primary_route_share",
+      "multi_label_route_incidence",
+      "language_script_incidence",
+      "raw_curated_token_share_delta"
+    ]
+  },
+  "mode_contract": {
+    "normal": "same_coverage_invariants",
+    "hard": "same_coverage_invariants",
+    "hard_may_weaken_coverage": false
+  },
+  "representative_precedence": [
+    "stage_b_directional_payload_superset",
+    "surviving_family_member",
+    "facility_location_then_stable_uid"
+  ],
+  "rematerialization": {
+    "silent_restore": false,
+    "required_retain_uids_emitted": true,
+    "second_complete_coverage_evaluation_required": true,
+    "validity_invalid_content_may_be_restored": false,
+    "independently_supported_quality_extinction_may_be_restored": false
+  },
+  "forbidden_inputs": [
+    "source_identity",
+    "source_reputation",
+    "dataset_identity",
+    "domain_quota",
+    "target_distribution",
+    "target_retention_fraction",
+    "hidden_token_budget",
+    "Utility",
+    "NLL",
+    "benchmark_outcomes"
+  ],
+  "promotion_requires": [
+    "multilingual_route_and_script_fixtures",
+    "provider_component_stability_audit",
+    "protected_extinction_recall",
+    "clean_removal_false_veto_bound",
+    "corpus_scale_ann_backend",
+    "normal_hard_invariant_equivalence",
+    "composition_artifact_selection_leakage_test"
+  ]
+}

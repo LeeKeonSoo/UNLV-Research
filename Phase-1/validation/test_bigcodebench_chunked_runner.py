@@ -12,9 +12,12 @@ if str(ROOT) not in sys.path:
 
 from external_evaluation.bigcodebench_chunked_runner import (
     ChunkArtifact,
+    ChunkedEvaluationRequest,
     aggregate_chunk_artifacts,
     partition_task_ids,
+    run_chunked_evaluation,
 )
+from external_evaluation.bigcodebench_remote_runner import RemoteEvaluationArtifacts
 
 
 def _write_chunk(
@@ -98,8 +101,60 @@ def test_aggregate_chunk_artifacts_rejects_missing_or_duplicate_tasks() -> None:
             raise AssertionError("duplicate task judgments must be rejected")
 
 
+def test_chunked_runner_forwards_custom_endpoint() -> None:
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        samples = root / "samples.jsonl"
+        samples.write_text(
+            json.dumps({"task_id": "BigCodeBench/0"}) + "\n",
+            encoding="utf-8",
+        )
+        observed_endpoints: list[str] = []
+
+        def evaluator(request):
+            observed_endpoints.append(request.endpoint)
+            assert request.result_path is not None
+            assert request.pass_rate_path is not None
+            request.result_path.parent.mkdir(parents=True, exist_ok=True)
+            request.result_path.write_text(
+                json.dumps(
+                    {
+                        "eval": {
+                            "BigCodeBench/0": [
+                                {"task_id": "BigCodeBench/0", "status": "pass"}
+                            ]
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            request.pass_rate_path.write_text(
+                json.dumps({"pass@1": 1.0, "failed_tasks": []}),
+                encoding="utf-8",
+            )
+            return RemoteEvaluationArtifacts(
+                request.result_path,
+                request.pass_rate_path,
+            )
+
+        run_chunked_evaluation(
+            ChunkedEvaluationRequest(
+                samples=samples,
+                work_root=root / "chunks",
+                final_result_path=root / "final_pass_at_k.json",
+                final_eval_path=root / "final_eval_results.json",
+                expected_task_count=1,
+                endpoint="https://self-hosted.example/",
+            ),
+            evaluator=evaluator,
+        )
+
+    assert observed_endpoints == ["https://self-hosted.example/"]
+
+
 if __name__ == "__main__":
     test_partition_task_ids_is_complete_disjoint_and_deterministic()
     test_aggregate_chunk_artifacts_recomputes_exact_pass_at_one()
     test_aggregate_chunk_artifacts_rejects_missing_or_duplicate_tasks()
+    test_chunked_runner_forwards_custom_endpoint()
     print("BigCodeBench chunked runner contract passed")

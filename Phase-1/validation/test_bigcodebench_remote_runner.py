@@ -160,10 +160,37 @@ def test_remote_runner_retries_transient_evaluator_server_error() -> None:
     assert attempts == 2
 
 
+def test_remote_runner_retries_transient_rate_limit() -> None:
+    attempts = 0
+
+    class RateLimitedClient:
+        def predict(self, **_kwargs: object) -> tuple[dict[str, object], dict[str, object]]:
+            nonlocal attempts
+            attempts += 1
+            if attempts == 1:
+                raise AppError("429 Client Error: Too Many Requests; rate limit")
+            return FakeClient().predict(**_kwargs)
+
+    with TemporaryDirectory() as directory:
+        samples = Path(directory) / "samples.jsonl"
+        samples.write_text('{"task_id":"BigCodeBench/0","solution":"pass"}\n')
+        request = RemoteEvaluationRequest(samples=samples, max_attempts=2)
+
+        run_remote_evaluation(
+            request,
+            client_factory=lambda _endpoint: RateLimitedClient(),
+            file_handler=lambda path: str(path),
+            sleep_fn=lambda _seconds: None,
+        )
+
+    assert attempts == 2
+
+
 if __name__ == "__main__":
     test_remote_runner_persists_official_results_without_bigcodebench_cli()
     test_remote_runner_retries_temporary_endpoint_failure()
     test_remote_runner_writes_to_explicit_chunk_artifact_paths()
     test_remote_runner_does_not_retry_deterministic_evaluator_rejection()
     test_remote_runner_retries_transient_evaluator_server_error()
+    test_remote_runner_retries_transient_rate_limit()
     print("BigCodeBench remote runner contract passed")

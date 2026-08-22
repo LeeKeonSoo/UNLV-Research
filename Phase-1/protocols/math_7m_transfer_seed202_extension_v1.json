@@ -1,0 +1,73 @@
+{
+  "schema_version": "math-7m-transfer-seed202-extension-v1",
+  "status": "frozen_before_curation_and_tokenizer_materialization",
+  "purpose": "Second-seed natural-budget replication of the frozen Code-calibrated curation policy on benchmark-clean OpenWebMath.",
+  "parent_protocol": {
+    "path": "protocols/math_7m_transfer_pilot_training_v1.json",
+    "sha256": "f7e49325482849608ee29ad5ceb1a65ff306e9a55c7b71560de6721eca3ed941"
+  },
+  "extension_basis": {
+    "decision": "Add seed 202 after all seed-101 Base, Raw, Normal, and Hard evaluations completed.",
+    "membership_mutated": false,
+    "training_inputs_mutated": false,
+    "hyperparameters_mutated": false,
+    "benchmark_tasks_mutated": false,
+    "interpretation": "Seed 101 showed that the Math transfer result was promising but arm-dependent; one independent replication is required before deciding whether to run seed 303."
+  },
+  "benchmark_exclusion": {
+    "audit_path": "D:/UNLV-Research/math_7m_framework_v1/raw_benchmark_clean/benchmark_exclusion_audit.json",
+    "required_status": "benchmark_exclusion_complete",
+    "removed_records": 1
+  },
+  "training": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["raw_math_natural", "normal_math_natural", "hard_math_natural"],
+    "seeds": [202],
+    "budget": "one_complete_natural_dataset_pass_per_arm_no_equal_token_resampling",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "output_root": "D:/UNLV-Research/math_7m_framework_v1/external_training_benchmark_clean_v1"
+  },
+  "evaluation_arms": ["base_no_update", "raw_math_natural", "normal_math_natural", "hard_math_natural"],
+  "primary_benchmarks": [
+    {
+      "id": "gsm8k_cot_zeroshot",
+      "snapshot_id": "openai/gsm8k@740312add88f781978c0658806c59bc2815b9866",
+      "snapshot_sha256": "e53aa7ecdb7f4b3e3cd45b541bbd75f89f951903f9f2c9f57d51ab8aa82a82ce",
+      "metric": "exact_match"
+    },
+    {
+      "id": "hendrycks_math500",
+      "snapshot_id": "HuggingFaceH4/MATH-500@6e4ed1a2a79af7d8630a6b768ec859cb5af4d3be",
+      "snapshot_sha256": "35dc41080a3680858b27fa7e0533d2d547825316fc5dafe5d316f4ccc5a06132",
+      "metric": "exact_match"
+    }
+  ],
+  "evaluator": {
+    "implementation": "EleutherAI lm-evaluation-harness",
+    "version": "0.4.12",
+    "batch_size": 4,
+    "evaluation_seed": 1234,
+    "decoding": "task-defined deterministic generation",
+    "pilot_limit": null
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false,
+    "equal_token_resampling": false
+  },
+  "decision_rule": "Run seed 202 for the three frozen natural-budget training arms. Do not alter curation membership, token blocks, training hyperparameters, evaluator settings, or benchmark tasks. Decide on seed 303 only after the complete seed-202 result is inspected.",
+  "claim_boundary": "This remains a Math-domain transfer diagnostic. Two seeds reduce single-run uncertainty but do not support a confirmatory multi-domain claim."
+}

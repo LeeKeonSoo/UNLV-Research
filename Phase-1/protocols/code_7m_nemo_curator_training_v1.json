@@ -1,0 +1,46 @@
+{
+  "schema_version": "code-7m-nemo-curator-training-v1",
+  "status": "frozen_before_curation_and_tokenizer_materialization",
+  "purpose": "Natural-budget external evaluation of one frozen NeMo Curator code recipe against the existing Code experiment.",
+  "external_baseline": {
+    "curation_protocol": "protocols/code_7m_nemo_curator_baseline_v1.json",
+    "curation_report": "D:/UNLV-Research/nemo_curator_code_7m_v1/nemo_curator_code_7m_report.json",
+    "curated_path": "D:/UNLV-Research/nemo_curator_code_7m_v1/curated/nemo_curated.jsonl",
+    "curated_sha256": "c455ea2a6f95d3341ed864d225eead5ad09ad1b0d3c0d33791687e0d8869b425"
+  },
+  "training": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["nemo_natural"],
+    "seeds": [101, 202, 303],
+    "budget": "one_complete_natural_dataset_pass_per_arm_no_equal_token_resampling",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "output_root": "D:/UNLV-Research/nemo_curator_code_7m_v1/external_training_v1"
+  },
+  "primary_benchmarks": [
+    "humanevalplus",
+    "mbppplus",
+    "bigcodebench_complete",
+    "cruxeval_input_prediction",
+    "cruxeval_output_prediction",
+    "ds1000"
+  ],
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false,
+    "equal_token_resampling": false
+  },
+  "claim_boundary": "This protocol evaluates one frozen NeMo Curator recipe on the same audited Code corpus, model revision, natural-budget training recipe, seeds, and benchmark suite. It does not represent every NeMo Curator configuration."
+}

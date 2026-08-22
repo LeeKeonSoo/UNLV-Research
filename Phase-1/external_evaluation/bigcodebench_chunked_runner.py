@@ -12,6 +12,7 @@ import re
 from typing import Final
 
 from external_evaluation.bigcodebench_remote_runner import (
+    DEFAULT_ENDPOINT,
     RemoteEvaluationArtifacts,
     RemoteEvaluationRequest,
     run_remote_evaluation,
@@ -53,6 +54,7 @@ class ChunkedEvaluationRequest:
     chunk_size: int = 50
     expected_task_count: int = 1_140
     parallel: int = 8
+    endpoint: str = DEFAULT_ENDPOINT
     max_attempts: int = 5
     retry_seconds: float = 60.0
 
@@ -175,6 +177,7 @@ def run_chunked_evaluation(
                 pass_rate_path=pass_rate_path,
                 selective_evaluate=chunk.selective_evaluate,
                 parallel=request.parallel,
+                endpoint=request.endpoint,
                 max_attempts=request.max_attempts,
                 retry_seconds=request.retry_seconds,
             )
@@ -231,6 +234,9 @@ def main() -> int:
     parser.add_argument("--final-eval", type=Path, required=True)
     parser.add_argument("--chunk-size", type=int, default=50)
     parser.add_argument("--parallel", type=int, default=8)
+    parser.add_argument("--endpoint", default=DEFAULT_ENDPOINT)
+    parser.add_argument("--max-attempts", type=int, default=5)
+    parser.add_argument("--retry-seconds", type=float, default=60.0)
     args = parser.parse_args()
     result = run_chunked_evaluation(
         ChunkedEvaluationRequest(
@@ -240,6 +246,9 @@ def main() -> int:
             final_eval_path=args.final_eval,
             chunk_size=args.chunk_size,
             parallel=args.parallel,
+            endpoint=args.endpoint,
+            max_attempts=args.max_attempts,
+            retry_seconds=args.retry_seconds,
         )
     )
     print(

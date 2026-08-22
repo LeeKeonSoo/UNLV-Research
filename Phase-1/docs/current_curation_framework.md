@@ -15,7 +15,7 @@ downstream model evaluation.
 ```text
 collect candidate pool
   -> Stage A: Validity normalization and closed-failure quarantine
-  -> Stage B: chunking plus Redundancy removal and positive Quality selection
+  -> Stage B: chunking plus Redundancy removal and explicit Quality failure filtering
   -> Stage C: Coverage veto, explicit restoration, and final materialization
 ```
 
@@ -32,13 +32,13 @@ result and is never read by the runtime.
 
 ## Core-Metric-Policy Roles
 
-The active user-facing runtime profiles are **Normal** (`normal_structural_v1`)
-and **Hard** (`hard_structural_v1`), declared in
-`configs/policy_profiles.json`. They use the same reason-coded structural and
-distilled Q1-Q4 Quality Policy families and differ only in frozen operating
-points. `safe_structural_v3` is retained only to
-reproduce historical provenance-and-safety experiments. The historical
-score-selector template is retired and cannot run. The required fields for a versioned active policy card are declared
+The active user-facing runtime has one **framework** profile
+(`framework_structural_v2`), declared in
+`configs/runtime_policy_profiles_v1.json`. Historical Normal/Hard experiment
+contracts remain reproducibility artifacts and are not accepted by the public
+entry point. `safe_structural_v3` is retained only to reproduce historical
+provenance-and-safety experiments. The historical score-selector template is
+retired and cannot run. The required fields for a versioned active policy card are declared
 in `configs/policy_card_contract.json` and instantiated in
 `configs/policy_cards.json`. `configs/core_policy_registry.json` is the
 authoritative lifecycle registry: every active rule is currently
@@ -54,7 +54,7 @@ Historical artifact identifiers may retain older labels only in the explicit
 | --- | --- | --- |
 | Validity | closed text-contract evidence | Stage A quarantines only payload absence, declared text-contract violation, unrecoverable corruption, or acquisition failure; Stage B rejects only invalid chunk results |
 | Redundancy | exact identity plus formatting, bounded changed-token near-substitute, exact containment, token-preserving reflow, and optional declared-verifier witnesses | Stage B proposes only nonrepresentative removal with a stable family, witness, evidence hash, and representative. Near edges are non-transitive pairwise matches; retrieval similarity alone cannot delete |
-| Quality | four independent Q1-Q4 ranker decisions plus closed deterministic non-payload evidence | Stage B retains only chunks with enough positive evidence and no qualified fail. Normal requires one independent pass and Hard requires two. Abstention, OOD, and low confidence do not support retention; provider output alone has no membership authority |
+| Quality | four independent Q1-Q4 ranker decisions plus closed deterministic non-payload evidence | Stage B removes a qualified local failure and retains only conjunctive Q2+Q3+Q4 pass. Q1 acts as a qualified-failure veto. Every other local outcome requires hash-bound Luna Batch evidence; completed fallback evidence without conjunctive support is not selected, while missing provider evidence stops the run |
 | Coverage | representative linkage, semantic support extinction, residual-payload preservation, and composition audit | Stage C originates no deletion. It accepts Stage-B proposals or veto-restores the minimum required support, rematerializes, and reruns the complete invariant set; quotas and target mixes are forbidden |
 
 Content domain and language/script are separate audit axes. For example,
@@ -87,7 +87,7 @@ Stage C has no weighted operational threshold. It does not access Utility or
 benchmarks. It cannot originate a deletion; it only accepts or vetoes Stage-B
 non-selection proposals and materializes the final output. A fixed-fraction, token-cap, or
 priority allocator remains outside the current framework surface.
-The active Normal profile may inspect only chunk text. Source identity, source tier,
+The active framework profile may inspect only chunk text. Source identity, source tier,
 rights, path, composition labels, Utility, and benchmark outcomes remain
 unavailable to removal policy. Language/script and route tags are used only by
 Coverage support accounting, never as quotas or direct deletion evidence.
@@ -121,7 +121,7 @@ provides an artifact declaration. `stage_c_selection.py` is retained only as a
 legacy implementation adapter; public runtime traces and ownership use
 `stage_b_policy.py`.
 
-The Normal Quality rules are intentionally narrower than a generic web-content
+The deterministic Quality rules are intentionally narrower than a generic web-content
 filter. `empty_html_shell` requires a complete HTML wrapper and no visible
 lexical token after tags are removed. `web_chrome_only_chunk` requires at
 least four nonblank lines and every line must be one of the fixed explicit
@@ -132,39 +132,40 @@ close.
 
 The structural development gate runs frozen Code, Math, and General fixtures across
 clean, exact-duplicate-heavy, explicit-artifact-heavy, and malformed scenarios.
-It compares artifact rules off versus all active Normal Quality rules on, reports
+It compares artifact rules off versus all active deterministic Quality rules on, reports
 reason-code and token-proxy deltas, and requires the Coverage invariant to
 pass. That sub-gate is local structural evidence only. The final profiles run
-one frozen local Q1-Q4 ranker distilled from offline GPT-5.6 Luna Batch labels;
-neither component reads
+one frozen local Q1-Q4 ranker distilled from offline GPT-5.6 Luna Batch labels.
+The ranker handles closed local decisions, and frozen Luna Batch evidence
+resolves only unsupported cases before final materialization. Neither component reads
 NLL, Utility, benchmark outcomes, source reputation, a target composition, or
 a token budget.
 
-## Normal And Hard Profiles
+## Single Framework Profile
 
-`curation_mode: "normal"` and `curation_mode: "hard"` execute the same four
-Cores and the same Policy families. Normal uses strict Near-duplicate bounds
-and requires at least one independent Q1-Q4 pass. Hard uses broader
-bounded-change limits and requires at least two independent passes. Any
-qualified fail blocks selection in both modes.
-Both are available for development/confirmatory runtime experiments and remain
-release-disabled. Neither uses model-relative scalar scores, source or domain
-metadata, retention fractions, or token budgets.
+`curation_mode: "framework"` executes the four Cores and one frozen Policy
+set. Redundancy uses exact identity, token MinHash, and character 24-gram
+MinHash only to retrieve candidate pairs; a typed equivalence or containment
+witness is still required before a nonrepresentative removal is proposed.
+Quality uses a Boolean positive-support contract rather than a weighted score
+or retention quota. Q2, Q3, and Q4 must all pass; Q1 acts as a qualified-failure
+veto. A qualified failure is not selected. Unsupported local outcomes are evaluated
+by the frozen Luna Batch fallback under the same rule. A completed fallback
+without support is not selected, and missing fallback evidence stops the run.
+The runtime reads neither model-relative scalar scores, source/domain metadata,
+retention fractions, nor token budgets.
 
-The former Hard span inventory (prefix-license header, self-contained license
-comment block, and repeated-template span) is an authorized-but-disabled
-candidate archive. None of those candidates can select, transform, or remove
-data in the final Normal or Hard runtime. Hard inherits every Normal rule and
-its Stage-C restoration candidates are bounded by the final Normal retained
-set, so `Hard subset-or-equal Normal` remains true after Coverage vetoes.
-changes only frozen strength parameters. The retired 0.95 shingle selector, model-relative
+The former Normal/Hard profiles and span inventory (prefix-license header,
+self-contained license-comment block, and repeated-template span) are
+historical or candidate artifacts. None can select, transform, or remove data
+through the public runtime. The retired 0.95 shingle selector, model-relative
 proxies, source metadata rules, and parser adapters are not in the final
 runtime surface.
 
 The earlier Stage C2 proxy, Mid estimator, token-budget planner, and three-arm
 materializer remain archived candidate research. They have no user-facing mode
 or Stage C authority. Their files are retained for traceability and possible
-future policy research, not as a path around the Hard promotion gate.
+future policy research, not as a path around the framework policy gate.
 
 A frozen reference-distribution probe is also diagnostic-only. It may compare
 candidate text with a source-declared reference pool for scope diagnostics, but
@@ -200,7 +201,7 @@ precision rule, not a claim of material compression.
 false-positive, metamorphic, and adversarial fixtures through the real A/B/C
 runtime. It verifies more than reason-code presence: Validity must issue the
 declared action, Redundancy removals must link to a surviving representative,
-Quality decisions must carry passed/failed Policy IDs, required pass count, and
+Quality decisions must carry passed/failed/abstained Policy IDs and
 the typed membership trace, while Coverage
 must detect missing representatives while remaining audit-only. It also fails
 when Registry and Case Matrix Core ownership disagree. The resulting
@@ -290,7 +291,7 @@ output and canonical metadata audit are stored under
 The preserved mathematics pool contains 4,292 legacy source rows and a
 5,000,112 collection-time token proxy. Its historical current-contract replay
 artifacts are under `D:\UNLV-Research\cross_domain_stress\abc_curation_math_5m_current_v1`.
-The Normal text-only profile does not quarantine rows because rights are absent;
+The framework text-only profile does not quarantine rows because rights are absent;
 rights resolution belongs to the optional safety review, not A-B-C compression.
 
 The source-declared-license OpenWebMath cross-domain replay uses

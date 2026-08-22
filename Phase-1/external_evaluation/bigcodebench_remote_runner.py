@@ -25,7 +25,8 @@ REMOTE_HTTP_TIMEOUT: Final = httpx.Timeout(
     pool=60.0,
 )
 TRANSIENT_APP_ERROR: Final = re.compile(
-    r"\b(?:500|502|503|504)\b|server error|bad gateway|service unavailable|gateway timeout",
+    r"\b(?:429|500|502|503|504)\b|too many requests|rate limit|server error|"
+    r"bad gateway|service unavailable|gateway timeout",
     flags=re.IGNORECASE,
 )
 

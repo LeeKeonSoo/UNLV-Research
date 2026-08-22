@@ -1,0 +1,47 @@
+{
+  "schema_version": "code-7m-data-juicer-training-v1",
+  "status": "frozen_before_curation_and_tokenizer_materialization",
+  "purpose": "Three-seed natural-budget QLoRA evaluation of the frozen Data-Juicer The Stack recipe output.",
+  "baseline": {
+    "curation_protocol": "protocols/code_7m_data_juicer_baseline_v1.json",
+    "materialization_protocol": "protocols/code_7m_data_juicer_training_materialization_v1.json",
+    "runtime_policy": false,
+    "target_token_budget": null,
+    "benchmark_feedback": false
+  },
+  "training": {
+    "base_model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "arms": ["data_juicer_natural"],
+    "seeds": [101, 202, 303],
+    "budget": "one_complete_natural_dataset_pass_no_equal_token_resampling",
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 0.00005,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "adapter": {
+      "rank": 32,
+      "alpha": 64,
+      "dropout": 0.05,
+      "target_modules": "all-linear"
+    },
+    "output_root": "D:/UNLV-Research/data_juicer_code_7m_v1/external_training_v1"
+  },
+  "primary_benchmarks": [
+    "humanevalplus",
+    "mbppplus",
+    "bigcodebench_complete",
+    "cruxeval_input_prediction",
+    "cruxeval_output_prediction",
+    "ds1000"
+  ],
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "source_reputation_read": false,
+    "equal_token_resampling": false
+  },
+  "claim_boundary": "This external baseline evaluates one published Data-Juicer recipe under its natural output size. It is not tuned to match Normal, Hard, or Random-72%, and does not represent every possible Data-Juicer configuration."
+}

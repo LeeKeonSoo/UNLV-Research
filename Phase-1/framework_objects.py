@@ -44,6 +44,8 @@ class DecisionAuthority(str, Enum):
     QUARANTINE_OR_REMOVE = "quarantine_or_remove"
     REMOVE_NONREPRESENTATIVE = "remove_nonrepresentative"
     QUALITY_DECISION = "quality_decision"
+    QUALITY_EXPLICIT_FAILURE = "quality_explicit_failure"
+    QUALITY_MEMBERSHIP_DECISION = "quality_membership_decision"
     MATERIALIZATION_VETO = "materialization_veto"
 
 
@@ -155,13 +157,20 @@ class ObjectRegistry(BaseModel):
         expected_authority = {
             CoreId.VALIDITY: DecisionAuthority.QUARANTINE_OR_REMOVE,
             CoreId.REDUNDANCY: DecisionAuthority.REMOVE_NONREPRESENTATIVE,
-            CoreId.QUALITY: DecisionAuthority.QUALITY_DECISION,
+            CoreId.QUALITY: {
+                DecisionAuthority.QUALITY_DECISION,
+                DecisionAuthority.QUALITY_EXPLICIT_FAILURE,
+                DecisionAuthority.QUALITY_MEMBERSHIP_DECISION,
+            },
             CoreId.COVERAGE: DecisionAuthority.MATERIALIZATION_VETO,
         }
         for policy in self.policies:
             if policy.stage_id is not expected_stage[policy.core_id]:
                 raise FrameworkObjectError("framework_policy_stage_core_mismatch")
-            if policy.decision_authority is not expected_authority[policy.core_id]:
+            allowed_authority = expected_authority[policy.core_id]
+            if not isinstance(allowed_authority, set):
+                allowed_authority = {allowed_authority}
+            if policy.decision_authority not in allowed_authority:
                 raise FrameworkObjectError("framework_policy_authority_core_mismatch")
             for metric_id in policy.metric_ids:
                 if metric_id not in metrics:

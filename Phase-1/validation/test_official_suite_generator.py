@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import gzip
 from pathlib import Path
 import sys
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -16,11 +18,14 @@ from external_evaluation.official_suite_generator import (
     batches,
     bigcodebench_parquet_path,
     build_cruxeval_prompt,
+    ds1000_records,
     generate_texts,
+    is_complete_output,
     jsonl_resume_count,
     load_bigcodebench_problems,
     output_path,
     postprocess_cruxeval,
+    preflight_suite,
 )
 
 
@@ -83,6 +88,19 @@ def main() -> int:
     fixture_root = Path("D:/fixture")
     assert bigcodebench_parquet_path(fixture_root) == fixture_root / "data" / "v0.1.4-00000-of-00001.parquet"
     with TemporaryDirectory() as directory:
+        crux_fixture = Path(directory) / "cruxeval.jsonl"
+        crux_fixture.write_text("{}\n", encoding="utf-8")
+        with (
+            patch(
+                "external_evaluation.official_suite_generator.cruxeval_data_path",
+                return_value=crux_fixture,
+            ),
+            patch(
+                "external_evaluation.official_suite_generator.bigcodebench_parquet_path",
+                side_effect=AssertionError("unrequested BigCodeBench lookup"),
+            ),
+        ):
+            preflight_suite("cruxeval_input")
         fixture_parquet = Path(directory) / "bigcodebench.parquet"
         pq.write_table(
             pa.table(
@@ -105,6 +123,32 @@ def main() -> int:
             encoding="utf-8",
         )
         assert jsonl_resume_count(partial_output) == 1
+        empty_output = Path(directory) / "empty.jsonl"
+        empty_output.touch()
+        assert not is_complete_output(empty_output)
+        assert is_complete_output(partial_output)
+        ds1000_fixture = Path(directory) / "ds1000.jsonl.gz"
+        with gzip.open(ds1000_fixture, "wt", encoding="utf-8") as handle:
+            handle.write('{"prompt":"first"}\n')
+            handle.write('{"prompt":"second"}\n')
+            handle.write('{"prompt":"third"}\n')
+        with patch(
+            "external_evaluation.official_suite_generator.ds1000_data_path",
+            return_value=ds1000_fixture,
+        ):
+            resumed_model = FakeModel()
+            resumed = list(
+                ds1000_records(
+                    resumed_model,
+                    FakeTokenizer(),
+                    max_new_tokens=1,
+                    batch_size=2,
+                    max_batch_context_tokens=32,
+                    completed=1,
+                )
+            )
+        assert len(resumed) == 2
+        assert resumed_model.batch_sizes == [2]
     assert list(batches([1, 2, 3, 4, 5], 2)) == [[1, 2], [3, 4], [5]]
     model = FakeModel()
     generated = generate_texts(

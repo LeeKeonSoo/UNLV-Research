@@ -55,7 +55,7 @@ def _all_pass() -> tuple[PanelPolicyResult, ...]:
     )
 
 
-def test_normal_and_hard_share_evidence_but_use_different_fail_strength() -> None:
+def test_teacher_materializer_emits_one_positive_support_framework_output() -> None:
     rows = [
         {"chunk_uid": "keep", "text": "substantive payload", "token_proxy": 2},
         {"chunk_uid": "normal-remove", "text": "boilerplate", "token_proxy": 1},
@@ -86,22 +86,15 @@ def test_normal_and_hard_share_evidence_but_use_different_fail_strength() -> Non
             output_dir=Path(directory),
             scoring_audit={"fixture": True},
         )
-        normal = {
+        retained = {
             json.loads(line)["chunk_uid"]
-            for line in Path(report["modes"]["normal"]["retained_path"])
+            for line in Path(report["modes"]["framework"]["retained_path"])
             .read_text(encoding="utf-8")
             .splitlines()
         }
-        hard = {
-            json.loads(line)["chunk_uid"]
-            for line in Path(report["modes"]["hard"]["retained_path"])
-            .read_text(encoding="utf-8")
-            .splitlines()
-        }
-        assert normal == {"keep", "hard-only-remove"}
-        assert hard == {"keep"}
-        assert hard <= normal
-        assert report["abstain_action"] == "not_select_unless_coverage_veto"
+        assert retained == {"keep"}
+        assert set(report["modes"]) == {"framework"}
+        assert report["abstain_action"] == "not_select_without_positive_support"
         assert report["benchmark_outcomes_read"] is False
 
 
@@ -250,7 +243,7 @@ def test_reliable_evaluation_forwards_provider_evidence_store() -> None:
 
 
 if __name__ == "__main__":
-    test_normal_and_hard_share_evidence_but_use_different_fail_strength()
+    test_teacher_materializer_emits_one_positive_support_framework_output()
     test_unavailable_provider_observation_is_never_reused()
     test_calibration_cache_requires_all_three_teachers_when_declared()
     test_observation_cache_rejects_runtime_identity_mismatch()

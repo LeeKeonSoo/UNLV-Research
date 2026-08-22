@@ -92,6 +92,8 @@ def test_luna_batch_panel_freezes_openai_provider_identity() -> None:
 
     assert panel.schema_version == "quality-teacher-panel-v3"
     assert panel.aggregation_strategy == "single_teacher_confirmed_fail"
+    assert panel.lifecycle == "runtime_fallback_quality_authority"
+    assert panel.teacher_output_alone_may_delete is True
     assert len(panel.teachers) == 1
     teacher = panel.teachers[0]
     assert teacher.location.value == "openai"

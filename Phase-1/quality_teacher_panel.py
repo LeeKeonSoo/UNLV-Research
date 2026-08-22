@@ -194,6 +194,7 @@ class TeacherPanel(BaseModel):
         "runtime_experiment_quality_deletion",
         "calibration_oracle",
         "single_teacher_calibration_oracle",
+        "runtime_fallback_quality_authority",
     ]
     runtime_activation: bool
     aggregation_strategy: AggregationStrategy = "three_teacher_stable_majority"
@@ -202,10 +203,16 @@ class TeacherPanel(BaseModel):
         "all_policies_per_unit_request",
     ] = "single_policy_request"
     unit_batch_size: int = Field(default=1, ge=1, le=16)
-    teacher_output_alone_may_delete: Literal[False]
+    teacher_output_alone_may_delete: bool
     training_objective: Literal["continued_pretraining"]
     initial_language_scope: tuple[Literal["english"], ...]
-    allowed_external_data: tuple[Literal["public_license_compatible_calibration_samples"], ...]
+    allowed_external_data: tuple[
+        Literal[
+            "public_license_compatible_calibration_samples",
+            "approved_runtime_candidate_text",
+        ],
+        ...,
+    ]
     forbidden_inputs: tuple[str, ...]
     teachers: tuple[TeacherSpec, ...] = Field(min_length=1, max_length=3)
     policies: tuple[QualityPolicy, QualityPolicy, QualityPolicy, QualityPolicy]
@@ -219,6 +226,7 @@ class TeacherPanel(BaseModel):
             "runtime_experiment_quality_deletion",
             "calibration_oracle",
             "single_teacher_calibration_oracle",
+            "runtime_fallback_quality_authority",
         }
         if self.runtime_activation is not expected_activation:
             raise PanelContractError(
@@ -226,8 +234,16 @@ class TeacherPanel(BaseModel):
             )
         if self.lifecycle in {"runtime_experiment_quality_deletion", "calibration_oracle"} and self.schema_version != "quality-teacher-panel-v2":
             raise PanelContractError("The three-teacher runtime lifecycle requires panel v2")
-        if self.lifecycle == "single_teacher_calibration_oracle" and self.schema_version != "quality-teacher-panel-v3":
+        if self.lifecycle in {
+            "single_teacher_calibration_oracle",
+            "runtime_fallback_quality_authority",
+        } and self.schema_version != "quality-teacher-panel-v3":
             raise PanelContractError("The single-teacher calibration lifecycle requires panel v3")
+        expected_teacher_authority = self.lifecycle == "runtime_fallback_quality_authority"
+        if self.teacher_output_alone_may_delete is not expected_teacher_authority:
+            raise PanelContractError(
+                "Teacher membership authority must match the runtime fallback lifecycle"
+            )
         if self.runtime_activation and self.transport_mode != "all_policies_per_unit_request":
             raise PanelContractError("Runtime Quality deletion requires combined Q1-Q4 transport")
         if self.runtime_activation and self.unit_batch_size not in {4, 8, 16}:

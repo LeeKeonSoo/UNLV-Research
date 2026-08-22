@@ -1,0 +1,59 @@
+# Path-only adaptation of Data-Juicer-Hub's published
+# refined_recipes/pretrain/redpajama-arxiv-refine.yaml (Apache-2.0).
+project_name: 'unlv-math-7m-data-juicer-arxiv-recipe-v1'
+dataset_path: '/workspace/unlv/data/raw_math_7m.jsonl'
+export_path: '/workspace/unlv/data_juicer_math/output/data_juicer_math_7m.jsonl'
+
+text_keys: 'text'
+np: 32
+open_tracer: true
+keep_stats_in_res_ds: false
+keep_hashes_in_res_ds: false
+
+process:
+  - clean_email_mapper:
+  - clean_links_mapper:
+  - fix_unicode_mapper:
+  - punctuation_normalization_mapper:
+  - whitespace_normalization_mapper:
+
+  - alphanumeric_filter:
+      tokenization: false
+      min_ratio: 0.516
+      max_ratio: 0.915
+  - average_line_length_filter:
+      max_len: 682
+  - character_repetition_filter:
+      rep_len: 10
+      max_ratio: 0.3
+  - flagged_words_filter:
+      lang: en
+      tokenization: true
+      max_ratio: 0.00076
+  - maximum_line_length_filter:
+      max_len: 4000
+  - perplexity_filter:
+      lang: en
+      max_ppl: 8000
+  - special_characters_filter:
+      max_ratio: 0.6
+  - text_length_filter:
+      max_len: 350000
+  - words_num_filter:
+      lang: en
+      tokenization: true
+      min_num: 20
+      max_num: 100000
+  - word_repetition_filter:
+      lang: en
+      tokenization: true
+      rep_len: 10
+      max_ratio: 0.574
+
+  - document_simhash_deduplicator:
+      tokenization: space
+      window_size: 6
+      lowercase: true
+      ignore_pattern: '\p{P}'
+      num_blocks: 6
+      hamming_distance: 4

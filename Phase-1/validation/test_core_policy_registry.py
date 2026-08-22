@@ -22,13 +22,22 @@ def main() -> int:
     quality_contract = registry["core_decision_contracts"]["quality"]
     assert quality_contract["runtime_owner"] == "all_policy_stage_b.py"
     assert quality_contract["decisions"] == [
-        "retain_supported",
-        "not_select_qualified_fail",
-        "not_select_insufficient_pass_evidence",
+        "retain_local_positive_support",
+        "retain_teacher_positive_support",
+        "not_select_qualified_local_fail",
+        "not_select_teacher_confirmed_fail",
+        "not_select_teacher_no_positive_support",
         "coverage_veto_retain",
     ]
-    assert quality_contract["abstain_action"] == "not_select_unless_coverage_veto"
-    assert quality_contract["decision_contract"] == "quality_positive_selection_authority_v3"
+    assert quality_contract["abstain_action"] == (
+        "luna_fallback_then_not_select_without_positive_support"
+    )
+    assert quality_contract["decision_contract"] == (
+        "quality_conjunctive_positive_support_with_luna_fallback_v2"
+    )
+    assert quality_contract["missing_provider_evidence_action"] == (
+        "emit_requests_and_stop_without_membership_change"
+    )
     assert quality_contract["missing_trace_action"] == "quality_decision_construction_fails_closed"
     assert quality_contract["intrinsic_quality_score_used"] is False
     route_quality = registry["core_decision_contracts"]["candidate_route_conditioned_quality_v2"]

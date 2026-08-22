@@ -1,0 +1,25 @@
+{
+  "schema_version": "math-7m-data-juicer-training-materialization-v1",
+  "status": "frozen_before_tokenizer_materialization",
+  "purpose": "Materialize the Data-Juicer Math output under the shared Qwen tokenizer and its natural packed-token budget.",
+  "tokenizer": {
+    "model": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "gradient_accumulation_steps": 8,
+    "budget": "one_complete_natural_dataset_pass_no_equal_token_resampling"
+  },
+  "arms": {
+    "data_juicer_math_natural": {
+      "source": "D:/UNLV-Research/data_juicer_math_7m_v1/curated/data_juicer_curated.jsonl",
+      "source_stage": "frozen_data_juicer_academic_pretraining_recipe_v1"
+    }
+  },
+  "output_root": "D:/UNLV-Research/data_juicer_math_7m_v1/training_inputs_v1",
+  "claim_boundary": "This materialization preserves Data-Juicer's natural output size and does not match another arm, resample tokens, or read benchmark outcomes."
+}

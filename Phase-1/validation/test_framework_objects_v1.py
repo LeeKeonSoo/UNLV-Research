@@ -41,21 +41,14 @@ def test_registry_parses_complete_core_metric_policy_method_lineage() -> None:
     )
     assert tuple(item.path for item in quality_ranker.evidence) == (
         "configs/quality_ranker_v1.json",
-        "configs/quality_teacher_luna_single_v1.json",
     )
     assert quality_ranker.lifecycle.value == "candidate"
-    assert quality_ranker.decision_authority.value == "quality_decision"
+    assert quality_ranker.decision_authority.value == "quality_membership_decision"
     quality_provider = next(
         provider for provider in registry.providers if provider.id == "quality.distilled_ranker_v1"
     )
     assert quality_provider.identity_sha256 == quality_ranker.evidence[0].sha256
-    teacher_oracle = next(
-        provider
-        for provider in registry.providers
-        if provider.id == "quality.teacher_luna_single_v1"
-    )
-    assert teacher_oracle.role == "offline_quality_annotation_oracle"
-    assert teacher_oracle.direct_deletion_authority is False
+    assert all("teacher" not in provider.id for provider in registry.providers)
     coverage = next(
         policy for policy in registry.policies if policy.id == "coverage.representative_guard"
     )

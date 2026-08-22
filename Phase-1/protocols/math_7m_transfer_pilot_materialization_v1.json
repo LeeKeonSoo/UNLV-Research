@@ -1,0 +1,37 @@
+{
+  "schema_version": "math-7m-transfer-pilot-materialization-v1",
+  "status": "frozen_before_tokenizer_materialization",
+  "purpose": "Materialize benchmark-clean natural-budget continued-pretraining blocks for a Math transfer diagnostic.",
+  "tokenizer": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "tail_rule": "Drop only the final incomplete sequence and final incomplete gradient-accumulation group; never impose a target fraction, max-token budget, or equal-token resampling."
+  },
+  "arms": {
+    "raw_math_natural": {
+      "source": "D:/UNLV-Research/math_7m_framework_v1/raw_benchmark_clean/openwebmath_qwen7m_benchmark_clean_v1.jsonl",
+      "source_stage": "Benchmark-clean Raw",
+      "role": "OpenWebMath transfer corpus after frozen GSM8K and Hendrycks MATH exclusion"
+    },
+    "normal_math_natural": {
+      "source": "D:/UNLV-Research/math_7m_framework_v1/normal_benchmark_clean/stage_c_curated_chunks.jsonl",
+      "source_stage": "Benchmark-clean Normal Stage C output",
+      "role": "Frozen Normal runtime output"
+    },
+    "hard_math_natural": {
+      "source": "D:/UNLV-Research/math_7m_framework_v1/hard_benchmark_clean/stage_c_curated_chunks.jsonl",
+      "source_stage": "Benchmark-clean Hard Stage C output",
+      "role": "Frozen Hard runtime output"
+    }
+  },
+  "output_root": "D:/UNLV-Research/math_7m_framework_v1/training_inputs_benchmark_clean_v1",
+  "claim_boundary": "This artifact freezes external natural-budget training inputs for a Math transfer diagnostic. It does not alter runtime curation, read Utility or benchmark outcomes, or establish Math-domain policy validity."
+}

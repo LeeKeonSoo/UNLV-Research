@@ -1,0 +1,51 @@
+# Adapted only at the I/O boundary from Data-Juicer-Hub's published
+# refined_recipes/github_code/stack-code-refine.yaml (Apache-2.0).
+project_name: 'unlv-code-7m-data-juicer-stack-recipe-v1'
+dataset_path: '/workspace/unlv/data/raw_code_7m.jsonl'
+export_path: '/workspace/unlv/data_juicer/output/data_juicer_code_7m.jsonl'
+
+text_keys: 'text'
+np: 32
+open_tracer: true
+keep_stats_in_res_ds: false
+keep_hashes_in_res_ds: false
+
+process:
+  - clean_email_mapper:
+  - clean_links_mapper:
+  - fix_unicode_mapper:
+  - punctuation_normalization_mapper:
+  - whitespace_normalization_mapper:
+  - clean_copyright_mapper:
+
+  - alphanumeric_filter:
+      tokenization: false
+      min_ratio: 0.2
+      max_ratio: 0.9163
+  - alphanumeric_filter:
+      tokenization: true
+      min_ratio: 0.546
+      max_ratio: 3.65
+  - average_line_length_filter:
+      min_len: 10
+      max_len: 150
+  - character_repetition_filter:
+      max_ratio: 0.36
+  - maximum_line_length_filter:
+      max_len: 1000
+  - text_length_filter:
+      max_len: 96714
+  - words_num_filter:
+      min_num: 20
+      max_num: 6640
+  - word_repetition_filter:
+      rep_len: 10
+      max_ratio: 0.357
+
+  - document_simhash_deduplicator:
+      tokenization: space
+      window_size: 6
+      lowercase: true
+      ignore_pattern: '\p{P}'
+      num_blocks: 6
+      hamming_distance: 4

@@ -18,7 +18,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from tempfile import TemporaryDirectory, gettempdir
+from tempfile import TemporaryDirectory, TemporaryFile, gettempdir
 from typing import TypedDict
 
 
@@ -148,28 +148,31 @@ def evaluate_problem(
     environment["MPLCONFIGDIR"] = str(data_cache / "matplotlib")
     environment["SEABORN_DATA"] = str(data_cache / "seaborn")
     environment["SCIKIT_LEARN_DATA"] = str(data_cache / "scikit_learn")
-    with TemporaryDirectory(prefix="ds1000-") as directory:
+    with (
+        TemporaryDirectory(
+            prefix="ds1000-", ignore_cleanup_errors=True
+        ) as directory,
+        TemporaryFile(mode="w+t", encoding="utf-8", errors="replace") as log,
+    ):
         script = Path(directory) / "evaluate.py"
-        execution_log = Path(directory) / "execution.log"
         script.write_text(build_test_program(problem, answer), encoding="utf-8")
         try:
-            with execution_log.open("w", encoding="utf-8", errors="replace") as log:
-                completed = subprocess.run(
-                    [str(python_executable), str(script)],
-                    cwd=directory,
-                    env=environment,
-                    stdout=log,
-                    stderr=subprocess.STDOUT,
-                    timeout=timeout_seconds,
-                    check=False,
-                )
+            completed = subprocess.run(
+                [str(python_executable), str(script)],
+                cwd=directory,
+                env=environment,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                timeout=timeout_seconds,
+                check=False,
+            )
             passed = completed.returncode == 0
             status = "passed" if passed else f"failed_exit_{completed.returncode}"
             diagnostic = None
             if not passed:
-                diagnostic = execution_log.read_text(
-                    encoding="utf-8", errors="replace"
-                )[-4000:]
+                log.flush()
+                log.seek(0)
+                diagnostic = log.read()[-4000:]
         except subprocess.TimeoutExpired:
             passed = False
             status = "timed_out"
