@@ -1,0 +1,73 @@
+{
+  "schema_version": "nemo-curator-math-baseline-results-v2",
+  "score_unit": "percent",
+  "scope": "one_frozen_math_compatible_nemo_curator_recipe_same_math_corpus_and_training_protocol",
+  "seeds": [101, 202, 303],
+  "corpus": {
+    "raw_packed_tokens": 6979584,
+    "curated_records": 2914,
+    "curated_stream_tokens": 5892145,
+    "curated_packed_tokens": 5881856,
+    "packed_retention_percent": 84.2723,
+    "packed_reduction_percent": 15.7277,
+    "blocks": 2872,
+    "steps": 359,
+    "curated_sha256": "bcba2e70f44f2629ef18c48da4760872c0169ecd9f1a5b4b46a0135b36934216"
+  },
+  "protocols": {
+    "curation_sha256": "13fa847ba60c328d1eae1c096f76244f5dd260ad10d2b6e1420f9e17dc8db13f",
+    "training_sha256": "0a2bd5007b7123ccd34aeea03f859fd5dd81715293ef737d04dbe606edea6d48",
+    "curation_report_sha256": "d71a9ce2b117932e99fac4057436020d35a39faa771f3fd3372b1f7dbd497dab"
+  },
+  "rows": [
+    {
+      "seed": 101,
+      "scores_percent": {
+        "GSM8K strict": 78.847612,
+        "GSM8K flexible": 66.944655,
+        "GSM8K normalized": 80.212282,
+        "MATH-500": 8.8
+      },
+      "source_sha256": {
+        "GSM8K": "98d507c6a44689355589b0b209cfc74fac1ad10ca35071e36250b9424449b5f5",
+        "MATH-500": "32b73c3167830bd4785f198cf58e5c587c90b3ffcb062aba091e4be4d1d9fb5f"
+      }
+    },
+    {
+      "seed": 202,
+      "scores_percent": {
+        "GSM8K strict": 78.695982,
+        "GSM8K flexible": 66.11069,
+        "GSM8K normalized": 80.970432,
+        "MATH-500": 7.4
+      },
+      "source_sha256": {
+        "GSM8K": "3969f78617ff05d17de17fa041a72598d13c90ac713b960f8933a3262bb13003",
+        "MATH-500": "7cecda8001835d5458643867e94f634753feb6fc9858ab7a42efff839e241399"
+      }
+    },
+    {
+      "seed": 303,
+      "scores_percent": {
+        "GSM8K strict": 77.331312,
+        "GSM8K flexible": 61.561789,
+        "GSM8K normalized": 79.833207,
+        "MATH-500": 8.0
+      },
+      "source_sha256": {
+        "GSM8K": "42079375dc7543523ce233053893ee9c421ba3ebebb5ac8957a74065033db64b",
+        "GSM8K normalized audit": "ca4e2c36eee7faa3520c8d3155cff2dbe4755c3bc4793bd5c0c3b6567584387f",
+        "MATH-500": "62d97ff3f91b0a4c60d0b38a7625b89137dd273bf59e4459dcbc399ae3372ce5"
+      }
+    }
+  ],
+  "summary": {
+    "GSM8K strict": {"mean_percent": 78.291635, "sample_std_percent": 0.835113},
+    "GSM8K flexible": {"mean_percent": 64.872378, "sample_std_percent": 2.897218},
+    "GSM8K normalized": {"mean_percent": 80.338640, "sample_std_percent": 0.579047},
+    "MATH-500": {"mean_percent": 8.066667, "sample_std_percent": 0.702377}
+  },
+  "task_counts_per_seed": {"GSM8K": 1319, "MATH-500": 500, "total": 1819},
+  "normalized_rescore_policy": "One identical post-hoc parser is applied to all three stored GSM8K responses; the seed-303 audit artifact is hash-bound in rows[2].source_sha256.",
+  "claim_boundary": "This artifact evaluates one frozen Math-compatible NeMo Curator recipe. It does not represent every operator or configuration supported by NeMo Curator."
+}

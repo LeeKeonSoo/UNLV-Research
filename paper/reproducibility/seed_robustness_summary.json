@@ -1,0 +1,25 @@
+{
+  "schema_version": "paper-seed-robustness-v2",
+  "status": "complete_final_manuscript_arms",
+  "unit": "percentage_points",
+  "definition": {
+    "mean_task_sd": "arithmetic mean of the within-benchmark sample standard deviations",
+    "base_excluded": true,
+    "primary_macro_excluded": true
+  },
+  "rows": [
+    {"arm": "raw", "code_mean_task_sd": 1.17, "math_mean_task_sd": 0.95, "code_seeds": 3, "math_seeds": 3},
+    {"arm": "ours", "code_mean_task_sd": 0.72, "math_mean_task_sd": 1.11, "code_seeds": 3, "math_seeds": 3},
+    {"arm": "data_juicer", "code_mean_task_sd": 0.71, "math_mean_task_sd": 0.46, "code_seeds": 3, "math_seeds": 3},
+    {"arm": "nemo", "code_mean_task_sd": 0.88, "math_mean_task_sd": 1.25, "code_seeds": 3, "math_seeds": 3}
+  ],
+  "source_artifacts": [
+    "framework_code_results.json",
+    "framework_math_results.json",
+    "bigcodebench_common_cache_results.json",
+    "nemo_curator_baseline_results.json",
+    "nemo_curator_math_baseline_results.json",
+    "same_corpus_baseline_results.json"
+  ],
+  "excluded_historical_arms": ["normal", "hard", "matched_random"]
+}

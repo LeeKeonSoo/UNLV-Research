@@ -1,0 +1,27 @@
+{
+  "schema_version": "final-framework-code-training-materialization-v1",
+  "status": "frozen_before_tokenizer_materialization",
+  "freeze_manifest": "protocols/final_framework_code_freeze_v1.json",
+  "tokenizer": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "tail_rule": "Drop only the final incomplete sequence and final incomplete gradient-accumulation group."
+  },
+  "arms": {
+    "framework_curated_natural": {
+      "source": "D:/UNLV-Research/framework_replay_20260821_final_v1/code/framework/stage_c_curated_chunks.jsonl",
+      "source_stage": "Frozen Stage-C curated output",
+      "role": "single final framework output"
+    }
+  },
+  "output_root": "D:/UNLV-Research/framework_replay_20260821_final_v1/code/training_inputs_v1",
+  "claim_boundary": "Natural-token materialization for external validation only; no benchmark outcome can change frozen curation membership."
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": "nemo-curator-code-baseline-report-v1",
+  "status": "complete",
+  "protocol": "/project/protocols/code_7m_nemo_curator_baseline_v1.json",
+  "protocol_sha256": "b5b59f90db4f4d2f9e6639ebca1d237208f680c3206e352c3ce33375ed8392d4",
+  "input": {
+    "records": 4890,
+    "stream_tokens": 6984438,
+    "materialized_tokens": 6979584,
+    "dropped_tail_tokens": 4854
+  },
+  "filters": [
+    {
+      "filter": "PythonCommentToCodeFilter",
+      "input_records": 4890,
+      "retained_records": 3731,
+      "removed_records": 1159
+    },
+    {
+      "filter": "NumberOfLinesOfCodeFilter",
+      "input_records": 3731,
+      "retained_records": 3706,
+      "removed_records": 25
+    },
+    {
+      "filter": "AlphaFilter",
+      "input_records": 3706,
+      "retained_records": 3699,
+      "removed_records": 7
+    },
+    {
+      "filter": "XMLHeaderFilter",
+      "input_records": 3699,
+      "retained_records": 3699,
+      "removed_records": 0
+    }
+  ],
+  "deduplication": {
+    "exact_duplicates": 0,
+    "exact_seconds": 16.02621340751648,
+    "fuzzy_duplicates": 56,
+    "fuzzy_seconds": 53.427659034729004
+  },
+  "curated": {
+    "records": 3643,
+    "stream_tokens": 6044088,
+    "materialized_tokens": 6029312,
+    "dropped_tail_tokens": 14776,
+    "path": "/data/nemo_curator_code_7m_v1/curated/nemo_curated.jsonl",
+    "sha256": "c455ea2a6f95d3341ed864d225eead5ad09ad1b0d3c0d33791687e0d8869b425"
+  },
+  "total_seconds": 257.29583495999987,
+  "target_token_budget": null,
+  "claim_boundary": "This is one frozen NeMo Curator code recipe, not a claim about every configuration supported by NeMo Curator. It receives the same audited Raw records as the framework arms, uses no benchmark feedback, source reputation, domain quota, equal-token resampling, or target token budget, and is evaluated only as an external baseline."
+}

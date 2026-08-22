@@ -1,0 +1,66 @@
+{
+  "schema_version": "code-7m-data-juicer-external-baseline-v2",
+  "status": "frozen_after_v1_preflight_failure_before_corrected_external_curation",
+  "purpose": "Re-run the unchanged published Data-Juicer Stack-code recipe after a versioned text-tokenizer compatibility correction.",
+  "implementation": {
+    "project": "datajuicer/data-juicer",
+    "version": "1.5.5",
+    "commit": "12cd01fbdd696bed2ec5e7fb7102c538a8cc2b5e",
+    "license": "Apache-2.0"
+  },
+  "published_recipe": {
+    "project": "datajuicer/data-juicer-hub",
+    "path": "refined_recipes/github_code/stack-code-refine.yaml",
+    "commit": "47fc34588b5d4258c13747cea37c2b63cf4e11b0",
+    "sha256": "8a0a6906116bc4ff22fd8591ef1842146c5828d80fee9ee3618c7d30f7ca9147",
+    "threshold_source": "Data-Juicer-Hub published 3-sigma recipe",
+    "local_adaptation": "configs/data_juicer_stack_code_external_v2.yaml",
+    "local_adaptation_sha256": "532984c2a119978a2662d54c009e3839c147beb503bd1d25cbb32d844d4899de",
+    "allowed_changes": [
+      "dataset and export paths",
+      "text field name from content to text",
+      "worker count from 50 to 32",
+      "explicit removal of intermediate stats and hashes from exported rows"
+    ]
+  },
+  "compatibility_patch": {
+    "path": "configs/data_juicer_text_tokenizer_compatibility.patch",
+    "sha256": "027d1ae7f392d67a55ebe9495ed6a8ac6b3f940374e5afbd318ce558b573d3d8",
+    "target": "data_juicer/utils/model_utils.py",
+    "behavior": "Fall back to AutoTokenizer only when AutoProcessor cannot instantiate a processor for a text-only checkpoint.",
+    "operator_changes": [],
+    "threshold_changes": [],
+    "record_changes": []
+  },
+  "preflight_failure": {
+    "protocol": "protocols/code_7m_data_juicer_baseline_v1.json",
+    "input_records": 4890,
+    "records_after_first_alphanumeric_filter": 4880,
+    "records_after_tokenized_alphanumeric_filter": 0,
+    "exported_records": 0,
+    "exception": "ValueError: Unrecognized processing class in EleutherAI/pythia-6.9b-deduped",
+    "evidence_root": "/workspace/unlv/data_juicer/output/20260819_200004_178a97"
+  },
+  "input": {
+    "local_path": "D:/UNLV-Research/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+    "remote_path": "/workspace/unlv/data/raw_code_7m.jsonl",
+    "sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7",
+    "records": 4890,
+    "text_field": "text",
+    "id_field": "record_id"
+  },
+  "output": {
+    "remote_path": "/workspace/unlv/data_juicer/output_v2/data_juicer_code_7m.jsonl",
+    "local_root": "D:/UNLV-Research/data_juicer_code_7m_v2",
+    "canonical_path": "D:/UNLV-Research/data_juicer_code_7m_v2/curated/data_juicer_curated.jsonl",
+    "report": "D:/UNLV-Research/data_juicer_code_7m_v2/data_juicer_code_7m_report.json"
+  },
+  "execution": {
+    "platform": "RunPod",
+    "container": "runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404",
+    "tracing": true,
+    "target_token_budget": null,
+    "benchmark_feedback": false
+  },
+  "claim_boundary": "The v2 result remains the published recipe baseline. The compatibility patch changes only how a text-only tokenizer is instantiated; the failed v1 run is retained and no operator, threshold, order, input record, or benchmark-dependent choice is changed."
+}

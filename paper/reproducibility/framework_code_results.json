@@ -1,0 +1,233 @@
+{
+  "schema_version": "framework-code-results-v1",
+  "created_at_utc": "2026-08-21T21:09:46.4863451+00:00",
+  "arm": "final_evidence_bound_framework",
+  "seeds": [
+    101,
+    202,
+    303
+  ],
+  "task_counts": {
+    "HumanEval+": 164,
+    "MBPP+": 378,
+    "BigCodeBench Complete": 1140,
+    "CRUXEval-I": 800,
+    "CRUXEval-O": 800,
+    "DS-1000": 1000
+  },
+  "scorers": {
+    "HumanEval+/MBPP+": "EvalPlus 0.3.1 evaluate() base+plus tests",
+    "BigCodeBench Complete": {
+      "dataset_version": "0.1.4",
+      "evaluator_space_source_commit": "8653fc7f5e4f8c268d84e24d48f3548648a267d0",
+      "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+      "groundtruth_cache_sha256": "46b1b99945e5754c533d4b828252e0ce473ddf3afc2e1271bf13e5da61c12766",
+      "groundtruth_pass_rate": 0.9956140350877193,
+      "failed_tasks": [
+        "BigCodeBench/590",
+        "BigCodeBench/289",
+        "BigCodeBench/1005",
+        "BigCodeBench/363",
+        "BigCodeBench/417"
+      ],
+      "parallel_workers": 8
+    },
+    "CRUXEval-I/O": "upstream evaluate_generations(), commit 190faf16d175b5847b0af05d937872b1fb395942",
+    "DS-1000": "official test programs, commit b39aab71da6d23ef8d3cac59a7c5f834516ab334"
+  },
+  "seed_results_percent": {
+    "101": {
+      "HumanEval+": 32.31707317073171,
+      "MBPP+": 55.026455026455025,
+      "BigCodeBench Complete": 38.59649122807017,
+      "CRUXEval-I": 7.25,
+      "CRUXEval-O": 3.0,
+      "DS-1000": 33.6
+    },
+    "202": {
+      "HumanEval+": 31.70731707317073,
+      "MBPP+": 55.29100529100529,
+      "BigCodeBench Complete": 39.64912280701755,
+      "CRUXEval-I": 4.875,
+      "CRUXEval-O": 2.5,
+      "DS-1000": 34.4
+    },
+    "303": {
+      "HumanEval+": 30.48780487804878,
+      "MBPP+": 53.70370370370371,
+      "BigCodeBench Complete": 39.122807017543856,
+      "CRUXEval-I": 5.25,
+      "CRUXEval-O": 3.0,
+      "DS-1000": 34.4
+    }
+  },
+  "summary": {
+    "HumanEval+": {
+      "mean_percent": 31.504065,
+      "sample_std_percent": 0.931418
+    },
+    "MBPP+": {
+      "mean_percent": 54.673721,
+      "sample_std_percent": 0.85041
+    },
+    "BigCodeBench Complete": {
+      "mean_percent": 39.122807,
+      "sample_std_percent": 0.526316
+    },
+    "CRUXEval-I": {
+      "mean_percent": 5.791667,
+      "sample_std_percent": 1.276796
+    },
+    "CRUXEval-O": {
+      "mean_percent": 2.833333,
+      "sample_std_percent": 0.288675
+    },
+    "DS-1000": {
+      "mean_percent": 34.133333,
+      "sample_std_percent": 0.46188
+    }
+  },
+  "artifact_evidence": {
+    "101": [
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\bigcodebench_framework_curated_natural_seed101_eval_results.json",
+        "sha256": "51563d12f26234670d07133a75c798f1390d9537a2de7358c043037d12190937",
+        "bytes": 3519798
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\bigcodebench_framework_curated_natural_seed101_pass_at_k.json",
+        "sha256": "ce2003f7838406666b7cb11c612122a8b2a4118984cb10febeee329902dc3771",
+        "bytes": 350
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\cruxeval_input_framework_curated_natural_seed101.json",
+        "sha256": "4c213a491bf4318bafb95fc2798bf1673c0bb400778cdaf3fbaad085342c2bc9",
+        "bytes": 53555
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\cruxeval_output_framework_curated_natural_seed101.json",
+        "sha256": "9681c2e887972cd3770438cd82b5d76ced5cfd19c2eea7587f6a9c471e7a4139",
+        "bytes": 44785
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\ds1000_framework_curated_natural_seed101.json",
+        "sha256": "cf53fbb2ff3aebd4fc161e7d44b7ab37ffb6f87b28d4cdd6e9603fcecda932de",
+        "bytes": 607735
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\ds1000_framework_curated_natural_seed101.txt",
+        "sha256": "286790e8f603dd9288b30ea134ae143b6130ea28e57a19ac9dfb340322c35b05",
+        "bytes": 284
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\humaneval_framework_curated_natural_seed101_eval_results.json",
+        "sha256": "4e4ea51facf805ce9e54a2a20f57bfdadb4e5a89299582c23b1ffe08dcec9f34",
+        "bytes": 202316
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\mbpp_framework_curated_natural_seed101_eval_results.json",
+        "sha256": "0fb09486c4244b720145200410ca7e47c797975a58e992c7d3fb28da5dce2f09",
+        "bytes": 210842
+      }
+    ],
+    "202": [
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\bigcodebench_framework_curated_natural_seed202_eval_results.json",
+        "sha256": "d60dfedcf5a1bb6b093bcc30f3e8eb91920b79b081665c52fe3ee10a4892fb36",
+        "bytes": 3527843
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\bigcodebench_framework_curated_natural_seed202_pass_at_k.json",
+        "sha256": "289673dcebb011d95b612c563ba9cb6760407646457330c1e016d5aa0ef6edd2",
+        "bytes": 350
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\cruxeval_input_framework_curated_natural_seed202.json",
+        "sha256": "17e1985c961b2308ee8f472d7d04c26be1d5385458f925536498b6f4d1dd0a24",
+        "bytes": 54003
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\cruxeval_output_framework_curated_natural_seed202.json",
+        "sha256": "423d3af072369dffdbfe6aebc833be159ab579e263027b150e6ad26ca4e91b75",
+        "bytes": 43291
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\ds1000_framework_curated_natural_seed202.json",
+        "sha256": "c5342789a03165a2c31b03d8d367e957a37a53f961d078d2954415d3824a5648",
+        "bytes": 683422
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\ds1000_framework_curated_natural_seed202.txt",
+        "sha256": "b220bf29b2012349162a221545ad0284b3b3b4e9c88906d8bf96af1f22f0f34f",
+        "bytes": 300
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\humaneval_framework_curated_natural_seed202_eval_results.json",
+        "sha256": "733757b471f59aa564501dfeeacf03a6fc4e556318a9e7de4950d00b5d2e8eb2",
+        "bytes": 202960
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\mbpp_framework_curated_natural_seed202_eval_results.json",
+        "sha256": "400c164921168be1b7132dc538e6711d5151acfa4947623bdb86e30749a279a3",
+        "bytes": 209945
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\mbpp_framework_curated_natural_seed202.jsonl",
+        "sha256": "673743a38a6cbb50283b05744f557581cbce23e8c5e1ec121e033ea8df9a6e79",
+        "bytes": 101783
+      }
+    ],
+    "303": [
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\bigcodebench_framework_curated_natural_seed303_eval_results.json",
+        "sha256": "012ec5911130931783e4ef083a7a2ea9c69ffadadad2b913c4878a5ec83748a7",
+        "bytes": 3532496
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\bigcodebench_framework_curated_natural_seed303_pass_at_k.json",
+        "sha256": "cf8cbaa37aa58b79416da5c399c43001b36dc7e8c9596ad8d9544646a70fd8c1",
+        "bytes": 349
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\cruxeval_input_framework_curated_natural_seed303.json",
+        "sha256": "5457a7171fdced0dd2d5d61f2f20942138a472a852ec2f5e1d486c7a57f1e464",
+        "bytes": 53581
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\cruxeval_output_framework_curated_natural_seed303.json",
+        "sha256": "df530c419b8717142d273249f8d11977899ebc2992cec982ead0e7afb56f8454",
+        "bytes": 43391
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\ds1000_framework_curated_natural_seed303.json",
+        "sha256": "73ae92869b86b33fe3ef42db7b5270e6a38dc925ec2b263a1d7f0267e85cd565",
+        "bytes": 684897
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\ds1000_framework_curated_natural_seed303.txt",
+        "sha256": "16f0172932fe2b6416082c6140f2e01906d2257e84379998dc673a1c50f7616d",
+        "bytes": 301
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\humaneval_framework_curated_natural_seed303_eval_results.json",
+        "sha256": "81e92a2e37f3b5f8f7c624d2895bda8ff85c60287321bbc5a65130ea177e7ffc",
+        "bytes": 215252
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\humaneval_framework_curated_natural_seed303.jsonl",
+        "sha256": "aac5009c77ea3d2126d15f236b243dffeae2042b41f840350f99cc5f20a35880",
+        "bytes": 117382
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\mbpp_framework_curated_natural_seed303_eval_results.json",
+        "sha256": "3847a6d0ba0cb6028f2b9b97a27c817cc2dd2d13d8a202c829a718efb991a3fa",
+        "bytes": 204621
+      },
+      {
+        "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\mbpp_framework_curated_natural_seed303.jsonl",
+        "sha256": "0867fdf1e84a4033ece985a95f1c9aa2ca2f454533e3cc060a4a5639cf9fcbde",
+        "bytes": 96058
+      }
+    ]
+  }
+}

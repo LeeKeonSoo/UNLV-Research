@@ -1,0 +1,80 @@
+{
+  "schema_version": "same-corpus-baseline-results-v1",
+  "status": "complete_with_legacy_matched_random_diagnostic",
+  "score_unit": "percent",
+  "seeds": [101, 202, 303],
+  "controls": {
+    "matched_random": {
+      "role": "diagnostic selection control, not a runtime curation policy",
+      "construction": "complete Raw records ordered by seeded SHA-256 priority and greedily materialized to the Hard packed-token count",
+      "sampling_seed": 1701
+    },
+    "data_juicer": {
+      "role": "same-corpus executable-system baseline",
+      "construction": "one frozen published-recipe adaptation per domain"
+    }
+  },
+  "code": {
+    "raw_packed_tokens": 6979584,
+    "matched_random": {
+      "packed_tokens": 5029888,
+      "retention_percent": 72.0657,
+      "mean_sample_sd": {
+        "HumanEval+": [29.67, 1.53],
+        "MBPP+": [47.80, 1.76],
+        "BigCodeBench Complete": [40.20, 0.18],
+        "CRUXEval-I": [8.46, 1.94],
+        "CRUXEval-O": [2.62, 0.45],
+        "DS-1000": [33.93, 0.70]
+      },
+      "source_root": "D:/UNLV-Research/random72_code_7m_v1/external_training_v1/benchmarks_v1"
+    },
+    "data_juicer": {
+      "packed_tokens": 5505024,
+      "retention_percent": 78.8732,
+      "mean_sample_sd": {
+        "HumanEval+": [28.25, 0.70],
+        "MBPP+": [41.27, 1.32],
+        "BigCodeBench Complete": [40.350877, 0.40198],
+        "CRUXEval-I": [9.79, 0.62],
+        "CRUXEval-O": [1.83, 0.26],
+        "DS-1000": [34.23, 0.98]
+      },
+      "bigcodebench_common_cache_scores_percent": [39.912281, 40.701754, 40.438596],
+      "source_root": "D:/UNLV-Research/data_juicer_code_7m_v2/external_training_v2/benchmarks_v1"
+    }
+  },
+  "math": {
+    "raw_packed_tokens": 6979584,
+    "matched_random": {
+      "packed_tokens": 2670592,
+      "retention_percent": 38.2629,
+      "mean_sample_sd": {
+        "GSM8K strict": [77.84, 0.27],
+        "GSM8K flexible": [57.82, 2.34],
+        "GSM8K normalized": [79.81, 0.23],
+        "MATH-500": [2.67, 0.23]
+      },
+      "source_root": "D:/UNLV-Research/math_random_hard_matched_v1/external_training_v1/benchmarks_v1/math_lm_eval"
+    },
+    "data_juicer": {
+      "packed_tokens": 4603904,
+      "retention_percent": 65.9624,
+      "mean_sample_sd": {
+        "GSM8K strict": [78.72, 0.29],
+        "GSM8K flexible": [67.60, 0.94],
+        "GSM8K normalized": [79.78, 0.16],
+        "MATH-500": [8.07, 0.46]
+      },
+      "source_root": "D:/UNLV-Research/data_juicer_math_7m_v1/external_training_v1/benchmarks_v1/math_lm_eval"
+    }
+  },
+  "final_manuscript_scope": {
+    "matched_random_included": false,
+    "primary_macro_included": false,
+    "bigcodebench_authority": {
+      "path": "bigcodebench_common_cache_results.json",
+      "sha256": "624f2524489fe7327485ee82b33518a0e0798b0fac579ca01891aa461c2d3d50"
+    }
+  }
+}

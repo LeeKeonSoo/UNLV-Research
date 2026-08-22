@@ -1,0 +1,60 @@
+{
+  "schema_version": "math-7m-data-juicer-external-baseline-v1",
+  "status": "frozen_before_external_curation",
+  "purpose": "Apply one published Data-Juicer academic pretraining recipe to the benchmark-clean OpenWebMath corpus as an external configurable-pipeline baseline.",
+  "implementation": {
+    "project": "datajuicer/data-juicer",
+    "version": "1.5.5",
+    "commit": "12cd01fbdd696bed2ec5e7fb7102c538a8cc2b5e",
+    "license": "Apache-2.0"
+  },
+  "published_recipe": {
+    "project": "datajuicer/data-juicer-hub",
+    "path": "refined_recipes/pretrain/redpajama-arxiv-refine.yaml",
+    "commit": "47fc34588b5d4258c13747cea37c2b63cf4e11b0",
+    "sha256": "c69a4ba08ac40561a020a7875156dd28bc67ac95486adde6967fa34c4d05c7e2",
+    "threshold_source": "Data-Juicer-Hub published 3-sigma academic pretraining recipe",
+    "local_adaptation": "configs/data_juicer_openwebmath_external_v1.yaml",
+    "local_adaptation_sha256": "cdd577d31e01cd657f65299fe55b05364a12e169ad787a6cee4b3bb91254a254",
+    "allowed_changes": [
+      "dataset and export paths",
+      "text field declaration",
+      "worker count from 50 to 32",
+      "explicit removal of intermediate stats and hashes from exported rows"
+    ]
+  },
+  "compatibility_patch": {
+    "path": "configs/data_juicer_text_tokenizer_compatibility.patch",
+    "sha256": "027d1ae7f392d67a55ebe9495ed6a8ac6b3f940374e5afbd318ce558b573d3d8",
+    "target": "data_juicer/utils/model_utils.py",
+    "operator_changes": [],
+    "threshold_changes": [],
+    "record_changes": []
+  },
+  "input": {
+    "local_path": "D:/UNLV-Research/math_7m_framework_v1/raw_benchmark_clean/openwebmath_qwen7m_benchmark_clean_v1.jsonl",
+    "remote_path": "/workspace/unlv/data/raw_math_7m.jsonl",
+    "sha256": "02d709f703fe069cef6e470d33c346c3465060cd2056c9fb22752d7c149099d5",
+    "records": 3231,
+    "text_field": "text"
+  },
+  "metadata_projection": {
+    "fields": ["record_id", "text"],
+    "record_order_preserved": true,
+    "text_mutated": false,
+    "reason": "Data-Juicer 1.5.5 JSON export cannot serialize datetime values inferred inside unrelated provenance metadata; the published recipe reads only text."
+  },
+  "output": {
+    "remote_path": "/workspace/unlv/data_juicer_math/output/data_juicer_math_7m.jsonl",
+    "local_root": "D:/UNLV-Research/data_juicer_math_7m_v1",
+    "canonical_path": "D:/UNLV-Research/data_juicer_math_7m_v1/curated/data_juicer_curated.jsonl"
+  },
+  "execution": {
+    "platform": "RunPod",
+    "container": "runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404",
+    "tracing": true,
+    "target_token_budget": null,
+    "benchmark_feedback": false
+  },
+  "claim_boundary": "This baseline uses the closest published academic-text recipe without threshold tuning on OpenWebMath or benchmark outcomes. It tests a documented Data-Juicer configuration, not every possible Data-Juicer recipe."
+}

@@ -1,0 +1,870 @@
+{
+  "schema_version": "semantic-coverage-materialization-v1",
+  "execution_scope": "confirmatory",
+  "corpus_sha256": "9e27fae9a20878d1fac106acacbe17de27f19455311575026b0cf9c8f2ea9fb1",
+  "graph_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+  "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+  "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+  "initial_status": "veto_candidate",
+  "final_status": "pass",
+  "required_retain_uids": [
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/deberta/__init__.py::0000",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/dinat/__init__.py::0000",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/florence2/__init__.py::0000",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/gemma4_unified_assistant/__init__.py::0000",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/llava/__init__.py::0000",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0004",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0006",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0007",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/yolos/modular_yolos.py::0002",
+    "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/pipelines/base.py::0002",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/fixtures/custom_item/foo/test_foo.py::0000",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/logging/test_reporting.py::0005",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/python/integration.py::0001",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0006",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0008",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0010",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0001",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0002",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_capture.py::0004",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_conftest.py::0000",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_error_diffs.py::0000",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_pastebin.py::0001",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_reports.py::0001",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0008",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0009",
+    "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0018",
+    "known-hq::python-poetry/poetry::f46702336862::src/poetry/publishing/__init__.py::0000",
+    "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/datasets/images/__init__.py::0000",
+    "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_extra/_lib/_utils/_helpers.py::0003",
+    "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0006",
+    "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0012",
+    "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0014",
+    "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0017",
+    "the-stack-dedup::010d3f9c40f8189467a31c9527bc48d1d04ca6d71d09b7b22a9bc63b35e33977::0000",
+    "the-stack-dedup::01de72497df7c1d93b4788ed9a89067c8234c014a650a5d0ab471c94bea08757::0000",
+    "the-stack-dedup::0ecbae3fdd699b6757d023b8ad6c2624027201fb9731c0355092b483c92ba7b9::0001",
+    "the-stack-dedup::1186a907f666cdb0884a84e8fd04333ccc3fa4a03ae444bee325d4db3b294637::0001",
+    "the-stack-dedup::1fd8af63049f55318de41a47afd1da72a7be887d131e77340f94a880f56665e1::0002",
+    "the-stack-dedup::207e79b89d1d43125774685788e02b16f859dc17e9380017f9a8cdf773972c38::0000",
+    "the-stack-dedup::27e687fbeb46e84ea1196dda584c3da437d2010507fb4a22bcc544f450c95ebe::0002",
+    "the-stack-dedup::3dcfa5c0a7b2b6e5e7bb7ea3b23a79831de4a6d24950a70e1c35eca6d21db346::0000",
+    "the-stack-dedup::3f108169d45d097682977a5b3bbd42b116ac0bc7a4b3321dcf9b0fd62040d83a::0002",
+    "the-stack-dedup::3f2e264db9d0b26cf0b3bfeda81bd81195fcaee56f8fa97fc0a12c651da63905::0002",
+    "the-stack-dedup::4cc30ebeaf2d51170d07cce687a7f7f6ab1000dda390c7da68d20b82c4e03520::0000",
+    "the-stack-dedup::4e33b48bd739d617969e12c63dfffb2902375f4082a473946cf4eff3fad195e9::0001",
+    "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0002",
+    "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0003",
+    "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0007",
+    "the-stack-dedup::54c261417e192f6a888115271982f16d15afb599050202f2f8d8e2b58e0b4fe4::0001",
+    "the-stack-dedup::55d2dd9a258721177078b672aee03e810550ebca6b04440ee84f914793c3fa7b::0002",
+    "the-stack-dedup::57d0bf3b9908a2cf438feb560b773416b50521ed4ebeecd67ca544116cbc70e1::0000",
+    "the-stack-dedup::592a54bf547b40d8c40cb81ec553800cf67ee8f1a14a03f20fd1cbc32cf3015b::0000",
+    "the-stack-dedup::5ed35baeffa298b3cc7e363615214ede681777177f57bfc8b9fbfc4f9152a369::0000",
+    "the-stack-dedup::5f643f58c28fd82de373c6af48ff7fc23c8912ecd3f852918d3e36970870b358::0000",
+    "the-stack-dedup::67af3f560c9c879ce63f48c4e69778f83899d6b0486e91d087976413a182a026::0002",
+    "the-stack-dedup::69e7b8cae95ead88dfd6c323f7fcbe976903d2ac48c82c50429da15b497f6fa5::0006",
+    "the-stack-dedup::6ac04bbe5480f52f2c7765da25159f0c0da6f4f992558cf41efbec0ab29929b9::0000",
+    "the-stack-dedup::6b7d32b44ac0a31fd3034f5f1f4bdad6706a0db56d0cbcc733ed838d694745cc::0001",
+    "the-stack-dedup::709495ce4ef513ed37029979518c292ba69db93771bd8aa0eefeb759be7c1c64::0002",
+    "the-stack-dedup::77b2f37d1239255ff3b546a6fd9b875d45005d8eeba0fc2431aa23f98f61af0a::0001",
+    "the-stack-dedup::7ac5e5e239d65d3167b313ceb05a0e33c9707c414b748037ade8ab5f874c0ab9::0001",
+    "the-stack-dedup::7b5460f4c84ddd559daff277d7012b854aeb1f9135c7057db1bc4f37469b2a2a::0002",
+    "the-stack-dedup::87fba9028f18460daaa87e20ff167ca327177764b7ce4f491959b4e1a56790ea::0000",
+    "the-stack-dedup::8a13de8c51aa35e4d97b3b6054620aa44c9cfbb2725fba85f398861d70b8b461::0000",
+    "the-stack-dedup::8df7bd3f678bac2dbb3e40ee28b1b689acb3c17bd17c179b579b840ffe188e64::0000",
+    "the-stack-dedup::90ed5f8d1fff388c1c3d63904f4766f260f0ff35a0b8afb4141a39e125882754::0001",
+    "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0000",
+    "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0001",
+    "the-stack-dedup::989c3db8efb64e2fa5ac792e7a2913ed040d63fca9475923d92e1f8f371fa59d::0000",
+    "the-stack-dedup::99f81ec100c9cf2675fdc295691ba74ad737230ba0a6c06285c4815a4180caef::0001",
+    "the-stack-dedup::a0c583389c3a0c1faf0061e510b0a753ddd983da89201395058f0da20d0e805a::0001",
+    "the-stack-dedup::a20ae752fd5dd0530347bea39289a25714830e0fa1b13b26bba5887f51730cca::0003",
+    "the-stack-dedup::a20dc4034792e12e04f492d6a67f93d4f848a4562a006158dff57679b150ae55::0005",
+    "the-stack-dedup::a40079585c53284cd02124a137ff72f1a3605c66c7c1c774a3e7829d4944c8c9::0001",
+    "the-stack-dedup::b1bf35fbcbd071efe295dfb3733985bb90928b02e4bb62dd82c586dd02f648fe::0000",
+    "the-stack-dedup::b1ca26fba890c7fb4e1ade404a6c79d8316e7dbbed87dc022a70c8db13ab0599::0005",
+    "the-stack-dedup::b63f287b8f4f3b2217b61a24e70aa73e410a78c98dbf0a07c9251bc15de16391::0000",
+    "the-stack-dedup::c031032841c157167712a062d35a510ee477426a4759266fb490ae67beeae0ff::0002",
+    "the-stack-dedup::c28e2e6fd72009dd945386bf62db3188240e0b77fdada34ad2ee4fbb772bdeb6::0005",
+    "the-stack-dedup::c348c37b871de5445f8dd4f1bc8ebf4c6fbfaadfd270b490b4b89783cf5dc013::0000",
+    "the-stack-dedup::c35e4b79fc4d97498fceb4320c6ceab23d5adf4916c1e6c654f78fb9add37568::0001",
+    "the-stack-dedup::c7034cbb6bf1b4ddd7a6e743f4b1b4439715f0659fcd04cf4dd3a0119c332ba2::0001",
+    "the-stack-dedup::c7f4f2e8af4dc93bec025317f0ea07085be0ebe5a8ce73fe4feca96fa0b85cb8::0000",
+    "the-stack-dedup::cb43972c8d892c8d3cae1c5e023af3fdf107b5ac74f24bc1bc267c8ecf710983::0003",
+    "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0001",
+    "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0004",
+    "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0009",
+    "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0015",
+    "the-stack-dedup::cf272819ef86a583d3e57b91a47291c5db44ad03f32abe72f68d622204873e38::0000",
+    "the-stack-dedup::d084033bde7abf615e6f31d0a496c3829f5ee14197d5a997d64698d0f2d62963::0001",
+    "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0002",
+    "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0003",
+    "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0004",
+    "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0009",
+    "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0011",
+    "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0013",
+    "the-stack-dedup::e2cd794e8459151ddd684bef79111b720e00945a207f66d0d9c6e55a74b10e71::0008",
+    "the-stack-dedup::e6255d9555bb31ab4f8efa167fb1b57eb21fe135294ea15f53c6b96391460561::0002",
+    "the-stack-dedup::ebc7d5f93bcc5e8b55515285cc4c8b150e339cd4812b6f9469a96dc87fff3bc7::0000",
+    "the-stack-dedup::f0eb23ad5291a4695212d770e97ca845ee6ebbf871b49e5335f67e30c6670430::0001",
+    "the-stack-dedup::f3615147e2a9a915f40f304218f872e565af06faace3b8f500a6ae49bb251a25::0001",
+    "the-stack-dedup::fa1e52b251034c303ef8e86ad28f29579846ef48a7161a846d4d06849fe9e7a8::0000",
+    "the-stack-dedup::fb36b7f80bd64bf55a4adeebb79c4f131f188963e22b1c107cc483fc9b62b51b::0000",
+    "the-stack-dedup::fd47f70c239601917b700ca93a245591f0850c940915dba14b8fda7713eba14b::0000"
+  ],
+  "restoration_traces": [
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/deberta/__init__.py::0000",
+      "group_id": "semantic-uncertain-60",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/dinat/__init__.py::0000",
+      "group_id": "semantic-stable-167",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/florence2/__init__.py::0000",
+      "group_id": "semantic-uncertain-123",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/gemma4_unified_assistant/__init__.py::0000",
+      "group_id": "semantic-stable-216",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/llava/__init__.py::0000",
+      "group_id": "semantic-stable-272",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0004",
+      "group_id": "semantic-stable-452",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0006",
+      "group_id": "semantic-stable-457",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0007",
+      "group_id": "semantic-stable-455",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/yolos/modular_yolos.py::0002",
+      "group_id": "semantic-stable-459",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/pipelines/base.py::0002",
+      "group_id": "semantic-stable-463",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/fixtures/custom_item/foo/test_foo.py::0000",
+      "group_id": "semantic-stable-831",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/logging/test_reporting.py::0005",
+      "group_id": "semantic-stable-853",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/python/integration.py::0001",
+      "group_id": "semantic-stable-854",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0006",
+      "group_id": "semantic-stable-864",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0008",
+      "group_id": "semantic-stable-866",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0010",
+      "group_id": "semantic-stable-867",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0001",
+      "group_id": "semantic-stable-862",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0002",
+      "group_id": "semantic-stable-869",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_capture.py::0004",
+      "group_id": "semantic-stable-871",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_conftest.py::0000",
+      "group_id": "semantic-stable-876",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_error_diffs.py::0000",
+      "group_id": "semantic-stable-879",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_pastebin.py::0001",
+      "group_id": "semantic-stable-880",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_reports.py::0001",
+      "group_id": "semantic-stable-881",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0008",
+      "group_id": "semantic-stable-891",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0009",
+      "group_id": "semantic-stable-874",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0018",
+      "group_id": "semantic-stable-895",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::python-poetry/poetry::f46702336862::src/poetry/publishing/__init__.py::0000",
+      "group_id": "semantic-stable-940",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/datasets/images/__init__.py::0000",
+      "group_id": "semantic-stable-991",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_extra/_lib/_utils/_helpers.py::0003",
+      "group_id": "semantic-stable-1186",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0006",
+      "group_id": "semantic-stable-1286",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0012",
+      "group_id": "semantic-stable-1288",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0014",
+      "group_id": "semantic-stable-1297",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0017",
+      "group_id": "semantic-stable-1296",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::010d3f9c40f8189467a31c9527bc48d1d04ca6d71d09b7b22a9bc63b35e33977::0000",
+      "group_id": "semantic-stable-1505",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::01de72497df7c1d93b4788ed9a89067c8234c014a650a5d0ab471c94bea08757::0000",
+      "group_id": "semantic-uncertain-721",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::0ecbae3fdd699b6757d023b8ad6c2624027201fb9731c0355092b483c92ba7b9::0001",
+      "group_id": "semantic-uncertain-1276",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::1186a907f666cdb0884a84e8fd04333ccc3fa4a03ae444bee325d4db3b294637::0001",
+      "group_id": "semantic-stable-1770",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::1fd8af63049f55318de41a47afd1da72a7be887d131e77340f94a880f56665e1::0002",
+      "group_id": "semantic-stable-1977",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::207e79b89d1d43125774685788e02b16f859dc17e9380017f9a8cdf773972c38::0000",
+      "group_id": "semantic-uncertain-1717",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::27e687fbeb46e84ea1196dda584c3da437d2010507fb4a22bcc544f450c95ebe::0002",
+      "group_id": "semantic-stable-2105",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::3dcfa5c0a7b2b6e5e7bb7ea3b23a79831de4a6d24950a70e1c35eca6d21db346::0000",
+      "group_id": "semantic-stable-2411",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::3f108169d45d097682977a5b3bbd42b116ac0bc7a4b3321dcf9b0fd62040d83a::0002",
+      "group_id": "semantic-stable-2439",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::3f2e264db9d0b26cf0b3bfeda81bd81195fcaee56f8fa97fc0a12c651da63905::0002",
+      "group_id": "semantic-stable-2440",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::4cc30ebeaf2d51170d07cce687a7f7f6ab1000dda390c7da68d20b82c4e03520::0000",
+      "group_id": "semantic-stable-2578",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::4e33b48bd739d617969e12c63dfffb2902375f4082a473946cf4eff3fad195e9::0001",
+      "group_id": "semantic-stable-2587",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0002",
+      "group_id": "semantic-stable-2622",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0003",
+      "group_id": "semantic-stable-2626",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0007",
+      "group_id": "semantic-stable-2627",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::54c261417e192f6a888115271982f16d15afb599050202f2f8d8e2b58e0b4fe4::0001",
+      "group_id": "semantic-stable-2640",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::55d2dd9a258721177078b672aee03e810550ebca6b04440ee84f914793c3fa7b::0002",
+      "group_id": "semantic-stable-2659",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::57d0bf3b9908a2cf438feb560b773416b50521ed4ebeecd67ca544116cbc70e1::0000",
+      "group_id": "semantic-stable-2679",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::592a54bf547b40d8c40cb81ec553800cf67ee8f1a14a03f20fd1cbc32cf3015b::0000",
+      "group_id": "semantic-stable-2689",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::5ed35baeffa298b3cc7e363615214ede681777177f57bfc8b9fbfc4f9152a369::0000",
+      "group_id": "semantic-stable-2757",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::5f643f58c28fd82de373c6af48ff7fc23c8912ecd3f852918d3e36970870b358::0000",
+      "group_id": "semantic-stable-2760",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::67af3f560c9c879ce63f48c4e69778f83899d6b0486e91d087976413a182a026::0002",
+      "group_id": "semantic-stable-2841",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::69e7b8cae95ead88dfd6c323f7fcbe976903d2ac48c82c50429da15b497f6fa5::0006",
+      "group_id": "semantic-stable-2858",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::6ac04bbe5480f52f2c7765da25159f0c0da6f4f992558cf41efbec0ab29929b9::0000",
+      "group_id": "semantic-uncertain-2535",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::6b7d32b44ac0a31fd3034f5f1f4bdad6706a0db56d0cbcc733ed838d694745cc::0001",
+      "group_id": "semantic-stable-2867",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::709495ce4ef513ed37029979518c292ba69db93771bd8aa0eefeb759be7c1c64::0002",
+      "group_id": "semantic-stable-2908",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::77b2f37d1239255ff3b546a6fd9b875d45005d8eeba0fc2431aa23f98f61af0a::0001",
+      "group_id": "semantic-stable-2963",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::7ac5e5e239d65d3167b313ceb05a0e33c9707c414b748037ade8ab5f874c0ab9::0001",
+      "group_id": "semantic-stable-2985",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::7b5460f4c84ddd559daff277d7012b854aeb1f9135c7057db1bc4f37469b2a2a::0002",
+      "group_id": "semantic-uncertain-2638",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::87fba9028f18460daaa87e20ff167ca327177764b7ce4f491959b4e1a56790ea::0000",
+      "group_id": "semantic-stable-2605",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::8a13de8c51aa35e4d97b3b6054620aa44c9cfbb2725fba85f398861d70b8b461::0000",
+      "group_id": "semantic-stable-2588",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::8df7bd3f678bac2dbb3e40ee28b1b689acb3c17bd17c179b579b840ffe188e64::0000",
+      "group_id": "semantic-stable-3162",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::90ed5f8d1fff388c1c3d63904f4766f260f0ff35a0b8afb4141a39e125882754::0001",
+      "group_id": "semantic-stable-3187",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0000",
+      "group_id": "semantic-stable-3192",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0001",
+      "group_id": "semantic-stable-3191",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::989c3db8efb64e2fa5ac792e7a2913ed040d63fca9475923d92e1f8f371fa59d::0000",
+      "group_id": "semantic-stable-3222",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::99f81ec100c9cf2675fdc295691ba74ad737230ba0a6c06285c4815a4180caef::0001",
+      "group_id": "semantic-stable-3233",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::a0c583389c3a0c1faf0061e510b0a753ddd983da89201395058f0da20d0e805a::0001",
+      "group_id": "semantic-uncertain-1668",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::a20ae752fd5dd0530347bea39289a25714830e0fa1b13b26bba5887f51730cca::0003",
+      "group_id": "semantic-stable-3283",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::a20dc4034792e12e04f492d6a67f93d4f848a4562a006158dff57679b150ae55::0005",
+      "group_id": "semantic-stable-3284",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::a40079585c53284cd02124a137ff72f1a3605c66c7c1c774a3e7829d4944c8c9::0001",
+      "group_id": "semantic-stable-3298",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::b1bf35fbcbd071efe295dfb3733985bb90928b02e4bb62dd82c586dd02f648fe::0000",
+      "group_id": "semantic-stable-3390",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::b1ca26fba890c7fb4e1ade404a6c79d8316e7dbbed87dc022a70c8db13ab0599::0005",
+      "group_id": "semantic-stable-3393",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::b63f287b8f4f3b2217b61a24e70aa73e410a78c98dbf0a07c9251bc15de16391::0000",
+      "group_id": "semantic-stable-3423",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::c031032841c157167712a062d35a510ee477426a4759266fb490ae67beeae0ff::0002",
+      "group_id": "semantic-stable-3470",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::c28e2e6fd72009dd945386bf62db3188240e0b77fdada34ad2ee4fbb772bdeb6::0005",
+      "group_id": "semantic-stable-3489",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::c348c37b871de5445f8dd4f1bc8ebf4c6fbfaadfd270b490b4b89783cf5dc013::0000",
+      "group_id": "semantic-uncertain-2809",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::c35e4b79fc4d97498fceb4320c6ceab23d5adf4916c1e6c654f78fb9add37568::0001",
+      "group_id": "semantic-stable-3496",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::c7034cbb6bf1b4ddd7a6e743f4b1b4439715f0659fcd04cf4dd3a0119c332ba2::0001",
+      "group_id": "semantic-stable-3512",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::c7f4f2e8af4dc93bec025317f0ea07085be0ebe5a8ce73fe4feca96fa0b85cb8::0000",
+      "group_id": "semantic-stable-3514",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::cb43972c8d892c8d3cae1c5e023af3fdf107b5ac74f24bc1bc267c8ecf710983::0003",
+      "group_id": "semantic-stable-3527",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0001",
+      "group_id": "semantic-stable-3546",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0004",
+      "group_id": "semantic-stable-3551",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0009",
+      "group_id": "semantic-stable-3555",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0015",
+      "group_id": "semantic-stable-3550",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::cf272819ef86a583d3e57b91a47291c5db44ad03f32abe72f68d622204873e38::0000",
+      "group_id": "semantic-stable-3562",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::d084033bde7abf615e6f31d0a496c3829f5ee14197d5a997d64698d0f2d62963::0001",
+      "group_id": "semantic-stable-3564",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0002",
+      "group_id": "semantic-stable-3614",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0003",
+      "group_id": "semantic-stable-3616",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0004",
+      "group_id": "semantic-stable-3664",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0009",
+      "group_id": "semantic-stable-3671",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0011",
+      "group_id": "semantic-stable-3666",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0013",
+      "group_id": "semantic-stable-3673",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::e2cd794e8459151ddd684bef79111b720e00945a207f66d0d9c6e55a74b10e71::0008",
+      "group_id": "semantic-stable-3697",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::e6255d9555bb31ab4f8efa167fb1b57eb21fe135294ea15f53c6b96391460561::0002",
+      "group_id": "semantic-stable-3722",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::ebc7d5f93bcc5e8b55515285cc4c8b150e339cd4812b6f9469a96dc87fff3bc7::0000",
+      "group_id": "semantic-stable-3745",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::f0eb23ad5291a4695212d770e97ca845ee6ebbf871b49e5335f67e30c6670430::0001",
+      "group_id": "semantic-stable-3768",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::f3615147e2a9a915f40f304218f872e565af06faace3b8f500a6ae49bb251a25::0001",
+      "group_id": "semantic-stable-3783",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::fa1e52b251034c303ef8e86ad28f29579846ef48a7161a846d4d06849fe9e7a8::0000",
+      "group_id": "semantic-stable-3808",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::fb36b7f80bd64bf55a4adeebb79c4f131f188963e22b1c107cc483fc9b62b51b::0000",
+      "group_id": "semantic-stable-3809",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "the-stack-dedup::fd47f70c239601917b700ca93a245591f0850c940915dba14b8fda7713eba14b::0000",
+      "group_id": "semantic-stable-3815",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    }
+  ],
+  "restoration_trace_complete": true,
+  "complete_recheck_passed": true,
+  "rematerialization_applied": true,
+  "proposed_survivors": 7166,
+  "final_survivors": 7270,
+  "may_create_new_removal": false,
+  "scientific_promotion_claimed": false,
+  "benchmark_outcomes_read": false,
+  "utility_read": false,
+  "explicit_representative_families_consumed": 3,
+  "representative_families_evaluated": 3,
+  "families_outside_restoration_ceiling": [],
+  "restoration_ceiling_applied": false,
+  "restoration_candidate_count": 8025,
+  "status": "semantic_coverage_materialized",
+  "semantic_graph_consumed": true,
+  "artifact_preflight": {
+    "status": "semantic_coverage_artifacts_ready",
+    "corpus_sha256": "9e27fae9a20878d1fac106acacbe17de27f19455311575026b0cf9c8f2ea9fb1",
+    "graph_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+    "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+    "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+    "universe_chunks": 8025
+  }
+}

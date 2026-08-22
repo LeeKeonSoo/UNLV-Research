@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "status": "historical_development_measurement_not_final_manuscript_authority",
+  "historical_scope": "Normal/Hard development run retained for complexity context only; final framework counts are in final_code_curation_report.json and final_code_coverage_audit.json.",
+  "scope": "observed_code_run",
+  "definitions": {
+    "mib": 1048576,
+    "decision_audit_files": [
+      "stage_b_non_selection_proposals.jsonl",
+      "stage_b_removal_proposals.jsonl",
+      "curation_report.json",
+      "stage_c_coverage_audit.json",
+      "composition_audit.json"
+    ],
+    "shared_evidence_support_files": [
+      "quality_ranker_arrays.npz",
+      "embeddings.npz",
+      "semantic_coverage/corpus.jsonl",
+      "semantic_coverage/semantic_coverage_graph.json"
+    ],
+    "excluded_from_storage_totals": [
+      "raw corpus payload",
+      "curated corpus payload",
+      "training token blocks",
+      "model weights",
+      "benchmark generations"
+    ]
+  },
+  "workload": {
+    "raw_tokenizer_tokens": 6979584,
+    "stage_b_eligible_units": 8024,
+    "normal_redundancy_candidate_pairs": 2515,
+    "hard_redundancy_candidate_pairs": 2873,
+    "quality_windows": 8704,
+    "quality_embedding_dimension": 1024,
+    "coverage_edges": 23636,
+    "coverage_embedding_views": 2
+  },
+  "persistent_bytes": {
+    "normal_decision_audit": 12175174,
+    "hard_decision_audit": 31379922,
+    "shared_evidence_support": 96961971
+  },
+  "persistent_mib": {
+    "normal_decision_audit": 11.61,
+    "hard_decision_audit": 29.93,
+    "shared_evidence_support": 92.47
+  },
+  "asymptotic_reference": {
+    "streaming_and_hash": "O(T)",
+    "redundancy": "O(C_R) plus compared tokens after candidate retrieval",
+    "quality": "linear in the number of windows for a fixed model and fixed window size",
+    "coverage_exact_knn": "O(N^2 d) time with blockwise working memory",
+    "coverage_sparse_graph": "O(N k) storage",
+    "decision_trace": "O(N + C_R + E) storage"
+  },
+  "not_measured": [
+    "wall-clock runtime",
+    "peak RAM",
+    "peak VRAM",
+    "energy"
+  ],
+  "claim_boundary": "The byte counts describe selected persistent evidence and audit artifacts. They are not end-to-end lifecycle cost or distributed-scaling measurements."
+}

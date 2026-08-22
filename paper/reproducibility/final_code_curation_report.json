@@ -1,0 +1,4309 @@
+{
+  "schema_version": "curation-materialization-report-v1",
+  "status": "curation_materialization_complete",
+  "stage_contract": {
+    "stage_a": "source_agnostic_text_normalization_and_integrity_handling",
+    "stage_b": "redundancy_removal_and_explicit_quality_failure_filtering",
+    "stage_c": "coverage_veto_and_final_materialization",
+    "external_evaluation": "not_started"
+  },
+  "curation_mode": {
+    "mode": "framework",
+    "profile_id": "framework_structural_v2",
+    "profile_status": "beta_release",
+    "authorization": "confirmatory_beta_authorized",
+    "enabled_policy_ids": [
+      "stage_a_normalized_text_integrity",
+      "stage_a_bom_normalization",
+      "stage_a_chunk_integrity",
+      "stage_b_exact_duplicate",
+      "stage_b_intra_chunk_exact_sentence_compaction",
+      "stage_b_symmetric_near_duplicate",
+      "stage_b_explicit_generated_artifact",
+      "stage_b_license_comment_only",
+      "stage_b_structural_scaffold",
+      "stage_b_empty_html_shell",
+      "stage_b_web_chrome_only_chunk",
+      "stage_b_quality_distilled_ranker_v1",
+      "stage_c_coverage_guard"
+    ],
+    "effective_policy": {
+      "stage_a": {
+        "policy": "text_only_v2",
+        "normalization_context_default": "preserve"
+      },
+      "stage_b": {
+        "deduplicate_stage_a_text_exactly": true
+      },
+      "redundancy_v2": {
+        "contract": "configs/redundancy_v2.json",
+        "settings": {
+          "short_exact_only_max_tokens": 32,
+          "near_min_tokens": 64,
+          "near_max_changed_ratio": 0.02,
+          "near_max_changed_tokens": 4,
+          "containment_min_tokens": 12,
+          "repeated_span_min_lexical_tokens": 12,
+          "complementary_overlap_floor": 0.18,
+          "retrieval_min_tokens": 24,
+          "retrieval_shingle_size": 5,
+          "retrieval_signature_size": 32,
+          "retrieval_bands": 8,
+          "character_ngram_size": 24,
+          "character_minhash_bands": 20,
+          "character_minhashes_per_band": 13,
+          "retrieve_repeated_span_candidates": false
+        }
+      },
+      "stage_b_policy": {
+        "intra_chunk_exact_sentence_compaction": {
+          "enabled": true,
+          "minimum_occurrences": 3,
+          "minimum_lexical_tokens": 12
+        },
+        "structural_scaffold_compaction": {
+          "enabled": true
+        },
+        "structural_artifact_rules": {
+          "explicit_generated_artifact": true,
+          "license_comment_only_chunk": true,
+          "empty_html_shell": true,
+          "web_chrome_only_chunk": true
+        }
+      },
+      "coverage": {
+        "enforce_materialization_invariants": true,
+        "selection_authority": false
+      },
+      "quality_runtime": {
+        "contract": "configs/quality_ranker_v1.json",
+        "operating_point": "framework",
+        "decision_rule": "positive_support_with_luna_fallback",
+        "qualified_fail_threshold_field": "failure_threshold",
+        "qualified_fail_action": "not_select",
+        "positive_support_rule": "q2_and_q3_and_q4",
+        "pass_action": "retain_only_when_positive_support_rule_holds",
+        "abstain_action": "luna_fallback",
+        "out_of_distribution_action": "luna_fallback",
+        "low_confidence_action": "luna_fallback",
+        "teacher_fallback": {
+          "enabled": true,
+          "provider_contract": "configs/quality_teacher_luna_single_v1.json",
+          "transport": "openai_batch_api",
+          "confirmed_fail_action": "not_select",
+          "positive_support_action": "retain",
+          "unresolved_action": "not_select",
+          "missing_observation_action": "emit_requests_and_stop",
+          "transport_failure_action": "stop_without_membership_change"
+        },
+        "runtime_method": "distilled_quality_ranker_v1",
+        "runtime_required": true
+      }
+    },
+    "effective_policy_sha256": "be02cabf166a58af14fb603947db6d70740bb60c1df8aa59f43153242f34f672"
+  },
+  "framework_runtime": {
+    "schema_version": "runtime-stage-authority-report-v1",
+    "framework_manifest_sha256": "6f535ca9d55930bdfa8f75dcb489e22376b318cdaeade71a99e806a95d8305a8",
+    "policy_registry_sha256": "3d31ddd3b426f4705d693f4be512b163ae10ddfa826ca30d21b84c5cc7f3387c",
+    "policy_profiles_sha256": "3bfd4716c2f024b5fa1e15fa53f28dcc2e22d76fe333ff806c72498f52f43d0a",
+    "stage_tickets": [
+      {
+        "stage_id": "stage_a",
+        "core_id": "validity",
+        "supplied_categories": [
+          "raw_text",
+          "declared_input_contract",
+          "deterministic_normalized_text",
+          "stable_identifiers"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      },
+      {
+        "stage_id": "stage_b",
+        "core_id": "redundancy",
+        "supplied_categories": [
+          "stage_a_survivors",
+          "deterministic_normalized_text",
+          "stable_identifiers",
+          "runtime_local_structural_evidence",
+          "prior_stage_reason_codes"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      },
+      {
+        "stage_id": "stage_b",
+        "core_id": "quality",
+        "supplied_categories": [
+          "stage_a_survivors",
+          "deterministic_normalized_text",
+          "stable_identifiers",
+          "runtime_local_structural_evidence",
+          "prior_stage_reason_codes"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      },
+      {
+        "stage_id": "stage_c",
+        "core_id": "coverage",
+        "supplied_categories": [
+          "stage_b_survivors",
+          "typed_non_selection_proposals",
+          "representative_links",
+          "prior_stage_reason_codes"
+        ],
+        "authorization": "central_stage_permission_granted",
+        "selector_decision": null
+      }
+    ]
+  },
+  "effective_policy_manifest": {
+    "profile_id": "framework_structural_v2",
+    "profile_status": "beta_release",
+    "enabled_policy_ids": [
+      "stage_a_normalized_text_integrity",
+      "stage_a_bom_normalization",
+      "stage_a_chunk_integrity",
+      "stage_b_exact_duplicate",
+      "stage_b_intra_chunk_exact_sentence_compaction",
+      "stage_b_symmetric_near_duplicate",
+      "stage_b_explicit_generated_artifact",
+      "stage_b_license_comment_only",
+      "stage_b_structural_scaffold",
+      "stage_b_empty_html_shell",
+      "stage_b_web_chrome_only_chunk",
+      "stage_b_quality_distilled_ranker_v1",
+      "stage_c_coverage_guard"
+    ],
+    "policy_sha256": "be02cabf166a58af14fb603947db6d70740bb60c1df8aa59f43153242f34f672",
+    "policy": {
+      "stage_a": {
+        "policy": "text_only_v2",
+        "normalization_context_default": "preserve"
+      },
+      "stage_b": {
+        "deduplicate_stage_a_text_exactly": true
+      },
+      "redundancy_v2": {
+        "contract": "configs/redundancy_v2.json",
+        "settings": {
+          "short_exact_only_max_tokens": 32,
+          "near_min_tokens": 64,
+          "near_max_changed_ratio": 0.02,
+          "near_max_changed_tokens": 4,
+          "containment_min_tokens": 12,
+          "repeated_span_min_lexical_tokens": 12,
+          "complementary_overlap_floor": 0.18,
+          "retrieval_min_tokens": 24,
+          "retrieval_shingle_size": 5,
+          "retrieval_signature_size": 32,
+          "retrieval_bands": 8,
+          "character_ngram_size": 24,
+          "character_minhash_bands": 20,
+          "character_minhashes_per_band": 13,
+          "retrieve_repeated_span_candidates": false
+        }
+      },
+      "stage_b_policy": {
+        "intra_chunk_exact_sentence_compaction": {
+          "enabled": true,
+          "minimum_occurrences": 3,
+          "minimum_lexical_tokens": 12
+        },
+        "structural_scaffold_compaction": {
+          "enabled": true
+        },
+        "structural_artifact_rules": {
+          "explicit_generated_artifact": true,
+          "license_comment_only_chunk": true,
+          "empty_html_shell": true,
+          "web_chrome_only_chunk": true
+        }
+      },
+      "coverage": {
+        "enforce_materialization_invariants": true,
+        "selection_authority": false
+      },
+      "quality_runtime": {
+        "contract": "configs/quality_ranker_v1.json",
+        "operating_point": "framework",
+        "decision_rule": "positive_support_with_luna_fallback",
+        "qualified_fail_threshold_field": "failure_threshold",
+        "qualified_fail_action": "not_select",
+        "positive_support_rule": "q2_and_q3_and_q4",
+        "pass_action": "retain_only_when_positive_support_rule_holds",
+        "abstain_action": "luna_fallback",
+        "out_of_distribution_action": "luna_fallback",
+        "low_confidence_action": "luna_fallback",
+        "teacher_fallback": {
+          "enabled": true,
+          "provider_contract": "configs/quality_teacher_luna_single_v1.json",
+          "transport": "openai_batch_api",
+          "confirmed_fail_action": "not_select",
+          "positive_support_action": "retain",
+          "unresolved_action": "not_select",
+          "missing_observation_action": "emit_requests_and_stop",
+          "transport_failure_action": "stop_without_membership_change"
+        },
+        "runtime_method": "distilled_quality_ranker_v1",
+        "runtime_required": true
+      }
+    }
+  },
+  "summary": {
+    "input_records": 4890,
+    "stage_a_release_records": 4890,
+    "stage_a_quarantined_records": 0,
+    "stage_a_pass_chunks": 8026,
+    "stage_a_rejected_chunks": 0,
+    "stage_b_hard_gate_pass_chunks": 8025,
+    "stage_b_rejected_chunks": 1,
+    "stage_c_retained_chunks": 7270,
+    "stage_c_not_selected_chunks": 755,
+    "stage_b_near_duplicate_removed_chunks": 0,
+    "stage_b_redundancy_v2_removed_chunks": 3,
+    "stage_b_quality_not_selected_chunks": 816,
+    "stage_b_structural_scaffold_removed_chunks": 0,
+    "stage_b_explicit_generated_artifact_removed_chunks": 39,
+    "stage_b_license_comment_only_removed_chunks": 1,
+    "stage_b_empty_html_shell_removed_chunks": 0,
+    "stage_b_web_chrome_only_removed_chunks": 0,
+    "stage_b_explicit_non_payload_rejected_chunks": 40,
+    "stage_b_quality_no_qualified_fail_chunks": 7837,
+    "stage_b_all_quality_policies_passed_chunks": 25,
+    "stage_b_quality_chunks_with_any_abstain": 7957,
+    "stage_b_repeated_sentence_transformations": 222,
+    "stage_b_repeated_sentence_blocked_chunks": 0,
+    "stage_b_total_span_transformations": 222,
+    "stage_c_curated_chunks": 7270,
+    "stage_c_curated_whitespace_token_proxy": 2325548,
+    "stage_a_quarantine_reasons": {},
+    "stage_b_hard_gate_rejection_reasons": {
+      "normalized_exact_duplicate": 1
+    }
+  },
+  "composition_audit": {
+    "authority": "audit_only",
+    "consumed_by_stage_a": false,
+    "consumed_by_stage_b": false,
+    "consumed_by_stage_c": false,
+    "method": "deterministic_four_axis_audit_v2",
+    "stage_units": {
+      "raw_input": "record",
+      "stage_a_release": "record",
+      "stage_b_pass": "chunk",
+      "stage_c_curated": "chunk"
+    },
+    "stages": {
+      "raw_input": {
+        "content_domain": {
+          "records": {
+            "code": 4179,
+            "general": 87,
+            "mathematics": 597,
+            "science": 27
+          },
+          "token_proxy": {
+            "code": 2080013,
+            "general": 25715,
+            "mathematics": 459358,
+            "science": 11179
+          },
+          "token_share": {
+            "code": 0.8073754058685733,
+            "general": 0.00998150423190161,
+            "mathematics": 0.17830386237440635,
+            "science": 0.004339227525118728
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 4518,
+            "dialogue": 5,
+            "formula_structured": 117,
+            "markup": 16,
+            "prose": 234
+          },
+          "token_proxy": {
+            "code": 2506613,
+            "dialogue": 807,
+            "formula_structured": 22550,
+            "markup": 5558,
+            "prose": 40737
+          },
+          "token_share": {
+            "code": 0.9729639613937231,
+            "dialogue": 0.0003132441732508108,
+            "formula_structured": 0.008752981544988579,
+            "markup": 0.002157386759514258,
+            "prose": 0.01581242612852327
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 5,
+            "explanatory": 4622,
+            "instructional": 115,
+            "reference": 147,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 807,
+            "explanatory": 1963611,
+            "instructional": 269349,
+            "reference": 341949,
+            "transactional": 549
+          },
+          "token_share": {
+            "discussion": 0.0003132441732508108,
+            "explanatory": 0.7621929421080518,
+            "instructional": 0.10455019184750015,
+            "reference": 0.13273052267526828,
+            "transactional": 0.00021309919592899022
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 4506,
+            "mixed": 384
+          },
+          "token_proxy": {
+            "latin": 2401144,
+            "mixed": 175121
+          },
+          "token_share": {
+            "latin": 0.9320252380869204,
+            "mixed": 0.06797476191307959
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.06797476191307959
+      },
+      "stage_a_release": {
+        "content_domain": {
+          "records": {
+            "code": 4179,
+            "general": 87,
+            "mathematics": 597,
+            "science": 27
+          },
+          "token_proxy": {
+            "code": 2080013,
+            "general": 25715,
+            "mathematics": 459358,
+            "science": 11179
+          },
+          "token_share": {
+            "code": 0.8073754058685733,
+            "general": 0.00998150423190161,
+            "mathematics": 0.17830386237440635,
+            "science": 0.004339227525118728
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 4518,
+            "dialogue": 5,
+            "formula_structured": 117,
+            "markup": 16,
+            "prose": 234
+          },
+          "token_proxy": {
+            "code": 2506613,
+            "dialogue": 807,
+            "formula_structured": 22550,
+            "markup": 5558,
+            "prose": 40737
+          },
+          "token_share": {
+            "code": 0.9729639613937231,
+            "dialogue": 0.0003132441732508108,
+            "formula_structured": 0.008752981544988579,
+            "markup": 0.002157386759514258,
+            "prose": 0.01581242612852327
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 5,
+            "explanatory": 4622,
+            "instructional": 115,
+            "reference": 147,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 807,
+            "explanatory": 1963611,
+            "instructional": 269349,
+            "reference": 341949,
+            "transactional": 549
+          },
+          "token_share": {
+            "discussion": 0.0003132441732508108,
+            "explanatory": 0.7621929421080518,
+            "instructional": 0.10455019184750015,
+            "reference": 0.13273052267526828,
+            "transactional": 0.00021309919592899022
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 4506,
+            "mixed": 384
+          },
+          "token_proxy": {
+            "latin": 2401144,
+            "mixed": 175121
+          },
+          "token_share": {
+            "latin": 0.9320252380869204,
+            "mixed": 0.06797476191307959
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.06797476191307959
+      },
+      "stage_b_pass": {
+        "content_domain": {
+          "records": {
+            "code": 5894,
+            "general": 387,
+            "mathematics": 1622,
+            "science": 122
+          },
+          "token_proxy": {
+            "code": 1837788,
+            "general": 66696,
+            "mathematics": 620698,
+            "science": 51092
+          },
+          "token_share": {
+            "code": 0.7133511419980949,
+            "general": 0.025888550674345975,
+            "mathematics": 0.24092856582801364,
+            "science": 0.019831741499545467
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 6695,
+            "dialogue": 22,
+            "formula_structured": 493,
+            "markup": 83,
+            "prose": 732
+          },
+          "token_proxy": {
+            "code": 2274771,
+            "dialogue": 10434,
+            "formula_structured": 146399,
+            "markup": 34412,
+            "prose": 110258
+          },
+          "token_share": {
+            "code": 0.8829693580729379,
+            "dialogue": 0.004050035050619616,
+            "formula_structured": 0.05682586557175207,
+            "markup": 0.013357274886134005,
+            "prose": 0.04279746641855641
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 19,
+            "explanatory": 7607,
+            "instructional": 163,
+            "reference": 235,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 8071,
+            "explanatory": 2360801,
+            "instructional": 80758,
+            "reference": 126257,
+            "transactional": 387
+          },
+          "token_share": {
+            "discussion": 0.003132818947052992,
+            "explanatory": 0.9163625452882729,
+            "instructional": 0.03134682102912967,
+            "reference": 0.04900759779433399,
+            "transactional": 0.0001502169412104458
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 7554,
+            "mixed": 470,
+            "unknown": 1
+          },
+          "token_proxy": {
+            "latin": 2447040,
+            "mixed": 129032,
+            "unknown": 202
+          },
+          "token_share": {
+            "latin": 0.949836857415011,
+            "mixed": 0.05008473477588176,
+            "unknown": 7.840780910726111e-05
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.05008473477588176
+      },
+      "stage_c_curated": {
+        "content_domain": {
+          "records": {
+            "code": 5428,
+            "general": 287,
+            "mathematics": 1443,
+            "science": 112
+          },
+          "token_proxy": {
+            "code": 1681057,
+            "general": 46406,
+            "mathematics": 549661,
+            "science": 48424
+          },
+          "token_share": {
+            "code": 0.7228648903398253,
+            "general": 0.019954866551883686,
+            "mathematics": 0.236357624095482,
+            "science": 0.020822619012809025
+          }
+        },
+        "document_format": {
+          "records": {
+            "code": 6178,
+            "dialogue": 21,
+            "formula_structured": 423,
+            "markup": 73,
+            "prose": 575
+          },
+          "token_proxy": {
+            "code": 2074164,
+            "dialogue": 9859,
+            "formula_structured": 125339,
+            "markup": 32149,
+            "prose": 84037
+          },
+          "token_share": {
+            "code": 0.8919033277317863,
+            "dialogue": 0.0042394308782274116,
+            "formula_structured": 0.053896543954371184,
+            "markup": 0.013824268516495897,
+            "prose": 0.03613642891911928
+          }
+        },
+        "document_function": {
+          "records": {
+            "discussion": 18,
+            "explanatory": 6880,
+            "instructional": 151,
+            "reference": 220,
+            "transactional": 1
+          },
+          "token_proxy": {
+            "discussion": 7496,
+            "explanatory": 2126766,
+            "instructional": 74545,
+            "reference": 116354,
+            "transactional": 387
+          },
+          "token_share": {
+            "discussion": 0.0032233262869654808,
+            "explanatory": 0.9145225125432801,
+            "instructional": 0.03205481030707601,
+            "reference": 0.050032938472996474,
+            "transactional": 0.00016641238968191584
+          }
+        },
+        "language_script": {
+          "records": {
+            "latin": 6837,
+            "mixed": 433
+          },
+          "token_proxy": {
+            "latin": 2209370,
+            "mixed": 116178
+          },
+          "token_share": {
+            "latin": 0.950042742613784,
+            "mixed": 0.049957257386216064
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.049957257386216064
+      }
+    },
+    "delta_from_raw": {
+      "stage_a_release": {
+        "content_domain": {
+          "token_share": {
+            "code": 0.0,
+            "general": 0.0,
+            "mathematics": 0.0,
+            "science": 0.0
+          }
+        },
+        "document_format": {
+          "token_share": {
+            "code": 0.0,
+            "dialogue": 0.0,
+            "formula_structured": 0.0,
+            "markup": 0.0,
+            "prose": 0.0
+          }
+        },
+        "document_function": {
+          "token_share": {
+            "discussion": 0.0,
+            "explanatory": 0.0,
+            "instructional": 0.0,
+            "reference": 0.0,
+            "transactional": 0.0
+          }
+        },
+        "language_script": {
+          "token_share": {
+            "latin": 0.0,
+            "mixed": 0.0
+          }
+        },
+        "non_latin_or_mixed_token_share": 0.0
+      }
+    },
+    "excluded_cross_unit_deltas": {
+      "stage_b_pass": "record_to_chunk_delta_not_emitted",
+      "stage_c_curated": "record_to_chunk_delta_not_emitted"
+    },
+    "comparable_baseline_stage": "stage_b_pass",
+    "delta_from_stage_b_pass": {
+      "stage_c_curated": {
+        "content_domain": {
+          "token_share": {
+            "code": 0.009513748341730355,
+            "general": -0.005933684122462288,
+            "mathematics": -0.0045709417325316415,
+            "science": 0.0009908775132635578
+          }
+        },
+        "document_format": {
+          "token_share": {
+            "code": 0.008933969658848406,
+            "dialogue": 0.00018939582760779585,
+            "formula_structured": -0.002929321617380888,
+            "markup": 0.0004669936303618918,
+            "prose": -0.006661037499437132
+          }
+        },
+        "document_function": {
+          "token_share": {
+            "discussion": 9.050733991248887e-05,
+            "explanatory": -0.0018400327449927811,
+            "instructional": 0.0007079892779463387,
+            "reference": 0.001025340678662487,
+            "transactional": 1.6195448471470047e-05
+          }
+        },
+        "language_script": {
+          "token_share": {
+            "latin": 0.0002058851987729593,
+            "mixed": -0.00012747738966569638,
+            "unknown": -7.840780910726111e-05
+          }
+        },
+        "non_latin_or_mixed_token_share": -0.00012747738966569638
+      }
+    },
+    "coverage_v1": {
+      "taxonomy_version": "coverage-taxonomy-v1",
+      "authority": "audit_only",
+      "consumed_by_selection": false,
+      "classification": "multi_label_with_unknown",
+      "stages": {
+        "raw_input": {
+          "semantic_domain": {
+            "records": {
+              "code": 4617,
+              "finance_economics": 2,
+              "general_knowledge": 55,
+              "history_humanities": 6,
+              "law": 2,
+              "math": 190,
+              "medicine": 16,
+              "science": 72,
+              "unknown": 218
+            },
+            "token_proxy": {
+              "code": 2521793,
+              "finance_economics": 1256,
+              "general_knowledge": 26583,
+              "history_humanities": 15510,
+              "law": 1695,
+              "math": 478428,
+              "medicine": 26361,
+              "science": 126987,
+              "unknown": 27889
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.9788562123849837,
+              "finance_economics": 0.0004875274864969248,
+              "general_knowledge": 0.010318426093588975,
+              "history_humanities": 0.0060203434041140955,
+              "law": 0.0006579292114747513,
+              "math": 0.18570605120203085,
+              "medicine": 0.01023225483403299,
+              "science": 0.049291124942503976,
+              "unknown": 0.010825361521427337
+            },
+            "unknown_record_rate": 0.04458077709611452,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 2,
+              "cyrillic": 30,
+              "greek": 12,
+              "han": 182,
+              "hangul": 21,
+              "hebrew": 2,
+              "kana": 25,
+              "latin": 4890,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 296,
+              "cyrillic": 10110,
+              "greek": 16739,
+              "han": 57643,
+              "hangul": 7328,
+              "hebrew": 1154,
+              "kana": 8428,
+              "latin": 2576265,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 0.00011489501274131349,
+              "cyrillic": 0.003924285739238782,
+              "greek": 0.006497390602286644,
+              "han": 0.022374639254890315,
+              "hangul": 0.0028444278830011666,
+              "hebrew": 0.0004479352861603911,
+              "kana": 0.0032714025925128045,
+              "latin": 1.0,
+              "thai": 0.00013973717765835425
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 909,
+              "formula": 190,
+              "link_directory": 9,
+              "list": 46,
+              "markup": 543,
+              "prose": 4826,
+              "source_code": 4617,
+              "table": 11,
+              "unknown": 19
+            },
+            "token_proxy": {
+              "dialogue": 1333431,
+              "formula": 478428,
+              "link_directory": 33671,
+              "list": 130269,
+              "markup": 815301,
+              "prose": 2572768,
+              "source_code": 2521793,
+              "table": 27300,
+              "unknown": 888
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.5175830126171027,
+              "formula": 0.18570605120203085,
+              "link_directory": 0.013069695858151239,
+              "list": 0.05056506221215597,
+              "markup": 0.31646627967231633,
+              "prose": 0.9986426085825798,
+              "source_code": 0.9788562123849837,
+              "table": 0.010596735972425197,
+              "unknown": 0.00034468503822394046
+            },
+            "unknown_record_rate": 0.003885480572597137,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 52,
+              "explanation": 420,
+              "implementation": 4617,
+              "procedure": 615,
+              "reference": 151,
+              "transactional_ui": 1,
+              "unknown": 254
+            },
+            "token_proxy": {
+              "argument": 227146,
+              "explanation": 960070,
+              "implementation": 2521793,
+              "procedure": 1122090,
+              "reference": 345026,
+              "transactional_ui": 549,
+              "unknown": 49865
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.08816872487884593,
+              "explanation": 0.37265964487348935,
+              "implementation": 0.9788562123849837,
+              "procedure": 0.4355491379962853,
+              "reference": 0.13392488738542035,
+              "transactional_ui": 0.00021309919592899022,
+              "unknown": 0.019355539899816206
+            },
+            "unknown_record_rate": 0.05194274028629857,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        },
+        "stage_a_release": {
+          "semantic_domain": {
+            "records": {
+              "code": 4617,
+              "finance_economics": 2,
+              "general_knowledge": 55,
+              "history_humanities": 6,
+              "law": 2,
+              "math": 190,
+              "medicine": 16,
+              "science": 72,
+              "unknown": 218
+            },
+            "token_proxy": {
+              "code": 2521793,
+              "finance_economics": 1256,
+              "general_knowledge": 26583,
+              "history_humanities": 15510,
+              "law": 1695,
+              "math": 478428,
+              "medicine": 26361,
+              "science": 126987,
+              "unknown": 27889
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.9788562123849837,
+              "finance_economics": 0.0004875274864969248,
+              "general_knowledge": 0.010318426093588975,
+              "history_humanities": 0.0060203434041140955,
+              "law": 0.0006579292114747513,
+              "math": 0.18570605120203085,
+              "medicine": 0.01023225483403299,
+              "science": 0.049291124942503976,
+              "unknown": 0.010825361521427337
+            },
+            "unknown_record_rate": 0.04458077709611452,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 2,
+              "cyrillic": 30,
+              "greek": 12,
+              "han": 182,
+              "hangul": 21,
+              "hebrew": 2,
+              "kana": 25,
+              "latin": 4890,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 296,
+              "cyrillic": 10110,
+              "greek": 16739,
+              "han": 57643,
+              "hangul": 7328,
+              "hebrew": 1154,
+              "kana": 8428,
+              "latin": 2576265,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 0.00011489501274131349,
+              "cyrillic": 0.003924285739238782,
+              "greek": 0.006497390602286644,
+              "han": 0.022374639254890315,
+              "hangul": 0.0028444278830011666,
+              "hebrew": 0.0004479352861603911,
+              "kana": 0.0032714025925128045,
+              "latin": 1.0,
+              "thai": 0.00013973717765835425
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 909,
+              "formula": 190,
+              "link_directory": 9,
+              "list": 46,
+              "markup": 543,
+              "prose": 4826,
+              "source_code": 4617,
+              "table": 11,
+              "unknown": 19
+            },
+            "token_proxy": {
+              "dialogue": 1333431,
+              "formula": 478428,
+              "link_directory": 33671,
+              "list": 130269,
+              "markup": 815301,
+              "prose": 2572768,
+              "source_code": 2521793,
+              "table": 27300,
+              "unknown": 888
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.5175830126171027,
+              "formula": 0.18570605120203085,
+              "link_directory": 0.013069695858151239,
+              "list": 0.05056506221215597,
+              "markup": 0.31646627967231633,
+              "prose": 0.9986426085825798,
+              "source_code": 0.9788562123849837,
+              "table": 0.010596735972425197,
+              "unknown": 0.00034468503822394046
+            },
+            "unknown_record_rate": 0.003885480572597137,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 52,
+              "explanation": 420,
+              "implementation": 4617,
+              "procedure": 615,
+              "reference": 151,
+              "transactional_ui": 1,
+              "unknown": 254
+            },
+            "token_proxy": {
+              "argument": 227146,
+              "explanation": 960070,
+              "implementation": 2521793,
+              "procedure": 1122090,
+              "reference": 345026,
+              "transactional_ui": 549,
+              "unknown": 49865
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.08816872487884593,
+              "explanation": 0.37265964487348935,
+              "implementation": 0.9788562123849837,
+              "procedure": 0.4355491379962853,
+              "reference": 0.13392488738542035,
+              "transactional_ui": 0.00021309919592899022,
+              "unknown": 0.019355539899816206
+            },
+            "unknown_record_rate": 0.05194274028629857,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        },
+        "stage_b_pass": {
+          "semantic_domain": {
+            "records": {
+              "code": 7121,
+              "finance_economics": 2,
+              "general_knowledge": 198,
+              "history_humanities": 7,
+              "law": 2,
+              "math": 416,
+              "medicine": 16,
+              "science": 91,
+              "unknown": 692
+            },
+            "token_proxy": {
+              "code": 2398201,
+              "finance_economics": 1011,
+              "general_knowledge": 76450,
+              "history_humanities": 3533,
+              "law": 721,
+              "math": 236277,
+              "medicine": 5786,
+              "science": 43607,
+              "unknown": 96971
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.9308796346972411,
+              "finance_economics": 0.00039242720300713355,
+              "general_knowledge": 0.029674638644802534,
+              "history_humanities": 0.0013713603444354134,
+              "law": 0.00027986153646700624,
+              "math": 0.09171268273483332,
+              "medicine": 0.002245879126210954,
+              "science": 0.0169263828303977,
+              "unknown": 0.03764001810366444
+            },
+            "unknown_record_rate": 0.08623052959501558,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 2,
+              "cyrillic": 36,
+              "greek": 14,
+              "han": 206,
+              "hangul": 27,
+              "hebrew": 3,
+              "kana": 30,
+              "latin": 8025,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 296,
+              "cyrillic": 10020,
+              "greek": 6107,
+              "han": 47265,
+              "hangul": 7161,
+              "hebrew": 1154,
+              "kana": 7997,
+              "latin": 2576274,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 0.00011489461136509549,
+              "cyrillic": 0.0038893378576968134,
+              "greek": 0.0023704776743467505,
+              "han": 0.018346262858686613,
+              "hangul": 0.002779595648599489,
+              "hebrew": 0.0004479337213355412,
+              "kana": 0.003104095294211718,
+              "latin": 1.0,
+              "thai": 0.0001397366894980891
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 1935,
+              "formula": 416,
+              "link_directory": 5,
+              "list": 56,
+              "markup": 910,
+              "prose": 7887,
+              "source_code": 7121,
+              "table": 13,
+              "unknown": 87
+            },
+            "token_proxy": {
+              "dialogue": 974973,
+              "formula": 236277,
+              "link_directory": 2172,
+              "list": 27668,
+              "markup": 426619,
+              "prose": 2565360,
+              "source_code": 2398201,
+              "table": 7349,
+              "unknown": 8128
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.3784430538056123,
+              "formula": 0.09171268273483332,
+              "link_directory": 0.0008430780266384709,
+              "list": 0.010739540902869804,
+              "markup": 0.16559535204718132,
+              "prose": 0.9957636493633829,
+              "source_code": 0.9308796346972411,
+              "table": 0.002852569253115158,
+              "unknown": 0.0031549439228901895
+            },
+            "unknown_record_rate": 0.010841121495327103,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 35,
+              "explanation": 736,
+              "implementation": 7121,
+              "procedure": 970,
+              "reference": 240,
+              "transactional_ui": 1,
+              "unknown": 809
+            },
+            "token_proxy": {
+              "argument": 21025,
+              "explanation": 398918,
+              "implementation": 2398201,
+              "procedure": 493177,
+              "reference": 127910,
+              "transactional_ui": 387,
+              "unknown": 140008
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.008161010824159232,
+              "explanation": 0.1548430019477742,
+              "implementation": 0.9308796346972411,
+              "procedure": 0.19143033699055303,
+              "reference": 0.049649222093612715,
+              "transactional_ui": 0.0001502169412104458,
+              "unknown": 0.054345151175690165
+            },
+            "unknown_record_rate": 0.10080996884735202,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        },
+        "stage_c_curated": {
+          "semantic_domain": {
+            "records": {
+              "code": 6550,
+              "finance_economics": 2,
+              "general_knowledge": 157,
+              "history_humanities": 7,
+              "law": 2,
+              "math": 374,
+              "medicine": 15,
+              "science": 75,
+              "unknown": 551
+            },
+            "token_proxy": {
+              "code": 2186576,
+              "finance_economics": 1011,
+              "general_knowledge": 57007,
+              "history_humanities": 3533,
+              "law": 721,
+              "math": 212482,
+              "medicine": 5405,
+              "science": 35815,
+              "unknown": 77892
+            },
+            "token_incidence_share_of_stage": {
+              "code": 0.9402411818633716,
+              "finance_economics": 0.00043473624281244676,
+              "general_knowledge": 0.02451336201187849,
+              "history_humanities": 0.0015192118158816762,
+              "law": 0.0003100344520947321,
+              "math": 0.09136857205269468,
+              "medicine": 0.002324183375273269,
+              "science": 0.015400671153637767,
+              "unknown": 0.033494040974428395
+            },
+            "unknown_record_rate": 0.07579092159559835,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "language_script": {
+            "records": {
+              "arabic": 2,
+              "cyrillic": 31,
+              "greek": 13,
+              "han": 194,
+              "hangul": 24,
+              "hebrew": 1,
+              "kana": 29,
+              "latin": 7270,
+              "thai": 1
+            },
+            "token_proxy": {
+              "arabic": 296,
+              "cyrillic": 8423,
+              "greek": 5559,
+              "han": 44165,
+              "hangul": 6494,
+              "hebrew": 88,
+              "kana": 7953,
+              "latin": 2325548,
+              "thai": 360
+            },
+            "token_incidence_share_of_stage": {
+              "arabic": 0.00012728182776704672,
+              "cyrillic": 0.003621942011087279,
+              "greek": 0.0023904043262061242,
+              "han": 0.018991222713958172,
+              "hangul": 0.0027924600997270323,
+              "hebrew": 3.7840543390203083e-05,
+              "kana": 0.0034198391088896035,
+              "latin": 1.0,
+              "thai": 0.0001548022229599217
+            },
+            "unknown_record_rate": 0.0,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "format_genre": {
+            "records": {
+              "dialogue": 1809,
+              "formula": 374,
+              "link_directory": 3,
+              "list": 52,
+              "markup": 834,
+              "prose": 7175,
+              "source_code": 6550,
+              "table": 13,
+              "unknown": 56
+            },
+            "token_proxy": {
+              "dialogue": 907890,
+              "formula": 212482,
+              "link_directory": 1086,
+              "list": 25490,
+              "markup": 388039,
+              "prose": 2316494,
+              "source_code": 2186576,
+              "table": 7349,
+              "unknown": 6568
+            },
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.39039830611967585,
+              "formula": 0.09136857205269468,
+              "link_directory": 0.00046698670592909715,
+              "list": 0.010960857397912234,
+              "markup": 0.16685916609762516,
+              "prose": 0.996106724092558,
+              "source_code": 0.9402411818633716,
+              "table": 0.003160115379256846,
+              "unknown": 0.0028242805566687937
+            },
+            "unknown_record_rate": 0.007702888583218707,
+            "multi_label_note": "incidence shares may sum above one"
+          },
+          "content_morphology": {
+            "records": {
+              "argument": 31,
+              "explanation": 675,
+              "implementation": 6550,
+              "procedure": 873,
+              "reference": 224,
+              "transactional_ui": 1,
+              "unknown": 637
+            },
+            "token_proxy": {
+              "argument": 18263,
+              "explanation": 362239,
+              "implementation": 2186576,
+              "procedure": 442603,
+              "reference": 117592,
+              "transactional_ui": 387,
+              "unknown": 105870
+            },
+            "token_incidence_share_of_stage": {
+              "argument": 0.007853202771991806,
+              "explanation": 0.15576500678549743,
+              "implementation": 0.9402411818633716,
+              "procedure": 0.19032202302425064,
+              "reference": 0.05056528611750865,
+              "transactional_ui": 0.00016641238968191584,
+              "unknown": 0.04552475373546364
+            },
+            "unknown_record_rate": 0.08762035763411279,
+            "multi_label_note": "incidence shares may sum above one"
+          }
+        }
+      },
+      "delta_from_raw": {
+        "stage_a_release": {
+          "semantic_domain": {
+            "token_incidence_share_of_stage": {
+              "code": 0.0,
+              "finance_economics": 0.0,
+              "general_knowledge": 0.0,
+              "history_humanities": 0.0,
+              "law": 0.0,
+              "math": 0.0,
+              "medicine": 0.0,
+              "science": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "language_script": {
+            "token_incidence_share_of_stage": {
+              "arabic": 0.0,
+              "cyrillic": 0.0,
+              "greek": 0.0,
+              "han": 0.0,
+              "hangul": 0.0,
+              "hebrew": 0.0,
+              "kana": 0.0,
+              "latin": 0.0,
+              "thai": 0.0
+            }
+          },
+          "format_genre": {
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.0,
+              "formula": 0.0,
+              "link_directory": 0.0,
+              "list": 0.0,
+              "markup": 0.0,
+              "prose": 0.0,
+              "source_code": 0.0,
+              "table": 0.0,
+              "unknown": 0.0
+            }
+          },
+          "content_morphology": {
+            "token_incidence_share_of_stage": {
+              "argument": 0.0,
+              "explanation": 0.0,
+              "implementation": 0.0,
+              "procedure": 0.0,
+              "reference": 0.0,
+              "transactional_ui": 0.0,
+              "unknown": 0.0
+            }
+          }
+        }
+      },
+      "delta_from_stage_b_pass": {
+        "stage_c_curated": {
+          "semantic_domain": {
+            "token_incidence_share_of_stage": {
+              "code": 0.009361547166130468,
+              "finance_economics": 4.230903980531321e-05,
+              "general_knowledge": -0.005161276632924042,
+              "history_humanities": 0.00014785147144626273,
+              "law": 3.0172915627725842e-05,
+              "math": -0.0003441106821386458,
+              "medicine": 7.8304249062315e-05,
+              "science": -0.0015257116767599319,
+              "unknown": -0.0041459771292360476
+            }
+          },
+          "language_script": {
+            "token_incidence_share_of_stage": {
+              "arabic": 1.2387216401951238e-05,
+              "cyrillic": -0.00026739584660953435,
+              "greek": 1.9926651859373742e-05,
+              "han": 0.0006449598552715589,
+              "hangul": 1.2864451127543326e-05,
+              "hebrew": -0.0004100931779453381,
+              "kana": 0.0003157438146778853,
+              "latin": 0.0,
+              "thai": 1.5065533461832602e-05
+            }
+          },
+          "format_genre": {
+            "token_incidence_share_of_stage": {
+              "dialogue": 0.01195525231406358,
+              "formula": -0.0003441106821386458,
+              "link_directory": -0.0003760913207093737,
+              "list": 0.00022131649504242984,
+              "markup": 0.0012638140504438455,
+              "prose": 0.00034307472917505244,
+              "source_code": 0.009361547166130468,
+              "table": 0.00030754612614168836,
+              "unknown": -0.0003306633662213958
+            }
+          },
+          "content_morphology": {
+            "token_incidence_share_of_stage": {
+              "argument": -0.0003078080521674263,
+              "explanation": 0.0009220048377232282,
+              "implementation": 0.009361547166130468,
+              "procedure": -0.0011083139663023989,
+              "reference": 0.000916064023895935,
+              "transactional_ui": 1.6195448471470047e-05,
+              "unknown": -0.008820397440226523
+            }
+          }
+        }
+      },
+      "jensen_shannon_divergence_from_raw": {
+        "stage_a_release": {
+          "semantic_domain": 0.0,
+          "language_script": 0.0,
+          "format_genre": 0.0,
+          "content_morphology": 0.0
+        }
+      },
+      "jensen_shannon_divergence_from_stage_b_pass": {
+        "stage_c_curated": {
+          "semantic_domain": 0.00028105134513472374,
+          "language_script": 0.00015561741499208167,
+          "format_genre": 3.997205481020953e-05,
+          "content_morphology": 0.00021993667534590247
+        }
+      }
+    }
+  },
+  "composition_artifacts": {
+    "authority": "audit_only",
+    "consumed_by_selection": false,
+    "target_distribution_enforced": false,
+    "baseline_stage": "stage_b_pass",
+    "comparison_unit": "chunk",
+    "eligible_tokens": 2576274,
+    "curated_tokens": 2325548
+  },
+  "reason_code_impact_audit": {
+    "schema_version": "reason-code-impact-audit-v1",
+    "authority": "audit_only",
+    "selector_consumes_this_audit": false,
+    "token_accounting": "A multi-reason row is charged to each of its reasons; reason totals are not additive across reasons.",
+    "stages": {
+      "stage_a_quarantine": {
+        "reasons": {}
+      },
+      "stage_a_chunk_rejection": {
+        "reasons": {}
+      },
+      "stage_b_rejection": {
+        "reasons": {
+          "normalized_exact_duplicate": {
+            "records": 1,
+            "chunks": 1,
+            "token_proxy": 8
+          }
+        }
+      },
+      "stage_b_policy_removal": {
+        "reasons": {
+          "explicit_generated_artifact": {
+            "records": 10,
+            "chunks": 28,
+            "token_proxy": 5094
+          },
+          "quality_qualified_fail": {
+            "records": 1,
+            "chunks": 1,
+            "token_proxy": 1
+          },
+          "quality_teacher_confirmed_fail": {
+            "records": 136,
+            "chunks": 138,
+            "token_proxy": 28657
+          },
+          "quality_teacher_no_positive_support": {
+            "records": 397,
+            "chunks": 585,
+            "token_proxy": 213495
+          },
+          "redundancy_contained_payload_nonrepresentative": {
+            "records": 3,
+            "chunks": 3,
+            "token_proxy": 41
+          }
+        }
+      },
+      "stage_b_span_transformation": {
+        "reasons": {
+          "redundancy_intra_chunk_exact_sentence_repeat_compacted": {
+            "chunks": 60,
+            "token_proxy_removed": 3761
+          }
+        }
+      }
+    }
+  },
+  "coverage_impact_audit": {
+    "authority": "materialization_invariant",
+    "selector_consumes_this_audit": false,
+    "metadata_strata_or_target_mix_used": false,
+    "representative_linkage": {
+      "required_removed_chunks": 4,
+      "missing_representative_chunk_uids": [],
+      "representative_not_in_curated_pool": [],
+      "resolved_by_non_payload_removal": [],
+      "resolved_by_representative_chain": [],
+      "passed": true
+    },
+    "residual_payload": {
+      "span_rewrite_active": true,
+      "rewritten_chunks_checked": 60,
+      "minimum_residual_chars": 120,
+      "invalid_residual_chunk_uids": [],
+      "passed": true,
+      "zero_survivor_exception_allowed": false,
+      "note": "Any promoted span rewrite must retain its chunk and preserve the declared Stage-B residual boundary."
+    },
+    "zero_survivor_invariant": {
+      "zero_survivor_records": [
+        {
+          "stage_a_record_id": "the-stack-dedup::19da0bb95d57d28062ddc8cba4cd37d72158394bd25a4257438dcf1341805094",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2ef67dab132bcbe59a8577b83bdb3218c58c1e36d58ef7c65a588253c9ab716c",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::48b415730f2bddc267f6c3cbf095b4db6e01da63c45c5171ae0498b5bea6dc2d",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::59d6561ff9b89528c3e74be58d8a88d1659cd474b21f29afffb977ae70f9088b",
+          "reason_codes": [
+            "explicit_generated_artifact"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/fixtures/fill_fixtures/test_extend_fixture_conftest_conftest/pkg/conftest.py",
+          "reason_codes": [
+            "redundancy_contained_payload_nonrepresentative"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/cli/serving/__init__.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/align/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/audio_spectrogram_transformer/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/bark/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/bertweet/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/cohere2_vision/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/convnextv2/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/cosmos3_omni/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/dinov3_convnext/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/dots1/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/edgetam_video/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/exaone4/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/flex_olmo/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/gemma2/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/glm_image/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/gpt_neox_japanese/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/gpt_sw3/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/herbert/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/ibert/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/janus/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/kimi_k25/__init__.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/llama/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/llava_next/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/lw_detr/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/markuplm/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/pe_audio_video/__init__.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/squeezebert/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/table_transformer/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::utils/test_module/custom_video_processing.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pydantic/pydantic::428b0dba8924::pydantic/decorator.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pydantic/pydantic::428b0dba8924::pydantic/env_settings.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pydantic/pydantic::428b0dba8924::pydantic/json.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pydantic/pydantic::428b0dba8924::pydantic/parse.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pydantic/pydantic::428b0dba8924::pydantic/typing.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/collect/package_init_given_as_arg/pkg/__init__.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/config/collect_pytest_prefix/test_foo.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/dataclasses/test_compare_initvar.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/doctest/main_py/test_normal_module.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/perf_examples/collect_stats/template_test.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/warnings/test_group_warnings_by_message_summary/test_2.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/freeze/runtests_script.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_argcomplete.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_mark_expression.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::python-poetry/poetry::f46702336862::src/poetry/installation/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::python-poetry/poetry::f46702336862::src/poetry/packages/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::python-poetry/poetry::f46702336862::src/poetry/plugins/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::python-poetry/poetry::f46702336862::src/poetry/puzzle/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::python-poetry/poetry::f46702336862::src/poetry/vcs/git/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/_distributor_init.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/experimental/__init__.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_compat/numpy/linalg.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_extra/_lib/_utils/_typing.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/gaussian_process/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/inspection/__init__.py",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::07f1f04cdb20a6aee9c4d994dec84129f2e4a09d8724b1827ede83681bee8722",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0aff71b796b6fcb8c0178778913d972257b4cbe96592ead5bff625fa243829f2",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0ba262f4ec7051129c1152d0cfcccbc43ef3d897a4e9e2ee3c920178a7eabf56",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::0fa0dad07116e4fbfaaea31e01c00a9071b8d7f618125575c83d5144dcdaab6a",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::137be7761b7d9807c89a96aa17be0e5bf54527229dd55df0b07066992a96f757",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1448d91285604baf237a5f561f5c275af63522706bf6e9dbd12c8019669363b4",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::14e65a7dc690c753d8e9aa21ba3f3e466ae8f0cfb9395761489d76dfff231f29",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::14f524fbeafd4a1c8397224bf323286855594049528dccefde7fa8cd21d1a2b4",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::15f70775b253e68a56ab363814f1735a929ba5779d60c2e36ffa46e794c31582",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::16a81be8bfc718d285baf577cc4cfeda2b5c214a6bff827d54a6f3da140540ce",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::17a5c2b54bb29c440f94f90c73b9aa03c06e6eb77b06677d7d31955008459f3e",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::17fbfc683b8aab4fa25b3f85d7de2dcb40ab3c83f074976edb7c5d58062ee51c",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1915ae5c12c37c3ceca57adb78448c86868e1ce91637d46b4a004c16bf391c2d",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1edfcc3981d3b625872489b3c9f51c7c06305519756a6601affa482e06656394",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::1f9cc4912dd26f84c96f162a80d67ceae9c0b089dd049187e39f9b4a1127fa90",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::206e5ebaa2339330bbd65a498bc431eb0e45860bf354fd0d372a83b088063d56",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2239a2a489593577845d38319f027649a21f6e55215d9ceb5f7f5ccf5eb08928",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2279a655d1c7bc12c0c271bd96cf2e473d570c1aa9e933650f8c2507954259a9",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::234a414abf95bacadac8a605c83e11396a36df40a95a5f85aebb8033b312bca3",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::25d415d2c56ccaa19598383a0bdff751de3d308a33743f467e7d76806708d118",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2746c3e5735dbb88b98b3adaacd2f51258cd57e9b7ec5f6fa1e235d4416d7ada",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2922d9282279e8906f283fd98880b70a4fa32a1b2930c3fb3178e9e15b316517",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2a51e1e8370261d4d48580a443a2cab64071d63518a9e71742156632a47b413e",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::2e620f19edc52abb7428a75479e9dbfda8df28a4793033d813f5545532c79181",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3046a17b8275e0f242ddd54c03b211a5f50caab596e7f1b378597a455ebbc15d",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::327af8e1359a6cf23e36d5eb422d44d781041d85960ba3a9cc977cd93d98ea5b",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3326e5851ebf77b0be148de97b5efea9c5b853de83695b1ea1aa3fd66081c9a1",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::33f659aefe00ec7f7cdb46fb9a146294cb9d65b9358f156efa222d00aa26cc4b",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::351ae131aa1339b66824a9e02cf9ac6e662f6bb88ff9509dc42397a4c12a43e0",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::39274722ef6c0c32eb113a8819eebf4fc9a265057af8d6a150270c6f5b2c2a6f",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3987c3ed04d8881e0484ab8fc1e53b739baf194da79623f833d1ab1803f353e1",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3988256e6e949a60617115cd7089de868a4255897a19dc62c2195408e845849a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3ad337fde866e2e353b445078b953f3f2395109a266924f458c0715aa0461d6d",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3c6d3250673e5a5433ad578eca5c747eb1adcad06e1d1b87b4804d18e63980d3",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3d8adff1e87df110e64e148e8150a0fda9995faefb0a360cb4ea0452d9fc0e0e",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3e19106697f952def5bb4a856e0628f40fcb2c7cf248d99d05ee4036da5a3af4",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::405f0257ccdac002d4bf51b94b9fe477e23945ea02c45b251be210ce217987d8",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::43bc826a1f51db1e59d909b5f586202402fef4b84507f9a5474ff8b671aa73e7",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::43d08ebdea9d95b2d8462a6edd1522995df0536b4a07e4f2582591be3cb099d7",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::495acde2c73c6b8ab4e8f6ae05465c3739a0b39ae8f22f2bff3acf32be03c9a2",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::49ec14da9be4c7e3ec8be97c50d0c7437b508644cb5659ce30b9bf24b9aec5e8",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4b7649e5726adf21335acb901a698c9268367a290bde7765c1414297fc96b38a",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4b98751adf5fce1eed5fed7b3e1381c2e45fe7d857a4fb4542804c5785283275",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4c0b7f68a1ff02648050b7edad3c95bd498290c378a9c88aa2933e6f3789db6a",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4e50406cc425a3e81ab4a08e448570e225404c5e6c666d9f72ffa1901e5b233a",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::4ffe4fe7ab29102e8b3c1eae6b5d101506ce76e4b435d1dc978d791d3a674f73",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::57ad07fe4363818892c35a467655d923ae8f93021377d56936aa811ba7bba71d",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::57f331237806d4e53da9992f73b2d564aad6ee9cc123e8c0735a96b54dd7a276",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5bd89133fa9b44f6eb196a1e6d35513b064dc55ed1c120cd3b1e85a0b6e41f35",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5d7c33d5701f3aec735c56bf4c0f82b24cffd92438e09c92afa16f5898c2b7f0",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::5f8a5ae10da2a71e57d17bc1f7ae01b4ce847299fd0563f9a8ebdd234d029ad4",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::60345200bd60002c68be4612e99b65541d958388f565845eb769675f7ac000b0",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::66433183da928c8bd15af510ea660a36cd1eb7a8ec21c4031a90d18496fd9fca",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::67cf81d08f018fc243681b6c5cd595cb4c1c131724d9361dbac0d580e8391c8b",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::67ecdae3da5761e48726bd2a4db64ee6b69852f6ec6777271a588267f38ed981",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::683bf8787ad0452f2d2c45daa9c33b9b40472e35396daa9381c59dbe0859ef77",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::698df24202cd64b6b65dcbaf6e2f9baef7fe9f53041a1141faeadff2e9ec653a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6d5560bf918c82989cea09d520605afc5d0ac794d920ad9c6d4a1cfabed44894",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::6e6ddf980b0fa1d9b03260d820739d2f2e988b2960141fecb1fc0f5c1a857169",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::713a48f05828c69ab93d7c689ee95ec73a0c89ae703288476cf03f7a90e0fcbe",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::72fcf291cc03aeab476bc274d874f79afdaa67f1e2bead18f75a1469e89c7829",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7400d4fb222db4e02b650b7c6e80c0e13cc8fb7cd29c6af4391d1d86583dc2c1",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::75245edd5d76e6fe748edb09ffeb6674d08e854e691fe983e37f96a712afc66a",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::761c10a2dfc21720a1583e2b04c73c3d4eec2a902b79e2f755f1cd712b0cf416",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::78a105e72253ec418d945fedf862272ec914d0269dc6f02f508581971dfed556",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7f1c2f6af028d5502fa726c3c614708809f6021cc4419ab92bb46574eb2704fc",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::7f2b3ba08513d23a5d1301aa2da18e35976fe6e452dbe1c85c03bac29a3cb6e2",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::811f0fd1b936a701cf21e7a3582952fd548c139b1cde93b400eca74291617f41",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::83e6999efc5c05495cfd46f641f3035431c2d6ac307754a01f535409c27b9236",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::848e10f20b69245f0c94803feeefa13e9ceb6da68a6afa72dbcbeba54d676459",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8507bde3626de8b86f014de4aa6174e80b58a618350c6cd39c6628288f2a3c57",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::85a939a0c1850533534293212847954cae5277cc54dc0c1329d200b4b91bbf04",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::862abe52731c9cee73f147b702df1683e5a51ada5be1a236298f67665245a917",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8658281401494cd15a0a51f93d7b755ca14b418d94f67778c087e6aad96aa21b",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::86f258c2e6c969bfc5765ac4e4b53187e761e8d62c2f5d1c095e07257936c9e5",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::872ea3a48c1aeea3e13acf303db8c43d697f6c5c44aae9cfaa2af1e7eec0f66f",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::87e565c9764170d38820f5bdc5574b871e30263d52ce0854b1969758a6e5fc19",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8c37bd862a34b66e097f236d1ee8f50b70a6a523197cc2f257ea0fbc7fa29a8e",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8df0245a6276ee388e1eaf0fda0079f00f02ddec9d92c779e673ed3d049432a5",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8e4e6ea7d770e73a55cdba567d4e74f77c984a611db4aec9e30a38f26139579e",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8ec00da685330bea5d7d7b78665638d368d94bea7800bad9cf8048e719823b4a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::8f0d8a83705ab0c714bc91bab29bc248b564f72ba163563b280535b1aa6d4fd9",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::911798b69f45835a1df2f4acf88f8d8d1fd5a31ec84a44bbf35eb5888ab11021",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9209566adf2efaafe29b42f8ce8181bd254288b90b1df9e34ce3084986f8bb96",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::93a3535c4570d3e44a3c11495c3b66edbefe32a49d6bdd463c808d0b7885f943",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::95c265d4652b191782ffdc7b230ac76ec94a444135fedfe6f3a51d5af7b76d1a",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9624a89aa57d45ab347dde55faf7ee97bf3350d8b7fbfb57158e88d69005c815",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9649fde99292594bc39b8d89939bb090633eaf60788f0750b3c76dc505bc8537",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::96fdfc98bc5ebaa8c3559638c9ecfcba6d1fa6bcde5045ffd9d44e88a80bbdb5",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9925faa3659f71fa5b43a4bfb71452cd27b5cf05aace87cb0266cd5a10f3e5ec",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9954d91226764c4badd2a8bc3887eb4a52900fed23641aadc4ca7ce999ffaa2a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9b41f507855516552d29e4b40b1a164dd27a162e8b383b5a97cb7ddd75958b49",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::9dadebd21f49bae2601f70c8c836ee2e9824a5317c788bc4f57621b988312d6b",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a1c649594b45fa0484f99328baa78de6d0771c30087c0cf91149dd8d6f3fdffd",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a4bd9b6b9f15114f9c62ac89b08891d4b95d26864e422b4e8d17cc73b8dae87d",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a639011fc0a5616b78c5c29ae9bc7e3af7b3dbc649df7ad234ce94bc0f5eedc6",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::a65ffbcea1d4047070d82af0b99620d57adf1cb17da36f3eae8a9c110df7cb89",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ad9dc6de06c7da424189aad38d9f074ba25e9f7ed0ac59627870880a9a266a50",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ae7e6646319cdd9eda974c6b805979869598952f870f4dc9d908ef315f6fc208",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b1c328d2d9f219c7fc74780ba96eb66d8ec462102b9271e7d59e45faad3cec8e",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b38531680ac75f69da4331105029bf8c7053e25e3bb33ca5a0dd8ccba95a9232",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b5b48a495f7d2b3db5c0e133b7eba52d6b757eea01332c0eb0cbaad6095c6b9f",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b897a2730801f6912a9d9b94b0a931474d0eb7a42ba8a01af481106291efd219",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::b95a5413e9214fcced349c6107cb0665bb2b585e71a40bc7dc73739f02a94586",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bb6992625b328750c8b9e3c737d2d9bbc835ef3e85aca028304ea1cea9ec6758",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bcefa0331a0fefe9342487a403260c95fd585a7a2ba1021bfa21a42513a05f5b",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::befa344d8948ef1e2ea24fce1c413a1620aef2aac2330ccc85c951479ddc731e",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::bf9b6aea3e25206d903215f204a4ab1e2f4e7fddccb4317186ca1560649b3f7d",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c32742302cf95836d7dde6defb99345ceac3c0fe99cffb7f5840ff9354bc520c",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::c684d935db2899a601691c72db0ff4f40746691edd3ed833f2f643c748387da1",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cbbfa03485ebf9d19f1c33450264d4ab270517bf6ccf7fd7ee6a076a09d8db25",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cd1f52ab74ea3d14aa370470d291061adb897843ffb8141fbba394b5bbca7883",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ce10899bb049356a0f87f38558a13b819ebf56094b74decfff0f9c621d05b950",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::cf186f23dc51254c3887cc3640f4d3c1a62a2747b008be1cda331e21072e052a",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d085b44e294584d626b70b2577bf8923201d6cceddae2e3e516e990f50d6210e",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d3c81fe26d992b6a3ce3d9289b1a7254a9fc15266b2ffde0eaf870c954282628",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d4e5371d20b6ec167c66102a40ca68ce3c5a53253000e2dbb6576ea5efdb90b3",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d4f5c2acf74e55cabaeddf0878a0b5e2b03ffef496a4ad47bdd896737bdc8542",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d8a2e205f3a217766f40437c2487e7bab7c15466362ef4f5d1cff7f7d089d9a1",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d9cfb16e8abc3dccf78a66f1afc26df49a508b530fb3ce10a01306537df9eaac",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::dc4e6f37029f4415f6fe51fb4d3c80601e4a880fa2fad66ab982b6826e35e2f1",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::dc867e950a5c67f00e487dafb2a5049dfb0576215cc66ba74e9fb1526ac7c35f",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e117fb2f1ca7930ac8cd321d7e607aaed2242d2304cfcb41c2280294814ffa42",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e1475db30dc904276255c245497972547806feaf84a826e53c4e51cdc4404ae9",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e46663d47db3e2938427241c9bac0b1fc83bc0b5294fd5b1ecb01ea184261191",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e53e072dd530f2f490e31b7fbefc733c487a0aa139633b1510eeb82f796d605e",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e5816b18874b0688e0af82a24926f6591408a9d07ae4c6696de092b614f686a7",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e596d7f14f28f44d5ada74a8353df99070169d0e3ba77092b432c2d56e6b78ca",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e7311bc915249fa8a2d98f6acfe211d6dd545335f17b1663d76e4ebf6b65403a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e8154e00bb51876c3d364bdc242586506935f0b795d93d9875b6236d3f641c6c",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::e81f12804ad3193ea83571ee1c97ce7b57654f2cbeae0b3d50a7625a35333d8e",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::eae259d733708f302a8a7aa7046799b511d19d71b5fc4784be322169b5faa62a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::eb8609e00a574bfab3e46fa18270091e9d3ef64bdc1f576dd89996b5a052012c",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ed1ffecdd5d6d312a2592fb0ddd5700ed6af2a6ddccc1c26aeea189bca47d1d3",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ed7f41e1bb12f829326644c90c54d0554c15d9b77f90c638b2fc2cae33e8c5f8",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ef5b772cca289eca4544373720034f67080261c09644e0ae4842e4b40da673f7",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f11bd19de61d903e8ac933eb9411cf680558543a909f0549116ee2e9357f2e18",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f2017fa865edf9db189fdbf9fa04873c4b57020181489e374b666a8f2a42eb22",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f352a75712572dfa5713bb89a9a9353a3465eaca1098f8cdf88337df99bdadb3",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f438c053e85a2eee6684a56450ca36a99489294434c9b2b774439a3d3f42493b",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f4600df77f460af6c5d5ad7a90c2978532eeb9d2b3109102a7072ae158221a8d",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f50014cf16575e7e7000bcf0411f5b3ad6ec60fc657f18aa44cd54945d09a6c3",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f546e4b31ac91d63f90df7da1042d6d9c6157de5f937447a915435b123866be4",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f69d82edc96a02416b706a80a9f88cc8bc6fae4958e3a1f0296aed71db9fc2b4",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f6be57ea32b3620d7816dc40485b64d8448b73ff1ca2b4609711c1d28fe49aee",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f6cd24fffc15a3191245e514a1ac2c7d358760b2719c610beed8cc8a32fea6c3",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f6fd4378f6a614bf04d60eae5adeb76dcbde05b456a818dd435547cd592aa054",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::f706afed0abd71570714c8ed8d0a33f01dcdffe225e4424fe60cc7c1ff8c18a0",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fb0e56e5419e9ad49b5a1b6d6ce5faf3937e6d6ab09118086d1f96dbbe80e890",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fb8c875791550acfd44831f6718a33f57ac2ae0c9101a0ddb5eec744c31eccb1",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fd2b08069d05e338696c5236be43e60f809eb22f37f4c65126aa7d807aada242",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fd5c1ce4e51b93420f257262a493b1612d2120af914a3d5f9427f07437037089",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::fd93ef1edae75df088f5602ec60b8f3ad027bc694cebc835497745e1a9bdea67",
+          "reason_codes": [
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        }
+      ],
+      "unexplained_zero_survivor_records": [],
+      "passed": true
+    },
+    "rule_interaction_audit": {
+      "multi_reason_records": [
+        {
+          "stage_a_record_id": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/autoformer/modeling_autoformer.py",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::27e687fbeb46e84ea1196dda584c3da437d2010507fb4a22bcc544f450c95ebe",
+          "reason_codes": [
+            "quality_qualified_fail",
+            "quality_teacher_confirmed_fail"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::39274722ef6c0c32eb113a8819eebf4fc9a265057af8d6a150270c6f5b2c2a6f",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::3988256e6e949a60617115cd7089de868a4255897a19dc62c2195408e845849a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::77b2f37d1239255ff3b546a6fd9b875d45005d8eeba0fc2431aa23f98f61af0a",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::87e565c9764170d38820f5bdc5574b871e30263d52ce0854b1969758a6e5fc19",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        },
+        {
+          "stage_a_record_id": "the-stack-dedup::ef5b772cca289eca4544373720034f67080261c09644e0ae4842e4b40da673f7",
+          "reason_codes": [
+            "quality_teacher_confirmed_fail",
+            "quality_teacher_no_positive_support"
+          ],
+          "all_removals_explained": true
+        }
+      ],
+      "unexplained_multi_reason_records": [],
+      "passed": true
+    },
+    "passed": true,
+    "stage_c_delta_from_eligible_chunks": {
+      "content_domain": {
+        "token_share": {
+          "code": 0.009513748341730355,
+          "general": -0.005933684122462288,
+          "mathematics": -0.0045709417325316415,
+          "science": 0.0009908775132635578
+        }
+      },
+      "document_format": {
+        "token_share": {
+          "code": 0.008933969658848406,
+          "dialogue": 0.00018939582760779585,
+          "formula_structured": -0.002929321617380888,
+          "markup": 0.0004669936303618918,
+          "prose": -0.006661037499437132
+        }
+      },
+      "document_function": {
+        "token_share": {
+          "discussion": 9.050733991248887e-05,
+          "explanatory": -0.0018400327449927811,
+          "instructional": 0.0007079892779463387,
+          "reference": 0.001025340678662487,
+          "transactional": 1.6195448471470047e-05
+        }
+      },
+      "language_script": {
+        "token_share": {
+          "latin": 0.0002058851987729593,
+          "mixed": -0.00012747738966569638,
+          "unknown": -7.840780910726111e-05
+        }
+      },
+      "non_latin_or_mixed_token_share": -0.00012747738966569638
+    },
+    "claim_boundary": "Audits structural retention effects, representative linkage, and explainable zero-survivor outcomes; it never enforces or restores a target composition."
+  },
+  "measurement_contract": {
+    "runtime_token_measurement": "whitespace_proxy_non_training",
+    "exact_tokenizer_count": null,
+    "exact_tokenizer_count_role": "external_evaluation_only_with_declared_tokenizer"
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "source_pool_role_read": false,
+    "composition_read": false
+  },
+  "policy_fingerprint": {
+    "policy_configs": {
+      "configs/curation_framework_v1.json": "6f535ca9d55930bdfa8f75dcb489e22376b318cdaeade71a99e806a95d8305a8",
+      "configs/quality_ranker_v1.json": "b8395b10bab96c1e72539103c2e2fc473e8e90dc304a82e7ec3f3f6c070fb19d",
+      "configs/redundancy_v2.json": "9c80dfebd6741d4898ba930d19902131d262e22b9a240877b7d84a2fadc9c2cc",
+      "configs/curation_contract.json": "f5a7c20d2213a2215e7b6c187a2849b175b6ec3a1ac286cf10e300eac223f96a",
+      "configs/runtime_policy_registry_v1.json": "3d31ddd3b426f4705d693f4be512b163ae10ddfa826ca30d21b84c5cc7f3387c",
+      "configs/runtime_policy_profiles_v1.json": "3bfd4716c2f024b5fa1e15fa53f28dcc2e22d76fe333ff806c72498f52f43d0a"
+    },
+    "runtime_modules": {
+      "run_curation.py": "6fe35ced3337f58d69dc7e2ecac3f46580ced48a3e01d49ffbdab0b739a33f8d",
+      "all_policy_stage_b.py": "f8cc19ee0fd9f804647ece991667862b06ec674670aa2763336ce0bddfe018d4",
+      "composition_audit.py": "9b5b3aa2b51da9bc6cc0b9fb7d93b88af5f34529d77a7865a6bfa2ea935cfa85",
+      "composition_artifacts.py": "499ad1586ebe83364d7d243c455444b42ef41c355ff8e15113cfb59c8087657c",
+      "content_router.py": "4b31e4279d9d67826f7b43b27220690bf945f944c08ccc766e85e3b5053f03ea",
+      "coverage_contract.py": "de9b8f401e210ef786aec4d598a3263d95b78c5556c11417d287c4372418892a",
+      "coverage_engine.py": "0beb7147695a62e72b7c1fa6dba3b30ecd909aa7e3b02005f5c882d1e9e323d8",
+      "coverage_metrics.py": "1a5d7c92b02a526785f00f898bb1472ef71acd669dedbe76915f906dae882f30",
+      "coverage_rematerialization.py": "aeec9de30b28110d6ace394759bac88af223ebfd43f8ca00abf6cb3b731cbda7",
+      "coverage_taxonomy.py": "7cff80c65670cce076bf49dfb142df9b7a665eda4c2bf09261bdb7c8b0b6f3c2",
+      "curation_artifacts.py": "3ea127b49b5c29f29e3432d086d441150dbf1144a03852877e38d128aa29bd72",
+      "model_provider_contract.py": "e39468823fbf20f663cf6c43bb7031bc5f8875ffa5ecbbdcba1659577f570132",
+      "stage_permissions.py": "4835d677069db670ea20c4e69cad9878c4fa465a46f88567b5d5970a74952ee8",
+      "ingestion/input_adapter.py": "286de557ff6fdd9fc3a1841407455ead23c2f8fca814c9dfc2e381d84b8138df",
+      "ingestion/candidate_processing.py": "4cec413fca6c7494a1540b813b8928f55728db52cd98ad564bf747cbedd5743b",
+      "quality_decision_contract.py": "d1eba939eff3f2a9f1ac6ebc1b29ba1318f6b266bdef4266f560948888d29c28",
+      "quality_rule_evidence.py": "f612a5dd724e2e73811970280d5ccbcfe13f6049016c1c34f0da54b5ccb57ee1",
+      "quality_model_evidence.py": "29d2973dbc6c385ef8762691f45213c941be7eace3232687d30626bff67e1a19",
+      "quality_fallback_evidence.py": "666258929a9bb3a38bf45cd2fa765538d10f903e9403f4f47ba6c6f5ab6b8771",
+      "quality_ranker_artifact.py": "b60e8a74d10aed10ce6f534214e6ebef7b5bf1ee89906ec9caee6aa2fdd72b8d",
+      "quality_ranker_policy.py": "84bea2ebd262cee13929868c112254c9401f1a0f42e968fdaf66902e7e03f1df",
+      "quality_ranker_runtime.py": "65cb26d92d8700f86eec7d58722ddec85e2760257da09db5d64e85987562b2c4",
+      "quality_operating_points.py": "1e56bdf900e9efb08d01e9ecb7d9f0393b673463763604ae1b4f0543320458d9",
+      "quality_stage_bridge.py": "453130b642c238546f8b2a434faab2d56c38bf1ae480493e5056bd7adf857820",
+      "quality_teacher_observation_codec.py": "9c45e42bbec1b6412a6f3a1babe8ec500d679aebe133bb5236350b0899e00563",
+      "quality_retention.py": "e95fbde3a10da4b684fb9ef20bf12fde34c4b98183d2ef5679051201d8432cb5",
+      "reason_code_audit.py": "45185114a6cf472b682b373cd4a946da249ed2b10b4b2d53bb8fde05098056f8",
+      "repeated_sentence_compaction.py": "510e62a9b93105accec2994b2cbea9322d597fc09a86195b21bf042581188885",
+      "redundancy_checkpoint.py": "bbc9b978f7a10a7e3963e65fc5987ad5304a34d95fe320aa1f8c671405fd7f7a",
+      "redundancy_equivalence.py": "a7b8587c7090cf29cfd8ea40fa5c836a5a0289c25fe4d921ac1416320322d107",
+      "redundancy_mode_policy.py": "021ca4a339fecf07bc5bf90180f7b18c2e958a56695e52eaff2d2e464b9286f1",
+      "redundancy_v2.py": "a0a8b577ddc70b872242bebd58b20ff3b1d08daef8eef0178363822ba60fc003",
+      "redundancy_v2_retrieval.py": "8f2672eded901c0d63774f80ce8e600621282d1ef9c9c86f0525d7e3f9b0616e",
+      "runtime_artifact_materialization.py": "ab8e2358fb226a02ed1cbdd33107e1d2447283c02f596b8d2763f69be08c7754",
+      "coverage_redundancy_bridge.py": "051e147b854e00f6e630f2453bfad6d1a38c6605e6f2a0896dce636c55bdabda",
+      "semantic_coverage_corpus_runner.py": "3dc68bb66b6109ddf8b7b09c6c47c6d4f67788085384c2403681ada162573b1c",
+      "semantic_coverage_empirical_audit.py": "567c55cedde33a4a03a80968bc6713511518d8d1d3969078688efd3ea3c8a589",
+      "semantic_coverage_materializer.py": "6f77102a01f6400d38edcb93fce8b85790b6e05a3948adf849fdfebee35d9220",
+      "semantic_coverage_bundle.py": "4e30228787495d1a9cb034e96bec423325227c616919bf42fd833da5530c401f",
+      "semantic_coverage_graph.py": "0bc93e351353fe6c12312550e24881bcfa2ade36aa9cf73563736cc51c680636",
+      "semantic_embedding_artifact.py": "a8bf585e5a3c7931cef1501f14fa777ad1d83da2bd796ea41a2a5d31384a66f5",
+      "semantic_embedding_runtime.py": "59155c8f76fe1539342e5ceebed621867baec2070dd360240be161ed654f5a6e",
+      "semantic_neighbor_runtime.py": "7e7f8c56ba9294ffdbee299f49360fcd2efb0d27046cd2d41c11cf49f8294bc0",
+      "stage_b_policy.py": "7300bb210f31f8527050cc1655d7fca3a2740ee1e110433f1c7316eb148c08f3"
+    }
+  },
+  "stage_b_policy": {
+    "selection_mode": "stage_b_reason_coded_structural_without_budget",
+    "owner_stage": "Stage B",
+    "core_ids": [
+      "redundancy",
+      "quality"
+    ],
+    "proposal_is_final_membership": false,
+    "structural_scaffold_compaction": {
+      "enabled": true
+    },
+    "structural_scaffold_removed_chunks": 0,
+    "explicit_generated_artifact_removed_chunks": 39,
+    "license_comment_only_removed_chunks": 1,
+    "empty_html_shell_removed_chunks": 0,
+    "web_chrome_only_removed_chunks": 0,
+    "quality_retention": {
+      "contract": "quality_retention_deletion_authority_v2",
+      "decision_scope": "deterministic_structural_prefilter_only",
+      "policy_artifact_sha256": "3d31ddd3b426f4705d693f4be512b163ae10ddfa826ca30d21b84c5cc7f3387c",
+      "decision_counts": {
+        "reject": 40,
+        "keep": 0,
+        "abstain_retain": 7985
+      },
+      "reason_code_counts": {
+        "license_comment_only_chunk": 1,
+        "explicit_generated_artifact": 39
+      },
+      "active_policy_ids": [
+        "stage_b_explicit_generated_artifact",
+        "stage_b_license_comment_only",
+        "stage_b_empty_html_shell",
+        "stage_b_web_chrome_only_chunk"
+      ],
+      "intrinsic_quality_score_used": false,
+      "weighted_score_used": false,
+      "utility_read": false,
+      "benchmark_outcomes_read": false,
+      "abstain_action": "continue_to_model_quality_gate"
+    },
+    "structural_artifact_rules": {
+      "explicit_generated_artifact": true,
+      "license_comment_only_chunk": true,
+      "empty_html_shell": true,
+      "web_chrome_only_chunk": true
+    },
+    "coverage_representatives_retained": 0,
+    "budget_applied": false,
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "source_pool_role_read": false
+  },
+  "stage_b_redundancy_v2": {
+    "all_removals_have_representative": true,
+    "benchmark_outcomes_read": false,
+    "candidate_only_pairs": 599,
+    "candidate_pairs_evaluated": 602,
+    "family_count": 3,
+    "input_chunks": 7985,
+    "mode": "framework",
+    "relation_counts": {
+      "contained_payload": 1,
+      "distinct": 46,
+      "related_complementary": 121,
+      "repeated_span": 432,
+      "superset_payload": 2
+    },
+    "removal_witness_counts": {
+      "exact_token_containment": 3
+    },
+    "removed_chunks": 3,
+    "retained_chunks": 7982,
+    "retrieval_reason_counts": {
+      "character_minhash_lsh": 239,
+      "exact_containment_window_digest": 211,
+      "minhash_lsh": 282
+    },
+    "schema_version": "stage-b-redundancy-v2-runtime-audit-v1",
+    "token_budget_read": false,
+    "utility_read": false
+  },
+  "stage_b_redundancy_checkpoint": {
+    "checkpoint_hit": true,
+    "identity_sha256": "efd0ff8fe9e4cee02238f36c62646efbe0be73415164451063cb1699583cb2c5",
+    "checkpoint_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\checkpoints\\stage_b_redundancy_v2.json"
+  },
+  "stage_b_quality": {
+    "schema_version": "stage-b-quality-runtime-audit-v3",
+    "decision_rule": "positive_support_with_luna_fallback",
+    "input_chunks": 7982,
+    "retained_chunks": 7166,
+    "not_selected_chunks": 816,
+    "reason_code_counts": {
+      "quality_qualified_fail": 2,
+      "quality_teacher_confirmed_fail": 143,
+      "quality_teacher_no_positive_support": 671
+    },
+    "failed_policy_counts": {
+      "q1_correctness_evidence": 85,
+      "q2_semantic_coherence": 13,
+      "q3_substantive_payload": 39,
+      "q4_learnable_relations": 19
+    },
+    "panel_policy_decision_counts": {
+      "abstain": 17591,
+      "fail": 2,
+      "pass": 14335
+    },
+    "decision_source_counts": {
+      "distilled_ranker": 1807,
+      "luna_fallback": 6175
+    },
+    "teacher_reviewed_chunks": 6175,
+    "chunks_with_any_abstain": 7957,
+    "chunks_with_all_policy_pass": 25,
+    "chunks_without_qualified_fail": 7837,
+    "all_input_chunks_received_quality_decision": true,
+    "abstain_action": "luna_fallback_then_not_select_without_positive_support",
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "token_budget_read": false
+  },
+  "quality_scoring": {
+    "runtime_method": "distilled_quality_ranker_v1",
+    "ranker_manifest_path": "D:\\UNLV-Research\\final_all_policy_v1\\quality_ranker_luna_v1\\ranker_v2\\quality_ranker_manifest.json",
+    "ranker_artifact_sha256": "50f887ded1c7dfe1854b06e7ca3d51d439e6041d832267882d4af73416555912",
+    "embedding_manifest_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\runtime-artifacts\\primary\\embedding_manifest.json",
+    "embedding_manifest_sha256": "f7cee0312e9b5e4e9120088632d74e2cf1f5b307b4514103434cccd8200a2069",
+    "input_chunks": 7982,
+    "policy_heads": [
+      "q1_correctness_evidence",
+      "q2_semantic_coherence",
+      "q3_substantive_payload",
+      "q4_learnable_relations"
+    ],
+    "ood_chunks": 8,
+    "uncertain_chunks": 6613,
+    "teacher_requests": 0,
+    "uncertain_action": "retain",
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "source_reputation_read": false,
+    "domain_quota_read": false,
+    "teacher_fallback": {
+      "enabled": true,
+      "observation_path": "D:\\UNLV-Research\\framework_replay_20260821_luna_conjunctive_v2\\code\\quality_teacher_observations_merged.jsonl",
+      "observation_chunks": 6175,
+      "teacher_panel_sha256": "e4cc7a7618c1cefaa3160ffd67c052d97ab29efd281c21bd1cc805e23ec9c5f0",
+      "quality_runtime_sha256": "27372fc6d98ffba58e4a4b485dc0cf8fb05bbe0e66d2b27f34b11399fa172cc0",
+      "local_evidence": {
+        "schema_version": "quality-local-evidence-audit-summary-v1",
+        "input_chunks": 7982,
+        "decision_counts": {
+          "retain": 1805,
+          "not_select": 2,
+          "luna_fallback_required": 6175
+        },
+        "output_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\quality_local_evidence.jsonl",
+        "output_sha256": "38e2c530318df0c03310174e52b00068c384a88e240a693acfec30378f6fc535",
+        "benchmark_outcomes_read": false,
+        "utility_read": false,
+        "token_budget_read": false
+      },
+      "membership_authority": "positive_support_or_confirmed_failure",
+      "unresolved_action": "not_select",
+      "transport_failure_action": "stop_without_membership_change"
+    }
+  },
+  "stage_c_coverage": {
+    "schema_version": "semantic-coverage-materialization-v1",
+    "execution_scope": "confirmatory",
+    "corpus_sha256": "9e27fae9a20878d1fac106acacbe17de27f19455311575026b0cf9c8f2ea9fb1",
+    "graph_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+    "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+    "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+    "initial_status": "veto_candidate",
+    "final_status": "pass",
+    "required_retain_uids": [
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/deberta/__init__.py::0000",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/dinat/__init__.py::0000",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/florence2/__init__.py::0000",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/gemma4_unified_assistant/__init__.py::0000",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/llava/__init__.py::0000",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0004",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0006",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0007",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/yolos/modular_yolos.py::0002",
+      "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/pipelines/base.py::0002",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/fixtures/custom_item/foo/test_foo.py::0000",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/logging/test_reporting.py::0005",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/python/integration.py::0001",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0006",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0008",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0010",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0001",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0002",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_capture.py::0004",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_conftest.py::0000",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_error_diffs.py::0000",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_pastebin.py::0001",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_reports.py::0001",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0008",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0009",
+      "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0018",
+      "known-hq::python-poetry/poetry::f46702336862::src/poetry/publishing/__init__.py::0000",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/datasets/images/__init__.py::0000",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_extra/_lib/_utils/_helpers.py::0003",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0006",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0012",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0014",
+      "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0017",
+      "the-stack-dedup::010d3f9c40f8189467a31c9527bc48d1d04ca6d71d09b7b22a9bc63b35e33977::0000",
+      "the-stack-dedup::01de72497df7c1d93b4788ed9a89067c8234c014a650a5d0ab471c94bea08757::0000",
+      "the-stack-dedup::0ecbae3fdd699b6757d023b8ad6c2624027201fb9731c0355092b483c92ba7b9::0001",
+      "the-stack-dedup::1186a907f666cdb0884a84e8fd04333ccc3fa4a03ae444bee325d4db3b294637::0001",
+      "the-stack-dedup::1fd8af63049f55318de41a47afd1da72a7be887d131e77340f94a880f56665e1::0002",
+      "the-stack-dedup::207e79b89d1d43125774685788e02b16f859dc17e9380017f9a8cdf773972c38::0000",
+      "the-stack-dedup::27e687fbeb46e84ea1196dda584c3da437d2010507fb4a22bcc544f450c95ebe::0002",
+      "the-stack-dedup::3dcfa5c0a7b2b6e5e7bb7ea3b23a79831de4a6d24950a70e1c35eca6d21db346::0000",
+      "the-stack-dedup::3f108169d45d097682977a5b3bbd42b116ac0bc7a4b3321dcf9b0fd62040d83a::0002",
+      "the-stack-dedup::3f2e264db9d0b26cf0b3bfeda81bd81195fcaee56f8fa97fc0a12c651da63905::0002",
+      "the-stack-dedup::4cc30ebeaf2d51170d07cce687a7f7f6ab1000dda390c7da68d20b82c4e03520::0000",
+      "the-stack-dedup::4e33b48bd739d617969e12c63dfffb2902375f4082a473946cf4eff3fad195e9::0001",
+      "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0002",
+      "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0003",
+      "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0007",
+      "the-stack-dedup::54c261417e192f6a888115271982f16d15afb599050202f2f8d8e2b58e0b4fe4::0001",
+      "the-stack-dedup::55d2dd9a258721177078b672aee03e810550ebca6b04440ee84f914793c3fa7b::0002",
+      "the-stack-dedup::57d0bf3b9908a2cf438feb560b773416b50521ed4ebeecd67ca544116cbc70e1::0000",
+      "the-stack-dedup::592a54bf547b40d8c40cb81ec553800cf67ee8f1a14a03f20fd1cbc32cf3015b::0000",
+      "the-stack-dedup::5ed35baeffa298b3cc7e363615214ede681777177f57bfc8b9fbfc4f9152a369::0000",
+      "the-stack-dedup::5f643f58c28fd82de373c6af48ff7fc23c8912ecd3f852918d3e36970870b358::0000",
+      "the-stack-dedup::67af3f560c9c879ce63f48c4e69778f83899d6b0486e91d087976413a182a026::0002",
+      "the-stack-dedup::69e7b8cae95ead88dfd6c323f7fcbe976903d2ac48c82c50429da15b497f6fa5::0006",
+      "the-stack-dedup::6ac04bbe5480f52f2c7765da25159f0c0da6f4f992558cf41efbec0ab29929b9::0000",
+      "the-stack-dedup::6b7d32b44ac0a31fd3034f5f1f4bdad6706a0db56d0cbcc733ed838d694745cc::0001",
+      "the-stack-dedup::709495ce4ef513ed37029979518c292ba69db93771bd8aa0eefeb759be7c1c64::0002",
+      "the-stack-dedup::77b2f37d1239255ff3b546a6fd9b875d45005d8eeba0fc2431aa23f98f61af0a::0001",
+      "the-stack-dedup::7ac5e5e239d65d3167b313ceb05a0e33c9707c414b748037ade8ab5f874c0ab9::0001",
+      "the-stack-dedup::7b5460f4c84ddd559daff277d7012b854aeb1f9135c7057db1bc4f37469b2a2a::0002",
+      "the-stack-dedup::87fba9028f18460daaa87e20ff167ca327177764b7ce4f491959b4e1a56790ea::0000",
+      "the-stack-dedup::8a13de8c51aa35e4d97b3b6054620aa44c9cfbb2725fba85f398861d70b8b461::0000",
+      "the-stack-dedup::8df7bd3f678bac2dbb3e40ee28b1b689acb3c17bd17c179b579b840ffe188e64::0000",
+      "the-stack-dedup::90ed5f8d1fff388c1c3d63904f4766f260f0ff35a0b8afb4141a39e125882754::0001",
+      "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0000",
+      "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0001",
+      "the-stack-dedup::989c3db8efb64e2fa5ac792e7a2913ed040d63fca9475923d92e1f8f371fa59d::0000",
+      "the-stack-dedup::99f81ec100c9cf2675fdc295691ba74ad737230ba0a6c06285c4815a4180caef::0001",
+      "the-stack-dedup::a0c583389c3a0c1faf0061e510b0a753ddd983da89201395058f0da20d0e805a::0001",
+      "the-stack-dedup::a20ae752fd5dd0530347bea39289a25714830e0fa1b13b26bba5887f51730cca::0003",
+      "the-stack-dedup::a20dc4034792e12e04f492d6a67f93d4f848a4562a006158dff57679b150ae55::0005",
+      "the-stack-dedup::a40079585c53284cd02124a137ff72f1a3605c66c7c1c774a3e7829d4944c8c9::0001",
+      "the-stack-dedup::b1bf35fbcbd071efe295dfb3733985bb90928b02e4bb62dd82c586dd02f648fe::0000",
+      "the-stack-dedup::b1ca26fba890c7fb4e1ade404a6c79d8316e7dbbed87dc022a70c8db13ab0599::0005",
+      "the-stack-dedup::b63f287b8f4f3b2217b61a24e70aa73e410a78c98dbf0a07c9251bc15de16391::0000",
+      "the-stack-dedup::c031032841c157167712a062d35a510ee477426a4759266fb490ae67beeae0ff::0002",
+      "the-stack-dedup::c28e2e6fd72009dd945386bf62db3188240e0b77fdada34ad2ee4fbb772bdeb6::0005",
+      "the-stack-dedup::c348c37b871de5445f8dd4f1bc8ebf4c6fbfaadfd270b490b4b89783cf5dc013::0000",
+      "the-stack-dedup::c35e4b79fc4d97498fceb4320c6ceab23d5adf4916c1e6c654f78fb9add37568::0001",
+      "the-stack-dedup::c7034cbb6bf1b4ddd7a6e743f4b1b4439715f0659fcd04cf4dd3a0119c332ba2::0001",
+      "the-stack-dedup::c7f4f2e8af4dc93bec025317f0ea07085be0ebe5a8ce73fe4feca96fa0b85cb8::0000",
+      "the-stack-dedup::cb43972c8d892c8d3cae1c5e023af3fdf107b5ac74f24bc1bc267c8ecf710983::0003",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0001",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0004",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0009",
+      "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0015",
+      "the-stack-dedup::cf272819ef86a583d3e57b91a47291c5db44ad03f32abe72f68d622204873e38::0000",
+      "the-stack-dedup::d084033bde7abf615e6f31d0a496c3829f5ee14197d5a997d64698d0f2d62963::0001",
+      "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0002",
+      "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0003",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0004",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0009",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0011",
+      "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0013",
+      "the-stack-dedup::e2cd794e8459151ddd684bef79111b720e00945a207f66d0d9c6e55a74b10e71::0008",
+      "the-stack-dedup::e6255d9555bb31ab4f8efa167fb1b57eb21fe135294ea15f53c6b96391460561::0002",
+      "the-stack-dedup::ebc7d5f93bcc5e8b55515285cc4c8b150e339cd4812b6f9469a96dc87fff3bc7::0000",
+      "the-stack-dedup::f0eb23ad5291a4695212d770e97ca845ee6ebbf871b49e5335f67e30c6670430::0001",
+      "the-stack-dedup::f3615147e2a9a915f40f304218f872e565af06faace3b8f500a6ae49bb251a25::0001",
+      "the-stack-dedup::fa1e52b251034c303ef8e86ad28f29579846ef48a7161a846d4d06849fe9e7a8::0000",
+      "the-stack-dedup::fb36b7f80bd64bf55a4adeebb79c4f131f188963e22b1c107cc483fc9b62b51b::0000",
+      "the-stack-dedup::fd47f70c239601917b700ca93a245591f0850c940915dba14b8fda7713eba14b::0000"
+    ],
+    "restoration_traces": [
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/deberta/__init__.py::0000",
+        "group_id": "semantic-uncertain-60",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/dinat/__init__.py::0000",
+        "group_id": "semantic-stable-167",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/florence2/__init__.py::0000",
+        "group_id": "semantic-uncertain-123",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/gemma4_unified_assistant/__init__.py::0000",
+        "group_id": "semantic-stable-216",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/llava/__init__.py::0000",
+        "group_id": "semantic-stable-272",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0004",
+        "group_id": "semantic-stable-452",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0006",
+        "group_id": "semantic-stable-457",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/xmod/modeling_xmod.py::0007",
+        "group_id": "semantic-stable-455",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/models/yolos/modular_yolos.py::0002",
+        "group_id": "semantic-stable-459",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::huggingface/transformers::7ea2320c7611::src/transformers/pipelines/base.py::0002",
+        "group_id": "semantic-stable-463",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/example_scripts/fixtures/custom_item/foo/test_foo.py::0000",
+        "group_id": "semantic-stable-831",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/logging/test_reporting.py::0005",
+        "group_id": "semantic-stable-853",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/python/integration.py::0001",
+        "group_id": "semantic-stable-854",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0006",
+        "group_id": "semantic-stable-864",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0008",
+        "group_id": "semantic-stable-866",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_assertrewrite.py::0010",
+        "group_id": "semantic-stable-867",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0001",
+        "group_id": "semantic-stable-862",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_cacheprovider.py::0002",
+        "group_id": "semantic-stable-869",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_capture.py::0004",
+        "group_id": "semantic-stable-871",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_conftest.py::0000",
+        "group_id": "semantic-stable-876",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_error_diffs.py::0000",
+        "group_id": "semantic-stable-879",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_pastebin.py::0001",
+        "group_id": "semantic-stable-880",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_reports.py::0001",
+        "group_id": "semantic-stable-881",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0008",
+        "group_id": "semantic-stable-891",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0009",
+        "group_id": "semantic-stable-874",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::pytest-dev/pytest::67a174fcee35::testing/test_terminal.py::0018",
+        "group_id": "semantic-stable-895",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::python-poetry/poetry::f46702336862::src/poetry/publishing/__init__.py::0000",
+        "group_id": "semantic-stable-940",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/datasets/images/__init__.py::0000",
+        "group_id": "semantic-stable-991",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/externals/array_api_extra/_lib/_utils/_helpers.py::0003",
+        "group_id": "semantic-stable-1186",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0006",
+        "group_id": "semantic-stable-1286",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0012",
+        "group_id": "semantic-stable-1288",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0014",
+        "group_id": "semantic-stable-1297",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "known-hq::scikit-learn/scikit-learn::6d7f1f12c792::sklearn/metrics/_classification.py::0017",
+        "group_id": "semantic-stable-1296",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::010d3f9c40f8189467a31c9527bc48d1d04ca6d71d09b7b22a9bc63b35e33977::0000",
+        "group_id": "semantic-stable-1505",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::01de72497df7c1d93b4788ed9a89067c8234c014a650a5d0ab471c94bea08757::0000",
+        "group_id": "semantic-uncertain-721",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::0ecbae3fdd699b6757d023b8ad6c2624027201fb9731c0355092b483c92ba7b9::0001",
+        "group_id": "semantic-uncertain-1276",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::1186a907f666cdb0884a84e8fd04333ccc3fa4a03ae444bee325d4db3b294637::0001",
+        "group_id": "semantic-stable-1770",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::1fd8af63049f55318de41a47afd1da72a7be887d131e77340f94a880f56665e1::0002",
+        "group_id": "semantic-stable-1977",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::207e79b89d1d43125774685788e02b16f859dc17e9380017f9a8cdf773972c38::0000",
+        "group_id": "semantic-uncertain-1717",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::27e687fbeb46e84ea1196dda584c3da437d2010507fb4a22bcc544f450c95ebe::0002",
+        "group_id": "semantic-stable-2105",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::3dcfa5c0a7b2b6e5e7bb7ea3b23a79831de4a6d24950a70e1c35eca6d21db346::0000",
+        "group_id": "semantic-stable-2411",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::3f108169d45d097682977a5b3bbd42b116ac0bc7a4b3321dcf9b0fd62040d83a::0002",
+        "group_id": "semantic-stable-2439",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::3f2e264db9d0b26cf0b3bfeda81bd81195fcaee56f8fa97fc0a12c651da63905::0002",
+        "group_id": "semantic-stable-2440",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::4cc30ebeaf2d51170d07cce687a7f7f6ab1000dda390c7da68d20b82c4e03520::0000",
+        "group_id": "semantic-stable-2578",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::4e33b48bd739d617969e12c63dfffb2902375f4082a473946cf4eff3fad195e9::0001",
+        "group_id": "semantic-stable-2587",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0002",
+        "group_id": "semantic-stable-2622",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0003",
+        "group_id": "semantic-stable-2626",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::53087e103d1f48768873c18e41e199b6755560662738e5b3b5d60ef73e703287::0007",
+        "group_id": "semantic-stable-2627",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::54c261417e192f6a888115271982f16d15afb599050202f2f8d8e2b58e0b4fe4::0001",
+        "group_id": "semantic-stable-2640",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::55d2dd9a258721177078b672aee03e810550ebca6b04440ee84f914793c3fa7b::0002",
+        "group_id": "semantic-stable-2659",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::57d0bf3b9908a2cf438feb560b773416b50521ed4ebeecd67ca544116cbc70e1::0000",
+        "group_id": "semantic-stable-2679",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::592a54bf547b40d8c40cb81ec553800cf67ee8f1a14a03f20fd1cbc32cf3015b::0000",
+        "group_id": "semantic-stable-2689",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::5ed35baeffa298b3cc7e363615214ede681777177f57bfc8b9fbfc4f9152a369::0000",
+        "group_id": "semantic-stable-2757",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::5f643f58c28fd82de373c6af48ff7fc23c8912ecd3f852918d3e36970870b358::0000",
+        "group_id": "semantic-stable-2760",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::67af3f560c9c879ce63f48c4e69778f83899d6b0486e91d087976413a182a026::0002",
+        "group_id": "semantic-stable-2841",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::69e7b8cae95ead88dfd6c323f7fcbe976903d2ac48c82c50429da15b497f6fa5::0006",
+        "group_id": "semantic-stable-2858",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::6ac04bbe5480f52f2c7765da25159f0c0da6f4f992558cf41efbec0ab29929b9::0000",
+        "group_id": "semantic-uncertain-2535",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::6b7d32b44ac0a31fd3034f5f1f4bdad6706a0db56d0cbcc733ed838d694745cc::0001",
+        "group_id": "semantic-stable-2867",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::709495ce4ef513ed37029979518c292ba69db93771bd8aa0eefeb759be7c1c64::0002",
+        "group_id": "semantic-stable-2908",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::77b2f37d1239255ff3b546a6fd9b875d45005d8eeba0fc2431aa23f98f61af0a::0001",
+        "group_id": "semantic-stable-2963",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::7ac5e5e239d65d3167b313ceb05a0e33c9707c414b748037ade8ab5f874c0ab9::0001",
+        "group_id": "semantic-stable-2985",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::7b5460f4c84ddd559daff277d7012b854aeb1f9135c7057db1bc4f37469b2a2a::0002",
+        "group_id": "semantic-uncertain-2638",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::87fba9028f18460daaa87e20ff167ca327177764b7ce4f491959b4e1a56790ea::0000",
+        "group_id": "semantic-stable-2605",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::8a13de8c51aa35e4d97b3b6054620aa44c9cfbb2725fba85f398861d70b8b461::0000",
+        "group_id": "semantic-stable-2588",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::8df7bd3f678bac2dbb3e40ee28b1b689acb3c17bd17c179b579b840ffe188e64::0000",
+        "group_id": "semantic-stable-3162",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::90ed5f8d1fff388c1c3d63904f4766f260f0ff35a0b8afb4141a39e125882754::0001",
+        "group_id": "semantic-stable-3187",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0000",
+        "group_id": "semantic-stable-3192",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::921ff6d1fbf5f2d15943bbc095385b4e1a8793d4df707959be9b7c337c20f4d3::0001",
+        "group_id": "semantic-stable-3191",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::989c3db8efb64e2fa5ac792e7a2913ed040d63fca9475923d92e1f8f371fa59d::0000",
+        "group_id": "semantic-stable-3222",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::99f81ec100c9cf2675fdc295691ba74ad737230ba0a6c06285c4815a4180caef::0001",
+        "group_id": "semantic-stable-3233",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::a0c583389c3a0c1faf0061e510b0a753ddd983da89201395058f0da20d0e805a::0001",
+        "group_id": "semantic-uncertain-1668",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::a20ae752fd5dd0530347bea39289a25714830e0fa1b13b26bba5887f51730cca::0003",
+        "group_id": "semantic-stable-3283",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::a20dc4034792e12e04f492d6a67f93d4f848a4562a006158dff57679b150ae55::0005",
+        "group_id": "semantic-stable-3284",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::a40079585c53284cd02124a137ff72f1a3605c66c7c1c774a3e7829d4944c8c9::0001",
+        "group_id": "semantic-stable-3298",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::b1bf35fbcbd071efe295dfb3733985bb90928b02e4bb62dd82c586dd02f648fe::0000",
+        "group_id": "semantic-stable-3390",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::b1ca26fba890c7fb4e1ade404a6c79d8316e7dbbed87dc022a70c8db13ab0599::0005",
+        "group_id": "semantic-stable-3393",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::b63f287b8f4f3b2217b61a24e70aa73e410a78c98dbf0a07c9251bc15de16391::0000",
+        "group_id": "semantic-stable-3423",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::c031032841c157167712a062d35a510ee477426a4759266fb490ae67beeae0ff::0002",
+        "group_id": "semantic-stable-3470",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::c28e2e6fd72009dd945386bf62db3188240e0b77fdada34ad2ee4fbb772bdeb6::0005",
+        "group_id": "semantic-stable-3489",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::c348c37b871de5445f8dd4f1bc8ebf4c6fbfaadfd270b490b4b89783cf5dc013::0000",
+        "group_id": "semantic-uncertain-2809",
+        "view": "uncertain_intersection",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::c35e4b79fc4d97498fceb4320c6ceab23d5adf4916c1e6c654f78fb9add37568::0001",
+        "group_id": "semantic-stable-3496",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::c7034cbb6bf1b4ddd7a6e743f4b1b4439715f0659fcd04cf4dd3a0119c332ba2::0001",
+        "group_id": "semantic-stable-3512",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::c7f4f2e8af4dc93bec025317f0ea07085be0ebe5a8ce73fe4feca96fa0b85cb8::0000",
+        "group_id": "semantic-stable-3514",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::cb43972c8d892c8d3cae1c5e023af3fdf107b5ac74f24bc1bc267c8ecf710983::0003",
+        "group_id": "semantic-stable-3527",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0001",
+        "group_id": "semantic-stable-3546",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0004",
+        "group_id": "semantic-stable-3551",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0009",
+        "group_id": "semantic-stable-3555",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::ce162a94d9a5c57b58c1a48f194c7a9d888af22003c465dac4834384d2984ed5::0015",
+        "group_id": "semantic-stable-3550",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::cf272819ef86a583d3e57b91a47291c5db44ad03f32abe72f68d622204873e38::0000",
+        "group_id": "semantic-stable-3562",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::d084033bde7abf615e6f31d0a496c3829f5ee14197d5a997d64698d0f2d62963::0001",
+        "group_id": "semantic-stable-3564",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0002",
+        "group_id": "semantic-stable-3614",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::d976affaf5b1245c5845872fdb6995b14784b5febfab04552f6f089986e2cf4b::0003",
+        "group_id": "semantic-stable-3616",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0004",
+        "group_id": "semantic-stable-3664",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0009",
+        "group_id": "semantic-stable-3671",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0011",
+        "group_id": "semantic-stable-3666",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::df05cabef94794cc328b57c5f800cda7790c20c0f4233b1e67e52bd0a7d87c1a::0013",
+        "group_id": "semantic-stable-3673",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::e2cd794e8459151ddd684bef79111b720e00945a207f66d0d9c6e55a74b10e71::0008",
+        "group_id": "semantic-stable-3697",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::e6255d9555bb31ab4f8efa167fb1b57eb21fe135294ea15f53c6b96391460561::0002",
+        "group_id": "semantic-stable-3722",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::ebc7d5f93bcc5e8b55515285cc4c8b150e339cd4812b6f9469a96dc87fff3bc7::0000",
+        "group_id": "semantic-stable-3745",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::f0eb23ad5291a4695212d770e97ca845ee6ebbf871b49e5335f67e30c6670430::0001",
+        "group_id": "semantic-stable-3768",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::f3615147e2a9a915f40f304218f872e565af06faace3b8f500a6ae49bb251a25::0001",
+        "group_id": "semantic-stable-3783",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::fa1e52b251034c303ef8e86ad28f29579846ef48a7161a846d4d06849fe9e7a8::0000",
+        "group_id": "semantic-stable-3808",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::fb36b7f80bd64bf55a4adeebb79c4f131f188963e22b1c107cc483fc9b62b51b::0000",
+        "group_id": "semantic-stable-3809",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      },
+      {
+        "chunk_uid": "the-stack-dedup::fd47f70c239601917b700ca93a245591f0850c940915dba14b8fda7713eba14b::0000",
+        "group_id": "semantic-stable-3815",
+        "view": "semantic_skill",
+        "evidence_artifact_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+        "selection_method": "facility_location_marginal_gain_then_uid"
+      }
+    ],
+    "restoration_trace_complete": true,
+    "complete_recheck_passed": true,
+    "rematerialization_applied": true,
+    "proposed_survivors": 7166,
+    "final_survivors": 7270,
+    "may_create_new_removal": false,
+    "scientific_promotion_claimed": false,
+    "benchmark_outcomes_read": false,
+    "utility_read": false,
+    "explicit_representative_families_consumed": 3,
+    "representative_families_evaluated": 3,
+    "families_outside_restoration_ceiling": [],
+    "restoration_ceiling_applied": false,
+    "restoration_candidate_count": 8025,
+    "status": "semantic_coverage_materialized",
+    "semantic_graph_consumed": true,
+    "artifact_preflight": {
+      "status": "semantic_coverage_artifacts_ready",
+      "corpus_sha256": "9e27fae9a20878d1fac106acacbe17de27f19455311575026b0cf9c8f2ea9fb1",
+      "graph_sha256": "fe82460af39e0cc7d0c45fc819ac795de259dddf076d307ba76b40f32597da6a",
+      "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+      "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+      "universe_chunks": 8025
+    }
+  },
+  "runtime_artifacts": {
+    "mode": "precomputed",
+    "materialized": false
+  },
+  "pretraining_audit": {
+    "path": "D:\\UNLV-Research\\code_5m_corpus_v2\\final_replay_v1\\benchmark_exclusion_audit_v2.json",
+    "sha256": "67d255be38ccf5b111dccce83cd42995fa46b0199194e733c0ad9473c69a4e1d",
+    "status": "benchmark_exclusion_complete",
+    "pretraining_eligible": true,
+    "audited_input_sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7"
+  },
+  "claim_boundary": "Final-policy replay on the audited Code corpus. Runtime membership uses the single framework policy; external evaluation is excluded.",
+  "outputs": {
+    "normalized_input_records": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\normalized_input_records.jsonl",
+      "sha256": "6f771fcf1f323903ae3d310d1add556fcf5ac092a1a7dd0ba078f97aa43d0f34"
+    },
+    "stage_a_record_quarantine": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_a_record_quarantine.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stage_a_pass": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_a_pass_chunks.jsonl",
+      "sha256": "da3a1a941448e609a96f3db5d6f10158760c88f889974c1155213b0a4991d540"
+    },
+    "stage_a_rejected": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_a_rejected_chunks.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stage_b_pass": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_b_pass_chunks.jsonl",
+      "sha256": "722502e2a8ded10a6c57f3fc01609260661c4953e0a440cf32a20b2fbd404a5f"
+    },
+    "stage_b_rejected": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_b_rejected_chunks.jsonl",
+      "sha256": "a35db37ef9f387d2383883fe3a9af7bccb0010ee5a5b3da1fd2f8e68dfc49aa0"
+    },
+    "stage_b_proposed_survivors": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_b_proposed_survivors.jsonl",
+      "sha256": "46c11d83c123e5d69a9dede4daf8400889611372cba68c9eddc1cc6ed5cfc1de"
+    },
+    "stage_b_non_selection_proposals": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_b_non_selection_proposals.jsonl",
+      "sha256": "d424cfc5e6e42daa334122001de379d3ae0b2a6e66c4ce076e4a5d8b21b16b5a"
+    },
+    "stage_c_not_selected": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_c_not_selected_chunks.jsonl",
+      "sha256": "ee6a91dfacbd9cd28d442b470a0c2ea4d9e0bb275b579744cb5b411e15b16760"
+    },
+    "stage_c_curated": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_c_curated_chunks.jsonl",
+      "sha256": "09a2cfba6bb85e80117f0444224c981603ff39a8fbe61517e2184003943c2bee"
+    },
+    "stage_b_redundancy_span_transformations": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_b_redundancy_span_transformations.jsonl",
+      "sha256": "fd8f2fc1097771fa5c0ad4bc454238be4e9afd2d771c7b1f1742f3119a55f248"
+    },
+    "stage_c_coverage_audit": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_c_coverage_audit.json",
+      "sha256": "0413617b05523dac89741b46b4bc3afbbe3e86c6f39c382c38a4efcc62109219"
+    },
+    "composition_audit_json": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\composition_audit.json",
+      "sha256": "d88e398768afbe7438449d1d0e2067e8035166e83557ec73cc386216c515817b"
+    },
+    "composition_by_route_csv": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\composition_by_route.csv",
+      "sha256": "d0911545c1be4e1443e0b54b83c7757c13bf0e72266957d93f2a86ad7ffeeb84"
+    },
+    "composition_by_language_csv": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\composition_by_language.csv",
+      "sha256": "ab42689551b4febf62b42bb809f76accf4223d03812dba4465f9cdf9139f506a"
+    },
+    "eligible_curated_composition_delta_csv": {
+      "path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\eligible_curated_composition_delta.csv",
+      "sha256": "ea86f39f546a046c90e0f5178f4a5aa15568c59f90e117e04669554e3e19be5b"
+    }
+  },
+  "source_sha256": {
+    "config": "08a3f8d3f1a1de6ff6bd15d42978e12382c65b5ef516839f15e591551deb9c57",
+    "inputs": {
+      "D:\\UNLV-Research\\code_5m_corpus_v2\\final_replay_v1\\audited_release_candidates_v2.jsonl": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7"
+    }
+  }
+}

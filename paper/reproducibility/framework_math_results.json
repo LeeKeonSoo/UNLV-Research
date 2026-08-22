@@ -1,0 +1,65 @@
+{
+  "schema_version": "framework-math-results-v1",
+  "status": "complete",
+  "arm": "final_evidence_bound_framework",
+  "score_unit": "percent",
+  "seeds": [101, 202, 303],
+  "corpus": {
+    "raw_packed_tokens": 6979584,
+    "curated_packed_tokens": 5767168,
+    "packed_retention_percent": 82.629108,
+    "packed_reduction_percent": 17.370892
+  },
+  "rows": [
+    {
+      "seed": 101,
+      "scores_percent": {
+        "GSM8K strict": 77.862017,
+        "GSM8K flexible": 66.489765,
+        "GSM8K normalized": 79.529947,
+        "MATH-500": 7.8
+      },
+      "source_sha256": {
+        "GSM8K": "8fb789767b1cd370ff33eefcd67564d3f456c68d933d1728aba804f016ca2a2a",
+        "GSM8K normalized": "23b78b5eb0705a066a01f67e7c2c3fda543604da2afcb9470388eef477624270",
+        "MATH-500": "dda119c7a4207740981cb87c21cebba5d77abb4a895ecdf1da533d2fc2baca0d"
+      }
+    },
+    {
+      "seed": 202,
+      "scores_percent": {
+        "GSM8K strict": 77.103867,
+        "GSM8K flexible": 61.713419,
+        "GSM8K normalized": 78.771797,
+        "MATH-500": 6.8
+      },
+      "source_sha256": {
+        "GSM8K": "3e56333116b05b3339ae48393f6e5c8e2e80921221fd198c2d2c1326c048429f",
+        "GSM8K normalized": "37d8cd4d6ef13c3e696899165374b8acceb3795f53247785f08d7bd8ade6d821",
+        "MATH-500": "eec7f6dc5dda2687699f93f1fb1af99d3db7dc19634bbc318e8028cb0df7cb96"
+      }
+    },
+    {
+      "seed": 303,
+      "scores_percent": {
+        "GSM8K strict": 77.634572,
+        "GSM8K flexible": 61.031084,
+        "GSM8K normalized": 78.847612,
+        "MATH-500": 6.6
+      },
+      "source_sha256": {
+        "GSM8K": "56f922183265edecda50a43155834432ff3bfe0a053a6303008eeca691ac4c02",
+        "GSM8K normalized audit": "ca4e2c36eee7faa3520c8d3155cff2dbe4755c3bc4793bd5c0c3b6567584387f",
+        "MATH-500": "d26216acb17b3fc30ae428bd9c936efca9bc020d350d2107fc45aa5a85e2a0b9"
+      }
+    }
+  ],
+  "summary": {
+    "GSM8K strict": {"mean_percent": 77.533485, "sample_std_percent": 0.389052},
+    "GSM8K flexible": {"mean_percent": 63.078089, "sample_std_percent": 2.97423},
+    "GSM8K normalized": {"mean_percent": 79.049785, "sample_std_percent": 0.417557},
+    "MATH-500": {"mean_percent": 7.066667, "sample_std_percent": 0.64291}
+  },
+  "task_counts_per_seed": {"GSM8K": 1319, "MATH-500": 500, "total": 1819},
+  "normalized_rescore_policy": "One identical post-hoc parser is applied to all stored GSM8K responses; normalized accuracy is a sensitivity audit rather than the official primary scorer."
+}

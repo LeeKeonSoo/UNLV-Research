@@ -1,0 +1,44 @@
+{
+  "schema_version": "natural-budget-training-inputs-v1",
+  "status": "tokenizer_materialization_complete",
+  "contract": "protocols\\final_framework_code_training_materialization_v1.json",
+  "contract_sha256": "80f696ce5c21bcdf344d2dc5dd16ba29e9add62dc94ffe775454572faa3139d5",
+  "tokenizer": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "tail_rule": "Drop only the final incomplete sequence and final incomplete gradient-accumulation group."
+  },
+  "arms": {
+    "framework_curated_natural": {
+      "source_stage": "Frozen Stage-C curated output",
+      "records": 7270,
+      "source_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\framework\\stage_c_curated_chunks.jsonl",
+      "source_sha256": "09a2cfba6bb85e80117f0444224c981603ff39a8fbe61517e2184003943c2bee",
+      "arm_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\training_inputs_v1\\arms\\framework_curated_natural.jsonl",
+      "arm_sha256": "70dd72f630d05287a6ba82a60dde9fa536bc873814099ebcd6958181ea09bf7c",
+      "blocks_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\code\\training_inputs_v1\\token_blocks\\framework_curated_natural.pt",
+      "blocks_sha256": "61c04e6032e7822c2fddbbef5ccb5a56c27c73ae47428e59cc505c6f2ba34502",
+      "sequence_length": 2048,
+      "blocks": 3048,
+      "stream_tokens": 6249197,
+      "materialized_tokens": 6242304,
+      "dropped_tail_tokens": 6893,
+      "optimizer_steps": 381
+    }
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false,
+    "equal_token_resampling": false
+  },
+  "claim_boundary": "Natural-token materialization for external validation only; no benchmark outcome can change frozen curation membership."
+}

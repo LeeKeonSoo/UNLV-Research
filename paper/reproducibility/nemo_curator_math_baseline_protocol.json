@@ -1,0 +1,72 @@
+{
+  "schema_version": "math-7m-nemo-curator-baseline-v1",
+  "status": "frozen_before_external_baseline_materialization",
+  "environment": {
+    "base_image": "runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404",
+    "nemo_curator_version": "1.3.0",
+    "install_extra": "nemo-curator[text_cuda12]==1.3.0"
+  },
+  "input": {
+    "path": "/data/math_7m/openwebmath_qwen7m_benchmark_clean_v1.jsonl",
+    "sha256": "02d709f703fe069cef6e470d33c346c3465060cd2056c9fb22752d7c149099d5",
+    "records": 3231,
+    "text_field": "text",
+    "id_field": "record_id"
+  },
+  "recipe": {
+    "order": [
+      "WordCountFilter",
+      "LongWordFilter",
+      "BoilerPlateStringFilter",
+      "RepeatedLinesFilter",
+      "RepeatedLinesByCharFilter",
+      "RepeatedParagraphsFilter",
+      "RepeatedParagraphsByCharFilter",
+      "RepeatingTopNGramsFilter-2",
+      "RepeatingTopNGramsFilter-3",
+      "RepeatingTopNGramsFilter-4",
+      "ExactDeduplicationWorkflow",
+      "FuzzyDeduplicationWorkflow"
+    ],
+    "filters": {
+      "word_count": {"min_words": 20, "max_words": 100000},
+      "long_word": {"max_word_length": 1000},
+      "boilerplate": {"remove_if_at_top_or_bottom": true, "max_boilerplate_string_ratio": 0.4},
+      "repeated_lines": {"max_repeated_line_fraction": 0.7},
+      "repeated_lines_by_char": {"max_repeated_lines_char_ratio": 0.8},
+      "repeated_paragraphs": {"max_repeated_paragraphs_ratio": 0.7},
+      "repeated_paragraphs_by_char": {"max_repeated_paragraphs_char_ratio": 0.8},
+      "top_ngram_2": {"n": 2, "max_repeating_ngram_ratio": 0.2},
+      "top_ngram_3": {"n": 3, "max_repeating_ngram_ratio": 0.18},
+      "top_ngram_4": {"n": 4, "max_repeating_ngram_ratio": 0.16}
+    },
+    "excluded_math_hostile_filters": [
+      "NonAlphaNumericFilter",
+      "SymbolsToWordsFilter",
+      "NumbersFilter",
+      "ParenthesesFilter",
+      "PunctuationFilter",
+      "WordsWithoutAlphabetsFilter"
+    ],
+    "exact_dedup": {"method": "MD5", "assign_id": true},
+    "fuzzy_dedup": {
+      "method": "MinHash_LSH",
+      "seed": 42,
+      "char_ngrams": 24,
+      "num_bands": 20,
+      "minhashes_per_band": 13,
+      "use_64_bit_hash": false
+    },
+    "semantic_dedup": false,
+    "target_token_budget": null
+  },
+  "tokenizer": {
+    "snapshot_path": "/data/tokenizer",
+    "add_special_tokens": false,
+    "append_eos_per_record": true,
+    "sequence_length": 2048,
+    "gradient_accumulation_steps": 8
+  },
+  "output_root": "/data/nemo_curator_math_7m_v1",
+  "claim_boundary": "This is one frozen, Math-compatible NeMo Curator recipe on the same benchmark-clean Raw corpus. It excludes text heuristics that would penalize mathematical notation, reads no benchmark outcomes, imposes no target token budget, and is not a claim about every NeMo configuration."
+}

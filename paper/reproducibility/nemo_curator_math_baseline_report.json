@@ -1,0 +1,91 @@
+{
+  "schema_version": "nemo-curator-math-baseline-report-v1",
+  "status": "complete",
+  "protocol": "/workspace/unlv/Phase-1/protocols/math_7m_nemo_curator_baseline_v1.json",
+  "protocol_sha256": "13fa847ba60c328d1eae1c096f76244f5dd260ad10d2b6e1420f9e17dc8db13f",
+  "input": {
+    "records": 3231,
+    "stream_tokens": 6984004,
+    "materialized_tokens": 6979584,
+    "dropped_tail_tokens": 4420
+  },
+  "filters": [
+    {
+      "filter": "WordCountFilter",
+      "input_records": 3231,
+      "retained_records": 3225,
+      "removed_records": 6
+    },
+    {
+      "filter": "LongWordFilter",
+      "input_records": 3225,
+      "retained_records": 3221,
+      "removed_records": 4
+    },
+    {
+      "filter": "BoilerPlateStringFilter",
+      "input_records": 3221,
+      "retained_records": 3197,
+      "removed_records": 24
+    },
+    {
+      "filter": "RepeatedLinesFilter",
+      "input_records": 3197,
+      "retained_records": 3007,
+      "removed_records": 190
+    },
+    {
+      "filter": "RepeatedLinesByCharFilter",
+      "input_records": 3007,
+      "retained_records": 2959,
+      "removed_records": 48
+    },
+    {
+      "filter": "RepeatedParagraphsFilter",
+      "input_records": 2959,
+      "retained_records": 2954,
+      "removed_records": 5
+    },
+    {
+      "filter": "RepeatedParagraphsByCharFilter",
+      "input_records": 2954,
+      "retained_records": 2954,
+      "removed_records": 0
+    },
+    {
+      "filter": "RepeatingTopNGramsFilter-2",
+      "input_records": 2954,
+      "retained_records": 2947,
+      "removed_records": 7
+    },
+    {
+      "filter": "RepeatingTopNGramsFilter-3",
+      "input_records": 2947,
+      "retained_records": 2936,
+      "removed_records": 11
+    },
+    {
+      "filter": "RepeatingTopNGramsFilter-4",
+      "input_records": 2936,
+      "retained_records": 2914,
+      "removed_records": 22
+    }
+  ],
+  "deduplication": {
+    "exact_duplicates": 0,
+    "exact_seconds": 24.430505514144897,
+    "fuzzy_duplicates": 0,
+    "fuzzy_seconds": 50.99993586540222
+  },
+  "curated": {
+    "records": 2914,
+    "stream_tokens": 5892145,
+    "materialized_tokens": 5881856,
+    "dropped_tail_tokens": 10289,
+    "path": "/data/nemo_curator_math_7m_v1/curated/nemo_curated.jsonl",
+    "sha256": "bcba2e70f44f2629ef18c48da4760872c0169ecd9f1a5b4b46a0135b36934216"
+  },
+  "total_seconds": 442.9652581643313,
+  "target_token_budget": null,
+  "claim_boundary": "This is one frozen, Math-compatible NeMo Curator recipe on the same benchmark-clean Raw corpus. It excludes text heuristics that would penalize mathematical notation, reads no benchmark outcomes, imposes no target token budget, and is not a claim about every NeMo configuration."
+}

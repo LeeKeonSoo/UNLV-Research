@@ -1,5 +1,13 @@
 {
   "schema_version": "confirmatory-benchmark-results-v1",
+  "status": "superseded_for_final_manuscript",
+  "superseded_by": [
+    "framework_code_results.json",
+    "bigcodebench_common_cache_results.json",
+    "same_corpus_baseline_results.json",
+    "nemo_curator_baseline_results.json"
+  ],
+  "historical_scope": "Earlier Base/Raw/Normal/Hard matrix retained for audit history; do not use its BigCodeBench values or strength-profile arms as final manuscript results.",
   "score_unit": "percent",
   "seeds": [
     101,

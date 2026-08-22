@@ -1,0 +1,233 @@
+{
+  "schema_version": "bigcodebench-common-groundtruth-recheck-v1",
+  "created_at_utc": "2026-08-21T21:21:24.7550580+00:00",
+  "status": "complete",
+  "benchmark": "BigCodeBench Complete",
+  "task_count": 1140,
+  "evaluator": {
+    "dataset_version": "0.1.4",
+    "space_source_commit": "8653fc7f5e4f8c268d84e24d48f3548648a267d0",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "groundtruth_cache_sha256": "46b1b99945e5754c533d4b828252e0ce473ddf3afc2e1271bf13e5da61c12766",
+    "groundtruth_pass_rate": 0.9956140350877193,
+    "failed_tasks": [
+      "BigCodeBench/590",
+      "BigCodeBench/289",
+      "BigCodeBench/1005",
+      "BigCodeBench/363",
+      "BigCodeBench/417"
+    ],
+    "parallel_workers": 8,
+    "policy": "one frozen groundtruth cache reused across every paper arm and seed"
+  },
+  "arms": {
+    "Base": {
+      "seeds": [
+        "base"
+      ],
+      "scores_percent": {
+        "base": 39.64912280701755
+      },
+      "summary": {
+        "mean_percent": 39.649123,
+        "sample_std_percent": null
+      }
+    },
+    "Raw": {
+      "seeds": [
+        101,
+        202,
+        303
+      ],
+      "scores_percent": {
+        "101": 40.08771929824562,
+        "202": 41.31578947368421,
+        "303": 40.43859649122807
+      },
+      "summary": {
+        "mean_percent": 40.614035,
+        "sample_std_percent": 0.632553
+      }
+    },
+    "Ours": {
+      "seeds": [
+        101,
+        202,
+        303
+      ],
+      "scores_percent": {
+        "101": 38.59649122807017,
+        "202": 39.64912280701755,
+        "303": 39.122807017543856
+      },
+      "summary": {
+        "mean_percent": 39.122807,
+        "sample_std_percent": 0.526316
+      }
+    },
+    "Data-Juicer": {
+      "seeds": [
+        101,
+        202,
+        303
+      ],
+      "scores_percent": {
+        "101": 39.91228070175439,
+        "202": 40.70175438596491,
+        "303": 40.43859649122807
+      },
+      "summary": {
+        "mean_percent": 40.350877,
+        "sample_std_percent": 0.40198
+      }
+    },
+    "NeMo Curator": {
+      "seeds": [
+        101,
+        202,
+        303
+      ],
+      "scores_percent": {
+        "101": 40.35087719298245,
+        "202": 40.526315789473685,
+        "303": 40.35087719298245
+      },
+      "summary": {
+        "mean_percent": 40.409357,
+        "sample_std_percent": 0.10129
+      }
+    }
+  },
+  "artifact_evidence": [
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_base_no_update_base\\bigcodebench_base_no_update_base_eval_results.json",
+      "sha256": "8e81577430bf87716f9cc3ccce2cfcf12a780e648a6f6c7d386a9d92c06c52dd",
+      "bytes": 3553322
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_base_no_update_base\\bigcodebench_base_no_update_base_pass_at_k.json",
+      "sha256": "225692e3cbff7ed577848e4d3affe82958ece09f70c6a1c529391688ab677585",
+      "bytes": 336
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_data_juicer_natural_seed101\\bigcodebench_data_juicer_natural_seed101_eval_results.json",
+      "sha256": "98a62299940f251b395d68f706d341ce5966e6075d2cb67be9a4b72e402e4923",
+      "bytes": 3493804
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_data_juicer_natural_seed101\\bigcodebench_data_juicer_natural_seed101_pass_at_k.json",
+      "sha256": "6bf632704fb160041a3dbdf0921787d0943b73596cc08fc21ee6bde8e6447333",
+      "bytes": 343
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_data_juicer_natural_seed202\\bigcodebench_data_juicer_natural_seed202_eval_results.json",
+      "sha256": "29e155c1b6de5824508b1302a257a6044d134fc5d819a6ad7c45b27537f213d2",
+      "bytes": 3486580
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_data_juicer_natural_seed202\\bigcodebench_data_juicer_natural_seed202_pass_at_k.json",
+      "sha256": "9a0dce52649ce0d11d7b1ac9f27d91bac7ea0dd7784af9895c1517aadbdb339f",
+      "bytes": 343
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_data_juicer_natural_seed303\\bigcodebench_data_juicer_natural_seed303_eval_results.json",
+      "sha256": "eb21ed031c9657554e07c7355660f57a906791441f0f8d2cce3a8bc094862e23",
+      "bytes": 3501286
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_data_juicer_natural_seed303\\bigcodebench_data_juicer_natural_seed303_pass_at_k.json",
+      "sha256": "0aa95d5e4209939c689baf39d743ab356f971fd8ca0f9d43ad79458754117253",
+      "bytes": 343
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_nemo_natural_seed101\\bigcodebench_nemo_natural_seed101_eval_results.json",
+      "sha256": "3fd22678c73ad5934f7e62f81fe85d6ac5be1c6c82ec5b63eba192018b391b45",
+      "bytes": 3540343
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_nemo_natural_seed101\\bigcodebench_nemo_natural_seed101_pass_at_k.json",
+      "sha256": "e27f056c85c8659b966af7944699cc3510e15e37b69a57a1a7e23459ade5c0ea",
+      "bytes": 337
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_nemo_natural_seed202\\bigcodebench_nemo_natural_seed202_eval_results.json",
+      "sha256": "f10cebc927a3e50c0dda155749a0f84703ca88a250372b3de4ef5e38e11942b2",
+      "bytes": 3534153
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_nemo_natural_seed202\\bigcodebench_nemo_natural_seed202_pass_at_k.json",
+      "sha256": "20801a81ad1969824b5f96cd50b6ee6f930711ee17a167070f3710e10946b07e",
+      "bytes": 336
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_nemo_natural_seed303\\bigcodebench_nemo_natural_seed303_eval_results.json",
+      "sha256": "824e366d991848fca87c0bd01406b18b4b336ed962c86704445792adadcaaff6",
+      "bytes": 3492502
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_nemo_natural_seed303\\bigcodebench_nemo_natural_seed303_pass_at_k.json",
+      "sha256": "ff689fbecd5a9c7987aead61933ec0e54023a542da5c51e5cbd658b562c59b77",
+      "bytes": 337
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_raw_audited_natural_seed101\\bigcodebench_raw_audited_natural_seed101_eval_results.json",
+      "sha256": "8e30454dc84ddc3dbe3d4283a58ae1b632acd569f17087422f5a08e89eb8a406",
+      "bytes": 3503077
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_raw_audited_natural_seed101\\bigcodebench_raw_audited_natural_seed101_pass_at_k.json",
+      "sha256": "6eadb0182d9318a10691c2fe30c3dfdb2bd9df3086403ccffb7defd03618148b",
+      "bytes": 344
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_raw_audited_natural_seed202\\bigcodebench_raw_audited_natural_seed202_eval_results.json",
+      "sha256": "9ae6b9ad71c6829f7f4772da5f06e38025473a4e0ff358282487fc2b0fedae4c",
+      "bytes": 3479996
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_raw_audited_natural_seed202\\bigcodebench_raw_audited_natural_seed202_pass_at_k.json",
+      "sha256": "0745746dfe339bc41f579505dd0dec9760620b039eee3ad2a56a9d2906c7e3b4",
+      "bytes": 343
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_raw_audited_natural_seed303\\bigcodebench_raw_audited_natural_seed303_eval_results.json",
+      "sha256": "a1f91506c330ba45fc3ada39a3cf8d2d5b56966379ba965566950db74d87e637",
+      "bytes": 3472453
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\bigcodebench_common_cache\\bigcodebench_raw_audited_natural_seed303\\bigcodebench_raw_audited_natural_seed303_pass_at_k.json",
+      "sha256": "4eeb14f9cc01832e605b5317ae725623b0fb19061d975dd64ffde6b689d5b56e",
+      "bytes": 343
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\bigcodebench_framework_curated_natural_seed101_eval_results.json",
+      "sha256": "51563d12f26234670d07133a75c798f1390d9537a2de7358c043037d12190937",
+      "bytes": 3519798
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed101\\bigcodebench_framework_curated_natural_seed101_pass_at_k.json",
+      "sha256": "ce2003f7838406666b7cb11c612122a8b2a4118984cb10febeee329902dc3771",
+      "bytes": 350
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\bigcodebench_framework_curated_natural_seed202_eval_results.json",
+      "sha256": "d60dfedcf5a1bb6b093bcc30f3e8eb91920b79b081665c52fe3ee10a4892fb36",
+      "bytes": 3527843
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed202\\bigcodebench_framework_curated_natural_seed202_pass_at_k.json",
+      "sha256": "289673dcebb011d95b612c563ba9cb6760407646457330c1e016d5aa0ef6edd2",
+      "bytes": 350
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\bigcodebench_framework_curated_natural_seed303_eval_results.json",
+      "sha256": "012ec5911130931783e4ef083a7a2ea9c69ffadadad2b913c4878a5ec83748a7",
+      "bytes": 3532496
+    },
+    {
+      "path": ".\\paper\\reproducibility\\raw_results\\framework_code_seed303\\bigcodebench_framework_curated_natural_seed303_pass_at_k.json",
+      "sha256": "cf8cbaa37aa58b79416da5c399c43001b36dc7e8c9596ad8d9544646a70fd8c1",
+      "bytes": 349
+    }
+  ]
+}

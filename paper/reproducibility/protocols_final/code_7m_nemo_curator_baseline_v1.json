@@ -1,0 +1,56 @@
+{
+  "schema_version": "code-7m-nemo-curator-baseline-v1",
+  "status": "frozen_before_external_baseline_materialization",
+  "image": {
+    "repository": "nvcr.io/nvidia/nemo-curator",
+    "tag": "latest",
+    "digest": "sha256:96abe1a74557d0cd20a6288f5b38804d0dba6c220a7c1e221607e32fe13b5710",
+    "nemo_curator_version": "1.3.0+4ad90ff7"
+  },
+  "input": {
+    "path": "/data/code_5m_corpus_v2/final_replay_v1/audited_release_candidates_v2.jsonl",
+    "sha256": "804dc90e35b360ae257fba99cdb1835d4b72ebd174528650dcdd20d9621a58e7",
+    "records": 4890,
+    "text_field": "text",
+    "id_field": "record_id"
+  },
+  "recipe": {
+    "order": [
+      "PythonCommentToCodeFilter",
+      "NumberOfLinesOfCodeFilter",
+      "AlphaFilter",
+      "XMLHeaderFilter",
+      "ExactDeduplicationWorkflow",
+      "FuzzyDeduplicationWorkflow"
+    ],
+    "code_filters": [
+      {"name": "PythonCommentToCodeFilter", "min_comment_to_code_ratio": 0.01, "max_comment_to_code_ratio": 0.85},
+      {"name": "NumberOfLinesOfCodeFilter", "min_lines": 10, "max_lines": 20000},
+      {"name": "AlphaFilter", "min_alpha_ratio": 0.25},
+      {"name": "XMLHeaderFilter", "char_prefix_search_length": 100}
+    ],
+    "exact_dedup": {
+      "method": "MD5",
+      "assign_id": true
+    },
+    "fuzzy_dedup": {
+      "method": "MinHash_LSH",
+      "seed": 42,
+      "char_ngrams": 24,
+      "num_bands": 20,
+      "minhashes_per_band": 13,
+      "use_64_bit_hash": false
+    },
+    "semantic_dedup": false,
+    "target_token_budget": null
+  },
+  "tokenizer": {
+    "snapshot_path": "/data/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "add_special_tokens": false,
+    "append_eos_per_record": true,
+    "sequence_length": 2048,
+    "gradient_accumulation_steps": 8
+  },
+  "output_root": "/data/nemo_curator_code_7m_v1",
+  "claim_boundary": "This is one frozen NeMo Curator code recipe, not a claim about every configuration supported by NeMo Curator. It receives the same audited Raw records as the framework arms, uses no benchmark feedback, source reputation, domain quota, equal-token resampling, or target token budget, and is evaluated only as an external baseline."
+}

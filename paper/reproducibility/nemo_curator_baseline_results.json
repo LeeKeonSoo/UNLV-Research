@@ -1,0 +1,79 @@
+{
+  "schema_version": "nemo-curator-baseline-results-v1",
+  "score_unit": "percent",
+  "scope": "one_frozen_nemo_curator_recipe_same_code_corpus_and_training_protocol",
+  "seeds": [101, 202, 303],
+  "corpus": {
+    "raw_packed_tokens": 6979584,
+    "curated_records": 3643,
+    "curated_stream_tokens": 6044088,
+    "curated_packed_tokens": 6029312,
+    "packed_retention_percent": 86.384977,
+    "packed_reduction_percent": 13.615023,
+    "blocks": 2944,
+    "steps": 368,
+    "curated_sha256": "c455ea2a6f95d3341ed864d225eead5ad09ad1b0d3c0d33791687e0d8869b425"
+  },
+  "protocols": {
+    "curation_sha256": "b5b59f90db4f4d2f9e6639ebca1d237208f680c3206e352c3ce33375ed8392d4",
+    "training_sha256": "2d327649b74d670abfd3d1a5b18c4601e6d24d2f0803edbc7781d61f0a6508db",
+    "curation_report_sha256": "8f8299927ecc9b14c73257131c37be7b30fbbb83219fc799c65a90db1db28390"
+  },
+  "rows": [
+    {
+      "seed": 101,
+      "scores_percent": {
+        "HumanEval+": 32.926829,
+        "MBPP+": 50.0,
+        "BigCodeBench Complete": 40.350877,
+        "CRUXEval-I": 7.25,
+        "CRUXEval-O": 1.875,
+        "DS-1000": 35.1
+      }
+    },
+    {
+      "seed": 202,
+      "scores_percent": {
+        "HumanEval+": 28.04878,
+        "MBPP+": 51.322751,
+        "BigCodeBench Complete": 40.526316,
+        "CRUXEval-I": 6.75,
+        "CRUXEval-O": 2.375,
+        "DS-1000": 35.0
+      }
+    },
+    {
+      "seed": 303,
+      "scores_percent": {
+        "HumanEval+": 29.268293,
+        "MBPP+": 51.587302,
+        "BigCodeBench Complete": 40.350877,
+        "CRUXEval-I": 8.25,
+        "CRUXEval-O": 2.5,
+        "DS-1000": 33.8
+      }
+    }
+  ],
+  "summary": {
+    "HumanEval+": {"mean_percent": 30.081301, "sample_std_percent": 2.538617},
+    "MBPP+": {"mean_percent": 50.970018, "sample_std_percent": 0.85041},
+    "BigCodeBench Complete": {"mean_percent": 40.409357, "sample_std_percent": 0.10129},
+    "CRUXEval-I": {"mean_percent": 7.416667, "sample_std_percent": 0.763763},
+    "CRUXEval-O": {"mean_percent": 2.25, "sample_std_percent": 0.330719},
+    "DS-1000": {"mean_percent": 34.633333, "sample_std_percent": 0.723418}
+  },
+  "task_counts_per_seed": {
+    "HumanEval+": 164,
+    "MBPP+": 378,
+    "BigCodeBench Complete": 1140,
+    "CRUXEval-I": 800,
+    "CRUXEval-O": 800,
+    "DS-1000": 1000,
+    "total": 4282
+  },
+  "bigcodebench_authority": {
+    "path": "bigcodebench_common_cache_results.json",
+    "sha256": "624f2524489fe7327485ee82b33518a0e0798b0fac579ca01891aa461c2d3d50"
+  },
+  "claim_boundary": "This artifact evaluates one frozen NeMo Curator recipe. It does not represent every operator or configuration supported by NeMo Curator."
+}

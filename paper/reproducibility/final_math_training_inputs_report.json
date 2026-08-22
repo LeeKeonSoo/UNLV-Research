@@ -1,0 +1,44 @@
+{
+  "schema_version": "natural-budget-training-inputs-v1",
+  "status": "tokenizer_materialization_complete",
+  "contract": "protocols\\final_framework_math_training_materialization_v1.json",
+  "contract_sha256": "a26949cef9b1cc33916641220eeeb424639760c053b70bd9c1eed13e101a8086",
+  "tokenizer": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "snapshot_path": "D:/UNLV-Research/hf_cache/hub/models--Qwen--Qwen3-4B-Base/snapshots/906bfd4b4dc7f14ee4320094d8b41684abff8539",
+    "local_files_only": true,
+    "add_special_tokens": false,
+    "append_eos_per_record": true
+  },
+  "packing": {
+    "sequence_length": 2048,
+    "micro_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "tail_rule": "Drop only the final incomplete sequence and final incomplete gradient-accumulation group; never impose a target fraction, max-token budget, or equal-token resampling."
+  },
+  "arms": {
+    "framework_math_natural": {
+      "source_stage": "Final framework Math Stage C output",
+      "records": 5528,
+      "source_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\math\\framework\\stage_c_curated_chunks.jsonl",
+      "source_sha256": "a6d86bbbdd2b2e9b037e664317b613f0b21b4937034f52cc536c015b93a4347f",
+      "arm_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\math\\training_inputs_v1\\arms\\framework_math_natural.jsonl",
+      "arm_sha256": "08671e38e22bf537db75f6bf9f10e0b93379d5abd24270c76fe9dcd362a572a0",
+      "blocks_path": "D:\\UNLV-Research\\framework_replay_20260821_final_v1\\math\\training_inputs_v1\\token_blocks\\framework_math_natural.pt",
+      "blocks_sha256": "a7820d4e4f2ffa22e7723263e79b0205bee8e2a00abd2c69609c02fadcd5a315",
+      "sequence_length": 2048,
+      "blocks": 2816,
+      "stream_tokens": 5780762,
+      "materialized_tokens": 5767168,
+      "dropped_tail_tokens": 13594,
+      "optimizer_steps": 352
+    }
+  },
+  "selector_boundary": {
+    "utility_read": false,
+    "benchmark_outcomes_read": false,
+    "target_token_fraction_read": false,
+    "equal_token_resampling": false
+  },
+  "claim_boundary": "This artifact freezes the final Math natural-budget training input. It does not alter curation membership or read downstream benchmark outcomes."
+}

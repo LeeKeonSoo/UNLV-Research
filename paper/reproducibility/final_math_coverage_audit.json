@@ -1,0 +1,1182 @@
+{
+  "schema_version": "semantic-coverage-materialization-v1",
+  "execution_scope": "confirmatory",
+  "corpus_sha256": "45a9e3ce1c2980cac93c029c2eaa25b41663241ba60b023979ee5195214c365b",
+  "graph_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+  "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+  "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+  "initial_status": "veto_candidate",
+  "final_status": "pass",
+  "required_retain_uids": [
+    "open-web-math/open-web-math::00000002::01f6679d0cb1d00f105367f94cf0d92298d65cd10a0bd25ab357fa7940b70079::0000",
+    "open-web-math/open-web-math::00000053::322ad4cc151ccda38ca3f41ace5d1e3209fcdf968705d896881a9beb0068f9fc::0000",
+    "open-web-math/open-web-math::00000053::322ad4cc151ccda38ca3f41ace5d1e3209fcdf968705d896881a9beb0068f9fc::0005",
+    "open-web-math/open-web-math::00000093::9fae46be5b6f8f9b8352f26835539c41404927d1c072d182b8e818ac89339e7f::0004",
+    "open-web-math/open-web-math::00000140::7fc00fb7a3f79780d4665c48afcbc1c64976d609b0e7fa5e9236638b33ea23ef::0000",
+    "open-web-math/open-web-math::00000163::c621cfaa9fddf1e4a82cc42d9d5c78d07780d249b6241f9e72255247c930b629::0002",
+    "open-web-math/open-web-math::00000177::d61747e8ac532156f62a1a92398f16d79ba885ea2115e13e5b547472a6869695::0002",
+    "open-web-math/open-web-math::00000222::60a8da0d100ea5b0a3f3244d3aef340fadba87d039da71e3885726dbc0a8d3d4::0000",
+    "open-web-math/open-web-math::00000223::ae55c578b0dd64cd8d2f677db79a283318de794aa1832b1772d338841d066bda::0013",
+    "open-web-math/open-web-math::00000300::65c66c1aa8796b81031b92677b28d96c4fb6f23c4e03b843a2f29ded3ee6d664::0003",
+    "open-web-math/open-web-math::00000334::c8d39f1e98a80ea9d6e38f54d8172a207e098a99fe9208c106107ea639d2beed::0000",
+    "open-web-math/open-web-math::00000364::81dc6014ac101e6e8eb09df30c1d5a0842097a56ff90030abba935c9bfa62d9a::0002",
+    "open-web-math/open-web-math::00000382::5143ce3d0692738e0a7d439c9d63ecc8d9dcd1c4fad3e36be7ae81a1679fb029::0003",
+    "open-web-math/open-web-math::00000386::8cd4dded2c36032060ce7618deccbc9b3e129573f8e1b988efdcc4cedc4afbff::0000",
+    "open-web-math/open-web-math::00000464::8cee724e42e664362195343fc9035b3bc71ff3f31f178e042cce5fc4d8d35c1a::0002",
+    "open-web-math/open-web-math::00000511::28109c4fa1bb006ad5ee5a4cd6b66327874cb83a4e98795d658d38e1391b53c0::0000",
+    "open-web-math/open-web-math::00000526::10c5bb44758d8b9ab7129215df2af769ea2196a028222fd362596d9250194b0b::0001",
+    "open-web-math/open-web-math::00000554::8342470038a5e3c41f7ba76ecb442f1e09a34ddadc8ebdb902317d6f9e94c46b::0002",
+    "open-web-math/open-web-math::00000626::d5fd18f2e285f53877d87a55f690ae879ef9ac80582bf875be15c4e560143f2a::0000",
+    "open-web-math/open-web-math::00000638::2cef464aeea6d0f5740e4840bb06ef3d4a406470c063c91b6c113b955405f31f::0005",
+    "open-web-math/open-web-math::00000759::169566d802e76d6d8ae5fda630a23fe3b45a4ee9881486b87077081faf6e1008::0000",
+    "open-web-math/open-web-math::00000772::b2cc6a4e0cdf39e1ba9be27787ccc8f50ddcae369a4df1da713f694368c8c4de::0000",
+    "open-web-math/open-web-math::00000778::d7aa954a2238ed981c27d5c9617476f14129f965aad60ff5218a3d5e3fff76c2::0000",
+    "open-web-math/open-web-math::00000852::b8c12b7c2c4568564af7032b41ffdfaa3a3eb89292caaf654f14d883969764d5::0002",
+    "open-web-math/open-web-math::00000852::b8c12b7c2c4568564af7032b41ffdfaa3a3eb89292caaf654f14d883969764d5::0005",
+    "open-web-math/open-web-math::00000856::4f0b93bebbef558ea9592fb003586d993f984da6e631fd96b0d3cc75a6e3f3c2::0001",
+    "open-web-math/open-web-math::00000881::957b0dc2a3bb78cb8ac1edfd6858b51f3988a9c4b399fee4569940c780d61ae4::0000",
+    "open-web-math/open-web-math::00000895::3f3071fc45fddd7995ea6505be605c0bceb7d0be3e23dcbf23b4a3f8547485d9::0006",
+    "open-web-math/open-web-math::00000906::65520d65d78b2f8066bcbfbaa4ea1dff7be3e800c85ab85a9ab1eea872523b24::0001",
+    "open-web-math/open-web-math::00000930::0eb75b32c6f911a8bffdc747b99d3a8419b2aa653d728a51b72610ba35d30eb1::0001",
+    "open-web-math/open-web-math::00000931::dbc0821945e628be8878bc3195497cde27a5f75c172ac6d5ec7ed8c309d97d59::0002",
+    "open-web-math/open-web-math::00000936::bdf73ee3a79742f4f71fb9cdf53ec04cb99cbdee68bf65cef51b6e0d4c87031b::0000",
+    "open-web-math/open-web-math::00000972::e1345cb70b8cda621cb6ff50eb18c6aff6c05e7d068797a5dda411fb29f5954f::0053",
+    "open-web-math/open-web-math::00001057::06ea1d88c88762c3a11b026011f012dd5490e84b1df7a6f126ee62d8d8038907::0000",
+    "open-web-math/open-web-math::00001077::cd655f4f28635c9a04908b2ed79aae1e67a0025c6b0508773637ba49e5bc52c2::0000",
+    "open-web-math/open-web-math::00001111::2e9deffdede83130b6f71646496945de25e5500afedc97133b0f6b3c7f9f35aa::0000",
+    "open-web-math/open-web-math::00001146::047f38d005ad2f3784a6c29245172a1900c228917b5135f0e52d901c5eaf69da::0000",
+    "open-web-math/open-web-math::00001182::8fba4a8f2ee95283b6e3f296c8e1881d66e1d1204eea826669bf11e04f32cf65::0004",
+    "open-web-math/open-web-math::00001226::533143f9345b1072db9ad5c4677be3dcd02206edd58eb98806f099632ad07312::0001",
+    "open-web-math/open-web-math::00001237::28c8a767734f47ca0cf3212c9759526ba824e4fac26480863a4447d84f8782fb::0003",
+    "open-web-math/open-web-math::00001331::6b9751ad9af09cdad06b00db8fbd6a9abd733752b1ccc3e981bab8aa27a286c2::0008",
+    "open-web-math/open-web-math::00001362::6c9fa3027175e782187ac9c20533e8f2ce989a90679dff721d40f586b42e5265::0012",
+    "open-web-math/open-web-math::00001388::802340f0cca552d868a58f14e979b410ef09c0f328884edb7d51d0d1de5c635e::0000",
+    "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0000",
+    "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0004",
+    "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0005",
+    "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0008",
+    "open-web-math/open-web-math::00001396::932680e2b860ea7e016be5369f4897b61b6ac01605b4d8879aea124d2eed00b8::0002",
+    "open-web-math/open-web-math::00001413::cda97d02b38b9e5ed811196999b97cf540b27862f3a61860cb5f306a2acaeeaa::0001",
+    "open-web-math/open-web-math::00001442::00b8e389d5c744a5e6f72a7f744d3196a20c1c59a272bee62e43c2999b154f53::0000",
+    "open-web-math/open-web-math::00001488::33c290b16a5fda8b3db7e2eae3158e75ac0e2420532d3bdf6cf2a5548e6be35e::0000",
+    "open-web-math/open-web-math::00001513::059253dc086b45efaf0fcc8838c3aa74cc7ce52c28b6c2a1dbbd40bfcfa9a49c::0010",
+    "open-web-math/open-web-math::00001527::b0ed1855d0104678a7e8bf0d0801298ee1a7f7fdc0ef64f66ddb9158885bab85::0001",
+    "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0001",
+    "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0004",
+    "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0008",
+    "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0013",
+    "open-web-math/open-web-math::00001578::7f826e2cc475eebc8d8b39602e30d79476ea82920f6e7715582600239c30b655::0000",
+    "open-web-math/open-web-math::00001620::850d1dd4ae29462c9948634d87b1b0ba5217374d076aced7650e86100fed3d09::0000",
+    "open-web-math/open-web-math::00001680::712f796902afaa3f6a1260546ddc7b35cff7cfc7edc503edbaa6d328a8b8d87d::0000",
+    "open-web-math/open-web-math::00001791::cecad9fcdf69c9a9e3f9ceaf483530387929dd690edb832ad46af3b6aea3c33e::0002",
+    "open-web-math/open-web-math::00001791::cecad9fcdf69c9a9e3f9ceaf483530387929dd690edb832ad46af3b6aea3c33e::0007",
+    "open-web-math/open-web-math::00001791::cecad9fcdf69c9a9e3f9ceaf483530387929dd690edb832ad46af3b6aea3c33e::0008",
+    "open-web-math/open-web-math::00001794::789b3b5f56920282b253fa50ca544e7d093c56901b956a41fade930a5e64617e::0011",
+    "open-web-math/open-web-math::00001877::0b28af17c0fc9ea03515bb3de3f961fb0ebf2306f1deb3e22199bee6955cf545::0001",
+    "open-web-math/open-web-math::00001913::2713f1a92a6c36bb33772502c6bea69210e448612528bbd88a6ab62e44902cca::0013",
+    "open-web-math/open-web-math::00002015::9390c4210d9fde2ea54d1ff17f72b85df0b4e3edb0a0919dadf3a7f61340807e::0000",
+    "open-web-math/open-web-math::00002024::dca7702f8452c39cba88b6ea851da4404d05939ffa3cee773614c7579419a3e1::0015",
+    "open-web-math/open-web-math::00002051::aeebed523e809acc6e0517a4c84545a9859652db2750d170c01924856abb15d8::0004",
+    "open-web-math/open-web-math::00002051::aeebed523e809acc6e0517a4c84545a9859652db2750d170c01924856abb15d8::0008",
+    "open-web-math/open-web-math::00002103::12589f8ea0e5478bff551d2bc9ff97873573523a23e69314eaa86abb0d5d6ed9::0000",
+    "open-web-math/open-web-math::00002125::d964125003aed65e41963bdc5ede5cad986eeb799432fdeb9d9038d2af6597b0::0000",
+    "open-web-math/open-web-math::00002156::ef2b2ec05f5a465017bbb69972fcf625ed6cd2befc7a34999efb67c758afc603::0003",
+    "open-web-math/open-web-math::00002156::ef2b2ec05f5a465017bbb69972fcf625ed6cd2befc7a34999efb67c758afc603::0004",
+    "open-web-math/open-web-math::00002184::27a81a15f445c88294119154cae3926a1ef0ea8870943660e9fa49d5a49e8122::0000",
+    "open-web-math/open-web-math::00002209::d04489fcab720da3e097e9cd586449865cd12cf7f44137db27014cb6d7f14f0f::0000",
+    "open-web-math/open-web-math::00002216::c9ad4fb7f82e1018a7ea4238a4cbafd2cf15c1155be516959cae2732a20b2daa::0017",
+    "open-web-math/open-web-math::00002227::c3e1037044c9c4eda7839c4fba93578f557c16e27a36043a4ac9cbe9950efa5f::0008",
+    "open-web-math/open-web-math::00002249::d557244b821db3366a939cd1f1c4301f99d60242ebd38b4dff1798cce14614b0::0003",
+    "open-web-math/open-web-math::00002268::9070f9cd2aaa485c55dd3f30cd59d381ee5fc84a938b3f8badacb0278942ecb1::0001",
+    "open-web-math/open-web-math::00002268::9070f9cd2aaa485c55dd3f30cd59d381ee5fc84a938b3f8badacb0278942ecb1::0004",
+    "open-web-math/open-web-math::00002277::11a73448c0ee769e08fe9f5b72c0a12a895642dcb064679249145e7ec1a3d411::0000",
+    "open-web-math/open-web-math::00002277::11a73448c0ee769e08fe9f5b72c0a12a895642dcb064679249145e7ec1a3d411::0001",
+    "open-web-math/open-web-math::00002285::14212fc667e0daada694f2ccaf251da2e6caa5115d5617d4a695b2126aef5d8e::0000",
+    "open-web-math/open-web-math::00002323::8c0af7d178ffdd7f6db748fc4f7a7b777d727b070bbd6810ff2efff93b4a77de::0000",
+    "open-web-math/open-web-math::00002344::3b7c25f4cff8955472445497ebb6084a2b3d272acfa1c00a096b9996110931f2::0002",
+    "open-web-math/open-web-math::00002384::582ce23205af71572267dd656ede763cd0f3675694145d954e51d89b98c769a9::0000",
+    "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0000",
+    "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0002",
+    "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0004",
+    "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0009",
+    "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0011",
+    "open-web-math/open-web-math::00002531::36a8beb6764104bc6aab501cbefbeaa53f291f3603195cd73193acd2fff70f53::0001",
+    "open-web-math/open-web-math::00002584::c0ffece4cd5e22eebfba2ffa024573ec5a28450cb1e44caafa32b9f49eada9f9::0000",
+    "open-web-math/open-web-math::00002584::c0ffece4cd5e22eebfba2ffa024573ec5a28450cb1e44caafa32b9f49eada9f9::0002",
+    "open-web-math/open-web-math::00002594::8578e585a8bd9c57d2f92a06f112cf6c5c40970982c5c99bdc1fc36102fb6c72::0006",
+    "open-web-math/open-web-math::00002621::a241a560c111d72bfa057c85e923b7282b5de24361767ff3715f88c7e520fd6d::0005",
+    "open-web-math/open-web-math::00002621::a241a560c111d72bfa057c85e923b7282b5de24361767ff3715f88c7e520fd6d::0009",
+    "open-web-math/open-web-math::00002625::0994d1e09002221515bda717e522502b68d60b65bfdddde8502e5929ac9cb01e::0001",
+    "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0018",
+    "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0021",
+    "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0025",
+    "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0034",
+    "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0040",
+    "open-web-math/open-web-math::00002661::1046643617fd4ac3aa30142167273aeaf17ea6a92f887a31ab0eace110013592::0003",
+    "open-web-math/open-web-math::00002661::1046643617fd4ac3aa30142167273aeaf17ea6a92f887a31ab0eace110013592::0004",
+    "open-web-math/open-web-math::00002708::74d190b13b9d4cb78cc19ea710d61c184a27157f761160343abb5ec18a74c52b::0000",
+    "open-web-math/open-web-math::00002746::3c66bb518ec3716589b79f5b42bdd068ad4b1cad1f6452d0425111dc64507fac::0007",
+    "open-web-math/open-web-math::00002746::3c66bb518ec3716589b79f5b42bdd068ad4b1cad1f6452d0425111dc64507fac::0009",
+    "open-web-math/open-web-math::00002773::762d2d11eced6f7331e3796d7c1c4e5502b12b60cfd1b125c9cb8dcd316eb675::0002",
+    "open-web-math/open-web-math::00002868::ef64c9501607cca15319368e8b405fc7490fdbfd7e8e43faebb3c2e1395ab7fc::0003",
+    "open-web-math/open-web-math::00002868::ef64c9501607cca15319368e8b405fc7490fdbfd7e8e43faebb3c2e1395ab7fc::0010",
+    "open-web-math/open-web-math::00002879::2641dd76cdeb625f0a75f2bde9b911c08e96e0d62a0933b099f9c6f181950cb5::0000",
+    "open-web-math/open-web-math::00002962::32d984a6a165ca964e0ea6bcbb399109b558f17409da96b94a5c901bedc0e114::0003",
+    "open-web-math/open-web-math::00002962::32d984a6a165ca964e0ea6bcbb399109b558f17409da96b94a5c901bedc0e114::0005",
+    "open-web-math/open-web-math::00002966::dc2fe9ebcd9b1b4746b57a5faa25094c0b57eb042c336d079c6a1ecb7edff757::0001",
+    "open-web-math/open-web-math::00002966::dc2fe9ebcd9b1b4746b57a5faa25094c0b57eb042c336d079c6a1ecb7edff757::0003",
+    "open-web-math/open-web-math::00003018::21245ff7c6900405b367420a2be1175c9583e49c5b2f4eb9cf62ea407e7f0fb8::0000",
+    "open-web-math/open-web-math::00003028::30769df5e307e9fa86aa156bb22dd3a58a36c0c0d1b02a6d65d6ada817dfe13b::0004",
+    "open-web-math/open-web-math::00003028::30769df5e307e9fa86aa156bb22dd3a58a36c0c0d1b02a6d65d6ada817dfe13b::0005",
+    "open-web-math/open-web-math::00003102::53f9482d44e7d49b97b1d7e40886db31431594ca553ee8a45263b8b724bd63af::0000",
+    "open-web-math/open-web-math::00003107::b6d69141e33e89c9cfa7ca629acd7fbec49178a9061649fe203390ce57000d03::0008",
+    "open-web-math/open-web-math::00003127::838424945b71f2827a228103064ee4dc46d2cd7fcdd3af46def2cde97d9be5d7::0001",
+    "open-web-math/open-web-math::00003127::838424945b71f2827a228103064ee4dc46d2cd7fcdd3af46def2cde97d9be5d7::0004",
+    "open-web-math/open-web-math::00003189::c1338f422a53d7f399431b99d3a41bb93cc5aa74d2504539996dac8547cd9add::0000",
+    "open-web-math/open-web-math::00003189::c1338f422a53d7f399431b99d3a41bb93cc5aa74d2504539996dac8547cd9add::0006",
+    "open-web-math/open-web-math::00003209::989ca3af36de8fb73e5458022baf362d638f5482d424aad8648c9cb61142808f::0004",
+    "open-web-math/open-web-math::00003281::4936053b808f2d7df6452a0e1640e6e15844b20ffd8de5ef6c75e4689b12002b::0000",
+    "open-web-math/open-web-math::00003336::74d552d761189a2e3166154833ad176d499eb62b5a738e48230a5335f4ddc2e5::0002",
+    "open-web-math/open-web-math::00003336::74d552d761189a2e3166154833ad176d499eb62b5a738e48230a5335f4ddc2e5::0004",
+    "open-web-math/open-web-math::00003367::c521db8a279ce284ca5015597e1419d99e1ad4f28d9622ebeacae0d7f355efd0::0002",
+    "open-web-math/open-web-math::00003382::31ff29f7d7c2ff32f69e53a56f2aab1533a63ece3116c0bcc2ba774b9f805d16::0004",
+    "open-web-math/open-web-math::00003382::31ff29f7d7c2ff32f69e53a56f2aab1533a63ece3116c0bcc2ba774b9f805d16::0016",
+    "open-web-math/open-web-math::00003382::31ff29f7d7c2ff32f69e53a56f2aab1533a63ece3116c0bcc2ba774b9f805d16::0032",
+    "open-web-math/open-web-math::00003484::2049333b00f028f61b31ae873074216f17c8fbba75c91fbfafb91465673f6d62::0003",
+    "open-web-math/open-web-math::00003484::2049333b00f028f61b31ae873074216f17c8fbba75c91fbfafb91465673f6d62::0004",
+    "open-web-math/open-web-math::00003485::a1f0f1d88cd2f7993489b6857b9e34df45025f78d16408d6e5eae1bb67f7eb1f::0002",
+    "open-web-math/open-web-math::00003640::37db7b8548b046cc1a7cd089341cc043fe249a784b9d3445a5e2b4a10c43e8bd::0002",
+    "open-web-math/open-web-math::00003643::742b3dcb7c965b8741f8c3835d845a99154c91e01b23447eb647c6c7f7bb8b79::0000",
+    "open-web-math/open-web-math::00003689::b4770aeaf7f8d11955bc48fffaccaacaf34947d7877adf3582864ec267b2f5d9::0001",
+    "open-web-math/open-web-math::00003810::a19b1445a9f698023666b340ff0499774474995ca8d51d2b2d43af77c389e21a::0002",
+    "open-web-math/open-web-math::00003814::e6b61f2af4b2fbc2fa35f2fa7a0a9f46c0596027b05025d02eefd72fbbebdcc1::0000",
+    "open-web-math/open-web-math::00003890::0542a272dfec023d8bbc77b380a07276bada2aab651a2f1e37617bfbea8019ac::0001"
+  ],
+  "restoration_traces": [
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000002::01f6679d0cb1d00f105367f94cf0d92298d65cd10a0bd25ab357fa7940b70079::0000",
+      "group_id": "semantic-stable-5",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000053::322ad4cc151ccda38ca3f41ace5d1e3209fcdf968705d896881a9beb0068f9fc::0000",
+      "group_id": "semantic-stable-95",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000053::322ad4cc151ccda38ca3f41ace5d1e3209fcdf968705d896881a9beb0068f9fc::0005",
+      "group_id": "semantic-stable-98",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000093::9fae46be5b6f8f9b8352f26835539c41404927d1c072d182b8e818ac89339e7f::0004",
+      "group_id": "semantic-stable-151",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000140::7fc00fb7a3f79780d4665c48afcbc1c64976d609b0e7fa5e9236638b33ea23ef::0000",
+      "group_id": "semantic-stable-236",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000163::c621cfaa9fddf1e4a82cc42d9d5c78d07780d249b6241f9e72255247c930b629::0002",
+      "group_id": "semantic-stable-267",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000177::d61747e8ac532156f62a1a92398f16d79ba885ea2115e13e5b547472a6869695::0002",
+      "group_id": "semantic-stable-148",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000222::60a8da0d100ea5b0a3f3244d3aef340fadba87d039da71e3885726dbc0a8d3d4::0000",
+      "group_id": "semantic-stable-375",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000223::ae55c578b0dd64cd8d2f677db79a283318de794aa1832b1772d338841d066bda::0013",
+      "group_id": "semantic-stable-388",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000300::65c66c1aa8796b81031b92677b28d96c4fb6f23c4e03b843a2f29ded3ee6d664::0003",
+      "group_id": "semantic-stable-474",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000334::c8d39f1e98a80ea9d6e38f54d8172a207e098a99fe9208c106107ea639d2beed::0000",
+      "group_id": "semantic-stable-530",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000364::81dc6014ac101e6e8eb09df30c1d5a0842097a56ff90030abba935c9bfa62d9a::0002",
+      "group_id": "semantic-stable-567",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000382::5143ce3d0692738e0a7d439c9d63ecc8d9dcd1c4fad3e36be7ae81a1679fb029::0003",
+      "group_id": "semantic-stable-586",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000386::8cd4dded2c36032060ce7618deccbc9b3e129573f8e1b988efdcc4cedc4afbff::0000",
+      "group_id": "semantic-stable-593",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000464::8cee724e42e664362195343fc9035b3bc71ff3f31f178e042cce5fc4d8d35c1a::0002",
+      "group_id": "semantic-stable-663",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000511::28109c4fa1bb006ad5ee5a4cd6b66327874cb83a4e98795d658d38e1391b53c0::0000",
+      "group_id": "semantic-uncertain-245",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000526::10c5bb44758d8b9ab7129215df2af769ea2196a028222fd362596d9250194b0b::0001",
+      "group_id": "semantic-stable-744",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000554::8342470038a5e3c41f7ba76ecb442f1e09a34ddadc8ebdb902317d6f9e94c46b::0002",
+      "group_id": "semantic-stable-776",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000626::d5fd18f2e285f53877d87a55f690ae879ef9ac80582bf875be15c4e560143f2a::0000",
+      "group_id": "semantic-uncertain-648",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000638::2cef464aeea6d0f5740e4840bb06ef3d4a406470c063c91b6c113b955405f31f::0005",
+      "group_id": "semantic-stable-848",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000759::169566d802e76d6d8ae5fda630a23fe3b45a4ee9881486b87077081faf6e1008::0000",
+      "group_id": "semantic-stable-1025",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000772::b2cc6a4e0cdf39e1ba9be27787ccc8f50ddcae369a4df1da713f694368c8c4de::0000",
+      "group_id": "semantic-stable-1044",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000778::d7aa954a2238ed981c27d5c9617476f14129f965aad60ff5218a3d5e3fff76c2::0000",
+      "group_id": "semantic-stable-1047",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000852::b8c12b7c2c4568564af7032b41ffdfaa3a3eb89292caaf654f14d883969764d5::0002",
+      "group_id": "semantic-stable-1116",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000852::b8c12b7c2c4568564af7032b41ffdfaa3a3eb89292caaf654f14d883969764d5::0005",
+      "group_id": "semantic-stable-150",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000856::4f0b93bebbef558ea9592fb003586d993f984da6e631fd96b0d3cc75a6e3f3c2::0001",
+      "group_id": "semantic-stable-1122",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000881::957b0dc2a3bb78cb8ac1edfd6858b51f3988a9c4b399fee4569940c780d61ae4::0000",
+      "group_id": "semantic-stable-1146",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000895::3f3071fc45fddd7995ea6505be605c0bceb7d0be3e23dcbf23b4a3f8547485d9::0006",
+      "group_id": "semantic-uncertain-844",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000906::65520d65d78b2f8066bcbfbaa4ea1dff7be3e800c85ab85a9ab1eea872523b24::0001",
+      "group_id": "semantic-stable-1171",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000930::0eb75b32c6f911a8bffdc747b99d3a8419b2aa653d728a51b72610ba35d30eb1::0001",
+      "group_id": "semantic-stable-1205",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000931::dbc0821945e628be8878bc3195497cde27a5f75c172ac6d5ec7ed8c309d97d59::0002",
+      "group_id": "semantic-stable-1209",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000936::bdf73ee3a79742f4f71fb9cdf53ec04cb99cbdee68bf65cef51b6e0d4c87031b::0000",
+      "group_id": "semantic-stable-1210",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00000972::e1345cb70b8cda621cb6ff50eb18c6aff6c05e7d068797a5dda411fb29f5954f::0053",
+      "group_id": "semantic-uncertain-928",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001057::06ea1d88c88762c3a11b026011f012dd5490e84b1df7a6f126ee62d8d8038907::0000",
+      "group_id": "semantic-stable-1381",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001077::cd655f4f28635c9a04908b2ed79aae1e67a0025c6b0508773637ba49e5bc52c2::0000",
+      "group_id": "semantic-stable-1428",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001111::2e9deffdede83130b6f71646496945de25e5500afedc97133b0f6b3c7f9f35aa::0000",
+      "group_id": "language_script:thai",
+      "view": "language_script",
+      "evidence_artifact_sha256": "45a9e3ce1c2980cac93c029c2eaa25b41663241ba60b023979ee5195214c365b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001146::047f38d005ad2f3784a6c29245172a1900c228917b5135f0e52d901c5eaf69da::0000",
+      "group_id": "semantic-stable-1502",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001182::8fba4a8f2ee95283b6e3f296c8e1881d66e1d1204eea826669bf11e04f32cf65::0004",
+      "group_id": "semantic-stable-1546",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001226::533143f9345b1072db9ad5c4677be3dcd02206edd58eb98806f099632ad07312::0001",
+      "group_id": "semantic-stable-1601",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001237::28c8a767734f47ca0cf3212c9759526ba824e4fac26480863a4447d84f8782fb::0003",
+      "group_id": "semantic-stable-1615",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001331::6b9751ad9af09cdad06b00db8fbd6a9abd733752b1ccc3e981bab8aa27a286c2::0008",
+      "group_id": "semantic-stable-1748",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001362::6c9fa3027175e782187ac9c20533e8f2ce989a90679dff721d40f586b42e5265::0012",
+      "group_id": "semantic-stable-1802",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001388::802340f0cca552d868a58f14e979b410ef09c0f328884edb7d51d0d1de5c635e::0000",
+      "group_id": "semantic-stable-1829",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0000",
+      "group_id": "semantic-stable-1837",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0004",
+      "group_id": "semantic-stable-1836",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0005",
+      "group_id": "semantic-stable-1842",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001392::d6bca57cf8434ce3785c1927ca0f8a0262880ce0297cfa691580a248e1f25ef7::0008",
+      "group_id": "semantic-stable-1833",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001396::932680e2b860ea7e016be5369f4897b61b6ac01605b4d8879aea124d2eed00b8::0002",
+      "group_id": "semantic-stable-1843",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001413::cda97d02b38b9e5ed811196999b97cf540b27862f3a61860cb5f306a2acaeeaa::0001",
+      "group_id": "semantic-stable-1855",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001442::00b8e389d5c744a5e6f72a7f744d3196a20c1c59a272bee62e43c2999b154f53::0000",
+      "group_id": "semantic-stable-1901",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001488::33c290b16a5fda8b3db7e2eae3158e75ac0e2420532d3bdf6cf2a5548e6be35e::0000",
+      "group_id": "semantic-stable-1948",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001513::059253dc086b45efaf0fcc8838c3aa74cc7ce52c28b6c2a1dbbd40bfcfa9a49c::0010",
+      "group_id": "semantic-stable-1972",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001527::b0ed1855d0104678a7e8bf0d0801298ee1a7f7fdc0ef64f66ddb9158885bab85::0001",
+      "group_id": "semantic-stable-1984",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0001",
+      "group_id": "semantic-stable-2000",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0004",
+      "group_id": "semantic-stable-2007",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0008",
+      "group_id": "semantic-stable-2008",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001540::46e965a5267fb321d54ecbf4d95ff01fdd7ca2249b1d655f766ccd12c9f54dea::0013",
+      "group_id": "semantic-stable-2021",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001578::7f826e2cc475eebc8d8b39602e30d79476ea82920f6e7715582600239c30b655::0000",
+      "group_id": "semantic-stable-2062",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001620::850d1dd4ae29462c9948634d87b1b0ba5217374d076aced7650e86100fed3d09::0000",
+      "group_id": "semantic-uncertain-1021",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001680::712f796902afaa3f6a1260546ddc7b35cff7cfc7edc503edbaa6d328a8b8d87d::0000",
+      "group_id": "content_route:table_structured_data",
+      "view": "content_route",
+      "evidence_artifact_sha256": "45a9e3ce1c2980cac93c029c2eaa25b41663241ba60b023979ee5195214c365b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001791::cecad9fcdf69c9a9e3f9ceaf483530387929dd690edb832ad46af3b6aea3c33e::0002",
+      "group_id": "semantic-stable-2241",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001791::cecad9fcdf69c9a9e3f9ceaf483530387929dd690edb832ad46af3b6aea3c33e::0007",
+      "group_id": "semantic-stable-2239",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001791::cecad9fcdf69c9a9e3f9ceaf483530387929dd690edb832ad46af3b6aea3c33e::0008",
+      "group_id": "semantic-stable-2245",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001794::789b3b5f56920282b253fa50ca544e7d093c56901b956a41fade930a5e64617e::0011",
+      "group_id": "semantic-stable-2264",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001877::0b28af17c0fc9ea03515bb3de3f961fb0ebf2306f1deb3e22199bee6955cf545::0001",
+      "group_id": "semantic-stable-2331",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00001913::2713f1a92a6c36bb33772502c6bea69210e448612528bbd88a6ab62e44902cca::0013",
+      "group_id": "semantic-stable-2369",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002015::9390c4210d9fde2ea54d1ff17f72b85df0b4e3edb0a0919dadf3a7f61340807e::0000",
+      "group_id": "semantic-stable-2434",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002024::dca7702f8452c39cba88b6ea851da4404d05939ffa3cee773614c7579419a3e1::0015",
+      "group_id": "semantic-uncertain-816",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002051::aeebed523e809acc6e0517a4c84545a9859652db2750d170c01924856abb15d8::0004",
+      "group_id": "semantic-stable-2474",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002051::aeebed523e809acc6e0517a4c84545a9859652db2750d170c01924856abb15d8::0008",
+      "group_id": "semantic-uncertain-1001",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002103::12589f8ea0e5478bff551d2bc9ff97873573523a23e69314eaa86abb0d5d6ed9::0000",
+      "group_id": "semantic-stable-2516",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002125::d964125003aed65e41963bdc5ede5cad986eeb799432fdeb9d9038d2af6597b0::0000",
+      "group_id": "semantic-stable-1688",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002156::ef2b2ec05f5a465017bbb69972fcf625ed6cd2befc7a34999efb67c758afc603::0003",
+      "group_id": "semantic-stable-2555",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002156::ef2b2ec05f5a465017bbb69972fcf625ed6cd2befc7a34999efb67c758afc603::0004",
+      "group_id": "semantic-stable-2554",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002184::27a81a15f445c88294119154cae3926a1ef0ea8870943660e9fa49d5a49e8122::0000",
+      "group_id": "semantic-stable-2570",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002209::d04489fcab720da3e097e9cd586449865cd12cf7f44137db27014cb6d7f14f0f::0000",
+      "group_id": "semantic-stable-2608",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002216::c9ad4fb7f82e1018a7ea4238a4cbafd2cf15c1155be516959cae2732a20b2daa::0017",
+      "group_id": "semantic-stable-2623",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002227::c3e1037044c9c4eda7839c4fba93578f557c16e27a36043a4ac9cbe9950efa5f::0008",
+      "group_id": "language_script:tamil",
+      "view": "language_script",
+      "evidence_artifact_sha256": "45a9e3ce1c2980cac93c029c2eaa25b41663241ba60b023979ee5195214c365b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002249::d557244b821db3366a939cd1f1c4301f99d60242ebd38b4dff1798cce14614b0::0003",
+      "group_id": "semantic-stable-2057",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002268::9070f9cd2aaa485c55dd3f30cd59d381ee5fc84a938b3f8badacb0278942ecb1::0001",
+      "group_id": "semantic-stable-2665",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002268::9070f9cd2aaa485c55dd3f30cd59d381ee5fc84a938b3f8badacb0278942ecb1::0004",
+      "group_id": "semantic-stable-2661",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002277::11a73448c0ee769e08fe9f5b72c0a12a895642dcb064679249145e7ec1a3d411::0000",
+      "group_id": "semantic-stable-2670",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002277::11a73448c0ee769e08fe9f5b72c0a12a895642dcb064679249145e7ec1a3d411::0001",
+      "group_id": "semantic-stable-2672",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002285::14212fc667e0daada694f2ccaf251da2e6caa5115d5617d4a695b2126aef5d8e::0000",
+      "group_id": "semantic-stable-2676",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002323::8c0af7d178ffdd7f6db748fc4f7a7b777d727b070bbd6810ff2efff93b4a77de::0000",
+      "group_id": "semantic-stable-2688",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002344::3b7c25f4cff8955472445497ebb6084a2b3d272acfa1c00a096b9996110931f2::0002",
+      "group_id": "semantic-stable-2724",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002384::582ce23205af71572267dd656ede763cd0f3675694145d954e51d89b98c769a9::0000",
+      "group_id": "semantic-stable-1955",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0000",
+      "group_id": "semantic-uncertain-1361",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0002",
+      "group_id": "language_script:devanagari",
+      "view": "language_script",
+      "evidence_artifact_sha256": "45a9e3ce1c2980cac93c029c2eaa25b41663241ba60b023979ee5195214c365b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0004",
+      "group_id": "semantic-stable-2838",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0009",
+      "group_id": "semantic-stable-2839",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002493::7d8fbca67769974220872d98bc754bbfe82f8d5fbdbbde4061e5fca8895221a2::0011",
+      "group_id": "semantic-uncertain-1248",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002531::36a8beb6764104bc6aab501cbefbeaa53f291f3603195cd73193acd2fff70f53::0001",
+      "group_id": "semantic-stable-2864",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002584::c0ffece4cd5e22eebfba2ffa024573ec5a28450cb1e44caafa32b9f49eada9f9::0000",
+      "group_id": "semantic-stable-1958",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002584::c0ffece4cd5e22eebfba2ffa024573ec5a28450cb1e44caafa32b9f49eada9f9::0002",
+      "group_id": "semantic-stable-2910",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002594::8578e585a8bd9c57d2f92a06f112cf6c5c40970982c5c99bdc1fc36102fb6c72::0006",
+      "group_id": "semantic-uncertain-1141",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002621::a241a560c111d72bfa057c85e923b7282b5de24361767ff3715f88c7e520fd6d::0005",
+      "group_id": "semantic-stable-2929",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002621::a241a560c111d72bfa057c85e923b7282b5de24361767ff3715f88c7e520fd6d::0009",
+      "group_id": "semantic-stable-2934",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002625::0994d1e09002221515bda717e522502b68d60b65bfdddde8502e5929ac9cb01e::0001",
+      "group_id": "semantic-stable-2940",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0018",
+      "group_id": "semantic-stable-2993",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0021",
+      "group_id": "semantic-stable-2994",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0025",
+      "group_id": "semantic-stable-2991",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0034",
+      "group_id": "semantic-stable-3002",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002656::6c297a2554b3cdd3aa8701dc870921de50f931efa57e4d5d9f6b404b588d893b::0040",
+      "group_id": "semantic-stable-3005",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002661::1046643617fd4ac3aa30142167273aeaf17ea6a92f887a31ab0eace110013592::0003",
+      "group_id": "semantic-stable-3015",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002661::1046643617fd4ac3aa30142167273aeaf17ea6a92f887a31ab0eace110013592::0004",
+      "group_id": "semantic-uncertain-1225",
+      "view": "uncertain_intersection",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002708::74d190b13b9d4cb78cc19ea710d61c184a27157f761160343abb5ec18a74c52b::0000",
+      "group_id": "semantic-stable-3050",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002746::3c66bb518ec3716589b79f5b42bdd068ad4b1cad1f6452d0425111dc64507fac::0007",
+      "group_id": "semantic-stable-3082",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002746::3c66bb518ec3716589b79f5b42bdd068ad4b1cad1f6452d0425111dc64507fac::0009",
+      "group_id": "semantic-stable-3085",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002773::762d2d11eced6f7331e3796d7c1c4e5502b12b60cfd1b125c9cb8dcd316eb675::0002",
+      "group_id": "semantic-stable-2998",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002868::ef64c9501607cca15319368e8b405fc7490fdbfd7e8e43faebb3c2e1395ab7fc::0003",
+      "group_id": "semantic-stable-3180",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002868::ef64c9501607cca15319368e8b405fc7490fdbfd7e8e43faebb3c2e1395ab7fc::0010",
+      "group_id": "482fe089ccce4f6e1480fc011fac96ae68f41ee28bd956385f5bc5f3ca98d344",
+      "view": "redundancy_family",
+      "evidence_artifact_sha256": "a7eaae9e5f31998ace8fccda734b152d71a3868af3140b54e2e4a3771e3fc31d",
+      "selection_method": "stage_b_directional_preference"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002879::2641dd76cdeb625f0a75f2bde9b911c08e96e0d62a0933b099f9c6f181950cb5::0000",
+      "group_id": "semantic-stable-3191",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002962::32d984a6a165ca964e0ea6bcbb399109b558f17409da96b94a5c901bedc0e114::0003",
+      "group_id": "semantic-stable-1121",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002962::32d984a6a165ca964e0ea6bcbb399109b558f17409da96b94a5c901bedc0e114::0005",
+      "group_id": "semantic-stable-2673",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002966::dc2fe9ebcd9b1b4746b57a5faa25094c0b57eb042c336d079c6a1ecb7edff757::0001",
+      "group_id": "semantic-stable-3245",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00002966::dc2fe9ebcd9b1b4746b57a5faa25094c0b57eb042c336d079c6a1ecb7edff757::0003",
+      "group_id": "semantic-stable-3251",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003018::21245ff7c6900405b367420a2be1175c9583e49c5b2f4eb9cf62ea407e7f0fb8::0000",
+      "group_id": "semantic-stable-1320",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003028::30769df5e307e9fa86aa156bb22dd3a58a36c0c0d1b02a6d65d6ada817dfe13b::0004",
+      "group_id": "semantic-stable-3296",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003028::30769df5e307e9fa86aa156bb22dd3a58a36c0c0d1b02a6d65d6ada817dfe13b::0005",
+      "group_id": "semantic-stable-3294",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003102::53f9482d44e7d49b97b1d7e40886db31431594ca553ee8a45263b8b724bd63af::0000",
+      "group_id": "semantic-stable-1599",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003107::b6d69141e33e89c9cfa7ca629acd7fbec49178a9061649fe203390ce57000d03::0008",
+      "group_id": "semantic-stable-3328",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003127::838424945b71f2827a228103064ee4dc46d2cd7fcdd3af46def2cde97d9be5d7::0001",
+      "group_id": "semantic-stable-3373",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003127::838424945b71f2827a228103064ee4dc46d2cd7fcdd3af46def2cde97d9be5d7::0004",
+      "group_id": "semantic-stable-3375",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003189::c1338f422a53d7f399431b99d3a41bb93cc5aa74d2504539996dac8547cd9add::0000",
+      "group_id": "semantic-stable-3407",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003189::c1338f422a53d7f399431b99d3a41bb93cc5aa74d2504539996dac8547cd9add::0006",
+      "group_id": "semantic-stable-3408",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003209::989ca3af36de8fb73e5458022baf362d638f5482d424aad8648c9cb61142808f::0004",
+      "group_id": "semantic-stable-3414",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003281::4936053b808f2d7df6452a0e1640e6e15844b20ffd8de5ef6c75e4689b12002b::0000",
+      "group_id": "semantic-stable-3466",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003336::74d552d761189a2e3166154833ad176d499eb62b5a738e48230a5335f4ddc2e5::0002",
+      "group_id": "semantic-stable-3481",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003336::74d552d761189a2e3166154833ad176d499eb62b5a738e48230a5335f4ddc2e5::0004",
+      "group_id": "semantic-stable-425",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003367::c521db8a279ce284ca5015597e1419d99e1ad4f28d9622ebeacae0d7f355efd0::0002",
+      "group_id": "semantic-stable-3496",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003382::31ff29f7d7c2ff32f69e53a56f2aab1533a63ece3116c0bcc2ba774b9f805d16::0004",
+      "group_id": "semantic-stable-3509",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003382::31ff29f7d7c2ff32f69e53a56f2aab1533a63ece3116c0bcc2ba774b9f805d16::0016",
+      "group_id": "semantic-stable-3502",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003382::31ff29f7d7c2ff32f69e53a56f2aab1533a63ece3116c0bcc2ba774b9f805d16::0032",
+      "group_id": "semantic-stable-3522",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003484::2049333b00f028f61b31ae873074216f17c8fbba75c91fbfafb91465673f6d62::0003",
+      "group_id": "semantic-stable-3561",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003484::2049333b00f028f61b31ae873074216f17c8fbba75c91fbfafb91465673f6d62::0004",
+      "group_id": "semantic-stable-3560",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003485::a1f0f1d88cd2f7993489b6857b9e34df45025f78d16408d6e5eae1bb67f7eb1f::0002",
+      "group_id": "semantic-stable-704",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003640::37db7b8548b046cc1a7cd089341cc043fe249a784b9d3445a5e2b4a10c43e8bd::0002",
+      "group_id": "semantic-stable-3661",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003643::742b3dcb7c965b8741f8c3835d845a99154c91e01b23447eb647c6c7f7bb8b79::0000",
+      "group_id": "semantic-stable-3260",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003689::b4770aeaf7f8d11955bc48fffaccaacaf34947d7877adf3582864ec267b2f5d9::0001",
+      "group_id": "semantic-stable-2356",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003810::a19b1445a9f698023666b340ff0499774474995ca8d51d2b2d43af77c389e21a::0002",
+      "group_id": "semantic-stable-965",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003814::e6b61f2af4b2fbc2fa35f2fa7a0a9f46c0596027b05025d02eefd72fbbebdcc1::0000",
+      "group_id": "semantic-stable-3788",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    },
+    {
+      "chunk_uid": "open-web-math/open-web-math::00003890::0542a272dfec023d8bbc77b380a07276bada2aab651a2f1e37617bfbea8019ac::0001",
+      "group_id": "semantic-stable-1642",
+      "view": "semantic_skill",
+      "evidence_artifact_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+      "selection_method": "facility_location_marginal_gain_then_uid"
+    }
+  ],
+  "restoration_trace_complete": true,
+  "complete_recheck_passed": true,
+  "rematerialization_applied": true,
+  "proposed_survivors": 5385,
+  "final_survivors": 5528,
+  "may_create_new_removal": false,
+  "scientific_promotion_claimed": false,
+  "benchmark_outcomes_read": false,
+  "utility_read": false,
+  "explicit_representative_families_consumed": 6,
+  "representative_families_evaluated": 6,
+  "families_outside_restoration_ceiling": [],
+  "restoration_ceiling_applied": false,
+  "restoration_candidate_count": 6615,
+  "status": "semantic_coverage_materialized",
+  "semantic_graph_consumed": true,
+  "artifact_preflight": {
+    "status": "semantic_coverage_artifacts_ready",
+    "corpus_sha256": "45a9e3ce1c2980cac93c029c2eaa25b41663241ba60b023979ee5195214c365b",
+    "graph_sha256": "c8222abdcf3cb81a496b0dbf6a9781d64bfc5065c02d9a3cc65c976e5c1f992b",
+    "provider_id": "qwen3-embedding-0.6b-semantic-candidate",
+    "provider_identity_sha256": "529af20b304f15803a7b93282543c1a2ed36fc03c0d4e8e024a57a1a88c4fd02",
+    "universe_chunks": 6615
+  }
+}

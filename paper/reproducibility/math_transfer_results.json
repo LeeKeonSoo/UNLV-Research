@@ -1,0 +1,75 @@
+{
+  "schema_version": "paper-math-transfer-results-v1",
+  "status": "frozen_after_complete_three_seed_evaluation",
+  "claim_role": "exploratory_cross_domain_transfer_not_confirmatory_non_inferiority",
+  "model": {
+    "id": "Qwen/Qwen3-4B-Base",
+    "revision": "906bfd4b4dc7f14ee4320094d8b41684abff8539"
+  },
+  "training": {
+    "budget": "one_complete_natural_dataset_pass_per_arm_no_equal_token_resampling",
+    "seeds": [101, 202, 303],
+    "training_inputs_report_sha256": "fe3ec3c4354e72b970e447cb06175d59e0ca8f8a7b7e2a3e5339e23a17084aea",
+    "benchmark_exclusion_audit_sha256": "05f27de2b8ddcc7e632fe3a621a3b951fdf024c97bd2094e281a3015d1636409"
+  },
+  "arms": {
+    "base_no_update": {
+      "packed_tokens": 0,
+      "reduction_percent_vs_raw": null,
+      "gsm8k_strict_percent": [75.13],
+      "gsm8k_flexible_percent": [57.54],
+      "gsm8k_normalized_percent": [76.42],
+      "math500_percent": [3.80]
+    },
+    "raw_math_natural": {
+      "packed_tokens": 6979584,
+      "optimizer_steps": 426,
+      "reduction_percent_vs_raw": 0.00,
+      "gsm8k_strict_percent": [78.62, 76.27, 78.47],
+      "gsm8k_flexible_percent": [72.40, 71.65, 69.52],
+      "gsm8k_normalized_percent": [80.89, 79.83, 79.61],
+      "math500_percent": [9.00, 8.40, 8.60]
+    },
+    "normal_math_natural": {
+      "packed_tokens": 3145728,
+      "optimizer_steps": 192,
+      "reduction_percent_vs_raw": 54.93,
+      "gsm8k_strict_percent": [72.55, 71.95, 73.31],
+      "gsm8k_flexible_percent": [75.89, 74.53, 74.68],
+      "gsm8k_normalized_percent": [78.70, 79.00, 78.54],
+      "math500_percent": [5.60, 5.40, 5.20]
+    },
+    "hard_math_natural": {
+      "packed_tokens": 2670592,
+      "optimizer_steps": 163,
+      "reduction_percent_vs_raw": 61.74,
+      "gsm8k_strict_percent": [74.00, 74.45, 75.44],
+      "gsm8k_flexible_percent": [72.78, 71.72, 71.57],
+      "gsm8k_normalized_percent": [79.00, 78.39, 79.15],
+      "math500_percent": [5.20, 4.80, 5.20]
+    }
+  },
+  "source_artifacts": {
+    "gsm8k_normalized_rescore_sha256": "d37723a0cedd5e48b227dc4373b53dc61e530ca03f963cd878c7ad4e58dd57cb",
+    "base_combined_sha256": "6c80df14b2b62c4ed57081a5a3b7099d006bc79fa0380190d07c16803c2e9c8d",
+    "raw_seed101_combined_sha256": "6c24c8503c35a8d24977dad04bc2eac3d650506f4f0343bf923d1c1fd2bd4525",
+    "raw_seed202_math500_sha256": "897f448aba4cc4630fffce1a307068c41509e87779f390160e3beca20ad5ec4f",
+    "normal_seed101_math500_sha256": "6dbe482a85e1f0a5bfbcfe44a104fc157e9abcd23e0bc9cb0f908b90814de5f7",
+    "normal_seed202_math500_sha256": "dd962795e2de6a9db6b8098508411e1b3c19b4102e26a43ca3a8cc93262cce73",
+    "hard_seed101_math500_sha256": "e8c25ff8a4c6bd8375f376419c1c5c7029647fc9ed1d9152652a450037dc9072",
+    "hard_seed202_math500_sha256": "6b376f983ad9101671bb2e403b1ac77ce7841054f94381d7d666ab0e817d7dda",
+    "raw_seed303_gsm8k_sha256": "a5724cd31a99b0271c1a56636393611f66bc7ecebd485295b860a8764113f0a3",
+    "raw_seed303_math500_sha256": "8d4e7d54c8434e9964b837b36a3dc3e1504d5c6b78026dddcd7bfccf45a385d8",
+    "normal_seed303_gsm8k_sha256": "bb531f13db1f29c616b77bc688715b598b2e83bbdfe61477da17992aac92d0e3",
+    "normal_seed303_math500_sha256": "7abc56e96fd657bc64b70dcae7acc197f42c7748883925fab6c9235852321f4e",
+    "hard_seed303_gsm8k_sha256": "3377b12ce8c126c5e2e9321dd124dd2bb01196a7e663549c1e09fee8749ae704",
+    "hard_seed303_math500_sha256": "129c0e627f7b15776080f0c9caa7cf66c15b5919dd072a0ad1991406e78337eb"
+  },
+  "reporting_boundary": {
+    "official_gsm8k_scores_preserved": true,
+    "normalized_gsm8k_role": "post_hoc_sensitivity_audit_only",
+    "policy_mutated_after_results": false,
+    "seed_expansion_boundary": "Seeds 202 and 303 were added sequentially after the initial seed-101 result without changing corpus membership, training inputs, or evaluator settings.",
+    "math_raw_non_inferiority_supported": false
+  }
+}
